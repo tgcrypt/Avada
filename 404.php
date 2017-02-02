@@ -1,9 +1,16 @@
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <?php get_header(); ?>
 <div id="content" class="full-width">
 	<div id="post-404page">
 		<div class="post-content">
 			<?php
-			// Render the page titles
+			// Render the page titles.
 			$subtitle = esc_html__( 'Oops, This Page Could Not Be Found!', 'Avada' );
 			echo Avada()->template->title_template( $subtitle );
 			?>
@@ -39,4 +46,4 @@
 </div>
 <?php get_footer();
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

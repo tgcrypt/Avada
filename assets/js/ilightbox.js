@@ -1,3 +1,4 @@
+/*jshint -W065 */
 /**
  * jQuery iLightBox - Revolutionary Lightbox Plugin
  * http://www.ilightbox.net/
@@ -269,9 +270,9 @@
 
 				if (!options.width || !options.height) {
 					// ThemeFusion edit for Avada theme; set width from 1280x700 (100% for iframe) to the theme option values
-					if (type == "video") { options.width = js_local_vars.lightbox_video_width, options.height = js_local_vars.lightbox_video_height; }
-					else if (type == "iframe") { options.width = js_local_vars.lightbox_video_width, options.height = js_local_vars.lightbox_video_height; }
-					else if (type == "flash") { options.width = js_local_vars.lightbox_video_width, options.height = js_local_vars.lightbox_video_height; }
+					if (type == "video") { options.width = avadaVars.lightbox_video_width, options.height = avadaVars.lightbox_video_height; }
+					else if (type == "iframe") { options.width = avadaVars.lightbox_video_width, options.height = avadaVars.lightbox_video_height; }
+					else if (type == "flash") { options.width = avadaVars.lightbox_video_width, options.height = avadaVars.lightbox_video_height; }
 				}
 
 				delete val.url;
@@ -2379,6 +2380,7 @@
 						var $reg_exp =  /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
 						var $match = obj.URL.match( $reg_exp );
 
+						$query_string += '&enablejsapi=1';
 						if ( $match ) {
 							var $movie = '//www.youtube.com/embed/' + $match[7] + $query_string;
 						} else {
@@ -2390,6 +2392,7 @@
 					// End Edit
 
 					el = $('<iframe />').attr({
+						"id": 'lightboxvideo' + jQuery( 'iframe' ).length,
 						"width": (typeof obj.options.width == 'number' && obj.options.width && iL.options.minScale == '1' && iL.options.maxScale == '1') ? obj.options.width : "100%",
 						"height": (typeof obj.options.height == 'number' && obj.options.height && iL.options.minScale == '1' && iL.options.maxScale == '1') ? obj.options.height : "100%",
 						src: $movie,

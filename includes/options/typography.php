@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Menu
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + menu
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_typography( $sections ) {
 
@@ -266,6 +270,7 @@ function avada_options_section_typography( $sections ) {
 						'default'     => array(),
 						'type'        => 'repeater',
 						'bind_title'  => 'name',
+						'limit'       => 50,
 						'fields'      => array(
 							'name' => array(
 								'label'       => esc_html__( 'Font Name (this will be used in the font-family dropdown)', 'Avada' ),

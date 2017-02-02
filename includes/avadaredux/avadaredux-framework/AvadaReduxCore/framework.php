@@ -44,7 +44,7 @@
 
 		// General functions
 		require_once dirname( __FILE__ ) . '/inc/class.avadaredux_functions.php';
-		require_once dirname( __FILE__ ) . '/inc/class.p.php';
+		// require_once dirname( __FILE__ ) . '/inc/class.p.php';
 
 		require_once dirname( __FILE__ ) . '/inc/class.thirdparty.fixes.php';
 
@@ -406,24 +406,24 @@
 					// Ajax saving!!!
 					add_action( "wp_ajax_" . $this->args['opt_name'] . '_ajax_save', array( $this, "ajax_save" ) );
 
-					if ( $this->args['dev_mode'] == true || AvadaRedux_Helpers::isLocalHost() == true ) {
-						require_once 'core/dashboard.php';
-						new avadareduxDashboardWidget($this);
-
-						if ( ! isset ( $GLOBALS['avadaredux_notice_check'] ) ) {
-							require_once 'core/newsflash.php';
-
-							$params = array(
-								'dir_name'    => 'notice',
-								'server_file' => 'http://avadareduxframework.com/wp-content/uploads/avadaredux/avadaredux_notice.json',
-								'interval'    => 3,
-								'cookie_id'   => 'avadaredux_blast',
-							);
-
-							new avadareduxNewsflash( $this, $params );
-							$GLOBALS['avadaredux_notice_check'] = 1;
-						}
-					}
+					// if ( $this->args['dev_mode'] == true || AvadaRedux_Helpers::isLocalHost() == true ) {
+					// 	require_once 'core/dashboard.php';
+					// 	new avadareduxDashboardWidget($this);
+					//
+					// 	if ( ! isset ( $GLOBALS['avadaredux_notice_check'] ) ) {
+					// 		require_once 'core/newsflash.php';
+					//
+					// 		$params = array(
+					// 			'dir_name'    => 'notice',
+					// 			'server_file' => 'http://avadareduxframework.com/wp-content/uploads/avadaredux/avadaredux_notice.json',
+					// 			'interval'    => 3,
+					// 			'cookie_id'   => 'avadaredux_blast',
+					// 		);
+					//
+					// 		new avadareduxNewsflash( $this, $params );
+					// 		$GLOBALS['avadaredux_notice_check'] = 1;
+					// 	}
+					// }
 				}
 
 				/**
@@ -1662,6 +1662,9 @@
 							$families[] = $key;
 						}
 						?>
+						<link rel="dns-prefetch" href="//ajax.googleapis.com">
+						<link rel="dns-prefetch" href="//fonts.googleapis.com">
+						<link rel="dns-prefetch" href="//fonts.gstatic.com">
 						<script>
 							/* You can add more configuration options to webfontloader by previously defining the WebFontConfig with your options */
 							if ( typeof WebFontConfig === "undefined" ) {

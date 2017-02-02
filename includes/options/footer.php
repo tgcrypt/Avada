@@ -1,14 +1,17 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Footer settings
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + footer
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_footer( $sections ) {
-
 	$settings = get_option( Avada::get_option_name(), array() );
 
 	$sections['footer'] = array(
@@ -29,7 +32,7 @@ function avada_options_section_footer( $sections ) {
 						'description' => esc_html__( 'Turn on to display footer widgets.', 'Avada' ),
 						'id'          => 'footer_widgets',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'footer_widgets_columns' => array(
 						'label'       => esc_html__( 'Number of Footer Columns', 'Avada' ),
@@ -92,7 +95,7 @@ function avada_options_section_footer( $sections ) {
 					),
 					'footer_sticky_height' => array(
 						'label'       => esc_html__( 'Sticky Footer Height', 'Avada' ),
-						'description' => sprintf( esc_html__( 'The entire height of the footer area (widgets + copyright) %1s View tutorial here %2s. Set a static height in px to enable sticky footer effect. Set to 0 to disable.', 'Avada' ), '<a href="https://theme-fusion.com/avada-doc/footer-special-effects/" target="_blank">', '</a>' ),
+						'description' => sprintf( esc_html__( 'The entire height of the footer area (widgets + copyright) %1$s View tutorial here %2$s. Set a static height in px to enable sticky footer effect. Set to 0 to disable.', 'Avada' ), '<a href="https://theme-fusion.com/avada-doc/footer-special-effects/" target="_blank" rel="noopener noreferrer">', '</a>' ),
 						'id'          => 'footer_sticky_height',
 						'default'     => '0',
 						'type'        => 'slider',
@@ -125,7 +128,7 @@ function avada_options_section_footer( $sections ) {
 						'description' => esc_html__( 'Turn on to display the copyright bar.', 'Avada' ),
 						'id'          => 'footer_copyright',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'footer_copyright_center_content' => array(
 						'label'       => esc_html__( 'Center Copyright Content', 'Avada' ),
@@ -145,7 +148,7 @@ function avada_options_section_footer( $sections ) {
 						'label'             => esc_html__( 'Copyright Text', 'Avada' ),
 						'description'       => esc_html__( 'Enter the text that displays in the copyright bar. HTML markup can be used.', 'Avada' ),
 						'id'                => 'footer_text',
-						'default'           => sprintf( esc_html__( 'Copyright %1s Avada | All Rights Reserved | Powered by %2s | %3s', 'Avada' ), '2012 - ' . date( 'Y' ), '<a href="http://wordpress.org">WordPress</a>', '<a href="http://theme-fusion.com">Theme Fusion</a>' ),
+						'default'           => sprintf( esc_html__( 'Copyright %1$s Avada | All Rights Reserved | Powered by %2$s | %3$s', 'Avada' ), '2012 - ' . date( 'Y' ), '<a href="http://wordpress.org">WordPress</a>', '<a href="http://theme-fusion.com">Theme Fusion</a>' ),
 						'type'              => 'textarea',
 						'sanitize_callback' => array( 'Kirki_Sanitize', 'unfiltered' ),
 						'required'    => array(
@@ -274,7 +277,7 @@ function avada_options_section_footer( $sections ) {
 							'center right'  => esc_html__( 'center right', 'Avada' ),
 							'bottom left'   => esc_html__( 'bottom left', 'Avada' ),
 							'bottom center' => esc_html__( 'bottom center', 'Avada' ),
-							'bottom right'  => esc_html__( 'bottom right', 'Avada' )
+							'bottom right'  => esc_html__( 'bottom right', 'Avada' ),
 						),
 						'required'    => array(
 							array(
@@ -320,7 +323,20 @@ function avada_options_section_footer( $sections ) {
 						'description' => esc_html__( 'Turn on to have the footer area display at 100% width according to the window size. Turn off to follow site width.', 'Avada' ),
 						'id'          => 'footer_100_width',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
+						'class'		  => 'avada-or-gutter',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_widgets',
+								'operator' => '==',
+								'value'    => '1',
+							),
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
 					),
 					'footer_area_padding' => array(
 						'label'       => esc_html__( 'Footer Padding', 'Avada' ),
@@ -340,6 +356,19 @@ function avada_options_section_footer( $sections ) {
 							'right'   => '0px',
 						),
 						'type'        => 'spacing',
+						'class'		  => 'avada-or-gutter',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_widgets',
+								'operator' => '==',
+								'value'    => '1',
+							),
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
 					),
 					'footer_bg_color' => array(
 						'label'       => esc_html__( 'Footer Background Color', 'Avada' ),
@@ -347,6 +376,13 @@ function avada_options_section_footer( $sections ) {
 						'id'          => 'footer_bg_color',
 						'default'     => '#363839',
 						'type'        => 'color-alpha',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_widgets',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
 					),
 					'footer_border_size' => array(
 						'label'       => esc_html__( 'Footer Border Size', 'Avada' ),
@@ -359,6 +395,13 @@ function avada_options_section_footer( $sections ) {
 							'max'  => '50',
 							'step' => '1',
 						),
+						'required'    => array(
+							array(
+								'setting'  => 'footer_widgets',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
 					),
 					'footer_border_color' => array(
 						'label'       => esc_html__( 'Footer Border Color', 'Avada' ),
@@ -366,6 +409,18 @@ function avada_options_section_footer( $sections ) {
 						'id'          => 'footer_border_color',
 						'default'     => '#e9eaee',
 						'type'        => 'color-alpha',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_widgets',
+								'operator' => '==',
+								'value'    => '1',
+							),
+							array(
+								'setting'  => 'footer_border_size',
+								'operator' => '!=',
+								'value'    => '0',
+							),
+						),
 					),
 					'footer_divider_color' => array(
 						'label'       => esc_html__( 'Footer Widget Divider Color', 'Avada' ),
@@ -373,6 +428,13 @@ function avada_options_section_footer( $sections ) {
 						'id'          => 'footer_divider_color',
 						'default'     => '#505152',
 						'type'        => 'color-alpha',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_widgets',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
 					),
 					'copyright_padding' => array(
 						'label'       => esc_html__( 'Copyright Padding', 'Avada' ),
@@ -420,6 +482,13 @@ function avada_options_section_footer( $sections ) {
 							'max'  => '50',
 							'step' => '1',
 						),
+						'required'    => array(
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
 					),
 					'copyright_border_color' => array(
 						'label'       => esc_html__( 'Copyright Border Color', 'Avada' ),
@@ -432,6 +501,11 @@ function avada_options_section_footer( $sections ) {
 								'setting'  => 'footer_copyright',
 								'operator' => '==',
 								'value'    => '1',
+							),
+							array(
+								'setting'  => 'copyright_border_size',
+								'operator' => '!=',
+								'value'    => '0',
 							),
 						),
 					),
@@ -462,6 +536,19 @@ function avada_options_section_footer( $sections ) {
 							'letter-spacing' => '0',
 							'color'          => '#dddddd',
 						),
+						'class'		  => 'avada-or-gutter',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_widgets',
+								'operator' => '==',
+								'value'    => '1',
+							),
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
 					),
 					'footer_text_color' => array(
 						'label'       => esc_html__( 'Footer Font Color', 'Avada' ),
@@ -469,6 +556,19 @@ function avada_options_section_footer( $sections ) {
 						'id'          => 'footer_text_color',
 						'default'     => '#8C8989',
 						'type'        => 'color',
+						'class'		  => 'avada-or-gutter',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_widgets',
+								'operator' => '==',
+								'value'    => '1',
+							),
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
 					),
 					'footer_link_color' => array(
 						'label'       => esc_html__( 'Footer Link Color', 'Avada' ),
@@ -476,6 +576,81 @@ function avada_options_section_footer( $sections ) {
 						'id'          => 'footer_link_color',
 						'default'     => '#BFBFBF',
 						'type'        => 'color',
+						'class'		  => 'avada-or-gutter',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_widgets',
+								'operator' => '==',
+								'value'    => '1',
+							),
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
+					),
+					'footer_link_color_hover' => array(
+						'label'       => esc_html__( 'Footer Link Hover Color', 'Avada' ),
+						'description' => esc_html__( 'Controls the text hover color of the footer link font.', 'Avada' ),
+						'id'          => 'footer_link_color_hover',
+						'default'     => ( isset( $settings['primary_color'] ) && ! empty( $settings['primary_color'] ) ) ? $settings['primary_color'] : '#ffffff',
+						'type'        => 'color',
+						'class'		  => 'avada-or-gutter',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_widgets',
+								'operator' => '==',
+								'value'    => '1',
+							),
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
+					),
+					'copyright_text_color' => array(
+						'label'       => esc_html__( 'Copyright Text Color', 'Avada' ),
+						'description' => esc_html__( 'Controls the text color of the footer copyright area.', 'Avada' ),
+						'id'          => 'copyright_text_color',
+						'default'     => ( isset( $settings['footer_text_color'] ) && ! empty( $settings['footer_text_color'] ) ) ? $settings['footer_text_color'] : '#ffffff',
+						'type'        => 'color-alpha',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
+					),
+					'copyright_link_color' => array(
+						'label'       => esc_html__( 'Copyright Link Color', 'Avada' ),
+						'description' => esc_html__( 'Controls the link color of the footer copyright area.', 'Avada' ),
+						'id'          => 'copyright_link_color',
+						'default'     => ( isset( $settings['footer_link_color'] ) && ! empty( $settings['footer_link_color'] ) ) ? $settings['footer_link_color'] : '#ffffff',
+						'type'        => 'color-alpha',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
+					),
+					'copyright_link_color_hover' => array(
+						'label'       => esc_html__( 'Copyright Link Hover Color', 'Avada' ),
+						'description' => esc_html__( 'Controls the link hover color of the footer copyright area.', 'Avada' ),
+						'id'          => 'copyright_link_color_hover',
+						'default'     => ( isset( $settings['footer_link_color_hover'] ) && ! empty( $settings['footer_link_color_hover'] ) ) ? $settings['footer_link_color_hover'] : '#ffffff',
+						'type'        => 'color-alpha',
+						'required'    => array(
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
 					),
 					'copyright_font_size' => array(
 						'label'       => esc_html__( 'Copyright Font Size', 'Avada' ),
@@ -485,6 +660,13 @@ function avada_options_section_footer( $sections ) {
 						'type'        => 'dimension',
 						'choices'     => array(
 							'units' => array( 'px', 'em' ),
+						),
+						'required'    => array(
+							array(
+								'setting'  => 'footer_copyright',
+								'operator' => '==',
+								'value'    => '1',
+							),
 						),
 					),
 				),

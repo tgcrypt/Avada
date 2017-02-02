@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Menu
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + menu
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_menu( $sections ) {
 
@@ -57,7 +61,7 @@ function avada_options_section_menu( $sections ) {
 						'type'        => 'slider',
 						'choices'     => array(
 							'min'  => '0',
-							'max'  => '20',
+							'max'  => '40',
 							'step' => '1',
 						),
 					),
@@ -195,14 +199,14 @@ function avada_options_section_menu( $sections ) {
 						'description' => esc_html__( 'Turn on to display the search icon in the main menu.', 'Avada' ),
 						'id'          => 'main_nav_search_icon',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'main_nav_icon_circle' => array(
 						'label'       => esc_html__( 'Main Menu Icon Circle Borders', 'Avada' ),
 						'description' => esc_html__( 'Turn on to display a circle border on the cart and search icons.', 'Avada' ),
 						'id'          => 'main_nav_icon_circle',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'menu_sub_bg_color' => array(
 						'label'       => esc_html__( 'Main Menu Dropdown Background Color', 'Avada' ),
@@ -421,7 +425,7 @@ function avada_options_section_menu( $sections ) {
 				'id'       => 'flyout_menu_subsection',
 				'type'     => 'sub-section',
 				'fields'   => array(
-					'flyout_menu_important_note_info' => array(
+					'flyout_menu_important_note_info' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
 						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong>  Flyout Menu Options are only available when using Header Layout #6. Your current Header Layout does not utilize the flyout menu.', 'Avada' ) . '</div>',
 						'id'          => 'flyout_menu_important_note_info',
@@ -553,7 +557,7 @@ function avada_options_section_menu( $sections ) {
 				'priority' => 6,
 				'type'     => 'sub-section',
 				'fields'   => array(
-					'no_secondary_menu_note' => array(
+					'no_secondary_menu_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
 						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Secondary Top Menu Options are only available when using Header Layouts #2-5. Your current Header Layout does not utilize the secondary top menu.', 'Avada' ) . '</div>',
 						'id'          => 'no_secondary_menu_note',
@@ -990,7 +994,7 @@ function avada_options_section_menu( $sections ) {
 				'priority' => 6,
 				'type'     => 'sub-section',
 				'fields'   => array(
-					'no_responsive_mode_info_1' => array(
+					'no_responsive_mode_info_1' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
 						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Please enable responsive mode. Mobile menus are only available when you\'re using the responsive mode. To enable it please go to the "Responsive" section and set the "Responsive Design" option to ON.', 'Avada' ) . '</div>',
 						'id'          => 'no_responsive_mode_info_1',
@@ -1003,7 +1007,7 @@ function avada_options_section_menu( $sections ) {
 							),
 						),
 					),
-					'no_mobile_menu_note' => array(
+					'no_mobile_menu_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
 						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> "Mobile Header Background Color" is the only option available for your Header Layout #6, the other options are only available when using Header Layouts #1-5. The rest of the options for Header #6 are on the Flyout Menu and Main Menu tab. ', 'Avada' ) . '</div>',
 						'id'          => 'no_mobile_menu_note',
@@ -1013,6 +1017,11 @@ function avada_options_section_menu( $sections ) {
 								'setting'  => 'header_layout',
 								'operator' => '==',
 								'value'    => 'v6',
+							),
+							array(
+								'setting'  => 'header_position',
+								'operator' => '==',
+								'value'    => 'Top',
 							),
 						),
 					),
@@ -1315,7 +1324,7 @@ function avada_options_section_menu( $sections ) {
 				'id'       => 'mega_menu_subsection',
 				'type'     => 'sub-section',
 				'fields'   => array(
-					'header_v6_used_note' => array(
+					'header_v6_used_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
 						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Mega Menu Options are only available when using Header Layouts #1-5. Your current Header Layout #6 does not utilize the mega menu.', 'Avada' ) . '</div>',
 						'id'          => 'header_v6_used_note',
@@ -1328,7 +1337,7 @@ function avada_options_section_menu( $sections ) {
 							),
 						),
 					),
-					'megamenu_disabled_note' => array(
+					'megamenu_disabled_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
 						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Mega Menu is disabled in Advanced > Theme Features section. Please enable it to see the options.', 'Avada' ) . '</div>',
 						'id'          => 'megamenu_disabled_note',

@@ -1,34 +1,121 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
+/**
+ * Handles migrations.
+ *
+ * @since 4.0.0
+ */
 class Avada_Migrate extends Avada_Upgrade {
 
-	// The current step
+	/**
+	 * The current step number.
+	 *
+	 * @access  public
+	 * @var  int
+	 */
 	public $step;
-	// The number of steps available
+
+	/**
+	 * The number of steps available.
+	 *
+	 * @access  public
+	 * @var  array
+	 */
 	public $steps = array();
-	// Should we proceed to the next step?
+
+	/**
+	 * Should we proceed to the next step?
+	 *
+	 * @access  public
+	 * @var  bool
+	 */
 	public $proceed = true;
-	// instance
+
+	/**
+	 * The one, true instance of this object.
+	 *
+	 * @access  public
+	 * @var  null|object
+	 */
 	public static $instance = null;
 
+	/**
+	 * An array of all available languages.
+	 *
+	 * @access  public
+	 * @var  array
+	 */
 	public $available_languages = array();
+
+	/**
+	 * The active language.
+	 *
+	 * @access  public
+	 * @var  string
+	 */
 	public $active_language     = '';
+
+	/**
+	 * The default language/
+	 *
+	 * @access  public
+	 * @var  string
+	 */
 	public $default_language    = '';
 
+	/**
+	 * An array of our options.
+	 *
+	 * @access  public
+	 * @var  array
+	 */
 	public $options;
+
+	/**
+	 * An array of all our fields.
+	 *
+	 * @access  public
+	 * @var  array
+	 */
 	public $fields;
 
+	/**
+	 * The version.
+	 *
+	 * @access  public
+	 * @var  string
+	 */
 	public $version;
 
+	/**
+	 * The language.
+	 *
+	 * @access  public
+	 * @var  string
+	 */
 	public $lang = '';
 
+	/**
+	 * The language used when we start.
+	 *
+	 * @access  public
+	 * @var  string
+	 */
 	public $starting_language;
 
-	public function __construct() {
+	/**
+	 * Constructor.
+	 */
+	protected function __construct() {
 
 		Avada::$is_updating = true;
 
-		/* Raise the memory limit and max_execution_time time */
+		// Raise the memory limit and max_execution_time time.
 		@ini_set( 'memory_limit', '256M' );
 		@set_time_limit( 0 );
 
@@ -36,7 +123,7 @@ class Avada_Migrate extends Avada_Upgrade {
 		$this->active_language     = Avada_Multilingual::get_active_language();
 		$this->default_language    = Avada_Multilingual::get_default_language();
 
-		// If English is used then make this first in array order.  Also set starting language so that it is migrated first
+		// If English is used then make this first in array order.  Also set starting language so that it is migrated first.
 		if ( in_array( 'en', $this->available_languages ) ) {
 			$en_array = array( 'en' );
 			$en_key   = array_search( 'en', $this->available_languages );
@@ -55,15 +142,15 @@ class Avada_Migrate extends Avada_Upgrade {
 		}
 
 		if ( $_GET && isset( $_GET['avada_update'] ) ) {
-			// Only continue if the URL is ?avada_update=1
+			// Only continue if the URL is ?avada_update=1.
 			if ( '1' != $_GET['avada_update'] ) {
 				return;
 			}
-			// Only continue if we're updating to version 4.0.0
+			// Only continue if we're updating to version 4.0.0.
 			if ( ! isset( $_GET['ver'] ) || ( $this->version != $_GET['ver'] ) ) {
 				return;
 			}
-			// Get the current step
+			// Get the current step.
 			if ( ! isset( $_GET['step'] ) ) {
 				$this->step = 0;
 			} else {
@@ -86,6 +173,11 @@ class Avada_Migrate extends Avada_Upgrade {
 
 	}
 
+	/**
+	 * The migration page.
+	 *
+	 * @access  public
+	 */
 	public function migrate_page() {
 		ob_start();
 		$this->setup_wizard_template();
@@ -94,7 +186,7 @@ class Avada_Migrate extends Avada_Upgrade {
 			call_user_func( $this->steps[ $this->step ]['callback'] );
 		}
 
-		// Make sure we have not finished
+		// Make sure we have not finished.
 		if ( $this->step >= count( $this->steps ) - 1 ) {
 			if ( empty( $this->available_languages ) || count( $this->available_languages ) == array_search( $this->active_language, $this->available_languages ) + 1 ) {
 				$this->finished();
@@ -105,7 +197,7 @@ class Avada_Migrate extends Avada_Upgrade {
 	}
 
 	/**
-	 * Output the content for the current step
+	 * Output the content for the current step.
 	 */
 	public function setup_wizard_template() {
 		$current_step = intval( $this->step );
@@ -115,7 +207,7 @@ class Avada_Migrate extends Avada_Upgrade {
 			<head>
 				<meta name="viewport" content="width=device-width" />
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-				<title><?php esc_html_e( 'Avada Database Update Wizard', 'Avada' ); ?></title>
+				<title><?php esc_html_e( 'Avada Theme Option Migration', 'Avada' ); ?></title>
 				<?php do_action( 'admin_print_styles' ); ?>
 				<?php do_action( 'admin_head' ); ?>
 				<link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100' rel='stylesheet' type='text/css'>
@@ -260,11 +352,11 @@ class Avada_Migrate extends Avada_Upgrade {
 				}
 				</style>
 			</head>
-			<?php $version = Avada::get_version(); ?>
+			<?php $version = Avada::get_theme_version(); ?>
 			<body class="avada-setup wp-core-ui">
 				<div class="update-content">
 					<div class="avada-logo">
-						<img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo_migration.png" alt="<?php esc_html_e( 'Avada Logo', 'Avada' ); ?>" width="453" height="95">
+						<img src="<?php echo Avada::$template_dir_url; ?>/assets/images/logo_migration.png" alt="<?php esc_html_e( 'Avada Logo', 'Avada' ); ?>" width="453" height="95">
 						<span class="avada-version">
 							<span class="avada-version-inner"><?php echo $version; ?></span>
 						</span>
@@ -272,11 +364,12 @@ class Avada_Migrate extends Avada_Upgrade {
 					<div class="avada-content-wrapper">
 						<div class="avada-welcome-msg">
 							<?php
-							$migration_link = sprintf( '<a class="avada-migration-link" href="https://theme-fusion.com/knowledgebase/avada-v4-migration" target="_blank" title="%s">%s</a>', esc_html__( 'Migration Information' ), esc_html__( 'link' ) );
+							$migration_link = sprintf( '<a class="avada-migration-link" href="https://theme-fusion.com/knowledgebase/avada-v4-migration" target="_blank" rel="noopener noreferrer" title="%s">%s</a>', esc_html__( 'Conversion Information' ), esc_html__( 'link' ) );
+
 							if ( ! empty( $this->available_languages ) ) {
-								printf( esc_html__( 'We have an amazing new update in store for you! Avada 4.0 now includes a new options panel powered by the Redux Framework. To complete the migration, we have backed up your existing theme options in your database, made a copy and then securely converted. If you have a multi-lingual site, each language will be updated individually one after another. For more detailed information, please visit this %s. Thank you for choosing Avada!', 'Avada' ), $migration_link );
+								printf( esc_html__( 'We have an amazing new update in store for you! Avada %s includes our completely new Theme Options Panel and the brand new Fusion Builder. To enjoy the full experience, two primary conversion steps need to be performed. First your Theme Options database entries need to be converted (sequentially for each language, if you have a multi-lingual site). In a second step your shortcodes will be converted for the new builder. Thank you for choosing Avada!', 'Avada' ), $version );
 							} else {
-								printf( esc_html__( 'We have an amazing new update in store for you! Avada 4.0 now includes a new options panel powered by the Redux Framework. To complete the migration, we have backed up your existing theme options in your database, made a copy and then securely converted. For more detailed information, please visit this %s. Thank you for choosing Avada!', 'Avada' ), $migration_link );
+								printf( esc_html__( 'We have an amazing new update in store for you! Avada %s includes our completely new Theme Options Panel and the brand new Fusion Builder. To enjoy the full experience, two primary conversion steps need to be performed. First your Theme Options database entries need to be converted. In a second step your shortcodes will be converted for the new builder. Thank you for choosing Avada!', 'Avada' ), $version );
 							}
 							?>
 						</div>
@@ -285,7 +378,7 @@ class Avada_Migrate extends Avada_Upgrade {
 								<?php esc_html_e( 'Updating Avada Database Entries', 'Avada' ); ?>
 							</h1>
 							<?php if ( ! empty( $this->available_languages ) ) : ?>
-								<?php printf( esc_html__( 'Currently migrating language: %s', 'Avada' ), '<strong>' . esc_attr( $this->active_language ) . '</strong>' ); ?>
+								<?php printf( esc_html__( 'Currently converting language: %s', 'Avada' ), '<strong>' . esc_attr( $this->active_language ) . '</strong>' ); ?>
 							<?php endif; ?>
 							<?php if ( $current_step >= count( $this->steps ) ) : ?>
 								<p><?php esc_html_e( 'Done!', 'Avada' ); ?></p>
@@ -297,15 +390,16 @@ class Avada_Migrate extends Avada_Upgrade {
 								<p><?php esc_html_e( 'This may take a few minutes, please wait.', 'Avada' ); ?></p>
 							<?php endif; ?>
 
-							<?php if ( ! empty( $this->available_languages ) ) : ?>
+							<?php if ( ! empty( $this->available_languages ) && 1 < count( $this->available_languages ) ) : ?>
 								<?php $current_lang_step = 0; ?>
 								<?php $current_lang_step = array_search( $this->active_language, $this->available_languages ) + 1; ?>
 								<div class="avada-update-progress-bar"><span style="width: <?php echo intval( 100 * $current_lang_step / count( $this->available_languages ) ); ?>%"></span></div>
+								<p><?php printf( esc_html__( 'Converting language: %1$s of %2$s.', 'Avada' ), $current_lang_step, count( $this->available_languages ) ); ?></p>
 							<?php endif; ?>
 
 							<?php if ( $current_step <= count( $this->steps ) && isset( $this->steps[ $this->step ] ) ) : ?>
 								<div class="avada-update-progress-bar"><span style="width: <?php echo intval( 100 * ( $current_step + 1 ) / count( $this->steps ) ); ?>%"></span></div>
-								<p><?php printf( esc_html__( 'Updating Avada Database options: step %s of %s.', 'Avada' ), intval( $this->step + 1 ), count( $this->steps ) ); ?></p>
+								<p><?php printf( esc_html__( 'Updating Avada Database options: step %1$s of %2$s.', 'Avada' ), intval( $this->step + 1 ), count( $this->steps ) ); ?></p>
 								<ul class="tasks-list">
 									<?php foreach ( $this->steps as $key => $step ) : ?>
 										<?php
@@ -323,36 +417,21 @@ class Avada_Migrate extends Avada_Upgrade {
 								</ul>
 							<?php else : ?>
 								<?php if ( empty( $this->available_languages ) || count( $this->available_languages ) == array_search( $this->active_language, $this->available_languages ) + 1 ) : ?>
-									<p><?php esc_html_e( 'Congratulations, Data migration for Avada 4.0 was successfully completed.', 'Avada' ); ?></p>
+									<p><?php esc_html_e( 'Congratulations, Theme Options database enrties were successfully converted.', 'Avada' ); ?></p>
 									<p><?php esc_html_e( 'For best experience, please clear your browser cache once.', 'Avada' ); ?></p>
-									<p><?php esc_html_e( 'Dynamic-CSS caches have been auto reset. Have fun!', 'Avada' ); ?></p>
+									<p><?php esc_html_e( 'Dynamic-CSS caches have been auto reset.', 'Avada' ); ?></p>
 								<?php endif; ?>
 							<?php endif; ?>
 
 							<?php if ( intval( $this->step ) >= count( $this->steps ) ) : ?>
-								<?php $needs_plugin_update = false; ?>
-								<?php if ( class_exists( 'FusionCore_Plugin' ) ) : ?>
-									<?php $fc_version = FusionCore_Plugin::VERSION; ?>
-									<?php if ( version_compare( $fc_version, '2.0', '<' ) ) : ?>
-										<?php $needs_plugin_update = true; ?>
-									<?php endif; ?>
-								<?php endif; ?>
 								<?php if ( empty( $this->available_languages ) || count( $this->available_languages ) == array_search( $this->active_language, $this->available_languages ) + 1 ) : ?>
-
-									<?php if ( $needs_plugin_update ) : ?>
-										<a class="avada-save-options needs-update" href="<?php echo admin_url( 'themes.php?page=install-required-plugins' ); ?>">
-											<?php _e( 'Fusion Core Plugin Must Be Updated - Click Here', 'Avada' ); ?>
-										</a>
-									<?php else : ?>
-										<a class="avada-save-options" href="<?php echo admin_url( 'themes.php?page=avada_options' ); ?>">
-											<?php _e( 'Take Me To Theme Options!', 'Avada' ); ?>
-										</a>
-									<?php endif; ?>
-
+									<a class="avada-save-options" href="<?php echo admin_url( 'index.php?fusion_builder_migrate=1&ver=500' ); ?>">
+										<?php _e( 'Take Me To Shortcode Conversion', 'Avada' ); ?>
+									</a>
 								<?php endif; ?>
 							<?php endif; ?>
 						</div>
-						<div class="avada-footer"><a class="avada-themefusion-link" href="https://theme-fusion.com" target="_blank" title="ThemeFusion">ThemeFusion</a><span class="avada-separator">|</span><?php printf( esc_html__( 'Created with %s', 'Avada' ), '<span class="avada-heart"></span>' ); ?></div>
+						<div class="avada-footer"><a class="avada-themefusion-link" href="https://theme-fusion.com" target="_blank" rel="noopener noreferrer" title="ThemeFusion">ThemeFusion</a><span class="avada-separator">|</span><?php printf( esc_html__( 'Created with %s', 'Avada' ), '<span class="avada-heart"></span>' ); ?></div>
 					</div>
 					<?php echo $this->redirect_script(); ?>
 				</div>
@@ -365,27 +444,27 @@ class Avada_Migrate extends Avada_Upgrade {
 	 * Run when all steps have been completed.
 	 */
 	public function finished() {
-		// Reset the css
+		// Reset the CSS.
 		update_option( 'avada_dynamic_css_posts', array() );
 	}
 
 	/**
-	 * take care of redirecting to the next step
+	 * Take care of redirecting to the next step.
 	 */
 	public function redirect_script() {
 		$languages    = $this->available_languages;
 		$current_step = intval( $this->step );
 		$next_step    = $current_step + 1;
-		// Add 500ms delay for refreshes
+		// Add 500ms delay for refreshes.
 		$delay = 500;
 		if ( ( $current_step + 1 ) <= count( $this->steps ) && $this->proceed ) {
-			// Redirect to next step
+			// Redirect to next step.
 			$lang = ( $_GET && isset( $_GET['lang'] ) ) ? $_GET['lang'] : $this->starting_language;
 			return '<script type="text/javascript">setTimeout(function () {window.location.href = "' . admin_url( 'index.php?avada_update=1&ver=400&lang=' . $lang . '&step=' . $next_step ) . '";}, ' . $delay . ');</script>';
 		} else {
-			// check if this is a multilingual site
+			// Check if this is a multilingual site.
 			if ( ! empty( $languages ) ) {
-				// get the next language code
+				// Get the next language code.
 				$next_lang = $this->get_next_language();
 				if ( 'finished' == $next_lang ) {
 					return;
@@ -395,8 +474,14 @@ class Avada_Migrate extends Avada_Upgrade {
 		}
 	}
 
+	/**
+	 * Gets the next language in multilingual sites.
+	 *
+	 * @access  public
+	 * @return  string
+	 */
 	public function get_next_language() {
-		// Get all languages
+		// Get all languages.
 		$languages = $this->available_languages;
 		// Get the current language key.
 		if ( $_GET && isset( $_GET['lang'] ) ) {
@@ -412,7 +497,7 @@ class Avada_Migrate extends Avada_Upgrade {
 		// If no language is currently defined, then proceed to 0.
 		if ( null === $current_lang_key ) {
 			$next_lang_key = 0;
-		} else { // Proceed to next language
+		} else { // Proceed to next language.
 			$next_lang_key = $current_lang_key + 1;
 		}
 
@@ -433,11 +518,19 @@ class Avada_Migrate extends Avada_Upgrade {
 			return 'finished';
 		}
 
-		// return the code of the next language
+		// Return the code of the next language.
 		return esc_attr( $languages[ $next_lang_key ] );
 
 	}
 
+	/**
+	 * Debug helper.
+	 * Creates an `avada-migration-debug.log` file in wp-content.
+	 *
+	 * @static
+	 * @access  public
+	 * @param  array $data The setting data.
+	 */
 	public static function generate_debug_log( $data = array() ) {
 		$debug_log = '';
 		$debug_content = '';
@@ -446,7 +539,7 @@ class Avada_Migrate extends Avada_Upgrade {
 			if ( ! empty( $data ) ) {
 				$final_data = array();
 				foreach ( $data as $item ) {
-					$final_data[] = ( is_array( $item ) ) ? json_encode( $item ) : $item;
+					$final_data[] = ( is_array( $item ) ) ? wp_json_encode( $item ) : $item;
 				}
 				$debug_log .= 'Old Setting: ' . $final_data[0] . "\r\n";
 				$debug_log .= 'New Setting: ' . $final_data[1] . "\r\n";
@@ -454,7 +547,7 @@ class Avada_Migrate extends Avada_Upgrade {
 				$debug_log .= 'New Value: ' . $final_data[3] . "\r\n";
 				$debug_log .= "\r\n";
 			}
-			// write debug file contents
+			// Write debug file contents.
 			if ( file_exists( $debug_file_path ) ) {
 				$debug_content = file_get_contents( $debug_file_path );
 			}
@@ -462,5 +555,4 @@ class Avada_Migrate extends Avada_Upgrade {
 			file_put_contents( $debug_file_path, $debug_content );
 		}
 	}
-
 }

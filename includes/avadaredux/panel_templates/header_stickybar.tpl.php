@@ -1,12 +1,17 @@
 <?php
-	/**
-	 * The template for the header sticky bar.
-	 * Override this template by specifying the path where it is stored (templates_path) in your AvadaRedux config.
-	 *
-	 * @author        AvadaRedux Framework
-	 * @package       AvadaReduxFramework/Templates
-	 * @version:      3.5.7.8
-	 */
+/**
+ * The template for the header sticky bar.
+ * Override this template by specifying the path where it is stored (templates_path) in your AvadaRedux config.
+ *
+ * @author        AvadaRedux Framework
+ * @package       AvadaReduxFramework/Templates
+ * @version:      3.5.7.8
+ */
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
 ?>
 <div id="avadaredux-sticky">
 	<div id="info_bar">

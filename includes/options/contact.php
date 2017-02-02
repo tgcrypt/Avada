@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Contact
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + contact
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_contact( $sections ) {
 
@@ -30,7 +34,7 @@ function avada_options_section_contact( $sections ) {
 				'fields'      => array(
 					'contact_form_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are only for the contact form that displays on the "Contact" page template.', 'Avada' ) . '</div>',
+						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are only for the contact form that displays on the "Contact" page template except for the Google Map API Key.', 'Avada' ) . '</div>',
 						'id'          => 'contact_form_important_note_info',
 						'type'        => 'custom',
 					),
@@ -68,7 +72,7 @@ function avada_options_section_contact( $sections ) {
 					),
 					'recaptcha_public' => ( Avada::$is_updating || version_compare( PHP_VERSION, '5.3' ) >= 0 ) ? array(
 						'label'           => esc_html__( 'ReCaptcha Site Key', 'Avada' ),
-						'description'     => sprintf( esc_html__( 'Follow the steps in %s to get the site key.', 'Avada' ), '<a href="http://theme-fusion.com/avada-doc/pages/setting-up-contact-page/" target="_blank">' . esc_html__( 'our docs', 'Avada' ) . '</a>' ),
+						'description'     => sprintf( esc_html__( 'Follow the steps in %s to get the site key.', 'Avada' ), '<a href="http://theme-fusion.com/avada-doc/pages/setting-up-contact-page/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'our docs', 'Avada' ) . '</a>' ),
 						'id'              => 'recaptcha_public',
 						'default'         => '',
 						'type'            => 'text',
@@ -76,7 +80,7 @@ function avada_options_section_contact( $sections ) {
 					) : array(),
 					'recaptcha_private' => ( Avada::$is_updating || version_compare( PHP_VERSION, '5.3' ) >= 0 ) ? array(
 						'label'           => esc_html__( 'ReCaptcha Secret Key', 'Avada' ),
-						'description'     => sprintf( esc_html__( 'Follow the steps in %s to get the secret key.', 'Avada' ), '<a href="http://theme-fusion.com/avada-doc/pages/setting-up-contact-page/" target="_blank">' . esc_html__( 'our docs', 'Avada' ) . '</a>' ),
+						'description'     => sprintf( esc_html__( 'Follow the steps in %s to get the secret key.', 'Avada' ), '<a href="http://theme-fusion.com/avada-doc/pages/setting-up-contact-page/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'our docs', 'Avada' ) . '</a>' ),
 						'id'              => 'recaptcha_private',
 						'default'         => '',
 						'type'            => 'text',
@@ -104,7 +108,7 @@ function avada_options_section_contact( $sections ) {
 				'icon'        => true,
 				'type'        => 'sub-section',
 				'fields'      => array(
-					'google_map_disabled_note' => array(
+					'google_map_disabled_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
 						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Google Maps Script is disabled in Advanced > Theme Features section. Please enable it to see the options.', 'Avada' ) . '</div>',
 						'id'          => 'google_map_disabled_note',
@@ -119,9 +123,39 @@ function avada_options_section_contact( $sections ) {
 					),
 					'google_map_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are only for the google map that displays on the "Contact" page template, they do not control the google map shortcode.', 'Avada' ) . '</div>',
+						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are for the google map that displays on the "Contact" page template. The only option that controls the Fusion Builder google map element is the Google Maps API Key.', 'Avada' ) . '</div>',
 						'id'          => 'google_map_important_note_info',
 						'type'        => 'custom',
+						'required'    => array(
+							array(
+								'setting'  => 'status_gmap',
+								'operator' => '=',
+								'value'    => '1',
+							),
+						),
+					),
+					'gmap_api' => array(
+						'label'           => esc_html__( 'Google Maps API Key', 'Avada' ),
+						'description'     => sprintf( esc_html__( 'Follow the steps in %s to get the API key. This key applies to both the contact page map and Fusion Builder google map element.', 'Avada' ), '<a href="https://developers.google.com/maps/documentation/javascript/get-api-key#key" target="_blank" rel="noopener noreferrer">' . esc_html__( 'the Google docs', 'Avada' ) . '</a>' ),
+						'id'              => 'gmap_api',
+						'default'         => '',
+						'type'            => 'text',
+						'active_callback' => array( 'Avada_Options_Conditionals', 'is_contact' ),
+						'required'    => array(
+							array(
+								'setting'  => 'status_gmap',
+								'operator' => '=',
+								'value'    => '1',
+							),
+						),
+					),
+					'gmap_address' => array(
+						'label'           => esc_html__( 'Google Map Address', 'Avada' ),
+						'description'     => esc_html__( 'Add the address to the location you wish to display. Single address example: 775 New York Ave, Brooklyn, Kings, New York 11203. If the location is off, please try to use long/lat coordinates with latlng=. ex: latlng=12.381068,-1.492711. For multiple addresses, separate addresses by using the | symbol. ex: Address 1|Address 2|Address 3.', 'Avada' ),
+						'id'              => 'gmap_address',
+						'default'         => '775 New York Ave, Brooklyn, Kings, New York 11203',
+						'type'            => 'textarea',
+						'active_callback' => array( 'Avada_Options_Conditionals', 'is_contact' ),
 						'required'    => array(
 							array(
 								'setting'  => 'status_gmap',
@@ -176,21 +210,6 @@ function avada_options_section_contact( $sections ) {
 						'id'              => 'gmap_topmargin',
 						'default'         => '55px',
 						'type'            => 'dimension',
-						'active_callback' => array( 'Avada_Options_Conditionals', 'is_contact' ),
-						'required'    => array(
-							array(
-								'setting'  => 'status_gmap',
-								'operator' => '=',
-								'value'    => '1',
-							),
-						),
-					),
-					'gmap_address' => array(
-						'label'           => esc_html__( 'Google Map Address', 'Avada' ),
-						'description'     => esc_html__( 'Add the address to the location you wish to display. Single address example: 775 New York Ave, Brooklyn, Kings, New York 11203. If the location is off, please try to use long/lat coordinates with latlng=. ex: latlng=12.381068,-1.492711. For multiple addresses, separate addresses by using the | symbol. ex: Address 1|Address 2|Address 3.', 'Avada' ),
-						'id'              => 'gmap_address',
-						'default'         => '775 New York Ave, Brooklyn, Kings, New York 11203',
-						'type'            => 'textarea',
 						'active_callback' => array( 'Avada_Options_Conditionals', 'is_contact' ),
 						'required'    => array(
 							array(
@@ -319,7 +338,7 @@ function avada_options_section_contact( $sections ) {
 				'icon'        => true,
 				'type'        => 'sub-section',
 				'fields'      => array(
-					'google_map_disabled_note_1' => array(
+					'google_map_disabled_note_1' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
 						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Google Maps Script is disabled in Advanced > Theme Features section. Please enable it to see the options.', 'Avada' ) . '</div>',
 						'id'          => 'google_map_disabled_note_1',
@@ -334,7 +353,7 @@ function avada_options_section_contact( $sections ) {
 					),
 					'google_map_styling_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are only for the google map that displays on the "Contact" page template, they do not control the google map shortcode.', 'Avada' ) . '</div>',
+						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are only for the google map that displays on the "Contact" page template, they do not control the google map element.', 'Avada' ) . '</div>',
 						'id'          => 'google_map_styling_important_note_info',
 						'type'        => 'custom',
 						'required'    => array(
@@ -463,7 +482,7 @@ function avada_options_section_contact( $sections ) {
 						'label'           => esc_html__( 'Info Box Text Color', 'Avada' ),
 						'description'     => esc_html__( 'Custom styling setting only. Controls the info box text color.', 'Avada' ),
 						'id'              => 'map_infobox_text_color',
-						'default'         => ( 140 < Avada_Color::get_brightness( $settings['map_overlay_color'] ) ) ? '#ffffff' : '#747474',
+						'default'         => ( 140 < fusion_get_brightness( $settings['map_overlay_color'] ) ) ? '#ffffff' : '#747474',
 						'type'            => 'color',
 						'active_callback' => array( 'Avada_Options_Conditionals', 'is_contact' ),
 						'required'    => array(

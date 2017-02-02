@@ -1,5 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
+/**
+ * Handle Redux in Avada.
+ *
+ * @since 4.0.0
+ */
 class Avada_AvadaRedux {
 
 	/**
@@ -17,6 +27,15 @@ class Avada_AvadaRedux {
 	 * @var string
 	 */
 	public $ver;
+
+	/**
+	 * Facilitates copying options to 3rd-party option-tables in the db.
+	 *
+	 * @static
+	 * @access public
+	 * @var array
+	 */
+	public static $option_name_settings = array();
 
 	/**
 	 * Whether or not we're using "all" language.
@@ -40,7 +59,7 @@ class Avada_AvadaRedux {
 
 		/**
 		 * Initialization of the framework needs to be hooked, due to globals not being set earlier etc.
-		 * Priority 2 loads he options framework directly after widgets are initialized
+		 * Priority 2 loads he options framework directly after widgets are initialized.
 		 */
 		add_action( 'init', array( $this, 'init_avadaredux' ), 2 );
 
@@ -53,7 +72,12 @@ class Avada_AvadaRedux {
 	 */
 	public function init_avadaredux() {
 
+		$this->avada_sections = Avada::$options;
+
 		self::$is_language_all = Avada::get_language_is_all();
+
+		$this->parse_option_name_settings();
+		add_action( 'update_option_' . Avada::get_option_name(), array( $this, 'option_name_settings_update' ), 10, 3 );
 
 		$this->key = Avada::get_option_name();
 
@@ -67,7 +91,14 @@ class Avada_AvadaRedux {
 			new Avada_AvadaRedux_Addons();
 		}
 
-		$this->ver = Avada::$version;
+		$theme_version = Avada()->get_theme_version();
+		$theme_version_array = explode( '.', $theme_version );
+
+		if ( isset( $theme_version_array[2] ) && '0' === $theme_version_array[2] ) {
+			$theme_version = $theme_version_array[0] . '.' . $theme_version_array[1];
+		}
+
+		$this->ver = $theme_version;
 		$this->add_config();
 		$this->parse();
 
@@ -78,17 +109,17 @@ class Avada_AvadaRedux {
 		add_action( 'admin_notices', array( $this, 'remove_avadaredux_notices' ), 999 );
 		add_action( 'admin_menu', array( $this, 'deprecated_adminpage_hook' ) );
 
-		//  Update option for fusion builder and code block encoding
+		// Update option for fusion builder and code block encoding.
 		add_action( 'avadaredux/options/' . Avada::get_option_name() . '/saved', array( $this, 'save_as_option' ), 10, 2 );
 
-		// reset caches when loading avadaredux. This is a hack for the preset options.
+		// Reset caches when loading avadaredux. This is a hack for the preset options.
 		add_action( 'avada_avadaredux_header', array( $this, 'reset_cache' ) );
-		// Make sure caches are reset when saving/resetting options
+		// Make sure caches are reset when saving/resetting options.
 		add_action( 'avadaredux/options/' . Avada::get_option_name() . '/reset', array( $this, 'reset_cache' ) );
 		add_action( 'avadaredux/options/' . Avada::get_option_name() . '/section/reset', array( $this, 'reset_cache' ) );
 		add_action( 'avadaredux/options/' . Avada::get_option_name() . '/saved', array( $this, 'reset_cache' ) );
 
-		// Save all languages
+		// Save all languages.
 		add_action( 'avadaredux/options/' . Avada::get_option_name() . '/reset', array( $this, 'save_all_languages' ) );
 		add_action( 'avadaredux/options/' . Avada::get_option_name() . '/section/reset', array( $this, 'save_all_languages' ) );
 		add_action( 'avadaredux/options/' . Avada::get_option_name() . '/saved', array( $this, 'save_all_languages' ) );
@@ -96,6 +127,11 @@ class Avada_AvadaRedux {
 		add_filter( 'avadaredux/' . Avada::get_option_name() . '/localize/reset', array( $this, 'reset_message_l10n' ) );
 		add_filter( 'avadaredux/' . Avada::get_option_name() . '/localize/reset_section', array( $this, 'reset_section_message_l10n' ) );
 		add_filter( 'avadaredux-import-file-description', array( $this, 'avadaredux_import_file_description_l10n' ) );
+
+		// Custom color scheme ajax save.
+		add_action( 'wp_ajax_custom_colors_ajax_save', array( $this, 'custom_colors_ajax_save' ) );
+		// Custom color scheme ajax delete.
+		add_action( 'wp_ajax_custom_colors_ajax_delete', array( $this, 'custom_colors_ajax_delete' ) );
 	}
 
 	/**
@@ -158,7 +194,7 @@ class Avada_AvadaRedux {
 			remove_filter( 'plugin_row_meta', array( AvadaReduxFrameworkPlugin::get_instance(), 'plugin_metalinks' ), null, 2 );
 			remove_action( 'admin_notices', array( AvadaReduxFrameworkPlugin::get_instance(), 'admin_notices' ) );
 			remove_action( 'admin_notices', array( AvadaReduxFrameworkInstances::get_instance( Avada::get_option_name() ), '_admin_notices' ), 99 );
-			// Remove the admin metabox
+			// Remove the admin metabox.
 			remove_meta_box( 'avadaredux_dashboard_widget', 'dashboard', 'side' );
 		}
 	}
@@ -170,11 +206,8 @@ class Avada_AvadaRedux {
 	 */
 	public function parse() {
 
-		// Instantiate the Avada_Options object.
-		$avada_sections = new Avada_Options();
-
 		// Start looping through the sections from the $avada_sections object.
-		foreach ( $avada_sections->sections as $section ) {
+		foreach ( $this->avada_sections->sections as $section ) {
 
 			// Create the section.
 			$this->create_section( $section );
@@ -196,7 +229,33 @@ class Avada_AvadaRedux {
 							// We'll need to add these fields to the subsection.
 							if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
 								foreach ( $field['fields'] as $subfield ) {
-									$this->create_field( $subfield, $field['id'] );
+
+									// Handle accordions in subsections.
+									if ( isset( $subfield['type'] ) && 'accordion' === $subfield['type'] ) {
+										// Make sure we have fields defined before proceeding.
+										// We'll need to add these fields to the subsection.
+										if ( isset( $subfield['fields'] ) && is_array( $subfield['fields'] ) ) {
+
+											// Open the accordion.
+											$accordion_start             = $subfield;
+											$accordion_start['position'] = 'start';
+											$accordion_start['id']       = $subfield['id'] . '_start_accordion';
+											$this->create_field( $accordion_start, $field['id'] );
+
+											// Add the fields inside the accordion.
+											foreach ( $subfield['fields'] as $sub_subfield ) {
+												$this->create_field( $sub_subfield, $field['id'] );
+											}
+
+											// Close the accordion.
+											$accordion_end             = $subfield;
+											$accordion_end['position'] = 'end';
+											$accordion_end['id']       = $subfield['id'] . '_end_accordion';
+											$this->create_field( $accordion_end, $field['id'] );
+										}
+									} else {
+										$this->create_field( $subfield, $field['id'] );
+									}
 								}
 							}
 						} elseif ( 'accordion' == $field['type'] ) {
@@ -205,7 +264,7 @@ class Avada_AvadaRedux {
 							// We'll need to add these fields to the subsection.
 							if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
 
-								// Open the accordion
+								// Open the accordion.
 								$accordion_start             = $field;
 								$accordion_start['position'] = 'start';
 								$accordion_start['id']       = $field['id'] . '_start_accordion';
@@ -382,16 +441,16 @@ class Avada_AvadaRedux {
 				if ( in_array( $field['id'], $font_size_dimension_fields ) ) {
 					// $args['subtitle'] = sprintf( esc_html__( '%s Enter value including a CSS unit, ex: %s. Valid CSS units for this field are px, em, rem.', 'Avada' ), $args['subtitle'], $field['default'] );
 					$args['validate_callback'] = 'avada_avadaredux_validate_font_size';
-					$args['subtitle'] = sprintf( esc_html__( '%s Enter value including CSS unit (px, em, rem), ex: %s.', 'Avada' ), $args['subtitle'], $field['default'] );
+					$args['subtitle'] = sprintf( esc_html__( '%1$s Enter value including CSS unit (px, em, rem), ex: %2$s.', 'Avada' ), $args['subtitle'], $field['default'] );
 				} else {
-					$args['subtitle'] = sprintf( esc_html__( '%s Enter value including any valid CSS unit, ex: %s.', 'Avada' ), $args['subtitle'], $field['default'] );
+					$args['subtitle'] = sprintf( esc_html__( '%1$s Enter value including any valid CSS unit, ex: %2$s.', 'Avada' ), $args['subtitle'], $field['default'] );
 				}
 				break;
 			case 'dimensions':
 				if ( 'lightbox_video_dimensions' == $field['id'] ) {
-					$args['subtitle'] = sprintf( esc_html__( '%s In pixels, ex: %s.', 'Avada' ), $args['subtitle'], implode( ', ', $field['default'] ) );
+					$args['subtitle'] = sprintf( esc_html__( '%1$s In pixels, ex: %2$s.', 'Avada' ), $args['subtitle'], implode( ', ', $field['default'] ) );
 				} else {
-					$args['subtitle'] = sprintf( esc_html__( '%s Enter values including any valid CSS unit, ex: %s.', 'Avada' ), $args['subtitle'], implode( ', ', $field['default'] ) );
+					$args['subtitle'] = sprintf( esc_html__( '%1$s Enter values including any valid CSS unit, ex: %2$s.', 'Avada' ), $args['subtitle'], implode( ', ', $field['default'] ) );
 				}
 				$args['validate_callback'] = 'avada_avadaredux_validate_dimensions';
 				break;
@@ -401,7 +460,7 @@ class Avada_AvadaRedux {
 				$args['left']   = ( isset( $field['choices'] ) && isset( $field['choices']['left'] ) ) ? true : false;
 				$args['right']  = ( isset( $field['choices'] ) && isset( $field['choices']['right'] ) ) ? true : false;
 				$args['validate_callback'] = 'avada_avadaredux_validate_dimensions';
-				$args['subtitle'] = sprintf( esc_html__( '%s Enter values including any valid CSS unit, ex: %s.', 'Avada' ), $args['subtitle'], implode( ', ', $field['default'] ) );
+				$args['subtitle'] = sprintf( esc_html__( '%1$s Enter values including any valid CSS unit, ex: %2$s.', 'Avada' ), $args['subtitle'], implode( ', ', $field['default'] ) );
 				break;
 			case 'number':
 				$args['type'] = 'spinner';
@@ -652,7 +711,7 @@ class Avada_AvadaRedux {
 				$args['type']        = 'raw';
 				$args['full_width']  = true;
 				if ( isset( $field['style'] ) && 'heading' == $field['style'] ) {
-					$args['content'] = '<div class="avadaredux-field-info"><p class="avadaredux-info-desc" style="font-size:13px;"><b>' .$field['description'] . '</b></p></div>';
+					$args['content'] = '<div class="avadaredux-field-info"><p class="avadaredux-info-desc" style="font-size:13px;"><b>' . $field['description'] . '</b></p></div>';
 					$args['class'] .= ' custom-heading';
 				} else {
 					$args['content'] = $field['description'];
@@ -664,12 +723,128 @@ class Avada_AvadaRedux {
 				break;
 		}
 
-		// Add validation to the email field
+		// Add validation to the email field.
 		if ( isset( $field['id'] ) && 'email_address' == $field['id'] ) {
 			$args['validate'] = 'email';
 		}
 
 		$args = wp_parse_args( $args, $field );
+
+		// Add link to descriptions of soft dependencies.
+		$page_soft_dependencies = array(
+			'page_title_bar_text' => array( 'page_title_bar' ),
+			'page_title_100_width' => array( 'page_title_bar' ),
+			'page_title_height' => array( 'page_title_bar' ),
+			'page_title_mobile_height' => array( 'page_title_bar' ),
+			'page_title_bg_color' => array( 'page_title_bar' ),
+			'page_title_border_color' => array( 'page_title_bar' ),
+			'page_title_font_size' => array( 'page_title_bar', 'page_title_bar_text' ),
+			'page_title_color' => array( 'page_title_bar', 'page_title_bar_text' ),
+			'page_title_subheader_font_size' => array( 'page_title_bar', 'page_title_bar_text' ),
+			'page_title_alignment' => array( 'page_title_bar' ),
+			'page_title_bg' => array( 'page_title_bar' ),
+			'page_title_bg_retina' => array( 'page_title_bg', 'page_title_bar' ),
+			'page_title_bg_full' => array( 'page_title_bg', 'page_title_bar' ),
+			'page_title_bg_parallax' => array( 'page_title_bar', 'page_title_bg' ),
+			'page_title_fading' => array( 'page_title_bar' ),
+			'breadcrumb_important_note_info' => array( 'page_title_bar' ),
+			'page_title_bar_bs' => array( 'page_title_bar' ),
+			'breadcrumb_mobile' => array( 'page_title_bar' ),
+			'breacrumb_prefix' => array( 'page_title_bar' ),
+			'breadcrumb_separator' => array( 'page_title_bar' ),
+			'breadcrumbs_font_size' => array( 'page_title_bar' ),
+			'breadcrumbs_text_color' => array( 'page_title_bar' ),
+			'breadcrumb_show_categories' => array( 'page_title_bar' ),
+			'breadcrumb_show_post_type_archive' => array( 'page_title_bar' ),
+			'footer_widgets_columns' => array( 'footer_widgets' ),
+			'footer_widgets_center_content' => array( 'footer_widgets' ),
+			'footer_copyright_center_content' => array( 'footer_copyright' ),
+			'footer_text' => array( 'footer_copyright' ),
+			'footerw_bg_image' => array( 'footer_widgets' ),
+			'footerw_bg_full' => array( 'footer_widgets' ),
+			'footerw_bg_repeat' => array( 'footer_widgets' ),
+			'footerw_bg_pos' => array( 'footer_widgets' ),
+			'footer_100_width' => array( 'footer_widgets', 'footer_copyright' ),
+			'footer_area_padding' => array( 'footer_widgets', 'footer_copyright' ),
+			'footer_bg_color' => array( 'footer_widgets' ),
+			'footer_border_size' => array( 'footer_widgets' ),
+			'footer_border_color' => array( 'footer_widgets' ),
+			'footer_divider_color' => array( 'footer_widgets' ),
+			'copyright_padding' => array( 'footer_copyright' ),
+			'copyright_bg_color' => array( 'footer_copyright' ),
+			'copyright_border_size' => array( 'footer_copyright' ),
+			'copyright_border_color' => array( 'footer_copyright' ),
+			'footer_headings_typography' => array( 'footer_widgets', 'footer_copyright' ),
+			'footer_text_color' => array( 'footer_widgets', 'footer_copyright' ),
+			'footer_link_color' => array( 'footer_widgets', 'footer_copyright' ),
+			'footer_link_color_hover' => array( 'footer_widgets', 'footer_copyright' ),
+			'copyright_font_size' => array( 'footer_copyright' ),
+			'boxed_mode_backgrounds_important_note_info' => array( 'layout' ),
+			'bg_image' => array( 'layout' ),
+			'bg_color' => array( 'layout' ),
+			'bg_pattern_option' => array( 'layout' ),
+			'bg_pattern' => array( 'layout' ),
+			'image_rollover_direction' => array( 'image_rollover' ),
+			'image_rollover_icon_size' => array( 'image_rollover' ),
+			'link_image_rollover' => array( 'image_rollover' ),
+			'zoom_image_rollover' => array( 'image_rollover' ),
+			'title_image_rollover' => array( 'image_rollover' ),
+			'cats_image_rollover' => array( 'image_rollover' ),
+			'icon_circle_image_rollover' => array( 'image_rollover' ),
+			'image_gradient_top_color' => array( 'image_rollover' ),
+			'image_gradient_bottom_color' => array( 'image_rollover' ),
+			'image_rollover_text_color' => array( 'image_rollover' ),
+			'image_rollover_icon_color' => array( 'image_rollover' ),
+		);
+
+		$builder_soft_dependencies = array(
+			'excerpt_length_portfolio' => array( 'portfolio_content_length' ),
+			'portfolio_layout_padding' => array( 'portfolio_text_layout' ),
+			'social_links_icon_color' => array( 'social_links_color_type' ),
+			'social_links_box_color' => array( 'social_links_boxed', 'social_links_color_type' ),
+			'social_links_boxed_radius' => array( 'social_links_boxed' ),
+			'social_links_boxed_padding' => array( 'social_links_boxed' ),
+		);
+		$soft_dependencies = array_merge( $page_soft_dependencies, $builder_soft_dependencies );
+
+		if ( isset( $soft_dependencies[ $field['id'] ] ) && 'custom' !== $field['type'] ) {
+
+			$option_type = esc_attr( 'Page', 'Avada' );
+			if ( in_array( $field['id'], $builder_soft_dependencies ) ) {
+				$option_type = esc_attr( 'Builder', 'Avada' );
+			}
+
+			$correlation_link = '  <span class="avada-hover-description"><a href="https://theme-fusion.com/avada-doc/options/how-options-work/" target="_blank" rel="noopener noreferrer">' . sprintf( __( 'This option has a dependency for a corresponding %s Option.', 'Avada' ), $option_type ) . '</a></span>';
+
+			$args['subtitle'] .= $correlation_link;
+			foreach ( $args['required'] as $key => $requirement ) {
+				if ( isset( $requirement[0] ) && in_array( $requirement[0], $soft_dependencies[ $field['id'] ] ) ) {
+					unset( $args['required'][ $key ] );
+				}
+			}
+			if ( ! isset( $args['required'][0] ) ) {
+				unset( $args['required'] );
+			}
+		}
+
+		// Only process required arguments if we don't pass "disable_dependencies={$args['id']}" in the URL.
+		if ( $_GET && isset( $_GET['disable_dependencies'] ) ) {
+			if ( $_GET['disable_dependencies'] == $args['id'] ) {
+				$args['required'] = array();
+			}
+			if ( ! empty( $args['required'] ) ) {
+				foreach ( $args['required'] as $key => $requirement ) {
+					if ( isset( $requirement['setting'] ) && $_GET['disable_dependencies'] == $requirement['setting'] ) {
+						unset( $args['required'][ $key ] );
+					}
+				}
+			}
+		}
+
+		// Disable all dependencies if 'dependencies_status' is set to 0.
+		if ( '0' === Avada()->settings->get( 'dependencies_status' ) ) {
+			$args['required'] = array();
+		}
 
 		if ( class_exists( 'AvadaRedux' ) ) {
 			AvadaRedux::setField( $this->key, $args );
@@ -689,7 +864,7 @@ class Avada_AvadaRedux {
 			'color_scheme' => esc_html__( 'Color Scheme', 'Avada' ),
 		);
 		wp_register_script( 'avada-avadaredux-custom-js', trailingslashit( get_template_directory_uri() ) . 'includes/avadaredux/assets/avada-avadaredux.js', array( 'jquery' ), time(), true );
-		wp_localize_script( 'avada-avadaredux-custom-js', 'avada_avadaredux_vars', $vars );
+		wp_localize_script( 'avada-avadaredux-custom-js', 'avadaAvadareduxVars', $vars );
 		wp_enqueue_script( 'avada-avadaredux-custom-js' );
 	}
 
@@ -752,7 +927,7 @@ class Avada_AvadaRedux {
 
 			$styles = str_replace( '$themefusion_logo', $themefusion_logo, $styles );
 
-			// Add custom fonts
+			// Add custom fonts.
 			$styles .= avada_custom_fonts_font_faces();
 
 			echo '<style id="avada-avadaredux-custom-styles" type="text/css">' . $styles . '</style>';
@@ -764,6 +939,7 @@ class Avada_AvadaRedux {
 	 * Gets the main admin-color scheme.
 	 *
 	 * @access public
+	 * @param string $scheme The color scheme to use.
 	 * @return array
 	 */
 	public function get_main_colors( $scheme ) {
@@ -969,6 +1145,7 @@ class Avada_AvadaRedux {
 			'show_options_object'  => false,
 			'forced_dev_mode_off'  => true,
 			'footer_credit'        => ' ',
+			'allow_tracking'       => false,
 		);
 		if ( class_exists( 'AvadaRedux' ) ) {
 			AvadaRedux::setArgs( $this->key, $args );
@@ -977,14 +1154,15 @@ class Avada_AvadaRedux {
 	}
 
 	/**
-	* Save buider and code block encoding as option
-	*
-	* @access public
-	* @since 4.0
-	* @return void
-	*/
+	 * Save block encoding as option
+	 *
+	 * @access public
+	 * @since 4.0
+	 * @param array $data           The data.
+	 * @param array $changed_values The changed values to save.
+	 * @return void
+	 */
 	public function save_as_option( $data, $changed_values ) {
-		update_option( 'avada_disable_builder', $data['disable_builder'] );
 		update_option( 'avada_disable_encoding', $data['disable_code_block_encoding'] );
 	}
 
@@ -1002,7 +1180,10 @@ class Avada_AvadaRedux {
 
 			// Check the HTTP referrer to determine if the language is set to "all".
 			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				$parsed_url = parse_url( $_SERVER['HTTP_REFERER'] );
+				if ( ! function_exists( 'wp_parse_url' ) ) {
+					require_once( ABSPATH . '/wp-includes/http.php' );
+				}
+				$parsed_url = wp_parse_url( $_SERVER['HTTP_REFERER'] );
 				if ( isset( $parsed_url['query'] ) ) {
 					parse_str( $parsed_url['query'] );
 					if ( isset( $lang ) && 'all' == $lang ) {
@@ -1024,7 +1205,7 @@ class Avada_AvadaRedux {
 		// Get available languages.
 		$all_languages = Avada_Multilingual::get_available_languages();
 
-		// Get default language
+		// Get default language.
 		$default_language = Avada_Multilingual::get_default_language();
 
 		if ( 'en' !== $default_language ) {
@@ -1059,7 +1240,7 @@ class Avada_AvadaRedux {
 	 * @return string
 	 */
 	public function reset_message_l10n() {
-		return esc_html__( 'Are you sure? This will reset all saved theme options to their default values.', 'Avada' );
+		return esc_html__( 'Are you sure? This will reset all saved options to the default theme values. This does not reset them to a demo that you may have imported.', 'Avada' );
 	}
 
 	/**
@@ -1069,7 +1250,7 @@ class Avada_AvadaRedux {
 	 * @return string
 	 */
 	public function reset_section_message_l10n() {
-		return esc_html__( 'Are you sure? This will reset all saved options to their default values for this section.', 'Avada' );
+		return esc_html__( 'Are you sure? This will reset all saved options to the default theme values for this section. This does not reset them to a demo that you may have imported.', 'Avada' );
 	}
 
 	/**
@@ -1080,5 +1261,175 @@ class Avada_AvadaRedux {
 	 */
 	public function avadaredux_import_file_description_l10n() {
 		return esc_html__( 'Copy the contents of the json file and paste it below. Then click "Import" to restore your setings.', 'Avada' );
+	}
+
+	/**
+	 * Save the custom color scheme to an option
+	 *
+	 * @since 5.0.0
+	 * @return void
+	 */
+	public function custom_colors_ajax_save() {
+
+		global $wpdb;
+
+		if ( ! empty( $_POST['data'] ) ) {
+
+			$existing_colors  = get_option( 'avada_custom_color_schemes', array() );
+
+			if ( 'import' != $_POST['data']['type'] ) {
+				$scheme = array();
+				$scheme_colors = $_POST['data']['values'];
+				$scheme_name = $_POST['data']['name'];
+				$scheme[] = array( 'name' => $scheme_name, 'values' => $scheme_colors );
+
+				// Check if scheme trying to be saved already exists, if so unset and merge.
+				if ( 'update' == $_POST['data']['type'] ) {
+					// Remove existing saved version and and merge in.
+					foreach ( $existing_colors as $key => $existing_color ) {
+						if ( $existing_color['name'] == $scheme_name ) {
+							unset( $existing_colors[ $key ] );
+						}
+					}
+					$schemes = array_merge( $scheme, $existing_colors );
+				} elseif ( is_array( $existing_colors ) ) {
+					$schemes = array_merge( $scheme, $existing_colors );
+				} else {
+					$schemes = $scheme;
+				}
+
+				update_option( 'avada_custom_color_schemes', $schemes );
+				echo wp_json_encode( array(
+					'status' => 'success',
+					'action' => '',
+				) );
+
+			} else {
+				$schemes = stripslashes( stripcslashes( $_POST['data']['values'] ) );
+				$schemes = json_decode( $schemes, true );
+				if ( is_array( $existing_colors ) ) {
+					// Add imported schemes to existing set.
+					$schemes = array_merge( $schemes, $existing_colors );
+				}
+
+				update_option( 'avada_custom_color_schemes', $schemes );
+
+				echo wp_json_encode( array(
+					'status' => 'success',
+					'action' => '',
+				) );
+			}
+		}
+		die();
+	}
+
+	/**
+	 * Delete the custom color schemes selected
+	 *
+	 * @since 5.0.0
+	 * @return void
+	 */
+	public function custom_colors_ajax_delete() {
+
+		global $wpdb;
+
+		if ( ! empty( $_POST['data'] ) && is_array( $_POST['data']['names'] ) ) {
+
+			$existing_colors  = get_option( 'avada_custom_color_schemes', array() );
+
+			foreach ( $_POST['data']['names'] as $scheme_name ) {
+				// Remove from array of existing schemes.
+				foreach ( $existing_colors as $key => $existing_color ) {
+					if ( $existing_color['name'] == $scheme_name ) {
+						unset( $existing_colors[ $key ] );
+					}
+				}
+			}
+
+			update_option( 'avada_custom_color_schemes', $existing_colors );
+
+			echo wp_json_encode( array(
+				'status' => 'success',
+				'action' => '',
+			) );
+
+		}
+		die();
+	}
+
+	/**
+	 * Parses all fields and checks for any fields that use the "option_name" argument.
+	 * These settings will have to be processed separately so that these settings
+	 * are saved on a separate setting table in the db.
+	 *
+	 * @access public
+	 * @since 5.0.0
+	 */
+	public function parse_option_name_settings() {
+		foreach ( $this->avada_sections->sections as $section ) {
+			if ( isset( $section['fields'] ) ) {
+				foreach ( $section['fields'] as $field ) {
+					if ( isset( $field['type'] ) ) {
+						if ( 'sub-section' == $field['type'] ) {
+							if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
+								foreach ( $field['fields'] as $subfield ) {
+									if ( isset( $subfield['type'] ) && 'accordion' === $subfield['type'] && isset( $subfield['fields'] ) ) {
+										foreach ( $subfield['fields'] as $sub_subfield ) {
+											self::$option_name_settings[ $sub_subfield['id'] ] = $sub_subfield['option_name'];
+										}
+									} else {
+										if ( isset( $subfield['option_name'] ) && isset( $subfield['id'] ) ) {
+											self::$option_name_settings[ $subfield['id'] ] = $subfield['option_name'];
+										}
+									}
+								}
+							}
+						} elseif ( 'accordion' == $field['type'] ) {
+							if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
+								foreach ( $field['fields'] as $subfield ) {
+									self::$option_name_settings[ $subfield['id'] ] = $subfield['option_name'];
+								}
+							}
+						} else {
+							if ( isset( $field['option_name'] ) && isset( $field['id'] ) ) {
+								self::$option_name_settings[ $field['id'] ] = $field['option_name'];
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Fires after the value of the option has been successfully updated.
+	 * We'll be using this function to update any 3rd-party options injected.
+	 *
+	 * @access public
+	 * @since 5.0.0
+	 * @param mixed  $old_value The old option value.
+	 * @param mixed  $value     The new option value.
+	 * @param string $option    Option name.
+	 */
+	public function option_name_settings_update( $old_value, $value, $option ) {
+		$other_options = array();
+		// No need to proceed any further if we don't have any options to process.
+		if ( empty( self::$option_name_settings ) ) {
+			return;
+		}
+		foreach ( self::$option_name_settings as $setting => $option_name ) {
+			// Get the option_name setting value.
+			if ( ! isset( $other_options[ $option_name ] ) ) {
+				$other_options[ $option_name ] = get_option( $option_name, array() );
+			}
+			// Set the value to the new option.
+			if ( isset( $value[ $setting ] ) ) {
+				$other_options[ $option_name ][ $setting ] = $value[ $setting ];
+			}
+		}
+		// Save the new options.
+		foreach ( $other_options as $other_option_name => $other_option_value ) {
+			update_option( $other_option_name, $other_option_value );
+		}
 	}
 }

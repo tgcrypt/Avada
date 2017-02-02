@@ -1,3 +1,10 @@
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <form role="search" class="searchform" method="get" action="<?php echo home_url( '/' ); ?>">
 	<div class="search-table">
 		<div class="search-field">

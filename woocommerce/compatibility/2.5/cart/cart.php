@@ -147,4 +147,4 @@ do_action( 'woocommerce_before_cart' ); ?>
 
 <?php do_action( 'woocommerce_after_cart' );
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

@@ -1,3 +1,10 @@
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <?php if ( Avada()->settings->get( 'disable_date_rich_snippet_pages' ) ) : ?>
 
 	<?php if ( $title_tag ) : ?>
@@ -22,4 +29,4 @@
 
 <?php endif;
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

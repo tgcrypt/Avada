@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Lightbox
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + lightbox
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_lightbox( $sections ) {
 
@@ -20,7 +24,7 @@ function avada_options_section_lightbox( $sections ) {
 				'description' => esc_html__( 'Turn on to enable the lightbox throughout the theme.', 'Avada' ),
 				'id'          => 'status_lightbox',
 				'default'     => '1',
-				'type'        => 'switch'
+				'type'        => 'switch',
 			),
 			'status_lightbox_single' => array(
 				'label'       => esc_html__( 'Lightbox On Single Post Pages', 'Avada' ),

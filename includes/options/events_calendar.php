@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Footer settings
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + footer
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_events_calendar( $sections ) {
 
@@ -44,7 +48,7 @@ function avada_options_section_events_calendar( $sections ) {
 					),
 					'ec_bar_text_color' => array(
 						'label'       => esc_html__( 'Event Filter Bar Text Color', 'Avada' ),
-						'description' => esc_html__( 'Controls the color of the event filter bar text.', 'Avada'),
+						'description' => esc_html__( 'Controls the color of the event filter bar text.', 'Avada' ),
 						'id'          => 'ec_bar_text_color',
 						'default'     => '#747474',
 						'type'        => 'color',
@@ -94,7 +98,7 @@ function avada_options_section_events_calendar( $sections ) {
 							'none'    => 'none',
 							'zoomin'  => esc_html__( 'Zoom In', 'Avada' ),
 							'zoomout' => esc_html__( 'Zoom Out', 'Avada' ),
-							'liftup'  => esc_html__( 'Lift Up', 'Avada' )
+							'liftup'  => esc_html__( 'Lift Up', 'Avada' ),
 						),
 					),
 					'ec_bg_list_view' => array(

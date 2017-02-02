@@ -6,23 +6,23 @@
  * Override this template in your own theme by creating a file at [your-theme]/tribe-events/list/single-event.php
  *
  * @package TribeEventsCalendar
- *
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-// Setup an array of venue details for use later in the template
+// Setup an array of venue details for use later in the template.
 $venue_details = tribe_get_venue_details();
 
-// Venue microformats
+// Venue microformats.
 $has_venue_address = ( ! empty( $venue_details['address'] ) ) ? ' location' : '';
 
-// Organizer
+// Organizer.
 $organizer = tribe_get_organizer();
 ?>
 
-<div class="<?php if ( has_post_thumbnail() ): echo 'fusion-tribe-has-featured-image'; else: echo 'fusion-tribe-no-featured-image'; endif; ?>">
+<div class="<?php echo ( has_post_thumbnail() ) ? 'fusion-tribe-has-featured-image' : 'fusion-tribe-no-featured-image'; ?>">
 	<!-- Event Cost -->
 	<?php if ( tribe_get_cost() ) : ?>
 		<div class="tribe-events-event-cost">
@@ -30,32 +30,30 @@ $organizer = tribe_get_organizer();
 		</div>
 	<?php endif; ?>
 
-	<?php
-	if ( has_post_thumbnail() ):
-		$url = wp_get_attachment_url( get_post_thumbnail_id( get_the_ID() ) );
-	?>
-	<div class="fusion-tribe-primary-info">
-		<div class="hover-type-<?php echo Avada()->settings->get( 'ec_hover_type' ); ?>">
-			<!-- Event Title -->
-			<?php do_action( 'tribe_events_before_the_event_title' ) ?>
-			<h3 class="tribe-events-list-event-title entry-title summary">
-				<a class="url" href="<?php echo esc_url( tribe_get_event_link() ); ?>" title="<?php the_title() ?>" rel="bookmark">
-					<?php the_title() ?>
-				</a>
-			</h3>
-			<?php do_action( 'tribe_events_after_the_event_title' ) ?>
+	<?php if ( has_post_thumbnail() ) :?>
+		<?php $url = wp_get_attachment_url( get_post_thumbnail_id( get_the_ID() ) ); ?>
+		<div class="fusion-tribe-primary-info">
+			<div class="hover-type-<?php echo Avada()->settings->get( 'ec_hover_type' ); ?>">
+				<!-- Event Title -->
+				<?php do_action( 'tribe_events_before_the_event_title' ) ?>
+				<h3 class="tribe-events-list-event-title entry-title summary">
+					<a class="url" href="<?php echo esc_url( tribe_get_event_link() ); ?>" title="<?php the_title() ?>" rel="bookmark">
+						<?php the_title() ?>
+					</a>
+				</h3>
+				<?php do_action( 'tribe_events_after_the_event_title' ) ?>
 
-			<!-- Event Image -->
-			<a href="<?php the_permalink(); ?>">
-				<?php if (  Avada()->settings->get( 'ec_bg_list_view' ) == 'cover' ): ?>
-				<span class="tribe-events-event-image" style="background-image: url('<?php echo $url; ?>'); -webkit-background-size: <?php echo Avada()->settings->get( 'ec_bg_list_view' ); ?>; background-size: <?php echo Avada()->settings->get( 'ec_bg_list_view' ); ?>; background-position: center center;"></span>
-				<span class="fusion-tribe-events-event-image-responsive"><?php the_post_thumbnail(); ?></span>
-				<?php else: ?>
-				<?php the_post_thumbnail(); ?>
-				<?php endif; ?>
-			</a>
+				<!-- Event Image -->
+				<a href="<?php the_permalink(); ?>">
+					<?php if ( 'cover' === Avada()->settings->get( 'ec_bg_list_view' ) ) : ?>
+						<span class="tribe-events-event-image" style="background-image: url('<?php echo $url; ?>'); -webkit-background-size: <?php echo Avada()->settings->get( 'ec_bg_list_view' ); ?>; background-size: <?php echo Avada()->settings->get( 'ec_bg_list_view' ); ?>; background-position: center center;"></span>
+						<span class="fusion-tribe-events-event-image-responsive"><?php the_post_thumbnail(); ?></span>
+					<?php else : ?>
+						<?php the_post_thumbnail(); ?>
+					<?php endif; ?>
+				</a>
+			</div>
 		</div>
-	</div>
 	<?php endif; ?>
 
 	<div class="fusion-tribe-secondary-info">

@@ -1,3 +1,10 @@
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <div class="fusion-header-sticky-height"></div>
 <div class="fusion-sticky-header-wrapper"> <!-- start fusion sticky header wrapper -->
 	<div class="fusion-header">

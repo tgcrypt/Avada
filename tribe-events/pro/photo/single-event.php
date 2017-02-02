@@ -70,16 +70,13 @@ global $post;
 
 			<div class="fusion-meta-info">
 				<div class="fusion-alignleft">
-					<?php
-						if ( Avada()->settings->get( 'post_meta_read' ) ) {
-							$link_target = '';
-							if ( fusion_get_page_option( 'link_icon_target', get_the_ID() ) == 'yes' ||
-								fusion_get_page_option( 'post_links_target', get_the_ID() ) == 'yes' ) {
-								$link_target = ' target="_blank"';
-							}
-							printf( '<a href="%s" class="fusion-read-more"%s>%s</a>', get_permalink(), $link_target, esc_html__( 'Find Out More', 'Avada' ) );
-						}
-					?>
+					<?php if ( Avada()->settings->get( 'post_meta_read' ) ) : ?>
+						<?php $link_target = ''; ?>
+						<?php if ( 'yes' === fusion_get_page_option( 'link_icon_target', get_the_ID() ) || 'yes' === fusion_get_page_option( 'post_links_target', get_the_ID() ) ) : ?>
+							<?php $link_target = ' target="_blank" rel="noopener noreferrer"'; ?>
+						<?php endif; ?>
+						<a href="<?php echo get_permalink(); ?>" class="fusion-read-more"<?php echo $link_target; ?>><?php esc_attr_e( 'Find Out More', 'Avada' ); ?></a>
+					<?php endif; ?>
 				</div>
 			</div>
 

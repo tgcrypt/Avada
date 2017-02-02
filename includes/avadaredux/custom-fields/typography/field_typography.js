@@ -626,8 +626,34 @@
 
             $( '#' + mainID + ' .typography-preview' ).css( 'font-weight', style );
 
+            // Properly format the family.
+            if ( -1 !== family.indexOf( ',' ) ) {
+                // This contains multiple font-families, we must separate them
+                // and process them individually before re-combining them.
+                family = family.split( ',' );
+                for ( var i = 0; i < family.length; i++ ) {
+                    // Remove extra spaces.
+                    family[ i ] = family[ i ].trim();
+                    // Remove quotes and double quotes.
+                    family[ i ] = family[ i ].split( '"' ).join( '' );
+                    family[ i ] = family[ i ].split( "'" ).join( '' );
+                    // Add doublequotes if needed.
+                    if ( -1 !== family[ i ].indexOf( ' ' ) ) {
+                        family[ i ] = '"' + family[ i ] + '"';
+                    }
+                }
+                family = family.join( ', ' );
+            } else {
+                family = family.trim();
+                family = family.split( '"' ).join( '' );
+                family = family.split( "'" ).join( '' );
+                if ( -1 !== family.indexOf( ' ' ) ) {
+                    family = '"' + family + '"';
+                }
+            }
+
             //show in the preview box the font
-            $( '#' + mainID + ' .typography-preview' ).css( 'font-family', '"' + family + '", sans-serif' );
+            $( '#' + mainID + ' .typography-preview' ).css( 'font-family', family + ', sans-serif' );
 
             if ( family === 'none' && family === '' ) {
                 //if selected is not a font remove style "font-family" at preview box

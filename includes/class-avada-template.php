@@ -1,27 +1,50 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
+/**
+ * Template handler.
+ */
 class Avada_Template {
+
+	/**
+	 * An array of body classes to be added.
+	 *
+	 * @access private
+	 * @since 5.0.0
+	 * @var array
+	 */
+	private $body_classes = array();
+
 	/**
 	 * The class constructor
 	 */
 	public function __construct() {
-		add_filter( 'body_class', array( $this, 'body_classes' ) );
+		add_action( 'wp', array( $this, 'init' ), 20 );
+	}
+
+	/**
+	 * Initialize the class.
+	 *
+	 * @since 5.0.0
+	 *
+	 * @return void
+	 */
+	public function init() {
+		$this->body_classes = $this->body_classes( array() );
+
+		add_filter( 'body_class', array( $this, 'body_class_filter' ) );
 	}
 
 	/**
 	 * Detect if we have a sidebar.
 	 */
 	public function has_sidebar() {
-
-		// Get our extra body classes
-		$classes = $this->body_classes( array() );
-
-		if ( in_array( 'has-sidebar', $classes ) ) {
-			return true;
-		} else {
-			return false;
-		}
-
+		// Get our extra body classes.
+		return ( in_array( 'has-sidebar', $this->body_classes ) );
 	}
 
 	/**
@@ -29,30 +52,22 @@ class Avada_Template {
 	 */
 	public function double_sidebars() {
 
-		// Get our extra body classes
-		$classes = $this->body_classes( array() );
-
-		if ( in_array( 'double-sidebars', $classes ) ) {
-			return true;
-		} else {
-			return false;
-		}
-
+		// Get our extra body classes.
+		return ( in_array( 'double-sidebars', $this->body_classes ) );
 	}
 
 	/**
 	 * Returns the sidebar-1 & sidebar-2 context.
 	 *
-	 * @var  int 1/2
+	 * @param int $sidebar Sidebar 1 or 2 (values: 1/2).
 	 * @return mixed
 	 */
-	public function sidebar_context( $sidebar = 1 ) {
+	private function sidebar_context( $sidebar = 1 ) {
 
-		$c_pageID = Avada::c_pageID();
+		$c_page_id = Avada()->get_page_id();
 
-
-		$sidebar_1 = get_post_meta( $c_pageID, 'sbg_selected_sidebar_replacement', true );
-		$sidebar_2 = get_post_meta( $c_pageID, 'sbg_selected_sidebar_2_replacement', true );
+		$sidebar_1 = get_post_meta( $c_page_id, 'sbg_selected_sidebar_replacement', true );
+		$sidebar_2 = get_post_meta( $c_page_id, 'sbg_selected_sidebar_2_replacement', true );
 
 		if ( is_single() && ! is_singular( 'avada_portfolio' ) && ! is_singular( 'product' ) && ! ( class_exists( 'bbPress' ) && is_bbpress() ) && ! ( class_exists( 'BuddyPress' ) && is_buddypress() ) && ! is_singular( 'tribe_events' ) && ! is_singular( 'tribe_organizer' ) && ! is_singular( 'tribe_venue' ) ) {
 
@@ -61,25 +76,22 @@ class Avada_Template {
 				$sidebar_2 = ( 'None' != Avada()->settings->get( 'posts_sidebar_2' ) ) ? array( Avada()->settings->get( 'posts_sidebar_2' ) ) : '';
 			}
 
-			if ( class_exists( 'Tribe__Events__Main' ) && tribe_is_event( $c_pageID ) && Avada()->settings->get( 'pages_global_sidebar' ) ) {
+			if ( class_exists( 'Tribe__Events__Main' ) && tribe_is_event( $c_page_id ) && Avada()->settings->get( 'pages_global_sidebar' ) ) {
 				$sidebar_1 = ( 'None' != Avada()->settings->get( 'pages_sidebar' ) ) ? array( Avada()->settings->get( 'pages_sidebar' ) ) : '';
 				$sidebar_2 = ( 'None' != Avada()->settings->get( 'pages_sidebar_2' ) ) ? array( Avada()->settings->get( 'pages_sidebar_2' ) ) : '';
 			}
-
 		} elseif ( is_singular( 'avada_portfolio' ) ) {
 
 			if ( Avada()->settings->get( 'portfolio_global_sidebar' ) ) {
 				$sidebar_1 = ( 'None' != Avada()->settings->get( 'portfolio_sidebar' ) ) ? array( Avada()->settings->get( 'portfolio_sidebar' ) ) : '';
 				$sidebar_2 = ( 'None' != Avada()->settings->get( 'portfolio_sidebar_2' ) ) ? array( Avada()->settings->get( 'portfolio_sidebar_2' ) ) : '';
 			}
-
 		} elseif ( is_singular( 'product' ) || ( class_exists( 'WooCommerce' ) && is_shop() ) ) {
 
 			if ( Avada()->settings->get( 'woo_global_sidebar' ) ) {
 				$sidebar_1 = ( 'None' != Avada()->settings->get( 'woo_sidebar' ) ) ? array( Avada()->settings->get( 'woo_sidebar' ) ) : '';
 				$sidebar_2 = ( 'None' != Avada()->settings->get( 'woo_sidebar_2' ) ) ? array( Avada()->settings->get( 'woo_sidebar_2' ) ) : '';
 			}
-
 		} elseif ( ( is_page() || is_page_template() ) && ( ! is_page_template( '100-width.php' ) && ! is_page_template( 'blank.php' ) ) ) {
 
 			if ( Avada()->settings->get( 'pages_global_sidebar' ) ) {
@@ -88,14 +100,12 @@ class Avada_Template {
 				$sidebar_2 = ( 'None' != Avada()->settings->get( 'pages_sidebar_2' ) ) ? array( Avada()->settings->get( 'pages_sidebar_2' ) ) : '';
 
 			}
-
 		} else if ( is_singular( 'tribe_events' ) ) {
 
 			if ( Avada()->settings->get( 'ec_global_sidebar' ) ) {
 				$sidebar_1 = ( 'None' != Avada()->settings->get( 'ec_sidebar' ) ) ? array( Avada()->settings->get( 'ec_sidebar' ) ) : '';
 				$sidebar_2 = ( 'None' != Avada()->settings->get( 'ec_sidebar_2' ) ) ? array( Avada()->settings->get( 'ec_sidebar_2' ) ) : '';
 			}
-
 		} else if ( is_singular( 'tribe_venue' ) || is_singular( 'tribe_organizer' ) ) {
 
 			$sidebar_1 = ( 'None' != Avada()->settings->get( 'ec_sidebar' ) ) ? array( Avada()->settings->get( 'ec_sidebar' ) ) : '';
@@ -135,8 +145,8 @@ class Avada_Template {
 				$sidebar_1 = Avada()->settings->get( 'ppbress_sidebar' );
 				$sidebar_2 = Avada()->settings->get( 'ppbress_sidebar_2' );
 			} else {
-				$sidebar_1 = get_post_meta( $c_pageID, 'sbg_selected_sidebar_replacement', true );
-				$sidebar_2 = get_post_meta( $c_pageID, 'sbg_selected_sidebar_2_replacement', true );
+				$sidebar_1 = get_post_meta( $c_page_id, 'sbg_selected_sidebar_replacement', true );
+				$sidebar_2 = get_post_meta( $c_page_id, 'sbg_selected_sidebar_2_replacement', true );
 			}
 		}
 
@@ -145,7 +155,7 @@ class Avada_Template {
 			$sidebar_2 = Avada()->settings->get( 'ppbress_sidebar_2' );
 		}
 
-		if ( class_exists( 'Tribe__Events__Main' ) && is_events_archive() ) {
+		if ( class_exists( 'Tribe__Events__Main' ) && Avada_Helper::is_events_archive() ) {
 			$sidebar_1 = Avada()->settings->get( 'ec_sidebar' );
 			$sidebar_2 = Avada()->settings->get( 'ec_sidebar_2' );
 		}
@@ -158,16 +168,33 @@ class Avada_Template {
 
 	}
 
+
+	/**
+	 * Adds extra classes for the <body> element, using the 'body_class' filter.
+	 * Documentation: ttps://codex.wordpress.org/Plugin_API/Filter_Reference/body_class
+	 *
+	 * @since 5.0.0
+	 *
+	 * @param  array $classes CSS classes.
+	 * @return array The merged and extended body classes.
+	 */
+	public function body_class_filter( $classes ) {
+		$classes = array_merge( $classes, $this->body_classes );
+
+		return $classes;
+	}
+
 	/**
 	 * Calculate any extra classes for the <body> element.
-	 * These are then added using the 'body_class' filter.
-	 * Documentation: ttps://codex.wordpress.org/Plugin_API/Filter_Reference/body_class
+	 *
+	 * @param  array $classes CSS classes.
+	 * @return array The needed body classes.
 	 */
-	public function body_classes( $classes ) {
+	private function body_classes( $classes ) {
 
 		$sidebar_1 = $this->sidebar_context( 1 );
 		$sidebar_2 = $this->sidebar_context( 2 );
-		$c_pageID  = Avada::c_pageID();
+		$c_page_id  = Avada()->get_page_id();
 
 		$classes[] = 'fusion-body';
 
@@ -190,7 +217,7 @@ class Avada_Template {
 		if ( ! Avada()->settings->get( 'status_totop_mobile' ) ) {
 			$classes[] = 'no-mobile-totop';
 		}
-		if ( 'horizontal' == Avada()->settings->get( 'woocommerce_product_tab_design' ) && 
+		if ( 'horizontal' == Avada()->settings->get( 'woocommerce_product_tab_design' ) &&
 			 ( is_singular( 'product' ) || class_exists( 'Woocommerce' ) && ( is_account_page() || is_checkout() ) )
 		) {
 			$classes[] = 'woo-tabs-horizontal';
@@ -200,7 +227,7 @@ class Avada_Template {
 			$classes[] = 'mobile-logo-pos-' . strtolower( Avada()->settings->get( 'logo_alignment' ) );
 		}
 
-		if ( ( 'Boxed' == Avada()->settings->get( 'layout' ) && 'default' == get_post_meta( $c_pageID, 'pyre_page_bg_layout', true ) ) || 'boxed' == get_post_meta( $c_pageID, 'pyre_page_bg_layout', true ) ) {
+		if ( ( 'Boxed' == Avada()->settings->get( 'layout' ) && 'default' == get_post_meta( $c_page_id, 'pyre_page_bg_layout', true ) ) || 'boxed' == get_post_meta( $c_page_id, 'pyre_page_bg_layout', true ) ) {
 			$classes[] = 'layout-boxed-mode';
 		} else {
 			$classes[] = 'layout-wide-mode';
@@ -216,8 +243,8 @@ class Avada_Template {
 
 		if ( is_page_template( 'side-navigation.php' ) ) {
 			$classes[] = 'has-sidebar';
-		
-			if( is_array( $sidebar_2 ) && $sidebar_2[0] ) {
+
+			if ( is_array( $sidebar_2 ) && $sidebar_2[0] ) {
 				$classes[] = 'double-sidebars';
 			}
 		}
@@ -265,8 +292,8 @@ class Avada_Template {
 			if ( 'None' != $sidebar_1 && 'None' != $sidebar_2 ) {
 				$classes[] = 'double-sidebars';
 			}
-		}		
-		
+		}
+
 		if ( ( ( class_exists( 'bbPress' ) && is_bbpress() ) || ( class_exists( 'BuddyPress' ) && is_buddypress() ) ) && ! ( class_exists( 'bbPress' ) && bbp_is_forum_archive() ) && ! ( class_exists( 'bbPress' ) && bbp_is_topic_archive() ) && ! ( class_exists( 'bbPress' ) && bbp_is_user_home() ) && ! ( class_exists( 'bbPress' ) && bbp_is_search() ) ) {
 			if ( Avada()->settings->get( 'bbpress_global_sidebar' ) ) {
 				if ( 'None' != $sidebar_1 ) {
@@ -294,7 +321,9 @@ class Avada_Template {
 			}
 		}
 
-		if ( class_exists( 'Tribe__Events__Main' ) && is_events_archive() ) {
+		if ( class_exists( 'Tribe__Events__Main' ) && Avada_Helper::is_events_archive() ) {
+			$classes[] = 'tribe-filter-live';
+
 			if ( 'None' != $sidebar_1 ) {
 				$classes[] = 'has-sidebar';
 			}
@@ -303,9 +332,11 @@ class Avada_Template {
 			}
 		}
 
-		if ( 'no' != get_post_meta( $c_pageID, 'pyre_display_header', true) ) {
+		if ( 'no' !== get_post_meta( $c_page_id, 'pyre_display_header', true ) ) {
 			if ( 'Left' == Avada()->settings->get( 'header_position' ) || 'Right' == Avada()->settings->get( 'header_position' ) ) {
 				$classes[] = 'side-header';
+			} else {
+				$classes[] = 'fusion-top-header';
 			}
 			if ( 'Left' == Avada()->settings->get( 'header_position' ) ) {
 				$classes[] = 'side-header-left';
@@ -332,7 +363,16 @@ class Avada_Template {
 		return $classes;
 	}
 
-	public function comment_template( $comment, $args, $depth ) { ?>
+	/**
+	 * The comment template.
+	 *
+	 * @access public
+	 * @param string     $comment The comment.
+	 * @param array      $args    The comment arguments.
+	 * @param int|string $depth   The comment depth.
+	 */
+	public function comment_template( $comment, $args, $depth ) {
+		?>
 		<?php $add_below = ''; ?>
 		<li <?php comment_class(); ?> id="comment-<?php comment_ID() ?>">
 			<div class="the-comment">
@@ -343,7 +383,7 @@ class Avada_Template {
 						<?php printf( __( '%1$s at %2$s', 'Avada' ), get_comment_date(),  get_comment_time() ); ?><?php edit_comment_link( __( ' - Edit', 'Avada' ),'  ','' ); ?><?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( ' - Reply', 'Avada' ), 'add_below' => 'comment', 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
 					</div>
 					<div class="comment-text">
-						<?php if ( $comment->comment_approved == '0' ) : ?>
+						<?php if ( '0' == $comment->comment_approved ) : ?>
 							<em><?php _e( 'Your comment is awaiting moderation.', 'Avada' ); ?></em>
 							<br />
 						<?php endif; ?>
@@ -354,15 +394,23 @@ class Avada_Template {
 		<?php
 	}
 
+	/**
+	 * The title template.
+	 *
+	 * @access public
+	 * @param string     $content       The content.
+	 * @param int|string $size          The size.
+	 * @param string     $content_align The content alignment.
+	 */
 	public function title_template( $content = '', $size = '2', $content_align = 'left' ) {
-		$margin_top	= Avada()->settings->get( 'title_margin', 'top' );
+		$margin_top	    = Avada()->settings->get( 'title_margin', 'top' );
 		$margin_bottom	= Avada()->settings->get( 'title_margin', 'bottom' );
-		$sep_color = Avada()->settings->get( 'title_border_color' );
-		$style_type	= Avada()->settings->get( 'title_style_type' );
-		$size_array = array( '1' => 'one', '2' => 'two', '3' => 'three', '4' => 'four', '5' => 'five', '6' => 'six' );
-		$classes = '';
-		$styles = '';
-		$sep_styles = '';
+		$sep_color      = Avada()->settings->get( 'title_border_color' );
+		$style_type	    = Avada()->settings->get( 'title_style_type' );
+		$size_array     = array( '1' => 'one', '2' => 'two', '3' => 'three', '4' => 'four', '5' => 'five', '6' => 'six' );
+		$classes        = '';
+		$styles         = '';
+		$sep_styles     = '';
 
 		$classes_array = explode( ' ', $style_type );
 		foreach ( $classes_array as $class ) {
@@ -376,34 +424,26 @@ class Avada_Template {
 			$styles .= sprintf( 'margin-bottom:%s;', Avada_Sanitize::get_value_with_unit( $margin_bottom ) );
 		}
 
-		if ( strpos( $style_type, 'underline' ) !== FALSE ||
-			 strpos( $style_type, 'none' ) !== FALSE
-		) {
+		if ( false !== strpos( $style_type, 'underline' ) || false !== strpos( $style_type, 'none' ) ) {
 
-			if ( strpos( $style_type, 'underline' ) !== false ) {
-				if ( $sep_color ) {
-					$styles .= 'border-bottom-color:' . $sep_color;
-				}
-			} elseif ( strpos( $style_type, 'none' ) !== false ) {
+			if ( false !== strpos( $style_type, 'underline' ) && $sep_color ) {
+				$styles .= 'border-bottom-color:' . $sep_color;
+			} elseif ( false !== strpos( $style_type, 'none' ) ) {
 				$classes .= ' fusion-sep-none';
 			}
 
-			$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><h%s class="title-heading-%s">%s</h%s></div>', $size_array[$size],
-							 $classes, $styles, $size, $content_align, $content, $size );
+			$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><h%s class="title-heading-%s">%s</h%s></div>', $size_array[ $size ], $classes, $styles, $size, $content_align, $content, $size );
 		} else {
-			if ( $content_align == 'right' ) {
-				$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><div class="title-sep-container"><div class="title-sep%s"></div></div><h%s class="title-heading-%s">%s</h%s></div>',
-								 $size_array[$size], $classes, $styles, $classes, $size, $content_align, $content, $size );
-			} elseif ( $content_align == 'center' ) {
-				$html = sprintf( '<div class="fusion-title fusion-title-center fusion-title-size-%s%s" style="%s"><div class="title-sep-container title-sep-container-left"><div class="title-sep%s"></div></div><h%s class="title-heading-%s">%s</h%s><div class="title-sep-container title-sep-container-right"><div class="title-sep%s"></div></div></div>',
-								 $size_array[$size], $classes, $styles, $classes, $size, $content_align, $content, $size, $classes );
+			if ( 'right' === $content_align ) {
+				$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><div class="title-sep-container"><div class="title-sep%s"></div></div><h%s class="title-heading-%s">%s</h%s></div>', $size_array[ $size ], $classes, $styles, $classes, $size, $content_align, $content, $size );
+			} elseif ( 'center' === $content_align ) {
+				$html = sprintf( '<div class="fusion-title fusion-title-center fusion-title-size-%s%s" style="%s"><div class="title-sep-container title-sep-container-left"><div class="title-sep%s"></div></div><h%s class="title-heading-%s">%s</h%s><div class="title-sep-container title-sep-container-right"><div class="title-sep%s"></div></div></div>', $size_array[ $size ], $classes, $styles, $classes, $size, $content_align, $content, $size, $classes );
 			} else {
-				$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><h%s class="title-heading-%s">%s</h%s><div class="title-sep-container"><div class="title-sep%s"></div></div></div>',
-								 $size_array[$size], $classes, $styles, $size, $content_align, $content, $size, $classes );
+				$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><h%s class="title-heading-%s">%s</h%s><div class="title-sep-container"><div class="title-sep%s"></div></div></div>', $size_array[ $size ], $classes, $styles, $size, $content_align, $content, $size, $classes );
 			}
 		}
 		return $html;
 	}
 }
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

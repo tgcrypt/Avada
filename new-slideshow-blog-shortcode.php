@@ -1,3 +1,10 @@
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <?php global $post; ?>
 
 <?php if ( 'grid' != $atts['layout'] && 'timeline' != $atts['layout'] ) : ?>
@@ -21,13 +28,13 @@
 			}
 		<?php endif; ?>
 
-		<?php if ( get_post_meta($post->ID, 'pyre_fimg_height', true ) && 'auto' == get_post_meta( $post->ID, 'pyre_fimg_height', true ) ) : ?>
+		<?php if ( get_post_meta( $post->ID, 'pyre_fimg_height', true ) && 'auto' == get_post_meta( $post->ID, 'pyre_fimg_height', true ) ) : ?>
 			#post-<?php echo $post->ID; ?> .fusion-post-slideshow .fusion-image-wrapper img {
 				height: auto;
 			}
 		<?php endif; ?>
 
-		<?php if ( get_post_meta($post->ID, 'pyre_fimg_height', true ) && get_post_meta( $post->ID, 'pyre_fimg_width', true ) && 'auto' != get_post_meta( $post->ID, 'pyre_fimg_height', true ) && 'auto' != get_post_meta( $post->ID, 'pyre_fimg_width', true ) ) : ?>
+		<?php if ( get_post_meta( $post->ID, 'pyre_fimg_height', true ) && get_post_meta( $post->ID, 'pyre_fimg_width', true ) && 'auto' != get_post_meta( $post->ID, 'pyre_fimg_height', true ) && 'auto' != get_post_meta( $post->ID, 'pyre_fimg_width', true ) ) : ?>
 			@media only screen and (max-width: 479px){
 				#post-<?php echo $post->ID; ?> .fusion-post-slideshow,
 				#post-<?php echo $post->ID; ?> .fusion-post-slideshow .fusion-image-wrapper img {
@@ -50,7 +57,7 @@ $size = ( 'auto' == get_post_meta( $post->ID, 'pyre_fimg_height', true ) || 'aut
 $size = ( 'grid' == $atts['layout'] || 'timeline' == $atts['layout'] ) ? 'full' : $size;
 ?>
 
-<?php if ( has_post_thumbnail() || get_post_meta(get_the_ID(), 'pyre_video', true ) ) : ?>
+<?php if ( has_post_thumbnail() || get_post_meta( get_the_ID(), 'pyre_video', true ) ) : ?>
 	<div class="fusion-flexslider flexslider fusion-flexslider-loading fusion-post-slideshow">
 		<ul class="slides">
 			<?php if ( get_post_meta( get_the_ID(), 'pyre_video', true ) ) : ?>
@@ -82,19 +89,21 @@ $size = ( 'grid' == $atts['layout'] || 'timeline' == $atts['layout'] ) ? 'full' 
 					<?php $attachment_data  = wp_get_attachment_metadata( $attachment_id ); ?>
 					<?php $full_image       = wp_get_attachment_image_src( $attachment_id, 'full' ); ?>
 
-					<?php if ( 'grid' == $atts['layout'] ) {
+					<?php
+					if ( 'grid' == $atts['layout'] ) {
 						$image_size = Avada()->images->get_grid_image_base_size( $attachment_id, Avada_Images::$grid_image_meta['layout'], Avada_Images::$grid_image_meta['columns'] );
 						$attachment_image = wp_get_attachment_image_src( $attachment_id, $image_size );
 					} else {
 						$attachment_image = wp_get_attachment_image_src( $attachment_id, $size );
-					} ?>
+					}
+					?>
 
 					<?php if ( is_array( $attachment_data ) ) : ?>
 						<li>
 							<div class="fusion-image-wrapper">
 								<a href="<?php the_permalink(); ?>">
 									<?php
-									$image_markup = sprintf( '<img src="%s" alt="%s" class="wp-image-%s" role="presentation"/>', $attachment_image[0], $attachment_data['image_meta']['title'], $attachment_id );
+									$image_markup = '<img src="' . $attachment_image[0] . '" alt="' . $attachment_data['image_meta']['title'] . '" class="wp-image-' . $attachment_id . '" role="presentation"/>';
 									$image_markup = Avada()->images->edit_grid_image_src( $image_markup, get_the_ID(), $attachment_id, $size );
 									echo wp_make_content_images_responsive( $image_markup );
 									?>
@@ -115,4 +124,4 @@ $size = ( 'grid' == $atts['layout'] || 'timeline' == $atts['layout'] ) ? 'full' 
 	</div>
 <?php endif;
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

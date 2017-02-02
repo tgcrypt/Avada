@@ -9,6 +9,10 @@
  * @version:    3.5.4
  */
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
 ?>
 <div class="avadaredux-sidebar">
 	<div class="avada-avadaredux-sidebar-head">

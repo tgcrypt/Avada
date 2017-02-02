@@ -1,6 +1,20 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 if ( ! function_exists( 'avada_avadaredux_validate_dimension' ) ) {
+	/**
+	 * Validates & sanitizes values for dimension controls.
+	 *
+	 * @since 4.0.0
+	 * @param array  $field          The field with all its arguments.
+	 * @param string $value          The field value.
+	 * @param string $existing_value The previous value of the control.
+	 * @return array
+	 */
 	function avada_avadaredux_validate_dimension( $field, $value, $existing_value ) {
 
 		$return = array();
@@ -23,9 +37,9 @@ if ( ! function_exists( 'avada_avadaredux_validate_dimension' ) ) {
 			$value = $existing_value;
 		}
 
-		// remove spaces from the value
+		// Remove spaces from the value.
 		$value = trim( str_replace( ' ', '', $value ) );
-		// Get the numeric value
+		// Get the numeric value.
 		$value_numeric = Avada_Sanitize::number( $value );
 		if ( empty( $value_numeric ) ) {
 			$value_numeric = '0';
@@ -33,17 +47,22 @@ if ( ! function_exists( 'avada_avadaredux_validate_dimension' ) ) {
 		// Get the units.
 		$value_unit = str_replace( $value_numeric, '', $value );
 		$value_unit = strtolower( $value_unit );
-		if ( empty( $value_unit ) ) {
+		if ( '0' != $value_numeric && empty( $value_unit ) ) {
 			$warning = true;
 		}
 
-		// An array of valid CSS units
-		$valid_units = array( 'rem', 'em', 'ex', '%', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'vh', 'vw', 'vmin', 'vmax', );
+		// An array of valid CSS units.
+		$valid_units = array( 'rem', 'em', 'ex', '%', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'vh', 'vw', 'vmin', 'vmax' );
 
-		// If we can't find a valid CSS unit in the value
+		// If we can't find a valid CSS unit in the value,
 		// show a warning message and fallback to using pixels.
-		if ( ! in_array( $value_unit, $valid_units ) ) {
+		if ( '0' != $value_numeric && ! in_array( $value_unit, $valid_units ) ) {
 			$warning = true;
+		}
+
+		// If the numeric value is 0, remove units.
+		if ( '0' == $value_numeric ) {
+			$value_unit = '';
 		}
 
 		if ( $warning ) {
@@ -81,6 +100,15 @@ if ( ! function_exists( 'avada_avadaredux_validate_dimension' ) ) {
 }
 
 if ( ! function_exists( 'avada_avadaredux_validate_font_size' ) ) {
+	/**
+	 * Validates & sanitizes values for font-size controls.
+	 *
+	 * @since 4.0.0
+	 * @param array  $field          The field with all its arguments.
+	 * @param string $value          The field value.
+	 * @param string $existing_value The previous value of the control.
+	 * @return array
+	 */
 	function avada_avadaredux_validate_font_size( $field, $value, $existing_value ) {
 		$warning = false;
 		$value = trim( strtolower( $value ) );
@@ -95,9 +123,9 @@ if ( ! function_exists( 'avada_avadaredux_validate_font_size' ) ) {
 			$value = $existing_value;
 		}
 
-		// remove spaces from the value
+		// Remove spaces from the value.
 		$value = trim( str_replace( ' ', '', $value ) );
-		// Get the numeric value
+		// Get the numeric value.
 		$value_numeric = Avada_Sanitize::number( $value );
 		if ( empty( $value_numeric ) ) {
 			$value_numeric = '0';
@@ -109,10 +137,10 @@ if ( ! function_exists( 'avada_avadaredux_validate_font_size' ) ) {
 			$warning = true;
 		}
 
-		// An array of valid CSS units
+		// An array of valid CSS units.
 		$valid_units = array( 'rem', 'em', 'px' );
 
-		// If we can't find a valid CSS unit in the value
+		// If we can't find a valid CSS unit in the value.
 		// show a warning message and fallback to using pixels.
 		if ( ! in_array( $value_unit, $valid_units ) ) {
 			$warning = true;
@@ -154,6 +182,15 @@ if ( ! function_exists( 'avada_avadaredux_validate_font_size' ) ) {
 }
 
 if ( ! function_exists( 'avada_avadaredux_validate_typography' ) ) {
+	/**
+	 * Validates & sanitizes values for typography controls.
+	 *
+	 * @since 4.0.0
+	 * @param array $field          The field with all its arguments.
+	 * @param array $value          The field value.
+	 * @param array $existing_value The previous value of the control.
+	 * @return array
+	 */
 	function avada_avadaredux_validate_typography( $field, $value, $existing_value ) {
 
 		$return = array();
@@ -164,7 +201,7 @@ if ( ! function_exists( 'avada_avadaredux_validate_typography' ) ) {
 			'letter-spacing',
 		);
 		if ( is_array( $value ) ) {
-			// An array of valid CSS units
+			// An array of valid CSS units.
 			$valid_units = array( 'px', 'rem', 'em' );
 			$warning     = array();
 			$message     = array();
@@ -184,9 +221,9 @@ if ( ! function_exists( 'avada_avadaredux_validate_typography' ) ) {
 					if ( '' == $subvalue || null == $subvalue || false == $subvalue ) {
 						$subvalue = $existing_value[ $key ];
 					}
-					// remove spaces from the value
+					// Remove spaces from the value.
 					$subvalue = trim( str_replace( ' ', '', $subvalue ) );
-					// Get the numeric value
+					// Get the numeric value.
 					$subvalue_numeric = Avada_Sanitize::number( $subvalue );
 					if ( empty( $subvalue_numeric ) ) {
 						$subvalue_numeric = '0';
@@ -199,12 +236,12 @@ if ( ! function_exists( 'avada_avadaredux_validate_typography' ) ) {
 							if ( 'font-size' == $key ) {
 								$warning[ $key ] = true;
 							}
-						} else if ( 'line-height' != $key ) {
+						} elseif ( 'line-height' != $key ) {
 							$warning[ $key ] = true;
 						}
 					}
 
-					// If we can't find a valid CSS unit in the value
+					// If we can't find a valid CSS unit in the value,
 					// show a warning message and fallback to using pixels.
 					if ( ! in_array( $subvalue_unit, $valid_units ) ) {
 						if ( ! ( 'line-height' == $key && empty( $subvalue_unit ) ) && ! ( '0' == $subvalue && 'font-size' != $key ) ) {
@@ -245,6 +282,40 @@ if ( ! function_exists( 'avada_avadaredux_validate_typography' ) ) {
 					$value[ $key ] = $subvalue_numeric . $subvalue_unit;
 				}
 			}
+
+			// Take care of font-weight sanitization.
+			if ( ! class_exists( 'Avada_AvadaRedux_Get_GoogleFonts' ) ) {
+				include_once wp_normalize_path( Avada::$template_dir_path . '/includes/avadaredux/custom-fields/typography/googlefonts.php' );
+			}
+			$googlefonts    = Avada_AvadaRedux_Get_GoogleFonts::get_instance();
+			$font_family    = $value['font-family'];
+			if ( isset( $googlefonts->fonts[ $font_family ] ) ) {
+				$variants       = $googlefonts->fonts[ $font_family ]['variants'];
+				$valid_variants = array();
+				foreach ( $variants as $variant ) {
+					if ( isset( $variant['id'] ) ) {
+						$valid_variants[] = $variant['id'];
+					}
+				}
+				$forced_font_weight = false;
+				if ( ! isset( $value['font-weight'] ) || empty( $value['font-weight'] ) ) {
+					$forced_font_weight = true;
+				}
+				if ( ! in_array( $value['font-weight'], $valid_variants ) ) {
+					$forced_font_weight = true;
+				}
+				if ( $forced_font_weight ) {
+					if ( in_array( '400', $valid_variants ) ) {
+						$value['font-weight'] = '400';
+					} elseif ( in_array( '300', $valid_variants ) ) {
+						$value['font-weight'] = '300';
+					} elseif ( in_array( '500', $valid_variants ) ) {
+						$value['font-weight'] = '500';
+					} else {
+						$value['font-weight'] = $valid_variants[0];
+					}
+				}
+			}
 		}
 		if ( ! empty( $message ) ) {
 			$field['msg']      = implode( ' ', $message );
@@ -259,6 +330,15 @@ if ( ! function_exists( 'avada_avadaredux_validate_typography' ) ) {
 }
 
 if ( ! function_exists( 'avada_avadaredux_validate_dimensions' ) ) {
+	/**
+	 * Validates & sanitizes values for dimentions controls.
+	 *
+	 * @since 4.0.0
+	 * @param array $field          The field with all its arguments.
+	 * @param array $value          The field value.
+	 * @param array $existing_value The previous value of the control.
+	 * @return array
+	 */
 	function avada_avadaredux_validate_dimensions( $field, $value, $existing_value ) {
 
 		$warning       = array();
@@ -266,8 +346,8 @@ if ( ! function_exists( 'avada_avadaredux_validate_dimensions' ) ) {
 
 		$return = array();
 
-		// An array of valid CSS units
-		$valid_units = array( 'rem', 'em', 'ex', '%', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'vh', 'vw', 'vmin', 'vmax', );
+		// An array of valid CSS units.
+		$valid_units = array( 'rem', 'em', 'ex', '%', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'vh', 'vw', 'vmin', 'vmax' );
 
 		if ( ! is_array( $value ) ) {
 			return array( 'value' => $value );
@@ -289,9 +369,9 @@ if ( ! function_exists( 'avada_avadaredux_validate_dimensions' ) ) {
 				}
 			}
 
-			// remove spaces from the value
+			// Remove spaces from the value.
 			$subvalue = trim( str_replace( ' ', '', $subvalue ) );
-			// Get the numeric value
+			// Get the numeric value.
 			$subvalue_numeric = Avada_Sanitize::number( $subvalue );
 			if ( empty( $subvalue_numeric ) ) {
 				$subvalue_numeric = '0';
@@ -303,7 +383,7 @@ if ( ! function_exists( 'avada_avadaredux_validate_dimensions' ) ) {
 				$warning[ $key ] = true;
 			}
 
-			// If we can't find a valid CSS unit in the value
+			// If we can't find a valid CSS unit in the value,
 			// show a warning message and fallback to using pixels.
 			if ( ! in_array( $subvalue_unit, $valid_units ) ) {
 				$warning[ $key ] = true;
@@ -351,6 +431,15 @@ if ( ! function_exists( 'avada_avadaredux_validate_dimensions' ) ) {
 }
 
 if ( ! function_exists( 'avada_avadaredux_validate_color_rgba' ) ) {
+	/**
+	 * Validates & sanitizes values for RGBA color controls.
+	 *
+	 * @since 4.0.0
+	 * @param array  $field          The field with all its arguments.
+	 * @param string $value          The field value.
+	 * @param string $existing_value The previous value of the control.
+	 * @return array
+	 */
 	function avada_avadaredux_validate_color_rgba( $field, $value, $existing_value ) {
 
 		$return = array();
@@ -362,7 +451,7 @@ if ( ! function_exists( 'avada_avadaredux_validate_color_rgba' ) ) {
 		if ( $value != $sanitized_value ) {
 			$error = true;
 			$field['msg'] = sprintf(
-				esc_html__( 'Sanitized value and saved as %1s instead of %2s.', 'Avada' ),
+				esc_html__( 'Sanitized value and saved as %1$s instead of %2$s.', 'Avada' ),
 				'<code>' . $sanitized_value . '</code>',
 				'<code>' . $value . '</code>'
 			);
@@ -373,6 +462,15 @@ if ( ! function_exists( 'avada_avadaredux_validate_color_rgba' ) ) {
 }
 
 if ( ! function_exists( 'avada_avadaredux_validate_color_hex' ) ) {
+	/**
+	 * Validates & sanitizes values for HEX color controls.
+	 *
+	 * @since 4.0.0
+	 * @param array  $field          The field with all its arguments.
+	 * @param string $value          The field value.
+	 * @param string $existing_value The previous value of the control.
+	 * @return array
+	 */
 	function avada_avadaredux_validate_color_hex( $field, $value, $existing_value ) {
 
 		$return = array();
@@ -380,14 +478,14 @@ if ( ! function_exists( 'avada_avadaredux_validate_color_hex' ) ) {
 		$error = false;
 		$sanitized_value = Avada_Sanitize::color( $value );
 		if ( false !== strpos( $sanitized_value, 'rgba' ) ) {
-			$sanitized_value = Avada_Color::rgba2hex( $sanitized_value, false );
+			$sanitized_value = Avada_Color::new_color( $sanitized_value )->to_css( 'hex' );
 		}
 		$return['value'] = $sanitized_value;
 
 		if ( $value != $sanitized_value ) {
 			$error = true;
 			$field['msg'] = sprintf(
-				esc_html__( 'Sanitized value and saved as %1s instead of %2s.', 'Avada' ),
+				esc_html__( 'Sanitized value and saved as %1$s instead of %2$s.', 'Avada' ),
 				'<code>' . $sanitized_value . '</code>',
 				'<code>' . $value . '</code>'
 			);
@@ -398,6 +496,15 @@ if ( ! function_exists( 'avada_avadaredux_validate_color_hex' ) ) {
 }
 
 if ( ! function_exists( 'avada_avadaredux_validate_custom_fonts' ) ) {
+	/**
+	 * Validates & sanitizes values for custom-fonts controls.
+	 *
+	 * @since 4.0.0
+	 * @param array $field          The field with all its arguments.
+	 * @param array $value          The field value.
+	 * @param array $existing_value The previous value of the control.
+	 * @return array
+	 */
 	function avada_avadaredux_validate_custom_fonts( $field, $value, $existing_value ) {
 		$return = array();
 
@@ -407,7 +514,6 @@ if ( ! function_exists( 'avada_avadaredux_validate_custom_fonts' ) ) {
 				$value['name'][ $name_key ] = trim( $name_value );
 				$value['name'][ $name_key ] = str_replace( ' ', '-', $value['name'][ $name_key ] );
 			}
-
 		}
 
 		return array(

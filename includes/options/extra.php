@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Extra settings
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + extra
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_extra( $sections ) {
 
@@ -38,7 +42,7 @@ function avada_options_section_extra( $sections ) {
 						'description' => esc_html__( 'Turn on to display a placeholder image for posts that do not have a featured image. This allows the post to display on portfolio archives and related posts/projects carousels.', 'Avada' ),
 						'id'          => 'featured_image_placeholder',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'excerpt_base' => array(
 						'label'       => esc_html__( 'Basis for Excerpt Length', 'Avada' ),
@@ -56,61 +60,49 @@ function avada_options_section_extra( $sections ) {
 						'description' => esc_html__( 'Turn on to display the read more sign [...] on excerpts throughout the site.', 'Avada' ),
 						'id'          => 'disable_excerpts',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'link_read_more' => array(
 						'label'       => esc_html__( 'Make [...] Link to Single Post Page', 'Avada' ),
 						'description' => esc_html__( 'Turn on to have the read more sign [...] on excerpts link to the single post page.', 'Avada' ),
 						'id'          => 'link_read_more',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
+						'required'    => array(
+							array(
+								'setting'  => 'disable_excerpts',
+								'operator' => '==',
+								'value'    => '1',
+							),
+						),
 					),
 					'comments_pages' => array(
 						'label'       => esc_html__( 'Comments on Pages', 'Avada' ),
 						'description' => esc_html__( 'Turn on to allow comments on regular pages.', 'Avada' ),
 						'id'          => 'comments_pages',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'featured_images_pages' => array(
 						'label'       => esc_html__( 'Featured Images on Pages', 'Avada' ),
 						'description' => esc_html__( 'Turn on to display featured images on regular pages.', 'Avada' ),
 						'id'          => 'featured_images_pages',
 						'default'     => '1',
-						'type'        => 'switch'
-					),
-					'faq_featured_image' => array(
-						'label'       => esc_html__( 'FAQ Featured Images', 'Avada' ),
-						'description' => esc_html__( 'Turn on to display featured images on FAQ archive page.', 'Avada' ),
-						'id'          => 'faq_featured_image',
-						'default'     => '0',
-						'type'        => 'switch'
-					),
-					'faq_filters' => array(
-						'label'       => esc_html__( 'FAQ Filters', 'Avada' ),
-						'description' => esc_html__( 'Controls how the filters display for FAQs.', 'Avada' ),
-						'id'          => 'faq_filters',
-						'default'     => 'yes',
-						'type'        => 'radio-buttonset',
-						'choices'     => array(
-							'yes'             => esc_html__( 'Show', 'Avada' ),
-							'yes_without_all' => esc_html__( 'Show without "All"', 'Avada' ),
-							'no'              => esc_html__( 'Hide', 'Avada' ),
-						),
+						'type'        => 'switch',
 					),
 					'nofollow_social_links' => array(
 						'label'       => esc_html__( 'Add "nofollow" to social links', 'Avada' ),
 						'description' => esc_html__( 'Turn on to add "nofollow" attribute to all social links.', 'Avada' ),
 						'id'          => 'nofollow_social_links',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'social_icons_new' => array(
 						'label'       => esc_html__( 'Open Social Icons in a New Window', 'Avada' ),
 						'description' => esc_html__( 'Turn on to allow social icons to open in a new window.', 'Avada' ),
 						'id'          => 'social_icons_new',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 				),
 			),
@@ -129,7 +121,7 @@ function avada_options_section_extra( $sections ) {
 						'choices'     => array(
 							'title_on_rollover' => esc_html__( 'Title on rollover', 'Avada' ),
 							'title_below_image' => esc_html__( 'Title below image', 'Avada' ),
-						)
+						),
 					),
 					'number_related_posts' => array(
 						'label'       => esc_html__( 'Number of Related Posts / Projects', 'Avada' ),
@@ -184,7 +176,7 @@ function avada_options_section_extra( $sections ) {
 						'description' => esc_html__( 'Turn on to autoplay the related posts and project carousel.', 'Avada' ),
 						'id'          => 'related_posts_autoplay',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'related_posts_speed' => array(
 						'label'       => esc_html__( 'Related Posts / Projects Speed', 'Avada' ),
@@ -203,14 +195,14 @@ function avada_options_section_extra( $sections ) {
 						'description' => esc_html__( 'Turn on to display navigation arrows on the carousel.', 'Avada' ),
 						'id'          => 'related_posts_navigation',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'related_posts_swipe' => array(
 						'label'       => esc_html__( 'Related Posts / Projects Mouse Scroll', 'Avada' ),
 						'description' => esc_html__( 'Turn on to enable mouse drag control on the carousel.', 'Avada' ),
 						'id'          => 'related_posts_swipe',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'related_posts_swipe_items' => array(
 						'label'       => esc_html__( 'Related Posts / Projects Scroll Items', 'Avada' ),
@@ -237,7 +229,7 @@ function avada_options_section_extra( $sections ) {
 						'description' => esc_html__( 'Turn on to display the rollover graphic on blog and portfolio featured images.', 'Avada' ),
 						'id'          => 'image_rollover',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'image_rollover_direction' => array(
 						'label'       => esc_html__( 'Image Rollover Direction', 'Avada' ),
@@ -475,7 +467,7 @@ function avada_options_section_extra( $sections ) {
 						'description' => esc_html__( 'Controls the background color of form fields.', 'Avada' ),
 						'id'          => 'form_bg_color',
 						'default'     => '#ffffff',
-						'type'        => 'color-alpha'
+						'type'        => 'color-alpha',
 					),
 					'form_text_color' => array(
 						'label'       => esc_html__( 'Form Text Color', 'Avada' ),

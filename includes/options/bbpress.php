@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Color settings
  *
- * @var  array   any existing settings
- * @return array  existing sections + colors
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_bbpress( $sections ) {
 	if ( ! Avada::$is_updating && ! class_exists( 'bbPress' ) && ! class_exists( 'BuddyPress' ) ) {
@@ -13,7 +17,7 @@ function avada_options_section_bbpress( $sections ) {
 	}
 
 	$sections['bbpress'] = array(
-		'label'    => esc_html__( 'bbPress & BuddyPress', 'Avada' ),
+		'label'    => esc_html__( 'bbPress', 'Avada' ),
 		'id'       => 'bpress_section',
 		'priority' => 3,
 		'icon'     => 'el-icon-person',

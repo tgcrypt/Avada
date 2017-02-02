@@ -34,7 +34,7 @@ $event_id = get_the_ID();
 
 	<?php while ( have_posts() ) :  the_post(); ?>
 		<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-			<?php if ( has_post_thumbnail() ): ?>
+			<?php if ( has_post_thumbnail() ) :  ?>
 				<div class="fusion-events-featured-image">
 					<div class="hover-type-<?php echo Avada()->settings->get( 'ec_hover_type' ); ?>">
 						<!-- Event featured image, but exclude link -->
@@ -42,27 +42,27 @@ $event_id = get_the_ID();
 
 						<?php Avada_EventsCalendar::render_single_event_title(); ?>
 					</div>
-			<?php else: ?>
+			<?php else : ?>
 				<div class="fusion-events-featured-image fusion-events-single-title">
 					<?php Avada_EventsCalendar::render_single_event_title(); ?>
 			<?php endif; ?>
 				</div>
 
 			<!-- Event content -->
-			<?php do_action( 'tribe_events_single_event_before_the_content' ) ?>
+			<?php do_action( 'tribe_events_single_event_before_the_content' ); ?>
 			<div class="tribe-events-single-event-description tribe-events-content entry-content description">
 				<?php the_content(); ?>
 			</div>
 			<!-- .tribe-events-single-event-description -->
-			<?php do_action( 'tribe_events_single_event_after_the_content' ) ?>
+			<?php do_action( 'tribe_events_single_event_after_the_content' ); ?>
+
+			<!-- Event meta -->
+			<?php do_action( 'tribe_events_single_event_after_the_meta' ); ?>
 		</div> <!-- #post-x -->
 		<?php
 
 		avada_render_social_sharing( 'events' );
 
-		if ( class_exists( 'Tribe__Events__Pro__Main' ) && ! tribe_get_option( 'hideRelatedEvents', false ) ) {
-			tribe_get_template_part( 'pro/related-events' );
-		}
 		?>
 		<?php
 		if ( get_post_type() == Tribe__Events__Main::POSTTYPE && tribe_get_option( 'showComments', false ) ) {
@@ -70,7 +70,7 @@ $event_id = get_the_ID();
 			add_filter( 'comments_template', 'add_comments_template' );
 
 			function add_comments_template() {
-				return get_template_directory() . '/comments.php';
+				return Avada::$template_dir_path . '/comments.php';
 			}
 
 			comments_template();

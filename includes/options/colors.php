@@ -1,505 +1,17 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Color settings
  *
- * @var  array   any existing settings
- * @return array  existing sections + colors
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_colors( $sections ) {
-	$options = get_option( Avada::get_option_name(), array() );
-
-	$light = array();
-	$light['header_bg_color'] = '#ffffff';
-	$light['header_border_color'] = '#e5e5e5';
-	$light['content_bg_color'] = '#ffffff';
-	$light['slidingbar_bg_color'] = '#363839';
-	$light['header_sticky_bg_color'] = '#ffffff';
-	$light['footer_bg_color'] = '#363839';
-	$light['footer_border_color'] = '#e9eaee';
-	$light['copyright_border_color'] = '#4B4C4D';
-	$light['testimonial_bg_color'] = '#f6f3f3';
-	$light['testimonial_text_color'] = '#747474';
-	$light['sep_color'] = '#e0dede';
-	$light['slidingbar_divider_color'] = '#505152';
-	$light['footer_divider_color'] = '#505152';
-	$light['form_bg_color'] = '#ffffff';
-	$light['form_text_color'] = '#aaa9a9';
-	$light['form_border_color'] = '#d2d2d2';
-	$light['tagline_font_color'] = '#747474';
-	$light['page_title_color'] = '#333333';
-	$light['h1_typography'] = isset( $options['h1_typography'] ) ? $options['h1_typography'] : array();
-	$light['h1_typography']['color'] = '#333333';
-	$light['h2_typography'] = isset( $options['h2_typography'] ) ? $options['h2_typography'] : array();
-	$light['h2_typography']['color'] = '#333333';
-	$light['h3_typography'] = isset( $options['h3_typography'] ) ? $options['h3_typography'] : array();
-	$light['h3_typography']['color'] = '#333333';
-	$light['h4_typography'] = isset( $options['h4_typography'] ) ? $options['h4_typography'] : array();
-	$light['h4_typography']['color'] = '#333333';
-	$light['h5_typography'] = isset( $options['h5_typography'] ) ? $options['h5_typography'] : array();
-	$light['h5_typography']['color'] = '#333333';
-	$light['h6_typography'] = isset( $options['h6_typography'] ) ? $options['h6_typography'] : array();
-	$light['h6_typography']['color'] = '#333333';
-	$light['body_typography'] = isset( $options['body_typography'] ) ? $options['body_typography'] : array();
-	$light['body_typography']['color'] = '#747474';
-	$light['link_color'] = '#333333';
-	$light['menu_h45_bg_color'] = '#FFFFFF';
-	$light['menu_first_color'] = '#333333';
-	$light['menu_sub_bg_color'] = '#f2efef';
-	$light['menu_sub_color'] = '#333333';
-	$light['menu_bg_hover_color'] = '#f8f8f8';
-	$light['menu_sub_sep_color'] = '#dcdadb';
-	$light['snav_color'] = '#ffffff';
-	$light['header_social_links_icon_color'] = '#ffffff';
-	$light['header_top_first_border_color'] = '#e5e5e5';
-	$light['header_top_sub_bg_color'] = '#ffffff';
-	$light['header_top_menu_sub_color'] = '#747474';
-	$light['header_top_menu_bg_hover_color'] = '#fafafa';
-	$light['header_top_menu_sub_hover_color'] = '#333333';
-	$light['header_top_menu_sub_sep_color'] = '#e5e5e5';
-	$light['sidebar_bg_color'] = '#ffffff';
-	$light['page_title_bg_color'] = '#F6F6F6';
-	$light['page_title_border_color'] = '#d2d3d4';
-	$light['breadcrumbs_text_color'] = '#333333';
-	$light['sidebar_heading_color'] = '#333333';
-	$light['accordian_inactive_color'] = '#333333';
-	$light['counter_filled_color'] = '#a0ce4e';
-	$light['counter_unfilled_color'] = '#f6f6f6';
-	$light['dates_box_color'] = '#eef0f2';
-	$light['carousel_nav_color'] = '#999999';
-	$light['carousel_hover_color'] = '#808080';
-	$light['content_box_bg_color'] = 'transparent';
-	$light['title_border_color'] = '#e0dede';
-	$light['icon_circle_color'] = '#333333';
-	$light['icon_border_color'] = '#333333';
-	$light['icon_color'] = '#ffffff';
-	$light['imgframe_border_color'] = '#f6f6f6';
-	$light['imgframe_style_color'] = '#000000';
-	$light['sep_pricing_box_heading_color'] = '#333333';
-	$light['full_boxed_pricing_box_heading_color'] = '#333333';
-	$light['pricing_bg_color'] = '#ffffff';
-	$light['pricing_border_color'] = '#f8f8f8';
-	$light['pricing_divider_color'] = '#ededed';
-	$light['social_bg_color'] = '#f6f6f6';
-	$light['tabs_bg_color'] = '#ffffff';
-	$light['tabs_inactive_color'] = '#f1f2f2';
-	$light['tagline_bg'] = '#f6f6f6';
-	$light['tagline_border_color'] = '#f6f6f6';
-	$light['timeline_bg_color'] = 'transparent';
-	$light['timeline_color'] = '#ebeaea';
-	$light['woo_cart_bg_color'] = '#fafafa';
-	$light['qty_bg_color'] = '#fbfaf9';
-	$light['qty_bg_hover_color'] = '#ffffff';
-	$light['bbp_forum_header_bg'] = '#ebeaea';
-	$light['bbp_forum_border_color'] = '#ebeaea';
-	$light['checklist_icons_color'] = '#ffffff';
-	$light['flip_boxes_front_bg'] = '#f6f6f6';
-	$light['flip_boxes_front_heading'] = '#333333';
-	$light['flip_boxes_front_text'] = '#747474';
-	$light['full_width_bg_color'] = '#ffffff';
-	$light['full_width_border_color'] = '#eae9e9';
-	$light['modal_bg_color'] = '#f6f6f6';
-	$light['modal_border_color'] = '#ebebeb';
-	$light['person_border_color'] = '#f6f6f6';
-	$light['popover_heading_bg_color'] = '#f6f6f6';
-	$light['popover_content_bg_color'] = '#ffffff';
-	$light['popover_border_color'] = '#ebebeb';
-	$light['popover_text_color'] = '#747474';
-	$light['progressbar_unfilled_color'] = '#f6f6f6';
-	$light['section_sep_bg'] = '#f6f6f6';
-	$light['section_sep_border_color'] = '#f6f6f6';
-	$light['sharing_box_tagline_text_color'] = '#333333';
-	$light['header_social_links_icon_color'] = '#bebdbd';
-	$light['header_social_links_box_color'] = '#e8e8e8';
-	$light['bg_color'] = '#d7d6d6';
-	$light['mobile_menu_background_color'] = '#f9f9f9';
-	$light['mobile_menu_border_color'] = '#dadada';
-	$light['mobile_menu_hover_color'] = '#f6f6f6';
-	$light['social_links_icon_color'] = '#bebdbd';
-	$light['social_links_box_color'] = '#e8e8e8';
-	$light['sharing_social_links_icon_color'] = '#bebdbd';
-	$light['sharing_social_links_box_color'] = '#e8e8e8';
-	$light['load_more_posts_button_bg_color'] = '#ebeaea';
-	$light['ec_bar_bg_color'] = '#efeded';
-	$light['flyout_menu_icon_color'] = '#333333';
-	$light['flyout_menu_background_color'] = 'rgba(255,255,255,0.95)';
-
-	$dark = array();
-	$dark['header_bg_color'] = '#29292a';
-	$dark['header_border_color'] = '#3e3e3e';
-	$dark['header_top_bg_color'] = '#29292a';
-	$dark['content_bg_color'] = '#29292a';
-	$dark['slidingbar_bg_color'] = '#363839';
-	$dark['header_sticky_bg_color'] = '#29292a';
-	$dark['slidingbar_border_color'] = '#484747';
-	$dark['footer_bg_color'] = '#2d2d2d';
-	$dark['footer_border_color'] = '#403f3f';
-	$dark['copyright_border_color'] = '#4B4C4D';
-	$dark['testimonial_bg_color'] = '#3e3e3e';
-	$dark['testimonial_text_color'] = '#aaa9a9';
-	$dark['sep_color'] = '#3e3e3e';
-	$dark['slidingbar_divider_color'] = '#505152';
-	$dark['footer_divider_color'] = '#505152';
-	$dark['form_bg_color'] = '#3e3e3e';
-	$dark['form_text_color'] = '#cccccc';
-	$dark['form_border_color'] = '#212122';
-	$dark['tagline_font_color'] = '#ffffff';
-	$dark['page_title_color'] = '#ffffff';
-	$dark['h1_typography'] = isset( $options['h1_typography'] ) ? $options['h1_typography'] : array();
-	$dark['h1_typography']['color'] = '#ffffff';
-	$dark['h2_typography'] = isset( $options['h2_typography'] ) ? $options['h2_typography'] : array();
-	$dark['h2_typography']['color'] = '#ffffff';
-	$dark['h3_typography'] = isset( $options['h3_typography'] ) ? $options['h3_typography'] : array();
-	$dark['h3_typography']['color'] = '#ffffff';
-	$dark['h4_typography'] = isset( $options['h4_typography'] ) ? $options['h4_typography'] : array();
-	$dark['h4_typography']['color'] = '#ffffff';
-	$dark['h5_typography'] = isset( $options['h5_typography'] ) ? $options['h5_typography'] : array();
-	$dark['h5_typography']['color'] = '#ffffff';
-	$dark['h6_typography'] = isset( $options['h6_typography'] ) ? $options['h6_typography'] : array();
-	$dark['h6_typography']['color'] = '#ffffff';
-	$dark['body_typography'] = isset( $options['body_typography'] ) ? $options['body_typography'] : array();
-	$dark['body_typography']['color'] = '#aaa9a9';
-	$dark['link_color'] = '#ffffff';
-	$dark['menu_h45_bg_color'] = '#29292A';
-	$dark['menu_first_color'] = '#ffffff';
-	$dark['menu_sub_bg_color'] = '#3e3e3e';
-	$dark['menu_sub_color'] = '#d6d6d6';
-	$dark['menu_bg_hover_color'] = '#383838';
-	$dark['menu_sub_sep_color'] = '#313030';
-	$dark['snav_color'] = '#747474';
-	$dark['header_social_links_icon_color'] = '#747474';
-	$dark['header_top_first_border_color'] = '#3e3e3e';
-	$dark['header_top_sub_bg_color'] = '#29292a';
-	$dark['header_top_menu_sub_color'] = '#d6d6d6';
-	$dark['header_top_menu_bg_hover_color'] = '#333333';
-	$dark['header_top_menu_sub_hover_color'] = '#d6d6d6';
-	$dark['header_top_menu_sub_sep_color'] = '#3e3e3e';
-	$dark['sidebar_bg_color'] = '#29292a';
-	$dark['page_title_bg_color'] = '#353535';
-	$dark['page_title_border_color'] = '#464646';
-	$dark['breadcrumbs_text_color'] = '#ffffff';
-	$dark['sidebar_heading_color'] = '#ffffff';
-	$dark['accordian_inactive_color'] = '#3e3e3e';
-	$dark['counter_filled_color'] = '#a0ce4e';
-	$dark['counter_unfilled_color'] = '#3e3e3e';
-	$dark['dates_box_color'] = '#3e3e3e';
-	$dark['carousel_nav_color'] = '#3a3a3a';
-	$dark['carousel_hover_color'] = '#333333';
-	$dark['content_box_bg_color'] = 'transparent';
-	$dark['title_border_color'] = '#3e3e3e';
-	$dark['icon_circle_color'] = '#3e3e3e';
-	$dark['icon_border_color'] = '#3e3e3e';
-	$dark['icon_color'] = '#ffffff';
-	$dark['imgframe_border_color'] = '#494848';
-	$dark['imgframe_style_color'] = '#000000';
-	$dark['sep_pricing_box_heading_color'] = '#ffffff';
-	$dark['full_boxed_pricing_box_heading_color'] = '#AAA9A9';
-	$dark['pricing_bg_color'] = '#3e3e3e';
-	$dark['pricing_border_color'] = '#353535';
-	$dark['pricing_divider_color'] = '#29292a';
-	$dark['social_bg_color'] = '#3e3e3e';
-	$dark['tabs_bg_color'] = '#3e3e3e';
-	$dark['tabs_inactive_color'] = '#313132';
-	$dark['tagline_bg'] = '#3e3e3e';
-	$dark['tagline_border_color'] = '#3e3e3e';
-	$dark['timeline_bg_color'] = 'transparent';
-	$dark['timeline_color'] = '#3e3e3e';
-	$dark['woo_cart_bg_color'] = '#333333';
-	$dark['qty_bg_color'] = '#29292a';
-	$dark['qty_bg_hover_color'] = '#383838';
-	$dark['bbp_forum_header_bg'] = '#383838';
-	$dark['bbp_forum_border_color'] = '#212121';
-	$dark['checklist_icons_color'] = '#ffffff';
-	$dark['flip_boxes_front_bg'] = '#3e3e3e';
-	$dark['flip_boxes_front_heading'] = '#ffffff';
-	$dark['flip_boxes_front_text'] = '#aaa9a9';
-	$dark['full_width_bg_color'] = '#242424';
-	$dark['full_width_border_color'] = '#3e3e3e';
-	$dark['modal_bg_color'] = '#29292a';
-	$dark['modal_border_color'] = '#242424';
-	$dark['person_border_color'] = '#494848';
-	$dark['popover_heading_bg_color'] = '#29292a';
-	$dark['popover_content_bg_color'] = '#3e3e3e';
-	$dark['popover_border_color'] = '#242424';
-	$dark['popover_text_color'] = '#ffffff';
-	$dark['progressbar_unfilled_color'] = '#3e3e3e';
-	$dark['section_sep_bg'] = '#3e3e3e';
-	$dark['section_sep_border_color'] = '#3e3e3e';
-	$dark['sharing_box_tagline_text_color'] = '#ffffff';
-	$dark['header_social_links_icon_color'] = '#545455';
-	$dark['header_social_links_box_color'] = '#383838';
-	$dark['bg_color'] = '#1e1e1e';
-	$dark['mobile_menu_background_color'] = '#3e3e3e';
-	$dark['mobile_menu_border_color'] = '#212122';
-	$dark['mobile_menu_hover_color'] = '#383737';
-	$dark['social_links_icon_color'] = '#3e3e3e';
-	$dark['social_links_box_color'] = '#383838';
-	$dark['sharing_social_links_icon_color'] = '#919191';
-	$dark['sharing_social_links_box_color'] = '#4b4e4f';
-	$dark['load_more_posts_button_bg_color'] = '#3e3e3e';
-	$dark['ec_bar_bg_color'] = '#353535';
-	$dark['flyout_menu_icon_color'] = '#ffffff';
-	$dark['flyout_menu_background_color'] = 'rgba(0,0,0,0.85)';
-
-	$green = array();
-	$green['primary_color'] = '#a0ce4e';
-	$green['pricing_box_color'] = '#92C563';
-	$green['image_gradient_top_color'] = '#D1E990';
-	$green['image_gradient_bottom_color'] = '#AAD75B';
-	$green['button_gradient_top_color'] = '#D1E990';
-	$green['button_gradient_bottom_color'] = '#AAD75B';
-	$green['button_gradient_top_color_hover'] = '#AAD75B';
-	$green['button_gradient_bottom_color_hover'] = '#D1E990';
-	$green['button_accent_color'] = '#6e9a1f';
-	$green['button_accent_hover_color'] = '#638e1a';
-	$green['button_bevel_color'] = '#54770f';
-	$green['checklist_circle_color'] = '#a0ce4e';
-	$green['counter_box_color'] = '#a0ce4e';
-	$green['countdown_background_color'] = '#a0ce4e';
-	$green['dropcap_color'] = '#a0ce4e';
-	$green['flip_boxes_back_bg'] = '#a0ce4e';
-	$green['progressbar_filled_color'] = '#a0ce4e';
-	$green['counter_filled_color'] = '#a0ce4e';
-	$green['ec_sidebar_widget_bg_color'] = '#a0ce4e';
-	$green['menu_hover_first_color'] = '#a0ce4e';
-	$green['header_top_bg_color'] = '#a0ce4e';
-	$green['content_box_hover_animation_accent_color'] = '#a0ce4e';
-	$green['map_overlay_color'] = '#a0ce4e';
-	$green['flyout_menu_icon_hover_color'] = '#a0ce4e';
-
-	$darkgreen = array();
-	$darkgreen['primary_color'] = '#9db668';
-	$darkgreen['pricing_box_color'] = '#a5c462';
-	$darkgreen['image_gradient_top_color'] = '#cce890';
-	$darkgreen['image_gradient_bottom_color'] = '#afd65a';
-	$darkgreen['button_gradient_top_color'] = '#cce890';
-	$darkgreen['button_gradient_bottom_color'] = '#AAD75B';
-	$darkgreen['button_gradient_top_color_hover'] = '#AAD75B';
-	$darkgreen['button_gradient_bottom_color_hover'] = '#cce890';
-	$darkgreen['button_accent_color'] = '#577810';
-	$darkgreen['button_accent_hover_color'] = '#577810';
-	$darkgreen['button_bevel_color'] = '#577810';
-	$darkgreen['checklist_circle_color'] = '#9db668';
-	$darkgreen['counter_box_color'] = '#9db668';
-	$darkgreen['countdown_background_color'] = '#9db668';
-	$darkgreen['dropcap_color'] = '#9db668';
-	$darkgreen['flip_boxes_back_bg'] = '#9db668';
-	$darkgreen['progressbar_filled_color'] = '#9db668';
-	$darkgreen['counter_filled_color'] = '#9db668';
-	$darkgreen['ec_sidebar_widget_bg_color'] = '#9db668';
-	$darkgreen['menu_hover_first_color'] = '#9db668';
-	$darkgreen['header_top_bg_color'] = '#9db668';
-	$darkgreen['content_box_hover_animation_accent_color'] = '#9db668';
-	$darkgreen['map_overlay_color'] = '#9db668';
-	$darkgreen['flyout_menu_icon_hover_color'] = '#9db668';
-
-	$orange = array();
-	$orange['primary_color'] = '#e9a825';
-	$orange['pricing_box_color'] = '#c4a362';
-	$orange['image_gradient_top_color'] = '#e8cb90';
-	$orange['image_gradient_bottom_color'] = '#d6ad5a';
-	$orange['button_gradient_top_color'] = '#e8cb90';
-	$orange['button_gradient_bottom_color'] = '#d6ad5a';
-	$orange['button_gradient_top_color_hover'] = '#d6ad5a';
-	$orange['button_gradient_bottom_color_hover'] = '#e8cb90';
-	$orange['button_accent_color'] = '#785510';
-	$orange['button_accent_hover_color'] = '#785510';
-	$orange['button_bevel_color'] = '#785510';
-	$orange['checklist_circle_color'] = '#e9a825';
-	$orange['counter_box_color'] = '#e9a825';
-	$orange['countdown_background_color'] = '#e9a825';
-	$orange['dropcap_color'] = '#e9a825';
-	$orange['flip_boxes_back_bg'] = '#e9a825';
-	$orange['progressbar_filled_color'] = '#e9a825';
-	$orange['counter_filled_color'] = '#e9a825';
-	$orange['ec_sidebar_widget_bg_color'] = '#e9a825';
-	$orange['menu_hover_first_color'] = '#e9a825';
-	$orange['header_top_bg_color'] = '#e9a825';
-	$orange['content_box_hover_animation_accent_color'] = '#e9a825';
-	$orange['map_overlay_color'] = '#e9a825';
-	$orange['flyout_menu_icon_hover_color'] = '#e9a825';
-
-	$lightblue = array();
-	$lightblue['primary_color'] = '#67b7e1';
-	$lightblue['pricing_box_color'] = '#62a2c4';
-	$lightblue['image_gradient_top_color'] = '#90c9e8';
-	$lightblue['image_gradient_bottom_color'] = '#5aabd6';
-	$lightblue['button_gradient_top_color'] = '#90c9e8';
-	$lightblue['button_gradient_bottom_color'] = '#5aabd6';
-	$lightblue['button_gradient_top_color_hover'] = '#5aabd6';
-	$lightblue['button_gradient_bottom_color_hover'] = '#90c9e8';
-	$lightblue['button_accent_color'] = '#105378';
-	$lightblue['button_accent_hover_color'] = '#105378';
-	$lightblue['button_bevel_color'] = '#105378';
-	$lightblue['checklist_circle_color'] = '#67b7e1';
-	$lightblue['counter_box_color'] = '#67b7e1';
-	$lightblue['countdown_background_color'] = '#67b7e1';
-	$lightblue['dropcap_color'] = '#67b7e1';
-	$lightblue['flip_boxes_back_bg'] = '#67b7e1';
-	$lightblue['progressbar_filled_color'] = '#67b7e1';
-	$lightblue['counter_filled_color'] = '#67b7e1';
-	$lightblue['ec_sidebar_widget_bg_color'] = '#67b7e1';
-	$lightblue['menu_hover_first_color'] = '#67b7e1';
-	$lightblue['header_top_bg_color'] = '#67b7e1';
-	$lightblue['content_box_hover_animation_accent_color'] = '#67b7e1';
-	$lightblue['map_overlay_color'] = '#67b7e1';
-	$lightblue['flyout_menu_icon_hover_color'] = '#67b7e1';
-
-	$lightred = array();
-	$lightred['primary_color'] = '#f05858';
-	$lightred['pricing_box_color'] = '#c46262';
-	$lightred['image_gradient_top_color'] = '#e89090';
-	$lightred['image_gradient_bottom_color'] = '#d65a5a';
-	$lightred['button_gradient_top_color'] = '#e89090';
-	$lightred['button_gradient_bottom_color'] = '#d65a5a';
-	$lightred['button_gradient_top_color_hover'] = '#d65a5a';
-	$lightred['button_gradient_bottom_color_hover'] = '#e89090';
-	$lightred['button_accent_color'] = '#781010';
-	$lightred['button_accent_hover_color'] = '#781010';
-	$lightred['button_bevel_color'] = '#781010';
-	$lightred['checklist_circle_color'] = '#f05858';
-	$lightred['counter_box_color'] = '#f05858';
-	$lightred['countdown_background_color'] = '#f05858';
-	$lightred['dropcap_color'] = '#f05858';
-	$lightred['flip_boxes_back_bg'] = '#f05858';
-	$lightred['progressbar_filled_color'] = '#f05858';
-	$lightred['counter_filled_color'] = '#f05858';
-	$lightred['ec_sidebar_widget_bg_color'] = '#f05858';
-	$lightred['menu_hover_first_color'] = '#f05858';
-	$lightred['header_top_bg_color'] = '#f05858';
-	$lightred['content_box_hover_animation_accent_color'] = '#f05858';
-	$lightred['map_overlay_color'] = '#f05858';
-	$lightred['flyout_menu_icon_hover_color'] = '#f05858';
-
-	$pink = array();
-	$pink['primary_color'] = '#e67fb9';
-	$pink['pricing_box_color'] = '#c46299';
-	$pink['image_gradient_top_color'] = '#e890c2';
-	$pink['image_gradient_bottom_color'] = '#d65aa0';
-	$pink['button_gradient_top_color'] = '#e890c2';
-	$pink['button_gradient_bottom_color'] = '#d65aa0';
-	$pink['button_gradient_top_color_hover'] = '#d65aa0';
-	$pink['button_gradient_bottom_color_hover'] = '#e890c2';
-	$pink['button_accent_color'] = '#78104b';
-	$pink['button_accent_hover_color'] = '#78104b';
-	$pink['button_bevel_color'] = '#78104b';
-	$pink['checklist_circle_color'] = '#e67fb9';
-	$pink['counter_box_color'] = '#e67fb9';
-	$pink['countdown_background_color'] = '#e67fb9';
-	$pink['dropcap_color'] = '#e67fb9';
-	$pink['flip_boxes_back_bg'] = '#e67fb9';
-	$pink['progressbar_filled_color'] = '#e67fb9';
-	$pink['counter_filled_color'] = '#e67fb9';
-	$pink['ec_sidebar_widget_bg_color'] = '#e67fb9';
-	$pink['menu_hover_first_color'] = '#e67fb9';
-	$pink['header_top_bg_color'] = '#e67fb9';
-	$pink['content_box_hover_animation_accent_color'] = '#e67fb9';
-	$pink['map_overlay_color'] = '#e67fb9';
-	$pink['flyout_menu_icon_hover_color'] = '#e67fb9';
-
-	$lightgrey = array();
-	$lightgrey['primary_color'] = '#9e9e9e';
-	$lightgrey['pricing_box_color'] = '#c4c4c4';
-	$lightgrey['image_gradient_top_color'] = '#e8e8e8';
-	$lightgrey['image_gradient_bottom_color'] = '#d6d6d6';
-	$lightgrey['button_gradient_top_color'] = '#e8e8e8';
-	$lightgrey['button_gradient_bottom_color'] = '#d6d6d6';
-	$lightgrey['button_gradient_top_color_hover'] = '#d6d6d6';
-	$lightgrey['button_gradient_bottom_color_hover'] = '#e8e8e8';
-	$lightgrey['button_accent_color'] = '#787878';
-	$lightgrey['button_accent_hover_color'] = '#787878';
-	$lightgrey['button_bevel_color'] = '#787878';
-	$lightgrey['checklist_circle_color'] = '#9e9e9e';
-	$lightgrey['counter_box_color'] = '#9e9e9e';
-	$lightgrey['countdown_background_color'] = '#9e9e9e';
-	$lightgrey['dropcap_color'] = '#9e9e9e';
-	$lightgrey['flip_boxes_back_bg'] = '#9e9e9e';
-	$lightgrey['progressbar_filled_color'] = '#9e9e9e';
-	$lightgrey['counter_filled_color'] = '#9e9e9e';
-	$lightgrey['ec_sidebar_widget_bg_color'] = '#9e9e9e';
-	$lightgrey['menu_hover_first_color'] = '#9e9e9e';
-	$lightgrey['header_top_bg_color'] = '#9e9e9e';
-	$lightgrey['content_box_hover_animation_accent_color'] = '#9e9e9e';
-	$lightgrey['map_overlay_color'] = '#9e9e9e';
-	$lightgrey['flyout_menu_icon_hover_color'] = '#9e9e9e';
-
-	$brown = array();
-	$brown['primary_color'] = '#ab8b65';
-	$brown['pricing_box_color'] = '#c49862';
-	$brown['image_gradient_top_color'] = '#e8c090';
-	$brown['image_gradient_bottom_color'] = '#d69e5a';
-	$brown['button_gradient_top_color'] = '#e8c090';
-	$brown['button_gradient_bottom_color'] = '#d69e5a';
-	$brown['button_gradient_top_color_hover'] = '#d69e5a';
-	$brown['button_gradient_bottom_color_hover'] = '#e8c090';
-	$brown['button_accent_color'] = '#784910';
-	$brown['button_accent_hover_color'] = '#784910';
-	$brown['button_bevel_color'] = '#784910';
-	$brown['checklist_circle_color'] = '#ab8b65';
-	$brown['counter_box_color'] = '#ab8b65';
-	$brown['countdown_background_color'] = '#ab8b65';
-	$brown['dropcap_color'] = '#ab8b65';
-	$brown['flip_boxes_back_bg'] = '#ab8b65';
-	$brown['progressbar_filled_color'] = '#ab8b65';
-	$brown['ec_sidebar_widget_bg_color'] = '#ab8b65';
-	$brown['menu_hover_first_color'] = '#ab8b65';
-	$brown['header_top_bg_color'] = '#ab8b65';
-	$brown['content_box_hover_animation_accent_color'] = '#ab8b65';
-	$brown['map_overlay_color'] = '#ab8b65';
-	$brown['flyout_menu_icon_hover_color'] = '#ab8b65';
-
-	$red = array();
-	$red['primary_color'] = '#e10707';
-	$red['pricing_box_color'] = '#c40606';
-	$red['image_gradient_top_color'] = '#e80707';
-	$red['image_gradient_bottom_color'] = '#d60707';
-	$red['button_gradient_top_color'] = '#e80707';
-	$red['button_gradient_bottom_color'] = '#d60707';
-	$red['button_gradient_top_color_hover'] = '#d60707';
-	$red['button_gradient_bottom_color_hover'] = '#e80707';
-	$red['button_accent_color'] = '#780404';
-	$red['button_accent_hover_color'] = '#780404';
-	$red['button_bevel_color'] = '#780404';
-	$red['checklist_circle_color'] = '#e10707';
-	$red['counter_box_color'] = '#e10707';
-	$red['countdown_background_color'] = '#e10707';
-	$red['dropcap_color'] = '#e10707';
-	$red['flip_boxes_back_bg'] = '#e10707';
-	$red['progressbar_filled_color'] = '#e10707';
-	$red['counter_filled_color'] = '#e10707';
-	$red['ec_sidebar_widget_bg_color'] = '#e10707';
-	$red['menu_hover_first_color'] = '#e10707';
-	$red['header_top_bg_color'] = '#e10707';
-	$red['content_box_hover_animation_accent_color'] = '#e10707';
-	$red['map_overlay_color'] = '#e10707';
-	$red['flyout_menu_icon_hover_color'] = '#e10707';
-
-	$blue = array();
-	$blue['primary_color'] = '#1a80b6';
-	$blue['pricing_box_color'] = '#62a2c4';
-	$blue['image_gradient_top_color'] = '#90c9e8';
-	$blue['image_gradient_bottom_color'] = '#5aabd6';
-	$blue['button_gradient_top_color'] = '#90c9e8';
-	$blue['button_gradient_bottom_color'] = '#5aabd6';
-	$blue['button_gradient_top_color_hover'] = '#5aabd6';
-	$blue['button_gradient_bottom_color_hover'] = '#90c9e8';
-	$blue['button_accent_color'] = '#105378';
-	$blue['button_accent_hover_color'] = '#105378';
-	$blue['button_bevel_color'] = '#105378';
-	$blue['checklist_circle_color'] = '#1a80b6';
-	$blue['counter_box_color'] = '#1a80b6';
-	$blue['countdown_background_color'] = '#1a80b6';
-	$blue['dropcap_color'] = '#1a80b6';
-	$blue['flip_boxes_back_bg'] = '#1a80b6';
-	$blue['progressbar_filled_color'] = '#1a80b6';
-	$blue['counter_filled_color'] = '#1a80b6';
-	$blue['ec_sidebar_widget_bg_color'] = '#1a80b6';
-	$blue['menu_hover_first_color'] = '#1a80b6';
-	$blue['header_top_bg_color'] = '#1a80b6';
-	$blue['content_box_hover_animation_accent_color'] = '#1a80b6';
-	$blue['map_overlay_color'] = '#1a80b6';
-	$blue['flyout_menu_icon_hover_color'] = '#1a80b6';
 
 	$sections['colors'] = array(
 		'label'    => esc_html__( 'Colors', 'Avada' ),
@@ -515,81 +27,86 @@ function avada_options_section_colors( $sections ) {
 			),
 			'scheme_type' => array(
 				'label'       => esc_html__( 'Predefined Theme Skin', 'Avada' ),
-				'description' => esc_html__( 'Controls the main theme skin to be light or dark. Select a skin and all color options will change to the defined selection.', 'Avada' ),
+				'description' => esc_html__( 'Controls the main theme skin to be light or dark. Select a skin and all color options will change to the defined selection. Please note that individual pages have containers and Fusion Page Options that can override this setting, therefor you may not fully see the changes. If you change to light and a page is still dark, edit the page and look at each container background settings, along with Fusion Page Options.', 'Avada' ),
 				'id'          => 'scheme_type',
 				'default'     => '',
 				'type'        => 'preset',
 				'choices'     => array(
 					'Light' => array(
 						'label'    => esc_html__( 'Light', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/ffffff.png',
-						'settings' => $light,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/ffffff.png',
+						'settings' => Avada_Data::color_theme( 'light' ),
 					),
 					'Dark' => array(
 						'label'    => esc_html__( 'Dark', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/29292a.png',
-						'settings' => $dark,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/29292a.png',
+						'settings' => Avada_Data::color_theme( 'dark' ),
 					),
 				),
 			),
 			'color_scheme' => array(
 				'label'       => esc_html__( 'Predefined Color Scheme', 'Avada' ),
-				'description' => esc_html__( 'Controls the main color scheme throughout the theme. Select a scheme and all color options will change to the defined selection.', 'Avada' ),
+				'description' => esc_html__( 'Controls the main color scheme throughout the theme. Select a scheme and all the color options will change to the defined selection. Click the Save button to save your own current custom color scheme. Click the Import button to import a custom scheme. To delete or export a scheme, you must first have a custom scheme saved.', 'Avada' ),
 				'id'          => 'color_scheme',
 				'default'     => 'Green',
 				'type'        => 'preset',
 				'choices'     => array(
 					'Red'        => array(
 						'label'    => esc_html__( 'Red', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/e10707.png',
-						'settings' => $red,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/e10707.png',
+						'settings' => Avada_Data::color_theme( 'red' ),
 					),
 					'Light Red'  => array(
 						'label'    => esc_html__( 'Light Red', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/f05858.png',
-						'settings' => $lightred,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/f05858.png',
+						'settings' => Avada_Data::color_theme( 'lightred' ),
 					),
 					'Blue'       => array(
 						'label'    => esc_html__( 'Blue', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/1a80b6.png',
-						'settings' => $blue,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/1a80b6.png',
+						'settings' => Avada_Data::color_theme( 'blue' ),
 					),
 					'Light Blue' => array(
 						'label'    => esc_html__( 'Light Blue', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/67b7e1.png',
-						'settings' => $lightblue,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/67b7e1.png',
+						'settings' => Avada_Data::color_theme( 'lightblue' ),
 					),
 					'Green'      => array(
 						'label'    => esc_html__( 'Green', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/a0ce4e.png',
-						'settings' => $green,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/a0ce4e.png',
+						'settings' => Avada_Data::color_theme( 'green' ),
 					),
 					'Dark Green' => array(
 						'label'    => esc_html__( 'Dark Green', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/9db668.png',
-						'settings' => $darkgreen,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/9db668.png',
+						'settings' => Avada_Data::color_theme( 'darkgreen' ),
 					),
 					'Orange'     => array(
 						'label'    => esc_html__( 'Orange', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/e9a825.png',
-						'settings' => $orange,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/e9a825.png',
+						'settings' => Avada_Data::color_theme( 'orange' ),
 					),
 					'Pink'       => array(
 						'label'    => esc_html__( 'Pink', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/e67fb9.png',
-						'settings' => $pink,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/e67fb9.png',
+						'settings' => Avada_Data::color_theme( 'pink' ),
 					),
 					'Brown'      => array(
 						'label'    => esc_html__( 'Brown', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/ab8b65.png',
-						'settings' => $brown,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/ab8b65.png',
+						'settings' => Avada_Data::color_theme( 'brown' ),
 					),
 					'Light Grey' => array(
 						'label'    => esc_html__( 'Light Grey', 'Avada' ),
-						'image'    => get_template_directory_uri().'/assets/images/colors/9e9e9e.png',
-						'settings' => $lightgrey,
+						'image'    => Avada::$template_dir_url . '/assets/images/colors/9e9e9e.png',
+						'settings' => Avada_Data::color_theme( 'lightgrey' ),
 					),
 				),
+			),
+			'custom_color' => array(
+				'description' => '',
+				'id'          => 'custom_color_scheme_options',
+				'type'        => 'custom',
 			),
 			'primary_color' => array(
 				'label'       => esc_html__( 'Primary Color', 'Avada' ),
@@ -600,6 +117,98 @@ function avada_options_section_colors( $sections ) {
 			),
 		),
 	);
+
+	// Custom color schemes.
+	$custom_colors = get_option( 'avada_custom_color_schemes' );
+	$is_custom_color = ( is_array( $custom_colors ) && count( $custom_colors ) > 0 ) ? true : false;
+	$export = '';
+	$update = '';
+	$delete = '';
+
+	// Add save button.
+	$buttons =
+		'<input type="submit" name="custom_color_save id="custom_color_save" data-toggle="avada-save-custom-color" class="button button-secondary custom-color-toggle" value="' . esc_attr__( 'Save', 'Avada' ) . '"> ';
+
+	// If color already set, add update button and delete button.
+	if ( $is_custom_color ) {
+
+		$buttons .=
+			'<input type="submit" name="custom_color_update" data-toggle="avada-update-custom-color" id="custom_color_update" class="button button-secondary custom-color-toggle" value="' . esc_attr__( 'Update', 'Avada' ) . '"> ';
+
+		$buttons .=
+			'<input type="submit" name="custom_color_delete" data-toggle="avada-delete-custom-color" id="custom_color_delete" class="button button-secondary custom-color-toggle" value="' . esc_attr__( 'Delete', 'Avada' ) . '"> ';
+
+	}
+
+	// Add import button.
+	$buttons .=
+		'<input type="submit" name="custom_color_import" data-toggle="avada-import-custom-color" id="custom_color_import" class="button button-secondary custom-color-toggle" value="' . esc_attr__( 'Import', 'Avada' ) . '"> ';
+
+	// If color already exist, add export button, export markup, update markup and delete markup.
+	if ( $is_custom_color ) {
+
+		$buttons .=
+			'<input type="submit" name="custom_color_export" data-toggle="avada-export-custom-color" id="custom_color_export" class="button button-secondary custom-color-toggle" value="' . esc_attr__( 'Export', 'Avada' ) . '">';
+
+		$update .=
+			'<div id="avada-update-custom-color" class="color-hidden color-toggle">
+				<p class="description">' . esc_attr__( 'This will update the selected custom color scheme with the current selected color options.', 'Avada' ) . '</p>
+				<select name="color-scheme-update-name" id="color-scheme-update-name" class="avadaredux-select-item avada_options update-select">';
+
+		foreach ( $custom_colors as $scheme ) {
+			$update .= '<option value="' . $scheme['name'] . '">' . $scheme['name'] . '</option>';
+		}
+
+		$update .=
+			'	</select>
+				<input type="submit" name="custom_color_save_update" id="custom_color_save_update" class="button button-primary custom_color_save_button" value="' . esc_attr__( 'Update', 'Avada' ) . '">
+			</div>';
+
+		$export =
+			'<div id="avada-export-custom-color" class="color-hidden color-toggle">
+				<p class="description">' . esc_attr__( 'Copy the export code from the text area and paste it into another installation via the import button.', 'Avada' ) . '</p>
+				<textarea id="avada-export-custom-color-textarea">' . wp_json_encode( $custom_colors ) . '</textarea>
+			</div>';
+
+		$delete =
+			'<div id="avada-delete-custom-color" class="color-hidden color-toggle">
+				<p class="description">' . esc_attr__( 'Select the color schemes you wish to delete and then click the "Delete" button.', 'Avada' ) . '</p>
+				<input type="submit" name="custom_color_delete_cancel" id="custom_color_delete_cancel" class="button button-secondary" value="' . esc_attr__( 'Cancel Selection', 'Avada' ) . '">
+				<input type="submit" name="custom_color_delete_confirm" id="custom_color_delete_confirm" class="button button-primary" value="' . esc_attr__( 'Delete', 'Avada' ) . '">
+				<p class="hidden description">No color schemes selected.  Please select a scheme to delete from the color thumbnails before clicking "Delete".</p>
+			</div>';
+	}
+	// Add save markup.
+	$save =
+		'<div id="avada-save-custom-color" class="color-hidden color-toggle">
+			<p class="description">' . esc_attr__( 'This will save the current selected color options as a new custom color scheme.', 'Avada' ) . '</p>
+			<input name="color-scheme-new-name" maxlength="30" id="color-scheme-new-name" type="text" value="" placeholder="' . esc_attr__( 'New Scheme', 'Avada' ) . '"/>
+			<input type="submit" name="custom_color_save_new" id="custom_color_save_new" class="button button-primary custom_color_save_button" value="' . esc_attr__( 'Save', 'Avada' ) . '">
+		</div>';
+
+	// Add import markup.
+	$import =
+		'<div id="avada-import-custom-color" class="color-hidden color-toggle">
+			<p class="description">' . esc_attr__( 'Paste the code that was exported from the color scheme into the text area and then click the "Import" button.', 'Avada' ) . '</p>
+			<textarea id="avada-import-custom-color-textarea"></textarea>
+			<input type="submit" name="custom_color_import" id="custom_color_import_submit" class="button button-primary custom_color_save_button" value="' . esc_attr__( 'Import', 'Avada' ) . '">
+		</div>';
+
+	// Add all buttons and markup to field description.
+	$sections['colors']['fields']['custom_color']['description'] = '<div class="avada-custom-color-scheme">'
+			 . $buttons . $save . $update . $import . $export . $delete . '</div>';
+
+	// Add each scheme as an option.
+	if ( $is_custom_color ) {
+		foreach ( $custom_colors as $scheme ) {
+			$scheme_name = esc_html( $scheme['name'] );
+			$sections['colors']['fields']['color_scheme']['choices'][ $scheme_name ] = array(
+				'label'    => $scheme_name,
+				'image'    => Avada::$template_dir_url . '/assets/images/colors/custom.png',
+				'settings' => $scheme['values'],
+			);
+		}
+	}
 
 	return $sections;
 

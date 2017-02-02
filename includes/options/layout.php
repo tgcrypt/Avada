@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Layout
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + layout
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_layout( $sections ) {
 
@@ -53,8 +57,8 @@ function avada_options_section_layout( $sections ) {
 				'type'        => 'spacing',
 			),
 			'hundredp_padding' => array(
-				'label'       => esc_html__( '100% Width Left/Right Padding', 'Avada' ),
-				'description' => esc_html__( 'Controls the left/right padding for page content when using 100% site width or 100% width page template.', 'Avada' ),
+				'label'       => esc_html__( '100% Width Padding', 'Avada' ),
+				'description' => esc_html__( 'Controls the left and right padding for page content when using 100% site width, 100% width page template or 100% width post option. This does not affect Fusion Builder containers. Enter value including any valid CSS unit, ex: 30px.', 'Avada' ),
 				'id'          => 'hundredp_padding',
 				'default'     => '30px',
 				'type'        => 'dimension',

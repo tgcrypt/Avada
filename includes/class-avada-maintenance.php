@@ -1,5 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
+/**
+ * Maintenance page.
+ *
+ * @since 4.0.0
+ */
 class Avada_Maintenance {
 
 	/**
@@ -28,11 +38,12 @@ class Avada_Maintenance {
 	private $admin_warning = '';
 
 	/**
-	 * @access public
+	 * Constructor.
 	 *
-	 * @param $maintenance     bool
-	 * @param $users_warning   string
-	 * @param $admin_warning   string
+	 * @access public
+	 * @param bool   $maintenance     Maintenance on/off.
+	 * @param string $users_warning The warning to show to users.
+	 * @param string $admin_warning The warning to show to admins.
 	 */
 	public function __construct( $maintenance = false, $users_warning = '', $admin_warning = '' ) {
 
@@ -41,7 +52,7 @@ class Avada_Maintenance {
 			return;
 		}
 
-		// Only continue if we're on the frontend
+		// Only continue if we're on the frontend.
 		if ( is_admin() ) {
 			return;
 		}
@@ -49,7 +60,7 @@ class Avada_Maintenance {
 		$this->maintenance   = $maintenance;
 		$this->users_warning = $users_warning;
 		$this->admin_warning = $admin_warning;
-		
+
 		if ( is_admin() || ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) ) ) {
 			return;
 		}
@@ -59,15 +70,15 @@ class Avada_Maintenance {
 	}
 
 	/**
-	 * Displays the maintenance page
+	 * Displays the maintenance page.
 	 *
 	 * @access public
 	 */
-	public function maintenance_page() { ?>
-
+	public function maintenance_page() {
+		?>
 		<div class="wrapper" style="width:800px;max-width:95%;background:#f7f7f7;border:1px solid #f2f2f2;border-radius:3px;margin:auto;margin-top:200px;">
 			<div class="inner" style="padding:2rem;font-size:1.2rem;color:#333;">
-				<?php if ( current_user_can( 'install_plugins' ) ) : // current user is an admin ?>
+				<?php if ( current_user_can( 'install_plugins' ) ) : // Current user is an admin. ?>
 					<p><?php echo $this->admin_warning; ?></p>
 				<?php else : ?>
 					<p><?php echo $this->users_warning; ?></p>
@@ -78,5 +89,4 @@ class Avada_Maintenance {
 		exit;
 
 	}
-
 }

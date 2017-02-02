@@ -8,4 +8,9 @@
  * @version:    3.5.4.18
  */
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 do_action( 'avada_avadaredux_header' );

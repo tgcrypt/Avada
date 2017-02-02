@@ -1,3 +1,10 @@
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <?php get_header(); ?>
 <?php $full_image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' ); ?>
 <div id="content" <?php Avada()->layout->add_class( 'content_class' ); ?> <?php Avada()->layout->add_style( 'content_style' ); ?>>
@@ -9,8 +16,14 @@
 	<?php endif; ?>
 
 	<?php if ( have_posts() ) : the_post(); ?>
-		<div id="post-<?php the_ID(); ?>" <?php post_class('post'); ?>>
+		<article id="post-<?php the_ID(); ?>" <?php post_class( 'post' ); ?>>
 			<?php $full_image = ''; ?>
+			<?php if ( 'above' == Avada()->settings->get( 'blog_post_title' ) ) : ?>
+				<?php echo avada_render_post_title( $post->ID, false, '', '2' ); ?>
+			<?php elseif ( 'disabled' == Avada()->settings->get( 'blog_post_title' ) && Avada()->settings->get( 'disable_date_rich_snippet_pages' ) ) : ?>
+				<span class="entry-title" style="display: none;"><?php the_title(); ?></span>
+			<?php endif; ?>			
+			
 			<?php if ( ! post_password_required( $post->ID ) ) : ?>
 				<?php if ( Avada()->settings->get( 'featured_images_single' ) ) : ?>
 					<?php if ( 0 < avada_number_of_featured_images() || get_post_meta( $post->ID, 'pyre_video', true ) ) : ?>
@@ -32,7 +45,7 @@
 												<span class="screen-reader-text"><?php printf( esc_attr__( 'Go to "%s"', 'Avada' ), get_the_title( $post ) ); ?></span>
 												<img src="<?php echo $attachment_image[0]; ?>" alt="<?php echo get_post_meta( get_post_thumbnail_id(), '_wp_attachment_image_alt', true ); ?>" role="presentation" />
 											</a>
-										<?php else: ?>
+										<?php else : ?>
 											<img src="<?php echo $attachment_image[0]; ?>" alt="<?php echo get_post_meta( get_post_thumbnail_id(), '_wp_attachment_image_alt', true ); ?>" role="presentation" />
 										<?php endif; ?>
 									</li>
@@ -50,7 +63,7 @@
 													<span class="screen-reader-text"><?php printf( esc_attr__( 'Go to "%s"', 'Avada' ), get_the_title( $post ) ); ?></span>
 													<img src="<?php echo $attachment_image[0]; ?>" alt="<?php echo get_post_meta( $attachment_new_id, '_wp_attachment_image_alt', true ); ?>" role="presentation" />
 												</a>
-											<?php else: ?>
+											<?php else : ?>
 												<img src="<?php echo $attachment_image[0]; ?>" alt="<?php echo get_post_meta( $attachment_new_id, '_wp_attachment_image_alt', true ); ?>" role="presentation" />
 											<?php endif; ?>
 										</li>
@@ -62,12 +75,9 @@
 					<?php endif; ?>
 				<?php endif; ?>
 			<?php endif; ?>
-
-			<?php if ( Avada()->settings->get( 'blog_post_title' ) ) : ?>
-				<?php echo avada_render_post_title( $post->ID, false ); ?>
-			<?php elseif ( Avada()->settings->get( 'disable_date_rich_snippet_pages' ) ) : ?>
-				<span class="entry-title" style="display: none;"><?php the_title(); ?></span>
-			<?php endif; ?>
+			<?php if ( 'below' == Avada()->settings->get( 'blog_post_title' ) ) : ?>
+				<?php echo avada_render_post_title( $post->ID, false, '', '2' ); ?>
+			<?php endif; ?>			
 			<div class="post-content">
 				<?php echo avada_get_sermon_content(); ?>
 				<?php avada_link_pages(); ?>
@@ -76,7 +86,7 @@
 				<?php echo avada_render_post_metadata( 'single' ); ?>
 				<?php if ( Avada()->settings->get( 'social_sharing_box' ) ) : ?>
 
-					<?php $sharingbox_soical_icon_options = array (
+					<?php $sharingbox_soical_icon_options = array(
 						'sharingbox'        => 'yes',
 						'icon_colors'       => Avada()->settings->get( 'sharing_social_links_icon_color' ),
 						'box_colors'        => Avada()->settings->get( 'sharing_social_links_box_color' ),
@@ -84,8 +94,8 @@
 						'icon_boxed_radius' => Avada_Sanitize::size( Avada()->settings->get( 'sharing_social_links_boxed_radius' ) ),
 						'tooltip_placement' => Avada()->settings->get( 'sharing_social_links_tooltip_placement' ),
 						'linktarget'        => Avada()->settings->get( 'social_icons_new' ),
-						'title'             => wp_strip_all_tags(get_the_title( $post->ID ), true),
-						'description'       => wp_strip_all_tags(get_the_title( $post->ID ), true),
+						'title'             => wp_strip_all_tags( get_the_title( $post->ID ), true ),
+						'description'       => wp_strip_all_tags( get_the_title( $post->ID ), true ),
 						'link'              => get_permalink( $post->ID ),
 						'pinterest_image'   => ( $full_image ) ? $full_image[0] : '',
 					); ?>
@@ -113,17 +123,17 @@
 					</div>
 				<?php endif; ?>
 
-				<?php echo avada_render_related_posts(); // Render Related Posts ?>
+				<?php echo avada_render_related_posts(); // Render Related Posts. ?>
 
 				<?php if ( Avada()->settings->get( 'blog_comments' ) ) : ?>
 					<?php wp_reset_query(); ?>
 					<?php comments_template(); ?>
 				<?php endif; ?>
 			<?php endif; ?>
-		</div>
+		</article>
 	<?php endif; ?>
 </div>
 <?php do_action( 'avada_after_content' ); ?>
 <?php get_footer();
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

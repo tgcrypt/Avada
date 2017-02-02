@@ -1,5 +1,12 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
+<?php
+
 $layout = '';
 if ( is_archive() ) {
 	$layout = Avada()->settings->get( 'blog_archive_layout' );
@@ -21,7 +28,7 @@ if ( is_archive() ) {
 	}
 
 	if ( get_post_meta( $post->ID, 'pyre_fimg_height', true ) && 'auto' != get_post_meta( $post->ID, 'pyre_fimg_height', true ) ) {
-		$styles .= '#post-' . $post->ID . ' .fusion-post-slideshow, #post-' . $post->ID . ' .fusion-post-slideshow .fusion-image-wrapper img { max-height:' . get_post_meta( $post->ID, 'pyre_fimg_height', true) . ' !important;}';
+		$styles .= '#post-' . $post->ID . ' .fusion-post-slideshow, #post-' . $post->ID . ' .fusion-post-slideshow .fusion-image-wrapper img { max-height:' . get_post_meta( $post->ID, 'pyre_fimg_height', true ) . ' !important;}';
 	}
 
 	if ( get_post_meta( $post->ID, 'pyre_fimg_width', true ) && 'auto' == get_post_meta( $post->ID, 'pyre_fimg_width', true ) ) {
@@ -49,7 +56,6 @@ if ( is_archive() ) {
 } else {
 	$size = ( ! Avada()->template->has_sidebar() ) ? 'full' : 'blog-large';
 }
-
 $size = ( 'Medium' == $layout || 'Medium Alternate' == $layout ) ? 'blog-medium' : $size;
 $size = ( get_post_meta( $post->ID, 'pyre_fimg_height', true ) && get_post_meta( $post->ID, 'pyre_fimg_width', true ) && 'auto' != get_post_meta( $post->ID, 'pyre_fimg_height', true ) && 'auto' != get_post_meta( $post->ID, 'pyre_fimg_width', true ) ) ? 'full' : $size;
 $size = ( 'auto' == get_post_meta( $post->ID, 'pyre_fimg_height', true ) || 'auto' == get_post_meta( $post->ID, 'pyre_fimg_width', true ) ) ? 'full' : $size;
@@ -66,19 +72,23 @@ $size = ( 'Grid' == $layout || 'Timeline' == $layout ) ? 'full' : $size;
 					</div>
 				</li>
 			<?php endif; ?>
-			<?php 
+			<?php
 			if ( 'Grid' == $layout ) {
 				Avada()->images->set_grid_image_meta( array( 'layout' => strtolower( $layout ), 'columns' => Avada()->settings->get( 'blog_grid_columns' ), 'gutter_width' => Avada()->settings->get( 'blog_grid_column_spacing' ) ) );
 			} elseif ( 'Timeline' == $layout ) {
 				Avada()->images->set_grid_image_meta( array( 'layout' => strtolower( $layout ), 'columns' => '2' ) );
-			} elseif ( false !== strpos( $layout, 'Large' ) && 'full' == $size ) {
-				Avada()->images->set_grid_image_meta( array( 'layout' => strtolower( $layout ), 'columns' => '1' ) );			
+			} elseif ( false !== strpos( $layout, 'large' ) && 'full' == $size ) {
+				Avada()->images->set_grid_image_meta( array( 'layout' => strtolower( $layout ), 'columns' => '1' ) );
 			}
 			?>
 			<?php if ( has_post_thumbnail() ) : ?>
 				<?php $full_image      = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' ); ?>
 				<?php $attachment_data = wp_get_attachment_metadata( get_post_thumbnail_id() ); ?>
-				<li><?php echo avada_render_first_featured_image_markup( $post->ID, $size, $permalink ); ?></li>
+				<?php if ( is_search() ) : ?>
+					<li><?php echo avada_render_first_featured_image_markup( $post->ID, $size, $permalink, false, false, true ); ?></li>
+				<?php else : ?>
+					<li><?php echo avada_render_first_featured_image_markup( $post->ID, $size, $permalink ); ?></li>
+				<?php endif; ?>
 			<?php endif; ?>
 			<?php $i = 2; ?>
 			<?php while ( $i <= Avada()->settings->get( 'posts_slideshow_number' ) ) : ?>
@@ -92,9 +102,9 @@ $size = ( 'Grid' == $layout || 'Timeline' == $layout ) ? 'full' : $size;
 							<div class="fusion-image-wrapper">
 								<a href="<?php the_permalink(); ?>">
 									<?php
-									$image_markup = sprintf( '<img src="%s" alt="%s" class="wp-image-%s" role="presentation"/>', $attachment_image[0], $attachment_data['image_meta']['title'], $attachment_id );
+									$image_markup = '<img src="' . $attachment_image[0] . '" alt="' . $attachment_data['image_meta']['title'] . '" class="wp-image-' . $attachment_id . '" role="presentation"/>';
 									$image_markup = Avada()->images->edit_grid_image_src( $image_markup, get_the_ID(), $attachment_id, $size );
-									echo wp_make_content_images_responsive( $image_markup ); 
+									echo wp_make_content_images_responsive( $image_markup );
 									?>
 								</a>
 								<a style="display:none;" href="<?php echo $full_image[0]; ?>" data-rel="iLightbox[gallery<?php echo $post->ID; ?>]"  title="<?php echo get_post_field( 'post_excerpt', $attachment_id ); ?>" data-title="<?php echo get_post_field( 'post_title', $attachment_id ); ?>" data-caption="<?php echo get_post_field( 'post_excerpt', $attachment_id ); ?>">
@@ -113,4 +123,4 @@ $size = ( 'Grid' == $layout || 'Timeline' == $layout ) ? 'full' : $size;
 	</div>
 <?php endif;
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

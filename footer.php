@@ -1,4 +1,12 @@
-					<?php do_action( 'avada_after_main_content' ); ?>
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
+<?php do_action( 'avada_after_main_content' ); ?>
+
 				</div>  <!-- fusion-row -->
 			</div>  <!-- #main -->
 			<?php do_action( 'avada_after_main_container' ); ?>
@@ -11,14 +19,14 @@
 
 			<?php
 			/**
-			 * Get the correct page ID
+			 * Get the correct page ID.
 			 */
-			$c_pageID = Avada::c_pageID();
+			$c_page_id = Avada()->get_page_id();
 			?>
 
 			<?php
 			/**
-			 * Only include the footer
+			 * Only include the footer.
 			 */
 			?>
 			<?php if ( ! is_page_template( 'blank.php' ) ) : ?>
@@ -28,10 +36,10 @@
 
 					<?php
 					/**
-					 * Check if the footer widget area should be displayed
+					 * Check if the footer widget area should be displayed.
 					 */
 					?>
-					<?php if ( ( Avada()->settings->get( 'footer_widgets' ) && 'no' != get_post_meta( $c_pageID, 'pyre_display_footer', true ) ) || ( ! Avada()->settings->get( 'footer_widgets' ) && 'yes' == get_post_meta( $c_pageID, 'pyre_display_footer', true ) ) ) : ?>
+					<?php if ( ( Avada()->settings->get( 'footer_widgets' ) && 'no' != get_post_meta( $c_page_id, 'pyre_display_footer', true ) ) || ( ! Avada()->settings->get( 'footer_widgets' ) && 'yes' == get_post_meta( $c_page_id, 'pyre_display_footer', true ) ) ) : ?>
 						<?php $footer_widget_area_center_class = ( Avada()->settings->get( 'footer_widgets_center_content' ) ) ? ' fusion-footer-widget-area-center' : ''; ?>
 
 						<footer class="fusion-footer-widget-area fusion-widget-area<?php echo $footer_widget_area_center_class; ?>">
@@ -39,23 +47,23 @@
 								<div class="fusion-columns fusion-columns-<?php echo Avada()->settings->get( 'footer_widgets_columns' ); ?> fusion-widget-area">
 									<?php
 									/**
-									 * Check the column width based on the amount of columns chosen in Theme Options
+									 * Check the column width based on the amount of columns chosen in Theme Options.
 									 */
 									$column_width = ( '5' == Avada()->settings->get( 'footer_widgets_columns' ) ) ? 2 : 12 / Avada()->settings->get( 'footer_widgets_columns' );
 									?>
 
 									<?php
 									/**
-									 * Render as many widget columns as have been chosen in Theme Options
+									 * Render as many widget columns as have been chosen in Theme Options.
 									 */
 									?>
 									<?php for ( $i = 1; $i < 7; $i++ ) : ?>
 										<?php if ( $i <= Avada()->settings->get( 'footer_widgets_columns' ) ) : ?>
-											<div class="fusion-column<?php echo ( $i == Avada()->settings->get( 'footer_widgets_columns' ) ) ? ' fusion-column-last' : ''; ?> col-lg-<?php echo $column_width; ?> col-md-<?php echo $column_width; ?> col-sm-<?php echo $column_width; ?>">
+											<div class="fusion-column<?php echo ( Avada()->settings->get( 'footer_widgets_columns' ) == $i ) ? ' fusion-column-last' : ''; ?> col-lg-<?php echo $column_width; ?> col-md-<?php echo $column_width; ?> col-sm-<?php echo $column_width; ?>">
 												<?php if ( function_exists( 'dynamic_sidebar' ) && dynamic_sidebar( 'avada-footer-widget-' . $i ) ) : ?>
 													<?php
 													/**
-													 * All is good, dynamic_sidebar() already called the rendering
+													 * All is good, dynamic_sidebar() already called the rendering.
 													 */
 													?>
 												<?php endif; ?>
@@ -67,14 +75,14 @@
 								</div> <!-- fusion-columns -->
 							</div> <!-- fusion-row -->
 						</footer> <!-- fusion-footer-widget-area -->
-					<?php endif; // end footer wigets check ?>
+					<?php endif; // End footer wigets check. ?>
 
 					<?php
 					/**
-					 * Check if the footer copyright area should be displayed
+					 * Check if the footer copyright area should be displayed.
 					 */
 					?>
-					<?php if ( ( Avada()->settings->get( 'footer_copyright' ) && 'no' != get_post_meta( $c_pageID, 'pyre_display_copyright', true ) ) || ( ! Avada()->settings->get( 'footer_copyright' ) && 'yes' == get_post_meta( $c_pageID, 'pyre_display_copyright', true ) ) ) : ?>
+					<?php if ( ( Avada()->settings->get( 'footer_copyright' ) && 'no' != get_post_meta( $c_page_id, 'pyre_display_copyright', true ) ) || ( ! Avada()->settings->get( 'footer_copyright' ) && 'yes' == get_post_meta( $c_page_id, 'pyre_display_copyright', true ) ) ) : ?>
 						<?php $footer_copyright_center_class = ( Avada()->settings->get( 'footer_copyright_center_content' ) ) ? ' fusion-footer-copyright-center' : ''; ?>
 
 						<footer id="footer" class="fusion-footer-copyright-area<?php echo $footer_copyright_center_class; ?>">
@@ -83,10 +91,10 @@
 
 									<?php
 									/**
-									 * avada_footer_copyright_content hook
+									 * Footer Content (Copyright area) avada_footer_copyright_content hook.
 									 *
 									 * @hooked avada_render_footer_copyright_notice - 10 (outputs the HTML for the Theme Options footer copyright text)
-									 * @hooked avada_render_footer_social_icons - 15 (outputs the HTML for the footer social icons)
+									 * @hooked avada_render_footer_social_icons - 15 (outputs the HTML for the footer social icons)..
 									 */
 									do_action( 'avada_footer_copyright_content' );
 									?>
@@ -94,17 +102,17 @@
 								</div> <!-- fusion-fusion-copyright-content -->
 							</div> <!-- fusion-row -->
 						</footer> <!-- #footer -->
-					<?php endif; // end footer copyright area check ?>
+					<?php endif; // End footer copyright area check. ?>
 				</div> <!-- fusion-footer -->
-			<?php endif; // end is not blank page check ?>
+			<?php endif; // End is not blank page check. ?>
 		</div> <!-- wrapper -->
 
 		<?php
 		/**
-		 * Check if boxed side header layout is used; if so close the #boxed-wrapper container
+		 * Check if boxed side header layout is used; if so close the #boxed-wrapper container.
 		 */
 		?>
-		<?php if ( ( ( 'Boxed' == Avada()->settings->get( 'layout' ) && 'default' == get_post_meta( $c_pageID, 'pyre_page_bg_layout', true ) ) || 'boxed' == get_post_meta( $c_pageID, 'pyre_page_bg_layout', true ) ) && 'Top' != Avada()->settings->get( 'header_position' ) ) : ?>
+		<?php if ( ( ( 'Boxed' == Avada()->settings->get( 'layout' ) && 'default' == get_post_meta( $c_page_id, 'pyre_page_bg_layout', true ) ) || 'boxed' == get_post_meta( $c_page_id, 'pyre_page_bg_layout', true ) ) && 'Top' != Avada()->settings->get( 'header_position' ) ) : ?>
 			</div> <!-- #boxed-wrapper -->
 		<?php endif; ?>
 
@@ -120,9 +128,5 @@
 		 */
 		echo Avada()->settings->get( 'space_body' );
 		?>
-
-		<!--[if lte IE 8]>
-			<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/respond.js"></script>
-		<![endif]-->
 	</body>
 </html>

@@ -1,17 +1,24 @@
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <div class="fusion-header-sticky-height"></div>
 <div class="fusion-header">
 	<div class="fusion-row">
 		<div class="fusion-header-v6-content">
-			<?php 
+			<?php
 			avada_logo();
 			$menu = avada_main_menu( true );
 			?>
-			
+
 			<div class="fusion-flyout-menu-icons">
-				<?php if ( class_exists('WooCommerce') && Avada()->settings->get( 'woocommerce_cart_link_main_nav' ) ) :
+				<?php if ( class_exists( 'WooCommerce' ) && Avada()->settings->get( 'woocommerce_cart_link_main_nav' ) ) :
 					global $woocommerce;
-				
-					if ( Avada()->settings->get( 'woocommerce_cart_counter') && $woocommerce->cart->get_cart_contents_count() ) {
+
+					if ( Avada()->settings->get( 'woocommerce_cart_counter' ) && $woocommerce->cart->get_cart_contents_count() ) {
 						$cart_link_text = '<span class="fusion-widget-cart-number">' . $woocommerce->cart->get_cart_contents_count() . '</span>';
 						$cart_link_class = ' fusion-widget-cart-counter';
 					} else {
@@ -53,6 +60,6 @@
 			</div>
 		<?php endif; ?>
 
-		<div class="fusion-flyout-menu-bg"></div>		
+		<div class="fusion-flyout-menu-bg"></div>
 	</div>
 </div>

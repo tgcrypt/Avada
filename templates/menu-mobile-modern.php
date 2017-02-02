@@ -1,7 +1,15 @@
-<?php if ( 'modern' == Avada()->settings->get( 'mobile_menu_design' ) ) : ?>
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+$c_page_id = Avada()->get_page_id();
+?>
+<?php if ( 'modern' == Avada()->settings->get( 'mobile_menu_design' ) && ( has_nav_menu( 'main_navigation' ) || ( get_post_meta( $c_page_id, 'pyre_displayed_menu', true ) && '' !== get_post_meta( $c_page_id, 'pyre_displayed_menu', true ) && 'default' !== get_post_meta( $c_page_id, 'pyre_displayed_menu', true ) ) ) ) : ?>
 	<?php $header_content_3 = Avada()->settings->get( 'header_v4_content' ); ?>
 	<div class="fusion-mobile-menu-icons">
-		<?php // Make sure mobile menu toggle is not loaded when ubermenu is used ?>
+		<?php // Make sure mobile menu toggle is not loaded when ubermenu is used. ?>
 		<?php if ( ! function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) || ( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ! ubermenu_get_menu_instance_by_theme_location( 'main_navigation' ) ) ) : ?>
 			<a href="#" class="fusion-icon fusion-icon-bars"></a>
 		<?php endif; ?>
@@ -10,10 +18,10 @@
 			<a href="#" class="fusion-icon fusion-icon-search"></a>
 		<?php endif; ?>
 
-		<?php if ( class_exists('WooCommerce') && Avada()->settings->get( 'woocommerce_cart_link_main_nav' ) ) : ?>
+		<?php if ( class_exists( 'WooCommerce' ) && Avada()->settings->get( 'woocommerce_cart_link_main_nav' ) ) : ?>
 			<a href="<?php echo get_permalink( get_option( 'woocommerce_cart_page_id' ) ); ?>" class="fusion-icon fusion-icon-shopping-cart"></a>
 		<?php endif; ?>
 	</div>
 <?php endif;
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

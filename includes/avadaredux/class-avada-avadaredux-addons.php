@@ -1,15 +1,50 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 if ( class_exists( 'Avada_AvadaRedux_Addons' ) ) {
 	return;
 }
 
+/**
+ * Handle loading Redux Addons for Avada.
+ *
+ * @since 4.0.0
+ */
 class Avada_AvadaRedux_Addons {
 
+	/**
+	 * An array of our custom field types.
+	 *
+	 * @access public
+	 * @var array
+	 */
 	public $field_types;
+
+	/**
+	 * An array of our custom extension.
+	 *
+	 * @access public
+	 * @var array
+	 */
 	public $extensions;
+
+	/**
+	 * The path of the current file.
+	 *
+	 * @access public
+	 * @var string
+	 */
 	public $path;
 
+	/**
+	 * Constructor.
+	 *
+	 * @access public
+	 */
 	public function __construct() {
 		// An array of all the custom fields we have.
 		$this->field_types = array(
@@ -19,7 +54,7 @@ class Avada_AvadaRedux_Addons {
 			'dimensions',
 			'ace_editor',
 		);
-		// An array of all our extensions
+		// An array of all our extensions.
 		$this->extensions = array(
 			'search',
 			'repeater',

@@ -1,5 +1,10 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * WIP
  * These are conditionals that will be used
@@ -16,40 +21,13 @@ class Avada_Options_Conditionals {
 	 * @return  bool
 	 */
 	public static function is_woo() {
-		/**
-		 * Check if WooCommerce is installed.
-		 * If not, then return false
-		 */
+		// Check if WooCommerce is installed.
+		// If not, then return false.
 		if ( ! function_exists( 'is_woocommerce' ) ) {
 			return false;
 		}
-		/**
-		 * Return the result of the is_woocommerce() function (boolean)
-		 */
+		// Return the result of the is_woocommerce() function (boolean).
 		return is_woocommerce();
-
-	}
-
-	/**
-	 * Conditional check:
-	 * Figure out if the current layout is boxed or not.
-	 *
-	 * @return  bool
-	 */
-	public static function is_boxed() {
-		return ( 'Boxed' == get_theme_mod( 'layout' ) ) ? true : false;
-
-	}
-
-	/**
-	 * Conditional check:
-	 * Figure out if we're using responsive typography or not.
-	 *
-	 * @return  bool
-	 */
-	public static function is_responsive_typography() {
-		return ( '1' == get_theme_mod( 'typography_responsive' ) ) ? true : false;
-
 	}
 
 	/**
@@ -60,18 +38,13 @@ class Avada_Options_Conditionals {
 	 * @return  bool
 	 */
 	public static function is_bbpress() {
-		/**
-		 * Check if bbPress is installed.
-		 * If not, then return false
-		 */
+		// Check if bbPress is installed.
+		// If not, then return false.
 		if ( ! function_exists( 'is_bbpress' ) ) {
 			return false;
 		}
-		/**
-		 * Return the result of the is_woocommerce() function (boolean)
-		 */
+		// Return the result of the is_woocommerce() function (boolean).
 		return is_bbpress();
-
 	}
 
 	/**
@@ -81,15 +54,14 @@ class Avada_Options_Conditionals {
 	 * @return  bool
 	 */
 	public static function is_blog() {
-		if ( is_front_page() && is_home() ) { // Default homepage
+		if ( is_front_page() && is_home() ) { // Default homepage.
 			return true;
-		} elseif ( is_front_page() ) { // static homepage
+		} elseif ( is_front_page() ) { // Static homepage.
 			return false;
-		} elseif ( is_home() ) { // blog page
+		} elseif ( is_home() ) { // Blog page.
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -104,5 +76,4 @@ class Avada_Options_Conditionals {
 		}
 		return false;
 	}
-
 }

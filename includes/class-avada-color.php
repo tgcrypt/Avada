@@ -1,37 +1,634 @@
 <?php
 /**
- * Color Calculations class for Kirki
- * Initially built for the Shoestrap-3 theme and then tweaked for Kirki.
+ * Plugin Name:   ariColor
+ * Plugin URI:    http://aristath.github.io/ariColor/
+ * Description:   A PHP library for color manipulation in WordPress themes and plugins
+ * Author:        Aristeides Stathopoulos
+ * Author URI:    http://aristeides.com
+ * Version:       1.0
+ * Text Domain:   aricolor
  *
- * @package     Kirki
+ * GitHub Plugin URI: aristath/ariColor
+ * GitHub Plugin URI: https://github.com/aristath/ariColor
+ *
+ * @package     ariColor
  * @category    Core
  * @author      Aristeides Stathopoulos
- * @copyright   Copyright (c) 2015, Aristeides Stathopoulos
+ * @copyright   Copyright (c) 2016, Aristeides Stathopoulos
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       1.0
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Early exit if the class already exists
 if ( ! class_exists( 'Avada_Color' ) ) {
+	/**
+	 * The color calculations class.
+	 */
 	class Avada_Color {
 
 		/**
-		 * Sanitises a HEX value.
-		 * The way this works is by splitting the string in 6 substrings.
-		 * Each sub-string is individually sanitized, and the result is then returned.
+		 * An array of our instances.
 		 *
-		 * @var     string      The hex value of a color
-		 * @param   boolean     Whether we want to include a hash (#) at the beginning or not
-		 * @return  string      The sanitized hex color.
+		 * @static
+		 * @access public
+		 * @var array
 		 */
-		 public static function sanitize_hex( $color = '#FFFFFF', $hash = true ) {
+		public static $instances = array();
 
-			$word_colors = array(
+		/**
+		 * The color initially set.
+		 *
+		 * @access public
+		 * @var mixed
+		 */
+		public $color;
+
+		/**
+		 * The mode we're using for this color.
+		 *
+		 * @access public
+		 * @var string
+		 */
+		public $mode = 'hex';
+
+		/**
+		 * An array containing all word-colors (white/blue/red etc)
+		 * and their corresponding HEX codes.
+		 *
+		 * @access public
+		 * @var array
+		 */
+		public $word_colors = array();
+
+		/**
+		 * The hex code of the color.
+		 *
+		 * @access public
+		 * @var string
+		 */
+		public $hex;
+
+		/**
+		 * Red value.
+		 *
+		 * @access public
+		 * @var int
+		 */
+		public $red   = 0;
+
+		/**
+		 * Green value.
+		 *
+		 * @access public
+		 * @var int
+		 */
+		public $green = 0;
+
+		/**
+		 * Blue value.
+		 *
+		 * @access public
+		 * @var int
+		 */
+		public $blue  = 0;
+
+		/**
+		 * Alpha value (min:0, max: 1)
+		 *
+		 * @access public
+		 * @var float
+		 */
+		public $alpha = 1;
+
+
+		/**
+		 * Hue value.
+		 *
+		 * @access public
+		 * @var float
+		 */
+		public $hue;
+
+		/**
+		 * Saturation value.
+		 *
+		 * @access public
+		 * @var float
+		 */
+		public $saturation;
+
+		/**
+		 * Lightness value.
+		 *
+		 * @access public
+		 * @var float
+		 */
+		public $lightness;
+
+		/**
+		 * Chroma value.
+		 *
+		 * @access public
+		 * @var float
+		 */
+		public $chroma;
+
+		/**
+		 * An array containing brightnesses.
+		 *
+		 * @access public
+		 * @var array
+		 */
+		public $brightness = array();
+
+		/**
+		 * Luminance value.
+		 *
+		 * @access public
+		 * @var float
+		 */
+		public $luminance;
+
+		/**
+		 * The class constructor.
+		 *
+		 * @param string|array $color The color.
+		 * @param string       $mode  The color mode. Leave empty to auto-detect.
+		 */
+		private function __construct( $color = '', $mode = 'auto' ) {
+			$this->color = $color;
+			if ( ! method_exists( $this, 'from_' . $mode ) ) {
+				$mode = $this->get_mode( $color );
+			}
+			if ( null === $mode ) {
+				return;
+			}
+			$this->mode = $mode;
+			$method = 'from_' . $mode;
+			// Call the from_{$color_mode} method.
+			$this->$method();
+		}
+
+		/**
+		 * Gets an instance for this color.
+		 * We use a separate instance per color
+		 * because there's no need to create a completely new instance each time we call this class.
+		 * Instead using instances helps us improve performance & footprint.
+		 *
+		 * @param string|array $color The color.
+		 * @param string       $mode  Mode to be used.
+		 * @return Avada_Color (object)
+		 */
+		public static function new_color( $color, $mode = 'auto' ) {
+			// Get an md5 for this color.
+			$color_md5 = ( is_array( $color ) ) ? md5( wp_json_encode( $color ) . $mode ) : md5( $color . $mode );
+			// Set the instance if it does not already exist.
+			if ( ! isset( self::$instances[ $color_md5 ] ) ) {
+				self::$instances[ $color_md5 ] = new self( $color, $mode );
+			}
+			return self::$instances[ $color_md5 ];
+		}
+
+		/**
+		 * Allows us to get a new instance by modifying a property of the existing one.
+		 *
+		 * @param string           $property   Can be one of the following:
+		 *                             red,
+		 *                             green,
+		 *                             blue,
+		 *                             alpha,
+		 *                             hue,
+		 *                             saturation,
+		 *                             lightness,
+		 *                             brightness.
+		 * @param int|float|string $value      The new value.
+		 * @return Avada_Color|null
+		 */
+		public function get_new( $property = '', $value = '' ) {
+
+			if ( in_array( $property, array( 'red', 'green', 'blue', 'alpha' ) ) ) {
+				// Check if we're changing any of the rgba values.
+				$value = max( 0, min( 255, $value ) );
+				if ( 'red' === $property ) {
+					return self::new_color( 'rgba(' . $value . ',' . $this->green . ',' . $this->blue . ',' . $this->alpha . ')', 'rgba' );
+				} elseif ( 'green' === $property ) {
+					return self::new_color( 'rgba(' . $this->red . ',' . $value . ',' . $this->blue . ',' . $this->alpha . ')', 'rgba' );
+				} elseif ( 'blue' === $property ) {
+					return self::new_color( 'rgba(' . $this->red . ',' . $this->green . ',' . $value . ',' . $this->alpha . ')', 'rgba' );
+				} elseif ( 'alpha' === $property ) {
+					return self::new_color( 'rgba(' . $this->red . ',' . $this->green . ',' . $this->blue . ',' . $value . ')', 'rgba' );
+				}
+			} elseif ( in_array( $property, array( 'hue', 'saturation', 'lightness' ) ) ) {
+				// Check if we're changing any of the hsl values.
+				$value = ( 'hue' === $property ) ? max( 0, min( 360, $value ) ) : max( 0, min( 100, $value ) );
+
+				if ( 'hue' === $property ) {
+					return self::new_color( 'hsla(' . $value . ',' . $this->saturation . '%,' . $this->lightness . '%,' . $this->alpha . ')', 'hsla' );
+				} elseif ( 'saturation' === $property ) {
+					return self::new_color( 'hsla(' . $this->hue . ',' . $value . '%,' . $this->lightness . '%,' . $this->alpha . ')', 'hsla' );
+				} elseif ( 'lightness' === $property ) {
+					return self::new_color( 'hsla(' . $this->hue . ',' . $this->saturation . '%,' . $value . '%,' . $this->alpha . ')', 'hsla' );
+				}
+			} elseif ( 'brightness' == $property ) {
+				// Check if we're changing the brightness.
+				if ( $value < $this->brightness['total'] ) {
+					$red   = max( 0, min( 255, $this->red - ( $this->brightness['total'] - $value ) ) );
+					$green = max( 0, min( 255, $this->green - ( $this->brightness['total'] - $value ) ) );
+					$blue  = max( 0, min( 255, $this->blue - ( $this->brightness['total'] - $value ) ) );
+				} elseif ( $value > $this->brightness['total'] ) {
+					$red   = max( 0, min( 255, $this->red + ( $value - $this->brightness['total'] ) ) );
+					$green = max( 0, min( 255, $this->green + ( $value - $this->brightness['total'] ) ) );
+					$blue  = max( 0, min( 255, $this->blue + ( $value - $this->brightness['total'] ) ) );
+				} else {
+					// If it's not smaller and it's not greater, then it's equal.
+					return $this;
+				}
+				return self::new_color( 'rgba(' . $red . ',' . $green . ',' . $blue . ',' . $this->alpha . ')', 'rgba' );
+			}
+			return null;
+		}
+
+		/**
+		 * Figure out what mode we're using.
+		 *
+		 * @param string|array $color The color we're querying.
+		 * @return string
+		 */
+		public function get_mode( $color ) {
+			// Check if value is an array.
+			if ( is_array( $color ) ) {
+				// Does the array have an 'rgba' key?
+				if ( isset( $color['rgba'] ) ) {
+					$this->color = $color['rgba'];
+					return 'rgba';
+				} elseif ( isset( $color['color'] ) ) {
+					// Does the array have a 'color' key?
+					$this->color = $color['color'];
+					return 'hex';
+				}
+				// Is this a simple array with 4 items?
+				if ( 4 == count( $color ) && isset( $color[0] ) && isset( $color[1] ) && isset( $color[2] ) && isset( $color[3] ) ) {
+					$this->color = 'rgba(' . intval( $color[0] ) . ',' . intval( $color[1] ) . ',' . intval( $color[2] ) . ',' . intval( $color[3] ) . ')';
+					return 'rgba';
+				} elseif ( 3 == count( $color ) && isset( $color[0] ) && isset( $color[1] ) && isset( $color[2] ) ) {
+					// Is this a simple array with 3 items?
+					$this->color = 'rgba(' . intval( $color[0] ) . ',' . intval( $color[1] ) . ',' . intval( $color[2] ) . ',1)';
+					return 'rgba';
+				}
+				// Check for other keys in the array and get values from there.
+				$finders_keepers = array(
+					'r'       => 'red',
+					'g'       => 'green',
+					'b'       => 'blue',
+					'a'       => 'alpha',
+					'red'     => 'red',
+					'green'   => 'green',
+					'blue'    => 'blue',
+					'alpha'   => 'alpha',
+					'opacity' => 'alpha',
+				);
+				$found = false;
+				foreach ( $finders_keepers as $finder => $keeper ) {
+					if ( isset( $color[ $finder ] ) ) {
+						$found = true;
+						$this->$keeper = $color[ $finder ];
+					}
+				}
+				// We failed, return null.
+				if ( ! $found ) {
+					return null;
+				}
+				// We did not fail, so use rgba values recovered above.
+				$this->color = 'rgba(' . $this->red . ',' . $this->green . ',' . $this->blue . ',' . $this->alpha . ')';
+				return 'rgba';
+			}
+			// If we got this far, it's not an array.
+			// Check for key identifiers in the value.
+			$finders_keepers = array(
+				'#'    => 'hex',
+				'rgba' => 'rgba',
+				'rgb'  => 'rgb',
+				'hsla' => 'hsla',
+				'hsl'  => 'hsl',
+			);
+			foreach ( $finders_keepers as $finder => $keeper ) {
+				if ( false !== strrpos( $color, $finder ) ) {
+					return $keeper;
+				}
+			}
+			// Perhaps we're using a word like "orange"?
+			$wordcolors = $this->get_word_colors();
+			if ( array_key_exists( $color, $wordcolors ) ) {
+				$this->color = '#' . $wordcolors[ $color ];
+				return 'hex';
+			}
+			// Fallback to hex.
+			return 'hex';
+		}
+
+		/**
+		 * Starts with a HEX color and calculates all other properties.
+		 *
+		 * @return void
+		 */
+		private function from_hex() {
+
+			if ( ! function_exists( 'sanitize_hex_color' ) ) {
+				require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
+			}
+			// Is this perhaps a word-color?
+			$word_colors = $this->get_word_colors();
+			if ( array_key_exists( $this->color, $word_colors ) ) {
+				$this->color = '#' . $word_colors[ $this->color ];
+			}
+			// Sanitize color.
+			$this->hex = sanitize_hex_color( maybe_hash_hex_color( $this->color ) );
+			$hex = ltrim( $this->hex, '#' );
+			// Make sure we have 6 digits for the below calculations.
+			if ( 3 == strlen( $hex ) ) {
+				$hex = ltrim( $this->hex, '#' );
+				$hex = substr( $hex, 0, 1 ) . substr( $hex, 0, 1 ) . substr( $hex, 1, 1 ) . substr( $hex, 1, 1 ) . substr( $hex, 2, 1 ) . substr( $hex, 2, 1 );
+			}
+			// Set red, green, blue.
+			$this->red   = hexdec( substr( $hex, 0, 2 ) );
+			$this->green = hexdec( substr( $hex, 2, 2 ) );
+			$this->blue  = hexdec( substr( $hex, 4, 2 ) );
+			$this->alpha = 1;
+			// Set other color properties.
+			$this->set_brightness();
+			$this->set_hsl();
+			$this->set_luminance();
+
+		}
+
+		/**
+		 * Starts with an RGB color and calculates all other properties.
+		 *
+		 * @return void
+		 */
+		private function from_rgb() {
+			$value = explode( ',', str_replace( array( ' ', 'rgb', '(', ')' ), '', $this->color ) );
+			// Set red, green, blue.
+			$this->red   = ( isset( $value[0] ) ) ? intval( $value[0] ) : 255;
+			$this->green = ( isset( $value[1] ) ) ? intval( $value[1] ) : 255;
+			$this->blue  = ( isset( $value[2] ) ) ? intval( $value[2] ) : 255;
+			$this->alpha = 1;
+			// Set the hex.
+			$this->hex = $this->rgb_to_hex( $this->red, $this->green, $this->blue );
+			// Set other color properties.
+			$this->set_brightness();
+			$this->set_hsl();
+			$this->set_luminance();
+		}
+
+		/**
+		 * Starts with an RGBA color and calculates all other properties.
+		 *
+		 * @return void
+		 */
+		private function from_rgba() {
+			// Set r, g, b, a properties.
+			$value = explode( ',', str_replace( array( ' ', 'rgba', '(', ')' ), '', $this->color ) );
+			$this->red   = ( isset( $value[0] ) ) ? intval( $value[0] ) : 255;
+			$this->green = ( isset( $value[1] ) ) ? intval( $value[1] ) : 255;
+			$this->blue  = ( isset( $value[2] ) ) ? intval( $value[2] ) : 255;
+			$this->alpha = ( isset( $value[3] ) ) ? filter_var( $value[3], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION ) : 1;
+			// Limit values in the range of 0 - 255.
+			$this->red   = max( 0, min( 255, $this->red ) );
+			$this->green = max( 0, min( 255, $this->green ) );
+			$this->blue  = max( 0, min( 255, $this->blue ) );
+			// Limit values 0 - 1.
+			$this->alpha = max( 0, min( 1, $this->alpha ) );
+			// Set hex.
+			$this->hex = $this->rgb_to_hex( $this->red, $this->green, $this->blue );
+			// Set other color properties.
+			$this->set_brightness();
+			$this->set_hsl();
+			$this->set_luminance();
+		}
+
+		/**
+		 * Starts with an HSL color and calculates all other properties.
+		 *
+		 * @return void
+		 */
+		private function from_hsl() {
+			$value = explode( ',', str_replace( array( ' ', 'hsl', '(', ')', '%' ), '', $this->color ) );
+			$this->hue        = $value[0];
+			$this->saturation = $value[1];
+			$this->lightness  = $value[2];
+			$this->from_hsl_array();
+		}
+
+		/**
+		 * Starts with an HSLA color and calculates all other properties.
+		 *
+		 * @return void
+		 */
+		private function from_hsla() {
+			$value = explode( ',', str_replace( array( ' ', 'hsla', '(', ')', '%' ), '', $this->color ) );
+			$this->hue        = $value[0];
+			$this->saturation = $value[1];
+			$this->lightness  = $value[2];
+			$this->alpha      = $value[3];
+			$this->from_hsl_array();
+		}
+
+		/**
+		 * Generates the HEX value of a color given values for $red, $green, $blue.
+		 *
+		 * @param int|string $red   The red value of this color.
+		 * @param int|string $green The green value of this color.
+		 * @param int|string $blue  The blue value of this color.
+		 *
+		 * @return string
+		 */
+		private function rgb_to_hex( $red, $green, $blue ) {
+			// Get hex values properly formatted.
+			$hex_red   = $this->dexhex_double_digit( $red );
+			$hex_green = $this->dexhex_double_digit( $green );
+			$hex_blue  = $this->dexhex_double_digit( $blue );
+			return '#' . $hex_red . $hex_green . $hex_blue;
+		}
+
+		/**
+		 * Convert a decimal value to hex and make sure it's 2 characters.
+		 *
+		 * @param int|string $value The value to convert.
+		 * @return string
+		 */
+		private function dexhex_double_digit( $value ) {
+			$value = dechex( $value );
+			if ( 1 == strlen( $value ) ) {
+				$value = '0' . $value;
+			}
+			return $value;
+		}
+
+		/**
+		 * Calculates the red, green, blue values of an HSL color.
+		 *
+		 * @see https://gist.github.com/brandonheyer/5254516
+		 */
+		private function from_hsl_array() {
+			$h = $this->hue / 360;
+			$s = $this->saturation / 100;
+			$l = $this->lightness / 100;
+
+			$r = $l;
+			$g = $l;
+			$b = $l;
+			$v = ( $l <= 0.5 ) ? ( $l * ( 1.0 + $s ) ) : ( $l + $s - $l * $s );
+			if ( $v > 0 ) {
+				$m = $l + $l - $v;
+				$sv = ( $v - $m ) / $v;
+				$h *= 6.0;
+				$sextant = floor( $h );
+				$fract = $h - $sextant;
+				$vsf = $v * $sv * $fract;
+				$mid1 = $m + $vsf;
+				$mid2 = $v - $vsf;
+				switch ( $sextant ) {
+					case 0:
+						$r = $v;
+						$g = $mid1;
+						$b = $m;
+						break;
+					case 1:
+						$r = $mid2;
+						$g = $v;
+						$b = $m;
+						break;
+					case 2:
+						$r = $m;
+						$g = $v;
+						$b = $mid1;
+						break;
+					case 3:
+						$r = $m;
+						$g = $mid2;
+						$b = $v;
+						break;
+					case 4:
+						$r = $mid1;
+						$g = $m;
+						$b = $v;
+						break;
+					case 5:
+						$r = $v;
+						$g = $m;
+						$b = $mid2;
+						break;
+				}
+			}
+			$this->red   = round( $r * 255, 0 );
+			$this->green = round( $g * 255, 0 );
+			$this->blue  = round( $b * 255, 0 );
+
+			$this->hex = $this->rgb_to_hex( $this->red, $this->green, $this->blue );
+			$this->set_luminance();
+		}
+
+		/**
+		 * Returns a CSS-formatted value for colors.
+		 *
+		 * @param string $mode The mode we're using.
+		 * @return string
+		 */
+		public function to_css( $mode = 'hex' ) {
+
+			$value = '';
+
+			switch ( $mode ) {
+				case 'hex':
+					$value = strtolower( $this->hex );
+					break;
+				case 'rgba':
+					$value = 'rgba(' . $this->red . ',' . $this->green . ',' . $this->blue . ',' . $this->alpha . ')';
+					break;
+				case 'rgb':
+					$value = 'rgb(' . $this->red . ',' . $this->green . ',' . $this->blue . ')';
+					break;
+				case 'hsl':
+					$value = 'hsl(' . $this->hue . ',' . round( $this->saturation ) . '%,' . round( $this->lightness ) . '%)';
+					break;
+				case 'hsla':
+					$value = 'hsla(' . $this->hue . ',' . round( $this->saturation ) . '%,' . round( $this->lightness ) . '%,' . $this->alpha . ')';
+					break;
+			}
+			return $value;
+		}
+
+		/**
+		 * Sets the HSL values of a color based on the values of red, green, blue.
+		 */
+		private function set_hsl() {
+			$red   = $this->red / 255;
+			$green = $this->green / 255;
+			$blue  = $this->blue / 255;
+
+			$max = max( $red, $green, $blue );
+			$min = min( $red, $green, $blue );
+
+			$lightness  = ( $max + $min ) / 2;
+			$difference = $max - $min;
+
+			if ( 0 == $difference ) {
+				$hue = $saturation = 0; // Achromatic.
+			} else {
+				$saturation = $difference / ( 1 - abs( 2 * $lightness - 1 ) );
+				switch ( $max ) {
+					case $red:
+						$hue = 60 * fmod( ( ( $green - $blue ) / $difference ), 6 );
+						if ( $blue > $green ) {
+							$hue += 360;
+						}
+						break;
+					case $green:
+						$hue = 60 * ( ( $blue - $red ) / $difference + 2 );
+						break;
+					case $blue:
+						$hue = 60 * ( ( $red - $green ) / $difference + 4 );
+						break;
+				}
+			}
+
+			$this->hue        = round( $hue );
+			$this->saturation = round( $saturation * 100 );
+			$this->lightness  = round( $lightness * 100 );
+		}
+
+		/**
+		 * Sets the brightness of a color based on the values of red, green, blue.
+		 */
+		private function set_brightness() {
+			$this->brightness = array(
+				'red'   => round( $this->red * .299 ),
+				'green' => round( $this->green * .587 ),
+				'blue'  => round( $this->blue * .114 ),
+				'total' => intval( ( $this->red * .299 ) + ( $this->green * .587 ) + ( $this->blue * .114 ) ),
+			);
+		}
+
+		/**
+		 * Sets the luminance of a color (range:0-255) based on the values of red, green, blue.
+		 */
+		private function set_luminance() {
+			$lum = ( 0.2126 * $this->red ) + ( 0.7152 * $this->green ) + ( 0.0722 * $this->blue );
+			$this->luminance = round( $lum );
+		}
+
+		/**
+		 * Gets an array of all the wordcolors.
+		 *
+		 * @return array
+		 */
+		private function get_word_colors() {
+			return array(
 				'aliceblue'            => 'F0F8FF',
 				'antiquewhite'         => 'FAEBD7',
 				'aqua'                 => '00FFFF',
@@ -178,438 +775,44 @@ if ( ! class_exists( 'Avada_Color' ) ) {
 				'white'                => 'FFFFFF',
 				'whitesmoke'           => 'F5F5F5',
 				'yellow'               => 'FFFF00',
-				'yellowgreen'          => '9ACD32'
+				'yellowgreen'          => '9ACD32',
 			);
 
-			if ( is_array( $color ) ) {
-				$color = $color[0];
-			}
-
-			// Remove any spaces and special characters before and after the string
-			$color = trim( $color );
-			// Check if the color is a standard word-color.
-			// If it is, then convert to hex.
-			if ( array_key_exists( $color, $word_colors ) ) {
-				$color = $word_colors[ $color ];
-			}
-			// Remove any trailing '#' symbols from the color value
-			$color = str_replace( '#', '', $color );
-			// If the string is 6 characters long then use it in pairs.
-			if ( 3 == strlen( $color ) ) {
-				$color = substr( $color, 0, 1 ) . substr( $color, 0, 1 ) . substr( $color, 1, 1 ) . substr( $color, 1, 1 ) . substr( $color, 2, 1 ) . substr( $color, 2, 1 );
-			}
-			$substr = array();
-			for ( $i = 0; $i <= 5; $i++ ) {
-				$default    = ( 0 == $i ) ? 'F' : ( $substr[$i-1] );
-				$substr[$i] = substr( $color, $i, 1 );
-				$substr[$i] = ( false === $substr[$i] || ! ctype_xdigit( $substr[$i] ) ) ? $default : $substr[$i];
-			}
-			$hex = implode( '', $substr );
-
-			return ( ! $hash ) ? $hex : '#' . $hex;
-
-		}
-
-		public static function sanitize_rgba( $value ) {
-			// If empty or an array return transparent
-			if ( empty( $value ) || is_array( $value ) ) {
-				return 'rgba(0,0,0,0)';
-			}
-			// If string does not start with 'rgba', then treat as hex
-			// sanitize the hex color and finally convert hex to rgba
-			if ( false === strpos( $value, 'rgba' ) ) {
-				return self::get_rgba( self::sanitize_hex( $value ) );
-			}
-			// By now we know the string is formatted as an rgba color so we can just return it.
-			$value = str_replace( array( ' ', 'rgba', '(', ')' ), '', $value );
-			$value = explode( ',', $value );
-			$red   = ( isset( $value[0] ) ) ? intval( $value[0] ) : 255;
-			$green = ( isset( $value[1] ) ) ? intval( $value[1] ) : 255;
-			$blue  = ( isset( $value[2] ) ) ? intval( $value[2] ) : 255;
-			$alpha = ( isset( $value[3] ) ) ? filter_var( $value[3], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION ) : 1;
-			return 'rgba(' . $red . ',' . $green . ',' . $blue . ',' . $alpha . ')';
 		}
 
 		/**
-		 * Sanitize colors.
-		 * Determine if the current value is a hex or an rgba color and call the appropriate method.
+		 * Handle non-existing public methods.
 		 *
-		 * @since 0.8.5
-		 *
-		 * @param  $value   string  hex or rgba color
-		 * @param  $default string  hex or rgba color
-		 * @return string
+		 * @access public
+		 * @since Avada 5.0.0
+		 * @param string $name      The method name.
+		 * @param mixed  $arguments The method arguments.
+		 * @return mixed
 		 */
-		public static function sanitize_color( $value ) {
-
-			if ( is_array( $value ) ) {
-				if ( isset( $value['rgba'] ) ) {
-					$value = $value['rgba'];
-				} elseif ( isset( $value['color'] ) ) {
-					$opacity = ( isset( $value['opacity'] ) ) ? $value['opacity'] : null;
-					$opacity = ( ! is_null( $opacity ) && isset( $value['alpha'] ) ) ? $value['alpha'] : null;
-					$opacity = ( is_null( $opacity ) ) ? 1 : Avada_Sanitize::number( $opacity );
-					$value = self::get_rgba( $value['color'], $opacity );
-				} else {
-					return;
-				}
-			}
-
-			if ( 'transparent' == $value ) {
-				return 'transparent';
-			}
-
-			// Is this an rgba color or a hex?
-			$mode = ( false === strpos( $value, 'rgba' ) ) ? 'rgba' : 'hex';
-
-			if ( 'rgba' == $mode ) {
-				return self::sanitize_hex( $value );
+		public function __call( $name, $arguments ) {
+			if ( method_exists( $this, $name ) ) {
+				call_user_func( array( $this, $name ), $arguments );
 			} else {
-				return self::sanitize_rgba( $value );
+				return $arguments;
 			}
-
 		}
 
 		/**
-		 * Gets the rgb value of the $hex color.
+		 * Handle non-existing public static methods.
 		 *
-		 * @var     string      The hex value of a color
-		 * @param   boolean     Whether we want to implode the values or not
-		 * @return  mixed       array|string
+		 * @static
+		 * @access public
+		 * @since Avada 5.0.0
+		 * @param string $name      The method name.
+		 * @param mixed  $arguments The method arguments.
+		 * @return mixed
 		 */
-		public static function get_rgb( $hex, $implode = false ) {
-
-			// Remove any trailing '#' symbols from the color value
-			$hex = self::sanitize_hex( $hex, false );
-
-			// rgb is an array
-			$rgb = array(
-				hexdec( substr( $hex, 0, 2 ) ),
-				hexdec( substr( $hex, 2, 2 ) ),
-				hexdec( substr( $hex, 4, 2 ) ),
-			);
-
-			return ( $implode ) ? implode( ',', $rgb ) : $rgb;
-
-		}
-
-		/**
-		 * Converts an rgba color to hex
-		 * This is an approximation and not completely accurate.
-		 *
-		 * @var     string  The rgba color formatted like rgba(r,g,b,a)
-		 * @return  string  The hex value of the color.
-		 */
-		public static function rgba2hex( $color, $apply_opacity = false ) {
-
-			// Remove parts of the string
-			$color = str_replace( array( 'rgba', '(', ')', ' ' ), '', $color );
-
-			if ( is_array( $color ) ) {
-				return ( isset( $color['color'] ) ) ? $color['color'] : '#ffffff';
-			}
-
-			// if not rgba, sanitize as HEX
-			if ( false !== strpos( $color, '#' ) ) {
-				return self::sanitize_hex( $color );
-			}
-			// Convert to array
-			$color = explode( ',', $color );
-		
-			// This is not a valid rgba definition, so return white.
-			if ( 4 != count( $color ) ) {
-				return '#ffffff';
-			}
-			// Convert dec. to hex.
-			$red   = dechex( (int) $color[0] );
-			$green = dechex( (int) $color[1] );
-			$blue  = dechex( (int) $color[2] );
-			$alpha = $color[3];
-
-			// Make sure all colors are 2 digits
-			$red   = ( 1 == strlen( $red ) ) ? '0' . $red : $red;
-			$green = ( 1 == strlen( $green ) ) ? '0' . $green : $green;
-			$blue  = ( 1 == strlen( $blue ) ) ? '0' . $blue : $blue;
-
-			// Combine hex parts
-			$hex = $red . $green . $blue;
-			if ( $apply_opacity ) {
-				// Get the opacity value on a 0-100 basis instead of 0-1.
-				$mix_level = intval( $alpha * 100 );
-				// Apply opacity - mix with white.
-				$hex = self::mix_colors( $hex, '#ffffff', $mix_level );
-			}
-
-			return '#' . str_replace( '#', '', $hex );
-
-		}
-
-		/**
-		 * Get the alpha channel from an rgba color
-		 *
-		 * @var     string  The rgba color formatted like rgba(r,g,b,a)
-		 * @return  string  The alpha value of the color.
-		 */
-		public static function get_alpha_from_rgba( $color ) {
-			if ( is_array( $color ) ) {
-				if ( isset( $color['opacity'] ) ) {
-					return $color['opacity'];
-				} elseif ( isset( $color['alpha'] ) ) {
-					return $color['alpha'];
-				} else {
-					return 1;
-				}
-			}
-			if ( false === strpos( $color, 'rgba' ) ) {
-				return '1';
-			}
-			// Remove parts of the string
-			$color = str_replace( array( 'rgba', '(', ')', ' ' ), '', $color );
-			// Convert to array
-			$color = explode( ',', $color );
-
-			if ( isset ( $color[3] ) ) {
-				return (string) $color[3];
+		public static function __callStatic( $name, $arguments ) {
+			if ( method_exists( __CLASS__, $name ) ) {
+				call_user_func( array( __CLASS__, $name ), $arguments );
 			} else {
-				return '1';
+				return $arguments;
 			}
-		}
-
-		/**
-		 * Gets the rgb value of the $hex color.
-		 *
-		 * @var     string      The hex value of a color
-		 * @param   int         Opacity level (1-100)
-		 * @return  string
-		 */
-		public static function get_rgba( $hex = '#fff', $opacity = 100 ) {
-
-			$hex = self::sanitize_hex( $hex, false );
-			/**
-			 * Make sure that opacity is properly formatted :
-			 * Set the opacity to 100 if a larger value has been entered by mistake.
-			 * If a negative value is used, then set to 0.
-			 * If an opacity value is entered in a decimal form (for example 0.25), then multiply by 100.
-			 */
-			if ( $opacity >= 100 ) {
-				$opacity = 100;
-			} elseif ( $opacity < 0 ) {
-				$opacity = 0;
-			} elseif ( $opacity <= 1 && $opacity != 0 ) {
-				$opacity = ( $opacity * 100 );
-			}
-			// Divide the opacity by 100 to end-up with a CSS value for the opacity
-			$opacity = ( $opacity / 100 );
-			$color = 'rgba(' . self::get_rgb( $hex, true ) . ', ' . $opacity . ')';
-			return $color;
-
-		}
-
-		/**
-		 * Strips the alpha value from an RGBA color string.
-		 *
-		 * @param 	string $rgba	The RGBA color string.
-		 * @return  string			The corresponding RGB string.
-		 */
-		public static function rgba_to_rgb( $rgba ) {
-			$rgba = str_replace( ' ', '', $rgba );
-			$rgba_array = explode( ',', $rgba );
-			$rgba_array[0] = str_replace( 'rgba(', '', $rgba_array[0] );
-			if ( isset( $rgba_array[3] ) ) {
-				unset( $rgba_array[3] );
-			}
-
-			$rgb = sprintf( 'rgb(%s)', implode( ',', $rgba_array ) );
-
-			return $rgb;
-		}
-
-		/**
-		 * Gets the brightness of the $hex color.
-		 *
-		 * @var     string      The hex value of a color
-		 * @return  int         value between 0 and 255
-		 */
-		public static function get_brightness( $hex ) {
-
-			$hex = self::sanitize_hex( $hex, false );
-			// returns brightness value from 0 to 255
-			return intval( ( ( hexdec( substr( $hex, 0, 2 ) ) * 299 ) + ( hexdec( substr( $hex, 2, 2 ) ) * 587 ) + ( hexdec( substr( $hex, 4, 2 ) ) * 114 ) ) / 1000 );
-
-		}
-
-		/**
-		 * Adjusts brightness of the $hex color.
-		 *
-		 * @var     string      The hex value of a color
-		 * @var     int         a value between -255 (darken) and 255 (lighten)
-		 * @return  string      returns hex color
-		 */
-		public static function adjust_brightness( $hex, $steps ) {
-
-			$hex = self::sanitize_hex( $hex, false );
-			// Steps should be between -255 and 255. Negative = darker, positive = lighter
-			$steps = max( -255, min( 255, $steps ) );
-			// Adjust number of steps and keep it inside 0 to 255
-			$red   = max( 0, min( 255, hexdec( substr( $hex, 0, 2 ) ) + $steps ) );
-			$green = max( 0, min( 255, hexdec( substr( $hex, 2, 2 ) ) + $steps ) );
-			$blue  = max( 0, min( 255, hexdec( substr( $hex, 4, 2 ) ) + $steps ) );
-
-			$red_hex   = str_pad( dechex( $red ), 2, '0', STR_PAD_LEFT );
-			$green_hex = str_pad( dechex( $green ), 2, '0', STR_PAD_LEFT );
-			$blue_hex  = str_pad( dechex( $blue ), 2, '0', STR_PAD_LEFT );
-
-			return self::sanitize_hex( $red_hex . $green_hex . $blue_hex );
-
-		}
-
-		/**
-		 * Mixes 2 hex colors.
-		 * the "percentage" variable is the percent of the first color
-		 * to be used it the mix. default is 50 (equal mix)
-		 *
-		 * @var     string      The hex value of color 1
-		 * @var     string      The hex value of color 2
-		 * @var     int         a value between 0 and 100
-		 * @return  string      returns hex color
-		 */
-		public static function mix_colors( $hex1, $hex2, $percentage ) {
-
-			$hex1 = self::sanitize_hex( $hex1, false );
-			$hex2 = self::sanitize_hex( $hex2, false );
-
-			$red   = ( $percentage * hexdec( substr( $hex1, 0, 2 ) ) + ( 100 - $percentage ) * hexdec( substr( $hex2, 0, 2 ) ) ) / 100;
-			$green = ( $percentage * hexdec( substr( $hex1, 2, 2 ) ) + ( 100 - $percentage ) * hexdec( substr( $hex2, 2, 2 ) ) ) / 100;
-			$blue  = ( $percentage * hexdec( substr( $hex1, 4, 2 ) ) + ( 100 - $percentage ) * hexdec( substr( $hex2, 4, 2 ) ) ) / 100;
-
-			$red_hex   = str_pad( dechex( $red ), 2, '0', STR_PAD_LEFT );
-			$green_hex = str_pad( dechex( $green ), 2, '0', STR_PAD_LEFT );
-			$blue_hex  = str_pad( dechex( $blue ), 2, '0', STR_PAD_LEFT );
-
-			return self::sanitize_hex( $red_hex . $green_hex . $blue_hex );
-
-		}
-
-		/**
-		 * Convert hex color to hsv
-		 *
-		 * @var     string      The hex value of color 1
-		 * @return  array       returns array( 'h', 's', 'v' )
-		 */
-		public static function hex_to_hsv( $hex ) {
-			$rgb = (array) (array) self::get_rgb( self::sanitize_hex( $hex, false ) );
-			return self::rgb_to_hsv( $rgb );
-		}
-
-		/**
-		 * Convert hex color to hsv
-		 *
-		 * @var     array       The rgb color to conver array( 'r', 'g', 'b' )
-		 * @return  array       returns array( 'h', 's', 'v' )
-		 */
-		public static function rgb_to_hsv( $color = array() ) {
-
-			$var_r = ( $color[0] / 255 );
-			$var_g = ( $color[1] / 255 );
-			$var_b = ( $color[2] / 255 );
-
-			$var_min = min( $var_r, $var_g, $var_b );
-			$var_max = max( $var_r, $var_g, $var_b );
-			$del_max = $var_max - $var_min;
-
-			$h = 0;
-			$s = 0;
-			$v = $var_max;
-
-			if ( 0 != $del_max ) {
-				$s = $del_max / $var_max;
-
-				$del_r = ( ( ( $var_max - $var_r ) / 6 ) + ( $del_max / 2 ) ) / $del_max;
-				$del_g = ( ( ( $var_max - $var_g ) / 6 ) + ( $del_max / 2 ) ) / $del_max;
-				$del_b = ( ( ( $var_max - $var_b ) / 6 ) + ( $del_max / 2 ) ) / $del_max;
-
-				if ( $var_r == $var_max ) {
-					$h = $del_b - $del_g;
-				} elseif ( $var_g == $var_max ) {
-					$h = ( 1 / 3 ) + $del_r - $del_b;
-				} elseif ( $var_b == $var_max ) {
-					$h = ( 2 / 3 ) + $del_g - $del_r;
-				}
-
-				if ( $h < 0 ) {
-					$h++;
-				}
-
-				if ( $h > 1 ) {
-					$h--;
-				}
-			}
-
-			return array( 'h' => round( $h, 2 ), 's' => round( $s, 2 ), 'v' => round( $v, 2 ) );
-
-		}
-
-		/*
-		 * This is a very simple algorithm that works by summing up the differences between the three color components red, green and blue.
-		 * A value higher than 500 is recommended for good readability.
-		 */
-		public static function color_difference( $color_1 = '#ffffff', $color_2 = '#000000' ) {
-
-			$color_1 = self::sanitize_hex( $color_1, false );
-			$color_2 = self::sanitize_hex( $color_2, false );
-
-			$color_1_rgb = self::get_rgb( $color_1 );
-			$color_2_rgb = self::get_rgb( $color_2 );
-
-			$r_diff = max( $color_1_rgb[0], $color_2_rgb[0] ) - min( $color_1_rgb[0], $color_2_rgb[0] );
-			$g_diff = max( $color_1_rgb[1], $color_2_rgb[1] ) - min( $color_1_rgb[1], $color_2_rgb[1] );
-			$b_diff = max( $color_1_rgb[2], $color_2_rgb[2] ) - min( $color_1_rgb[2], $color_2_rgb[2] );
-
-			$color_diff = $r_diff + $g_diff + $b_diff;
-
-			return $color_diff;
-
-		}
-
-		/*
-		 * This function tries to compare the brightness of the colors.
-		 * A return value of more than 125 is recommended.
-		 * Combining it with the color_difference function above might make sense.
-		 */
-		public static function brightness_difference( $color_1 = '#ffffff', $color_2 = '#000000' ) {
-
-			$color_1 = self::sanitize_hex( $color_1, false );
-			$color_2 = self::sanitize_hex( $color_2, false );
-
-			$color_1_rgb = self::get_rgb( $color_1 );
-			$color_2_rgb = self::get_rgb( $color_2 );
-
-			$br_1 = ( 299 * $color_1_rgb[0] + 587 * $color_1_rgb[1] + 114 * $color_1_rgb[2] ) / 1000;
-			$br_2 = ( 299 * $color_2_rgb[0] + 587 * $color_2_rgb[1] + 114 * $color_2_rgb[2] ) / 1000;
-
-			return intval( abs( $br_1 - $br_2 ) );
-
-		}
-
-		/*
-		 * Uses the luminosity to calculate the difference between the given colors.
-		 * The returned value should be bigger than 5 for best readability.
-		 */
-		public static function lumosity_difference( $color_1 = '#ffffff', $color_2 = '#000000' ) {
-
-			$color_1 = self::sanitize_hex( $color_1, false );
-			$color_2 = self::sanitize_hex( $color_2, false );
-
-			$color_1_rgb = self::get_rgb( $color_1 );
-			$color_2_rgb = self::get_rgb( $color_2 );
-
-			$l1 = 0.2126 * pow( $color_1_rgb[0] / 255, 2.2 ) + 0.7152 * pow( $color_1_rgb[1] / 255, 2.2 ) + 0.0722 * pow( $color_1_rgb[2] / 255, 2.2 );
-			$l2 = 0.2126 * pow( $color_2_rgb[0] / 255, 2.2 ) + 0.7152 * pow( $color_2_rgb[1] / 255, 2.2 ) + 0.0722 * pow( $color_2_rgb[2] / 255, 2.2 );
-
-			$lum_diff = ( $l1 > $l2 ) ? ( $l1 + 0.05 ) / ( $l2 + 0.05 ) : ( $l2 + 0.05 ) / ( $l1 + 0.05 );
-
-			return round( $lum_diff, 2 );
-
 		}
 	}
 }

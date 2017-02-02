@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Logo
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + logo
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_sliding_bar( $sections ) {
 
@@ -82,8 +86,8 @@ function avada_options_section_sliding_bar( $sections ) {
 						'value'    => '1',
 					),
 				),
-			),			
-			
+			),
+
 			'slidingbar_bg_color' => array(
 				'label'       => esc_html__( 'Sliding Bar Background Color', 'Avada' ),
 				'description' => esc_html__( 'Controls the background color of the sliding bar.', 'Avada' ),
@@ -143,7 +147,6 @@ function avada_options_section_sliding_bar( $sections ) {
 					),
 				),
 			),
-
 
 			'slidingbar_headings_color' => array(
 				'label'       => esc_html__( 'Sliding Bar Headings Color', 'Avada' ),

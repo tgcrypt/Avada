@@ -1,9 +1,17 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
+<?php
+
 if ( ! function_exists( 'avada_header_template' ) ) {
 	/**
-	 * Avada Header Template Function
-	 * @param  string $slider_position Show header below or above slider
+	 * Avada Header Template Function.
+	 *
+	 * @param  string $slider_position Show header below or above slider.
 	 * @return void
 	 */
 	function avada_header_template( $slider_position = 'Below' ) {
@@ -17,13 +25,13 @@ if ( ! function_exists( 'avada_header_template' ) ) {
 		$theme_option_slider_position = Avada()->settings->get( 'slider_position' );
 		$page_option_slider_position  = fusion_get_page_option( 'slider_position', $page_id );
 
-		if ( ( ! $theme_option_slider_position || ( $theme_option_slider_position == $slider_position && $page_option_slider_position != strtolower( $reverse_position ) ) || ( $theme_option_slider_position != $slider_position && $page_option_slider_position == strtolower( $slider_position ) ) ) && ! is_page_template( 'blank.php' ) && fusion_get_page_option( 'display_header', $page_id ) != 'no' && Avada()->settings->get( 'header_position' ) == 'Top' ) {
+		if ( ( ! $theme_option_slider_position || ( $slider_position == $theme_option_slider_position && strtolower( $reverse_position ) != $page_option_slider_position ) || ( $theme_option_slider_position != $slider_position && strtolower( $slider_position ) == $page_option_slider_position ) ) && ! is_page_template( 'blank.php' ) && 'no' != fusion_get_page_option( 'display_header', $page_id ) && 'Top' == Avada()->settings->get( 'header_position' ) ) {
 			$header_wrapper_class  = 'fusion-header-wrapper';
 			$header_wrapper_class .= ( Avada()->settings->get( 'header_shadow' ) ) ? ' fusion-header-shadow' : '';
 			$header_wrapper_class  = 'class="' . $header_wrapper_class . '"';
 
 			/**
-			 * avada_before_header_wrapper hook
+			 * The avada_before_header_wrapper hook.
 			 */
 			do_action( 'avada_before_header_wrapper' );
 
@@ -40,23 +48,24 @@ if ( ! function_exists( 'avada_header_template' ) ) {
 			}
 			?>
 
-			<div <?php echo $header_wrapper_class; ?>>
+			<header <?php echo $header_wrapper_class; ?>>
 				<div class="fusion-header-<?php echo Avada()->settings->get( 'header_layout' ); ?> fusion-logo-<?php echo strtolower( Avada()->settings->get( 'logo_alignment' ) ); ?> fusion-sticky-menu-<?php echo has_nav_menu( 'sticky_navigation' ); ?> fusion-sticky-logo-<?php echo $sticky_header_logo; ?> fusion-mobile-logo-<?php echo $mobile_logo; ?> fusion-mobile-menu-design-<?php echo strtolower( Avada()->settings->get( 'mobile_menu_design' ) ); ?><?php echo $sticky_header_type2_layout; ?> <?php echo $menu_text_align; ?>">
 					<?php
 					/**
-					 * avada_header hook
-					 * @hooked avada_secondary_header - 10
-					 * @hooked avada_header_1 - 20 (adds header content for header v1-v3)
-					 * @hooked avada_header_2 - 20 (adds header content for header v4-v5)
+					 * The avada_header hook.
+					 *
+					 * @hooked avada_secondary_header - 10.
+					 * @hooked avada_header_1 - 20 (adds header content for header v1-v3).
+					 * @hooked avada_header_2 - 20 (adds header content for header v4-v5).
 					 */
 					do_action( 'avada_header' );
 					?>
 				</div>
 				<div class="fusion-clearfix"></div>
-			</div>
+			</header>
 			<?php
 			/**
-			 * avada_after_header_wrapper hook
+			 * The avada_after_header_wrapper hook.
 			 */
 			do_action( 'avada_after_header_wrapper' );
 		}
@@ -65,7 +74,8 @@ if ( ! function_exists( 'avada_header_template' ) ) {
 
 if ( ! function_exists( 'avada_side_header' ) ) {
 	/**
-	 * Avada Side Header Template Function
+	 * Avada Side Header Template Function.
+	 *
 	 * @return void
 	 */
 	function avada_side_header() {
@@ -78,6 +88,9 @@ if ( ! function_exists( 'avada_side_header' ) ) {
 }
 
 if ( ! function_exists( 'avada_secondary_header' ) ) {
+	/**
+	 * Gets the header-secondary template if needed.
+	 */
 	function avada_secondary_header() {
 		if ( ! in_array( Avada()->settings->get( 'header_layout' ), array( 'v2', 'v3', 'v4', 'v5' ) ) ) {
 			return;
@@ -90,6 +103,9 @@ if ( ! function_exists( 'avada_secondary_header' ) ) {
 add_action( 'avada_header', 'avada_secondary_header', 10 );
 
 if ( ! function_exists( 'avada_header_1' ) ) {
+	/**
+	 * Gets the header-1 template if needed.
+	 */
 	function avada_header_1() {
 		if ( ! in_array( Avada()->settings->get( 'header_layout' ), array( 'v1', 'v2', 'v3' ) ) ) {
 			return;
@@ -100,6 +116,9 @@ if ( ! function_exists( 'avada_header_1' ) ) {
 add_action( 'avada_header', 'avada_header_1', 20 );
 
 if ( ! function_exists( 'avada_header_2' ) ) {
+	/**
+	 * Gets the header-2 template if needed.
+	 */
 	function avada_header_2() {
 		if ( ! in_array( Avada()->settings->get( 'header_layout' ), array( 'v4', 'v5' ) ) ) {
 			return;
@@ -112,15 +131,36 @@ add_action( 'avada_header', 'avada_header_2', 20 );
 
 add_action( 'avada_header', 'avada_header_3', 10 );
 if ( ! function_exists( 'avada_header_3' ) ) {
+	/**
+	 * Getys the header-3 template if needed.
+	 */
 	function avada_header_3() {
-		if ( Avada()->settings->get( 'header_layout' ) != 'v6' ) {
+		if ( 'v6' !== Avada()->settings->get( 'header_layout' ) ) {
 			return;
 		}
 		get_template_part( 'templates/header-3' );
 	}
 }
 
+add_action( 'avada_header', 'avada_header_4', 10 );
+if ( ! function_exists( 'avada_header_4' ) ) {
+	/**
+	 * Gets the template part for the v7 header.
+	 *
+	 * @since 5.0
+	 */
+	function avada_header_4() {
+		if ( 'v7' !== Avada()->settings->get( 'header_layout' ) ) {
+			return;
+		}
+		get_template_part( 'templates/header-4' );
+	}
+}
+
 if ( ! function_exists( 'avada_secondary_main_menu' ) ) {
+	/**
+	 * Gets the secondary menu template if needed.
+	 */
 	function avada_secondary_main_menu() {
 		if ( ! in_array( Avada()->settings->get( 'header_layout' ), array( 'v4', 'v5' ) ) ) {
 			return;
@@ -131,8 +171,11 @@ if ( ! function_exists( 'avada_secondary_main_menu' ) ) {
 add_action( 'avada_header', 'avada_secondary_main_menu', 30 );
 
 if ( ! function_exists( 'avada_logo' ) ) {
+	/**
+	 * Gets the logo template if needed.
+	 */
 	function avada_logo() {
-		// No need to proceed any further if no logo is set
+		// No need to proceed any further if no logo is set.
 		if ( '' == Avada()->settings->get( 'logo' ) && '' == Avada()->settings->get( 'logo_retina' ) ) {
 			return;
 		}
@@ -141,18 +184,28 @@ if ( ! function_exists( 'avada_logo' ) ) {
 }
 
 if ( ! function_exists( 'avada_main_menu' ) ) {
+	/**
+	 * The main menu.
+	 *
+	 * @param bool $flyout_menu Whether we want the flyout menu or not.
+	 */
 	function avada_main_menu( $flyout_menu = false ) {
 		$sticky_menu = '';
+
+		$menu_class = 'fusion-menu';
+		if ( 'v7' == Avada()->settings->get( 'header_layout' ) ) {
+			$menu_class .= ' fusion-middle-logo-ul';
+		}
 
 		$main_menu_args = array(
 			'theme_location'  => 'main_navigation',
 			'depth'           => 5,
-			'menu_class'      => 'fusion-menu',
+			'menu_class'      => $menu_class,
 			'items_wrap'      => '<ul id="%1$s" class="%2$s">%3$s</ul>',
-			'fallback_cb'     => 'FusionCoreFrontendWalker::fallback',
-			'walker'          => new FusionCoreFrontendWalker(),
+			'fallback_cb'     => 'Avada_Nav_Walker::fallback',
+			'walker'          => new Avada_Nav_Walker(),
 			'container_class' => 'fusion-main-menu',
-			'container' 	  => 'div'
+			'container' 	  => 'nav',
 		);
 
 		if ( $flyout_menu ) {
@@ -177,6 +230,7 @@ if ( ! function_exists( 'avada_main_menu' ) ) {
 					'theme_location'  => 'sticky_navigation',
 					'container_class' => 'fusion-main-menu fusion-sticky-menu',
 					'menu_id'		  => 'menu-main-menu-1',
+					'walker'          => new Avada_Nav_Walker(),
 				);
 
 				$sticky_menu_args = wp_parse_args( $sticky_menu_args, $main_menu_args );
@@ -184,7 +238,7 @@ if ( ! function_exists( 'avada_main_menu' ) ) {
 				wp_nav_menu( $sticky_menu_args );
 			}
 
-			// Make sure mobile menu is not loaded when we use slideout menu or ubermenu
+			// Make sure mobile menu is not loaded when we use slideout menu or ubermenu.
 			if ( ! function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) || ( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ! ubermenu_get_menu_instance_by_theme_location( 'main_navigation' ) ) ) {
 				avada_mobile_main_menu();
 			}
@@ -193,12 +247,21 @@ if ( ! function_exists( 'avada_main_menu' ) ) {
 }
 
 if ( ! function_exists( 'avada_default_menu_fallback' ) ) {
+	/**
+	 * Return null.
+	 *
+	 * @param array $args Menu arguments. Irrelevant in this context.
+	 * @return null
+	 */
 	function avada_default_menu_fallback( $args ) {
 		return null;
 	}
 }
 
 if ( ! function_exists( 'avada_contact_info' ) ) {
+	/**
+	 * Returns the markup for the contact-info area.
+	 */
 	function avada_contact_info() {
 		$phone_number    = do_shortcode( Avada()->settings->get( 'header_number' ) );
 		$email           = antispambot( Avada()->settings->get( 'header_email' ) );
@@ -208,15 +271,16 @@ if ( ! function_exists( 'avada_contact_info' ) ) {
 
 		if ( $phone_number || $email ) {
 			$html .= '<div class="fusion-contact-info">';
-				$html .= $phone_number;
-				if ( $phone_number && $email ) {
-					if ( 'Top' == $header_position ) {
-						$html .= '<span class="fusion-header-separator">' . apply_filters( 'avada_header_separator', '|' ) .'</span>';
-					} else {
-						$html .= '<br />';
-					}
+			$html .= $phone_number;
+			if ( $phone_number && $email ) {
+				if ( 'Top' == $header_position ) {
+					$html .= '<span class="fusion-header-separator">' . apply_filters( 'avada_header_separator', '|' ) . '</span>';
+				} else {
+					$html .= '<br />';
 				}
-				$html .= sprintf( apply_filters( 'avada_header_contact_info_email', '<a href="mailto:%s">%s</a>' ), $email, $email );
+			}
+
+			$html .= sprintf( apply_filters( 'avada_header_contact_info_email', '<a href="mailto:%s">%s</a>' ), $email, $email );
 			$html .= '</div>';
 		}
 		return $html;
@@ -224,6 +288,9 @@ if ( ! function_exists( 'avada_contact_info' ) ) {
 }
 
 if ( ! function_exists( 'avada_secondary_nav' ) ) {
+	/**
+	 * Retuerns the markup for nav menu.
+	 */
 	function avada_secondary_nav() {
 		if ( has_nav_menu( 'top_navigation' ) ) {
 			return wp_nav_menu( array(
@@ -231,26 +298,32 @@ if ( ! function_exists( 'avada_secondary_nav' ) ) {
 				'depth'           => 5,
 				'items_wrap'      => '<ul id="%1$s" class="%2$s">%3$s</ul>',
 				'container_class' => 'fusion-secondary-menu',
-				'fallback_cb'     => 'FusionCoreFrontendWalker::fallback',
-				'walker'          => new FusionCoreFrontendWalker(),
-				'echo'            => false
+				'container'       => 'nav',
+				'fallback_cb'     => 'Avada_Nav_Walker::fallback',
+				'walker'          => new Avada_Nav_Walker(),
+				'echo'            => false,
 			) );
 		}
 	}
 }
 
 if ( ! function_exists( 'avada_header_social_links' ) ) {
+	/**
+	 * Return the social links maekup.
+	 *
+	 * @return string
+	 */
 	function avada_header_social_links() {
 		global $social_icons;
 
 		$options = array(
 			'position'          => 'header',
-			'icon_colors'       => Avada()->settings->get( 'header_social_links_icon_color'),
-			'box_colors'        => Avada()->settings->get( 'header_social_links_box_color', 'rgba' ),
+			'icon_colors'       => Avada()->settings->get( 'header_social_links_icon_color' ),
+			'box_colors'        => Avada()->settings->get( 'header_social_links_box_color' ),
 			'icon_boxed'        => Avada()->settings->get( 'header_social_links_boxed' ),
 			'icon_boxed_radius' => Avada_Sanitize::size( Avada()->settings->get( 'header_social_links_boxed_radius' ) ),
 			'tooltip_placement' => Avada()->settings->get( 'header_social_links_tooltip_placement' ),
-			'linktarget'        => Avada()->settings->get( 'social_icons_new' )
+			'linktarget'        => Avada()->settings->get( 'social_icons_new' ),
 		);
 
 		$render_social_icons = $social_icons->render_social_icons( $options );
@@ -262,9 +335,10 @@ if ( ! function_exists( 'avada_header_social_links' ) ) {
 
 if ( ! function_exists( 'avada_secondary_header_content' ) ) {
 	/**
-	 * Get the secondary header content based on the content area
-	 * @param  string $content_area Secondary header content area from theme optins
-	 * @return string               Html for the content
+	 * Get the secondary header content based on the content area.
+	 *
+	 * @param  string $content_area Secondary header content area from theme optins.
+	 * @return string               Html for the content.
 	 */
 	function avada_secondary_header_content( $content_area ) {
 		if ( Avada()->settings->get( $content_area ) == 'Contact Info' ) {
@@ -282,6 +356,9 @@ if ( ! function_exists( 'avada_secondary_header_content' ) ) {
 }
 
 if ( ! function_exists( 'avada_header_content_3' ) ) {
+	/**
+	 * Renders the 3rd content in headers.
+	 */
 	function avada_header_content_3() {
 		if ( 'v4' != Avada()->settings->get( 'header_layout' ) && Avada()->settings->get( 'header_position' ) == 'Top' ) {
 			return;
@@ -320,18 +397,33 @@ if ( Avada()->settings->get( 'header_position' ) == 'Top' ) {
 
 
 if ( ! function_exists( 'avada_header_banner' ) ) {
+	/**
+	 * Returns the header banner.
+	 *
+	 * @return string
+	 */
 	function avada_header_banner() {
 		return '<div class="fusion-header-banner">' . do_shortcode( Avada()->settings->get( 'header_banner_code' ) ) . '</div>';
 	}
 }
 
 if ( ! function_exists( 'avada_header_tagline' ) ) {
+	/**
+	 * Returns the headers tagline.
+	 *
+	 * @return string
+	 */
 	function avada_header_tagline() {
 		return '<h3 class="fusion-header-tagline">' . do_shortcode( Avada()->settings->get( 'header_tagline' ) ) . '</h3>';
 	}
 }
 
 if ( ! function_exists( 'avada_modern_menu' ) ) {
+	/**
+	 * Gets the menu-mobile-modern template part.
+	 *
+	 * @return string
+	 */
 	function avada_modern_menu() {
 		ob_start();
 		get_template_part( 'templates/menu-mobile-modern' );
@@ -340,9 +432,11 @@ if ( ! function_exists( 'avada_modern_menu' ) ) {
 }
 
 if ( ! function_exists( 'avada_mobile_main_menu' ) ) {
+	/**
+	 * Gets the menu-mobile-main template part.
+	 */
 	function avada_mobile_main_menu() {
 		get_template_part( 'templates/menu-mobile-main' );
 	}
 }
-
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

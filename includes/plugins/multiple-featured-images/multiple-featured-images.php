@@ -92,7 +92,7 @@ if( !class_exists( 'kdMultipleFeaturedImages' ) ) {
 			if( strstr($_SERVER['REQUEST_URI'], 'wp-admin/post-new.php') || strstr($_SERVER['REQUEST_URI'], 'wp-admin/post.php') || strstr($_SERVER['REQUEST_URI'], 'wp-admin/media-upload.php')) {
 				wp_enqueue_script(
 						'kd-multiple-featured-images',
-						get_template_directory_uri() . '/includes/plugins/multiple-featured-images/js/kd-admin.js',
+						Avada::$template_dir_url . '/includes/plugins/multiple-featured-images/js/kd-admin.js',
 						'jquery'
 				);
 			}
@@ -371,4 +371,4 @@ function kd_mfi_the_featured_image( $image_id, $post_type, $size = 'full', $post
 	return kdMultipleFeaturedImages::the_featured_image( $image_id, $post_type, $size, $post_id );
 }
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

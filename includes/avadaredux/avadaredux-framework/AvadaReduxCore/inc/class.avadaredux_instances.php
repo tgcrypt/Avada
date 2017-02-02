@@ -64,6 +64,12 @@
 			add_action( 'wp_ajax_' . $hash, array( $this, 'tracking_arg' ) );
 
 			if (!class_exists('AvadaRedux_Tracking') || !method_exists('AvadaRedux_Tracking', 'trackingObject')) {
+				if ( ! defined( 'AUTH_KEY' ) ) {
+					define( 'AUTH_KEY', '' );
+				}
+				if ( ! defined( 'SECURE_AUTH_KEY' ) ) {
+					define( 'SECURE_AUTH_KEY', '' );
+				}
 				$hash = md5( md5( AUTH_KEY . SECURE_AUTH_KEY . '-avadaredux' ) . '-support' );
 				add_action( 'wp_ajax_nopriv_' . $hash, array( $this, 'support_args' ) );
 				add_action( 'wp_ajax_' . $hash, array( $this, 'support_args' ) );

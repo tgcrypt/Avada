@@ -1140,4 +1140,4 @@ class WP_Import extends WP_Importer {
 } // class_exists( 'WP_Importer' )
 
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

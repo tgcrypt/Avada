@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Logo
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + logo
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_logo( $sections ) {
 
@@ -109,15 +113,16 @@ function avada_options_section_logo( $sections ) {
 						'description' => '',
 						'id'          => 'default_logo_info_title',
 						'icon'        => true,
-						'type'        => 'info'
+						'type'        => 'info',
 					),
 					'logo' => array(
 						'label'       => esc_html__( 'Default Logo', 'Avada' ),
 						'description' => esc_html__( 'Select an image file for your logo.', 'Avada' ),
 						'id'          => 'logo',
-						'default'     => get_template_directory_uri() . '/assets/images/logo.png',
+						'default'     => Avada::$template_dir_url . '/assets/images/logo.png',
 						'mod'         => 'min',
-						'type'        => 'media'
+						'type'        => 'media',
+						'mode'        => false,
 					),
 					'logo_retina' => array(
 						'label'       => esc_html__( 'Retina Default Logo', 'Avada' ),
@@ -126,6 +131,7 @@ function avada_options_section_logo( $sections ) {
 						'default'     => '',
 						'mod'         => 'min',
 						'type'        => 'media',
+						'mode'        => false,
 						'required'    => array(
 							array(
 								'setting'  => 'logo',
@@ -158,7 +164,7 @@ function avada_options_section_logo( $sections ) {
 						'description' => '',
 						'id'          => 'sticky_logo_info_title',
 						'icon'        => true,
-						'type'        => 'info'
+						'type'        => 'info',
 					),
 					'sticky_header_logo' => array(
 						'label'       => esc_html__( 'Sticky Header Logo', 'Avada' ),
@@ -166,7 +172,7 @@ function avada_options_section_logo( $sections ) {
 						'id'          => 'sticky_header_logo',
 						'default'     => '',
 						'mod'         => 'min',
-						'type'        => 'media'
+						'type'        => 'media',
 					),
 					'sticky_header_logo_retina' => array(
 						'label'       => esc_html__( 'Retina Sticky Header Logo', 'Avada' ),
@@ -206,7 +212,7 @@ function avada_options_section_logo( $sections ) {
 						'description' => '',
 						'id'          => 'mobile_logo_info_title',
 						'icon'        => true,
-						'type'        => 'info'
+						'type'        => 'info',
 					),
 					'mobile_logo' => array(
 						'label'       => esc_html__( 'Mobile Logo', 'Avada' ),
@@ -214,7 +220,7 @@ function avada_options_section_logo( $sections ) {
 						'id'          => 'mobile_logo',
 						'default'     => '',
 						'mod'         => 'min',
-						'type'        => 'media'
+						'type'        => 'media',
 					),
 					'mobile_logo_retina' => array(
 						'label'       => esc_html__( 'Retina Mobile Logo', 'Avada' ),
@@ -264,14 +270,14 @@ function avada_options_section_logo( $sections ) {
 						'description' => esc_html__( 'Favicon for your website at 16px x 16px.', 'Avada' ),
 						'id'          => 'favicon',
 						'default'     => '',
-						'type'        => 'media'
+						'type'        => 'media',
 					),
 					'iphone_icon' => array(
 						'label'       => esc_html__( 'Apple iPhone Icon Upload', 'Avada' ),
 						'description' => esc_html__( 'Favicon for Apple iPhone at 57px x 57px.', 'Avada' ),
 						'id'          => 'iphone_icon',
 						'default'     => '',
-						'type'        => 'media'
+						'type'        => 'media',
 					),
 					'iphone_icon_retina' => array(
 						'label'       => esc_html__( 'Apple iPhone Retina Icon Upload', 'Avada' ),
@@ -310,7 +316,7 @@ function avada_options_section_logo( $sections ) {
 						'description' => esc_html__( 'Favicon for Apple iPad at 72px x 72px.', 'Avada' ),
 						'id'          => 'ipad_icon',
 						'default'     => '',
-						'type'        => 'media'
+						'type'        => 'media',
 					),
 					'ipad_icon_retina' => array(
 						'label'       => esc_html__( 'Apple iPad Retina Icon Upload', 'Avada' ),

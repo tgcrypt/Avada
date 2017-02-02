@@ -1,13 +1,31 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
+/**
+ * Handles multiple featured images.
+ */
 class Avada_Multiple_Featured_Images {
 
+	/**
+	 * Constructor.
+	 *
+	 * @access  public
+	 */
 	public function __construct() {
 		if ( is_admin() ) {
 			add_action( 'after_setup_theme', array( $this, 'generate' ) );
 		}
 	}
 
+	/**
+	 * Generates the multiple images.
+	 *
+	 * @access  public
+	 */
 	public function generate() {
 		$post_types = array(
 			'post',
@@ -32,7 +50,7 @@ class Avada_Multiple_Featured_Images {
 						'set'	 => sprintf( __( 'Set featured image %s', 'Avada' ), $i ),
 						'remove' => sprintf( __( 'Remove featured image %s', 'Avada' ), $i ),
 						'use'    => sprintf( __( 'Use as featured image %s', 'Avada' ), $i ),
-					)
+					),
 				) );
 			}
 
@@ -41,7 +59,6 @@ class Avada_Multiple_Featured_Images {
 		}
 
 	}
-
 }
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

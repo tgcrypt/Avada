@@ -19,7 +19,7 @@ jQuery(document).ready(function($){
 				} else {
 					var $image_url = $ ( $( $html )[0] ).attr( 'href' );
 				}
-				$( window.avada_uploadfield ).val( $image_url );
+				$( window.avada_uploadfield ).val( $image_url ).trigger( 'change' );
 				window.avada_uploadfield = '';
 
 				tb_remove();

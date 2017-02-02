@@ -1,32 +1,34 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Sidebar settings
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + sidebars
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_sidebars( $sections ) {
 
 	/**
-	 * Register sidebar options for blog/portfolio/woocommerce archive pages
+	 * Register sidebar options for blog/portfolio/woocommerce archive pages.
 	 */
 	global $wp_registered_sidebars;
 	$sidebar_options[] = 'None';
 
-	for ( $i =0; $i < 1; $i++ ) {
+	for ( $i = 0; $i < 1; $i++ ) {
 
-		// sidebar_generator::get_sidebars();
 		$sidebars = $wp_registered_sidebars;
-		// var_dump( $sidebars );
 		if ( is_array( $sidebars ) && ! empty( $sidebars ) ) {
-			foreach( $sidebars as $sidebar ) {
+			foreach ( $sidebars as $sidebar ) {
 				$sidebar_options[] = $sidebar['name'];
 			}
 		}
 
-		$sidebars = sidebar_generator::get_sidebars();
+		$sidebars = Sidebar_Generator::get_sidebars();
 		if ( is_array( $sidebars ) && ! empty( $sidebars ) ) {
 			foreach ( $sidebars as $key => $value ) {
 				$sidebar_options[] = $value;
@@ -34,7 +36,7 @@ function avada_options_section_sidebars( $sections ) {
 		}
 	}
 	$sidebars_array = array();
-	foreach( $sidebar_options as $sidebar_option ) {
+	foreach ( $sidebar_options as $sidebar_option ) {
 		$sidebars_array[ $sidebar_option ] = $sidebar_option;
 	}
 	$sidebar_options = $sidebars_array;
@@ -101,7 +103,7 @@ function avada_options_section_sidebars( $sections ) {
 						'description' => esc_html__( 'Turn on if you want to use the same sidebars on all pages. This option overrides the page options.', 'Avada' ),
 						'id'          => 'pages_global_sidebar',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'pages_sidebar' => array(
 						'label'       => esc_html__( 'Global Page Sidebar 1', 'Avada' ),
@@ -117,7 +119,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'pages_sidebar_2',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'default_sidebar_pos' => array(
 						'label'       => esc_html__( 'Global Page Sidebar Position', 'Avada' ),
@@ -126,8 +128,8 @@ function avada_options_section_sidebars( $sections ) {
 						'default'     => 'Right',
 						'type'        => 'radio-buttonset',
 						'choices'     => array(
-							'Right' => esc_html__( 'Right', 'Avada' ),
 							'Left'  => esc_html__( 'Left', 'Avada' ),
+							'Right' => esc_html__( 'Right', 'Avada' ),
 						),
 					),
 				),
@@ -144,7 +146,7 @@ function avada_options_section_sidebars( $sections ) {
 						'description' => esc_html__( 'Turn on if you want to use the same sidebars on all portfolio posts. This option overrides the portfolio post options.', 'Avada' ),
 						'id'          => 'portfolio_global_sidebar',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'portfolio_sidebar' => array(
 						'label'       => esc_html__( 'Global Portfolio Post Sidebar 1', 'Avada' ),
@@ -152,7 +154,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'portfolio_sidebar',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'portfolio_sidebar_2' => array(
 						'label'       => esc_html__( 'Global Portfolio Post Sidebar 2', 'Avada' ),
@@ -160,7 +162,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'portfolio_sidebar_2',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'portfolio_sidebar_position' => array(
 						'label'       => esc_html__( 'Global Portfolio Sidebar Position', 'Avada' ),
@@ -169,9 +171,10 @@ function avada_options_section_sidebars( $sections ) {
 						'default'     => 'Right',
 						'type'        => 'radio-buttonset',
 						'choices'     => array(
-							'Right' => esc_html__( 'Right', 'Avada' ),
 							'Left'  => esc_html__( 'Left', 'Avada' ),
-						)
+							'Right' => esc_html__( 'Right', 'Avada' ),
+
+						),
 					),
 				),
 			),
@@ -188,7 +191,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'portfolio_archive_sidebar',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'portfolio_archive_sidebar_2' => array(
 						'label'       => esc_html__( 'Portfolio Archive Sidebar 2', 'Avada' ),
@@ -196,7 +199,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'portfolio_archive_sidebar_2',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 				),
 			),
@@ -212,7 +215,7 @@ function avada_options_section_sidebars( $sections ) {
 						'description' => esc_html__( 'Turn on if you want to use the same sidebars on all blog posts. This option overrides the blog post options.', 'Avada' ),
 						'id'          => 'posts_global_sidebar',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'posts_sidebar' => array(
 						'label'       => esc_html__( 'Global Blog Post Sidebar 1', 'Avada' ),
@@ -220,7 +223,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'posts_sidebar',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'posts_sidebar_2' => array(
 						'label'       => esc_html__( 'Global Blog Post Sidebar 2', 'Avada' ),
@@ -228,7 +231,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'posts_sidebar_2',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'blog_sidebar_position' => array(
 						'label'       => esc_html__( 'Global Blog Sidebar Position', 'Avada' ),
@@ -237,9 +240,9 @@ function avada_options_section_sidebars( $sections ) {
 						'default'     => 'Right',
 						'type'        => 'radio-buttonset',
 						'choices'     => array(
-							'Right' => esc_html__( 'Right', 'Avada' ),
 							'Left'  => esc_html__( 'Left', 'Avada' ),
-						)
+							'Right' => esc_html__( 'Right', 'Avada' ),
+						),
 					),
 				),
 			),
@@ -256,7 +259,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'blog_archive_sidebar',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'blog_archive_sidebar_2' => array(
 						'label'       => esc_html__( 'Blog Archive Sidebar 2', 'Avada' ),
@@ -264,7 +267,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'blog_archive_sidebar_2',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 				),
 			),
@@ -281,7 +284,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'search_sidebar',
 						'default'     => 'Blog Sidebar',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'search_sidebar_2' => array(
 						'label'       => esc_html__( 'Search Page Sidebar 2', 'Avada' ),
@@ -289,7 +292,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'search_sidebar_2',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'search_sidebar_position' => array(
 						'label'       => esc_html__( 'Search Sidebar Position', 'Avada' ),
@@ -298,12 +301,12 @@ function avada_options_section_sidebars( $sections ) {
 						'default'     => 'Right',
 						'type'        => 'radio-buttonset',
 						'choices'     => array(
-							'Right' => esc_html__( 'Right', 'Avada' ),
 							'Left'  => esc_html__( 'Left', 'Avada' ),
-						)
+							'Right' => esc_html__( 'Right', 'Avada' ),
+						),
 					),
 				),
-			),			
+			),
 			'woocommerce_products_sidebars_section' => ( Avada::$is_updating || class_exists( 'WooCommerce' ) ) ? array(
 				'label'           => esc_html__( 'Woocommerce Products', 'Avada' ),
 				'id'              => 'woocommerce_products_sidebars_section',
@@ -345,9 +348,9 @@ function avada_options_section_sidebars( $sections ) {
 						'type'            => 'radio-buttonset',
 						'active_callback' => array( 'Avada_Options_Conditionals', 'is_woo' ),
 						'choices'     => array(
-							'Right' => esc_html__( 'Right', 'Avada' ),
 							'Left'  => esc_html__( 'Left', 'Avada' ),
-						)
+							'Right' => esc_html__( 'Right', 'Avada' ),
+						),
 					),
 				),
 			) : array(),
@@ -414,13 +417,13 @@ function avada_options_section_sidebars( $sections ) {
 						'default'     => 'Right',
 						'type'        => 'select',
 						'choices'     => array(
-							'Right' => esc_html__( 'Right', 'Avada' ),
 							'Left'  => esc_html__( 'Left', 'Avada' ),
+							'Right' => esc_html__( 'Right', 'Avada' ),
 						),
 					),
 				),
-			) : array(),			
-			'bbpress_sidebars_section' =>  ( Avada::$is_updating || class_exists( 'bbPress' ) || class_exists( 'BuddyPress' ) ) ? array(
+			) : array(),
+			'bbpress_sidebars_section' => ( Avada::$is_updating || class_exists( 'bbPress' ) || class_exists( 'BuddyPress' ) ) ? array(
 				'label'           => esc_html__( 'bbPress/BuddyPress', 'Avada' ),
 				'description'     => '',
 				'id'              => 'bbpress_sidebars_section',
@@ -432,7 +435,7 @@ function avada_options_section_sidebars( $sections ) {
 						'description' => esc_html__( 'Turn on if you want to use the same sidebars on all bbPress/BuddyPress pages. Forums index page, profile page and search page does not need this option checked to display the sidebars selected below.', 'Avada' ),
 						'id'          => 'bbpress_global_sidebar',
 						'default'     => '0',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'ppbress_sidebar' => array(
 						'label'       => esc_html__( 'Global bbPress/BuddyPress Sidebar 1', 'Avada' ),
@@ -440,7 +443,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'ppbress_sidebar',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'ppbress_sidebar_2' => array(
 						'label'       => esc_html__( 'Global bbPress/BuddyPress Sidebar 2', 'Avada' ),
@@ -448,7 +451,7 @@ function avada_options_section_sidebars( $sections ) {
 						'id'          => 'ppbress_sidebar_2',
 						'default'     => 'None',
 						'type'        => 'select',
-						'choices'     => $sidebar_options
+						'choices'     => $sidebar_options,
 					),
 					'bbpress_sidebar_position' => array(
 						'label'       => esc_html__( 'Global bbPress/BuddyPress Sidebar Position', 'Avada' ),
@@ -457,9 +460,9 @@ function avada_options_section_sidebars( $sections ) {
 						'default'     => 'Right',
 						'type'        => 'radio-buttonset',
 						'choices'     => array(
-							'Right' => esc_html__( 'Right', 'Avada' ),
 							'Left'  => esc_html__( 'Left', 'Avada' ),
-						)
+							'Right' => esc_html__( 'Right', 'Avada' ),
+						),
 					),
 				),
 			) : array(),

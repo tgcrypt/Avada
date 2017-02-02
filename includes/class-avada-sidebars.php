@@ -1,13 +1,24 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
+/**
+ * Handle sidebars.
+ */
 class Avada_Sidebars {
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'widgets_init', array( $this, 'widgets_init' ) );
 	}
 
 	/**
-	 * Register our sidebars
+	 * Register our sidebars.
 	 */
 	public function widgets_init() {
 
@@ -23,7 +34,11 @@ class Avada_Sidebars {
 
 		$columns = Avada()->settings->get( 'footer_widgets_columns' ) + 1;
 
-		// Register he footer widgets
+		if ( ! $columns || 1 === $columns ) {
+			$columns = 5;
+		}
+
+		// Register he footer widgets.
 		for ( $i = 1; $i < $columns; $i++ ) {
 
 			register_sidebar( array(
@@ -37,9 +52,13 @@ class Avada_Sidebars {
 
 		}
 
-		$columns = (int) Avada()->settings->get( 'slidingbar_widgets_columns' ) + 1;
+		$columns = Avada()->settings->get( 'slidingbar_widgets_columns' ) + 1;
 
-		// Register the slidingbar widgets
+		if ( ! $columns || 1 === $columns ) {
+			$columns = 5;
+		}
+
+		// Register the slidingbar widgets.
 		for ( $i = 1; $i < $columns; $i++ ) {
 
 			register_sidebar( array(
@@ -54,7 +73,6 @@ class Avada_Sidebars {
 		}
 
 	}
-
 }
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

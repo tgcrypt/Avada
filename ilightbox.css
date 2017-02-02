@@ -295,7 +295,7 @@
   box-shadow: black 0px 0px 85px, black 0px 0px 85px;
 }
 .ilightbox-loader.dark div {
-  background: #000000 url(assets/images/iLightbox/dark-skin/preloader.gif) no-repeat center;
+  background: #000 url(assets/images/iLightbox/dark-skin/preloader.gif) no-repeat center;
 }
 .ilightbox-holder.dark {
   padding: 5px;
@@ -526,7 +526,7 @@
   box-shadow: #dacffc 0px 0px 85px, #dacffc 0px 0px 85px;
 }
 .ilightbox-loader.light div {
-  background: #ffffff url(assets/images/iLightbox/light-skin/preloader.gif) no-repeat center;
+  background: #FFF url(assets/images/iLightbox/light-skin/preloader.gif) no-repeat center;
 }
 .ilightbox-holder.light {
   padding: 10px;
@@ -1037,7 +1037,7 @@
   box-shadow: #000000 0px 0px 55px, rgba(0, 0, 0, 0.3) 0px 0px 55px;
 }
 .ilightbox-loader.metro-black div {
-  background: #000000 url(assets/images/iLightbox/metro-black-skin/preloader.gif) no-repeat center;
+  background: #000 url(assets/images/iLightbox/metro-black-skin/preloader.gif) no-repeat center;
 }
 .ilightbox-holder.metro-black {
   padding: 3px;
@@ -1070,7 +1070,7 @@
 .ilightbox-toolbar.metro-black a {
   width: 27px;
   height: 25px;
-  background: #000000 url(assets/images/iLightbox/metro-black-skin/buttons.png) no-repeat 7px 6px;
+  background: #000 url(assets/images/iLightbox/metro-black-skin/buttons.png) no-repeat 7px 6px;
 }
 .ilightbox-toolbar.metro-black a:hover {
   background-color: #51b7ff;
@@ -1237,7 +1237,7 @@
   box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 55px;
 }
 .ilightbox-loader.metro-white div {
-  background: #ffffff url(assets/images/iLightbox/metro-white-skin/preloader.gif) no-repeat center;
+  background: #FFF url(assets/images/iLightbox/metro-white-skin/preloader.gif) no-repeat center;
 }
 .ilightbox-holder.metro-white {
   padding: 3px;
@@ -1484,7 +1484,7 @@
   background-position: -7px 50%;
 }
 .ilightbox-overlay.parade {
-  background: #333333 url(assets/images/iLightbox/parade-skin/pattern.png);
+  background: #333 url(assets/images/iLightbox/parade-skin/pattern.png);
 }
 .ilightbox-loader.parade {
   box-shadow: 0 0 35px rgba(0, 0, 0, 0.3);
@@ -1524,7 +1524,7 @@
 .ilightbox-toolbar.parade a {
   width: 29px;
   height: 25px;
-  background: #ffffff url(assets/images/iLightbox/parade-skin/buttons.png) no-repeat 8px 6px;
+  background: #FFF url(assets/images/iLightbox/parade-skin/buttons.png) no-repeat 8px 6px;
 }
 .ilightbox-toolbar.parade a:hover {
   background-color: #f5f5f5;
@@ -1566,7 +1566,7 @@
   box-shadow: #000000 0px 0px 55px, rgba(0, 0, 0, 0.3) 0px 0px 55px;
 }
 .ilightbox-loader.smooth div {
-  background: #000000 url(assets/images/iLightbox/smooth-skin/preloader.gif) no-repeat center;
+  background: #000 url(assets/images/iLightbox/smooth-skin/preloader.gif) no-repeat center;
 }
 .ilightbox-holder.smooth {
   -: ;border/*\**/: black 1px solid\9;
@@ -1616,7 +1616,7 @@
 .ilightbox-toolbar.smooth a {
   width: 27px;
   height: 25px;
-  background: #000000 url(assets/images/iLightbox/smooth-skin/buttons.png) no-repeat 7px 6px;
+  background: #000 url(assets/images/iLightbox/smooth-skin/buttons.png) no-repeat 7px 6px;
 }
 .ilightbox-toolbar.smooth a:hover {
   background-color: #51b7ff;

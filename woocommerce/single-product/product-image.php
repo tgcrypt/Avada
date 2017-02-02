@@ -2,12 +2,23 @@
 /**
  * Single Product Image
  *
+ * This template can be overridden by copying it to yourtheme/woocommerce/single-product/product-image.php.
+ *
+ * HOWEVER, on occasion WooCommerce will need to update template files and you
+ * (the theme developer) will need to copy the new files to your theme to
+ * maintain compatibility. We try to do this as little as possible, but it does
+ * happen. When this occurs the version of the template file will be bumped and
+ * the readme will list any important changes.
+ *
+ * @see 	    https://docs.woocommerce.com/document/template-structure/
  * @author 		WooThemes
  * @package 	WooCommerce/Templates
- * @version	 2.0.14
+ * @version     2.6.3
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 global $post, $woocommerce, $product;
 
@@ -31,15 +42,24 @@ if ( ! Avada()->settings->get( 'disable_woo_gallery' ) ) {
 
 				if ( has_post_thumbnail() ) {
 
-					$image_title 		= esc_attr( get_the_title( get_post_thumbnail_id() ) );
-					$image_link  		= wp_get_attachment_url( get_post_thumbnail_id() );
-					$image	   			= get_the_post_thumbnail( $post->ID, apply_filters( 'single_product_large_thumbnail_size', 'shop_single' ), array(
-						'title' => $image_title
-						) );
-					$image_caption = get_post_field( 'post_excerpt', get_post_thumbnail_id() );
-
+					$props = wc_get_product_attachment_props( get_post_thumbnail_id(), $post );
+					$image = get_the_post_thumbnail( $post->ID, apply_filters( 'single_product_large_thumbnail_size', 'shop_single' ), array(
+						'title'	 => $props['title'],
+						'alt'    => $props['alt'],
+					) );
 					// Avada Edit
-					echo apply_filters( 'woocommerce_single_product_image_html', sprintf( '<li><a href="%s" itemprop="image" class="woocommerce-main-image zoom" title="%s" data-rel="iLightbox' . $gallery . '" data-title="%s" data-caption="%s">%s</a></li>', $image_link, $image_title, $image_title, $image_caption, $image ), $post->ID );
+					echo apply_filters(
+						'woocommerce_single_product_image_html',
+						sprintf(
+							'<li><a href="%s" itemprop="image" class="woocommerce-main-image zoom" title="%s" data-rel="iLightbox' . $gallery . '" data-title="%s" data-caption="%s">%s</a></li>',
+							esc_url( $props['url'] ),
+							esc_attr( $props['title'] ),
+							esc_attr( $props['title'] ),
+							esc_attr( $props['caption'] ),
+							$image
+						),
+						$post->ID
+					);
 
 				} else {
 

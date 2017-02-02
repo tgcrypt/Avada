@@ -1,8 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * The main class to alter bbPress output.
  * Anything that does not need a template override, should be added here.
+ *
+ * @since 3.8.6
  */
 class Avada_Layout_bbPress extends Avada_Layout {
 
@@ -33,7 +40,6 @@ class Avada_Layout_bbPress extends Avada_Layout {
 		add_action( 'bbp_template_before_pagination_loop', array( $this, 'open_pagination_wrapper' ) );
 		add_action( 'bbp_template_after_pagination_loop', array( $this, 'close_pagination_wrapper' ) );
 
-
 		add_filter( 'bbp_get_forum_subscribe_link', array( $this, 'remove_single_description' ) );
 		add_filter( 'bbp_get_single_forum_description', array( $this, 'remove_single_description' ) );
 		add_filter( 'bbp_get_single_topic_description', array( $this, 'remove_single_description' ) );
@@ -52,7 +58,7 @@ class Avada_Layout_bbPress extends Avada_Layout {
 
 			<div class="bbp-reply-favs">
 
-				<?php if ( !bbp_show_lead_topic() ) : ?>
+				<?php if ( ! bbp_show_lead_topic() ) : ?>
 
 					<?php bbp_user_favorites_link(); ?>
 
@@ -102,7 +108,7 @@ class Avada_Layout_bbPress extends Avada_Layout {
 	 */
 	public function add_search_form() {
 
-		if ( bbp_allow_search() ): ?>
+		if ( bbp_allow_search() ) :  ?>
 
 			<div class="bbp-search-form">
 
@@ -119,8 +125,8 @@ class Avada_Layout_bbPress extends Avada_Layout {
 	public function add_search_page_search_form() {
 		?>
 		<div class="search-page-search-form search-page-search-form-top">
-			<h2><?php _e('Need a new search?', 'Avada'); ?></h2>
-			<p><?php _e('If you didn\'t find what you were looking for, try a new search!', 'Avada'); ?></p>
+			<h2><?php _e( 'Need a new search?', 'Avada' ); ?></h2>
+			<p><?php _e( 'If you didn\'t find what you were looking for, try a new search!', 'Avada' ); ?></p>
 			<form role="search" method="get" class="bbp-search-form seach-form searchform" action="<?php bbp_search_url(); ?>">
 				<div class="search-table">
 					<label class="screen-reader-text hidden" for="bbp_search"><?php _e( 'Search for:', 'bbpress' ); ?></label>
@@ -142,11 +148,10 @@ class Avada_Layout_bbPress extends Avada_Layout {
 	 */
 	public function open_pagination_wrapper() {
 
-		if ( $this->pagination_counter == 0 ):
-		?>
-		<div class="top-pagination">
-		<?php
-		endif;
+		if ( 0 == $this->pagination_counter ) : ?>
+			<div class="top-pagination">
+		<?php endif;
+
 	}
 
 	/**
@@ -154,15 +159,12 @@ class Avada_Layout_bbPress extends Avada_Layout {
 	 */
 	public function close_pagination_wrapper() {
 
-		if ( $this->pagination_counter == 0 ):
-		?>
+		if ( 0 == $this->pagination_counter ) :  ?>
 			</div>
 			<div class="fusion-clearfix"></div>
-		<?php
 
-			if ( bbp_is_single_forum() ) {
-				remove_filter( 'bbp_get_forum_subscribe_link', array( $this, 'remove_single_description' ) );
-				?>
+			<?php if ( bbp_is_single_forum() ) : ?>
+				<?php remove_filter( 'bbp_get_forum_subscribe_link', array( $this, 'remove_single_description' ) ); ?>
 
 				<div class="bbp-header fusion-bbp-header">
 
@@ -175,8 +177,7 @@ class Avada_Layout_bbPress extends Avada_Layout {
 					<div class="fusion-clearfix"></div>
 
 				</div><!-- .bbp-header -->
-				<?php
-			}
+			<?php endif;
 
 		endif;
 
@@ -261,20 +262,24 @@ class Avada_Layout_bbPress extends Avada_Layout {
 
 		return $pagination_links;
 	}
-	
+
 	/**
 	 * Filters out the | if the reply admin links are empty
-	 * @since 3.9
 	 *
-	 * @ return string Avada style pagination mark up
-	 */	
+	 * @access  public
+	 * @since 3.9
+	 * @param  string $retval The return value.
+	 * @param  string $r      Not used.
+	 * @param  array  $args   Not used.
+	 * @return string Avada style pagination markup.
+	 */
 	public function remove_empty_reply_admin_links_sep( $retval, $r, $args ) {
-		if ( $retval == '<span class="bbp-admin-links"><span class="admin_links_sep"> | </span></span>' ) {
+		if ( '<span class="bbp-admin-links"><span class="admin_links_sep"> | </span></span>' == $retval ) {
 			$retval = '<span class="bbp-admin-links"></span>';
 		}
 
 		return $retval;
-	}	
+	}
 }
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

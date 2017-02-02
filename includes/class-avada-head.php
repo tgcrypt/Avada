@@ -1,43 +1,93 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
+/**
+ * Tweaks for the <head> of the document.
+ *
+ * @since 3.8
+ */
 class Avada_Head {
 
+	/**
+	 * Constructor.
+	 *
+	 * @access  public
+	 */
 	public function __construct() {
-		// add_action( 'wp_head', array( $this, 'x_ua_meta' ), 1 );
-		// add_action( 'wp_head', array( $this, 'the_meta' ) );
-		// add_action( 'wp_head', array( $this, 'insert_og_meta' ), 5 );
-		// add_filter( 'language_attributes', array( $this, 'add_opengraph_doctype' ) );
+		/*
+		// WIP
+		add_action( 'wp_head', array( $this, 'x_ua_meta' ), 1 );
+		add_action( 'wp_head', array( $this, 'the_meta' ) );
+		 */
+
+		add_action( 'wp_head', array( $this, 'insert_og_meta' ), 5 );
+		add_filter( 'language_attributes', array( $this, 'add_opengraph_doctype' ) );
 
 		add_filter( 'document_title_separator', array( $this, 'document_title_separator' ) );
 		add_action( 'wp_head', array( $this, 'insert_favicons' ), 2 );
+
+		remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head' );
+
+		if ( ! function_exists( '_wp_render_title_tag' ) ) {
+			add_action( 'wp_head', array( $this, 'render_title' ) );
+		}
+
+		/* add_filter( 'wpseo_metadesc', array( $this, 'yoast_metadesc_helper' ) ); */
+
 	}
 
 	/**
 	 * Adding the Open Graph in the Language Attributes
+	 *
+	 * @access public
+	 * @param  string $output The output we want to process/filter.
+	 * @return string The altered doctype
 	 */
 	public function add_opengraph_doctype( $output ) {
-		return $output . ' prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#"';
+		if ( Avada()->settings->get( 'status_opengraph' ) ) {
+			return $output . ' prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#"';
+		}
+		return $output;
+	}
+
+	/**
+	 * Renders the title.
+	 *
+	 * @access public
+	 * @since 5.0.0
+	 */
+	public function render_title() {
+		echo '<title>';
+		wp_title( '' );
+		echo '</title>';
 	}
 
 	/**
 	 * Avada extra OpenGraph tags
 	 * These are added to the <head> of the page using the 'wp_head' action.
+	 *
+	 * @access  public
+	 * @return void
 	 */
 	public function insert_og_meta() {
 
-		global $post;
-
-		$settings = Avada::settings();
-
-		// Early exit if we don't need to continue any further
+		// Early exit if we don't need to continue any further.
 		if ( ! Avada()->settings->get( 'status_opengraph' ) ) {
 			return;
 		}
 
-		// Early exit if this is not a singular post/page/cpt
+		// Early exit if this is not a singular post/page/cpt.
 		if ( ! is_singular() ) {
 			return;
 		}
+
+		global $post;
+
+		$settings = Avada::settings();
 
 		$image = '';
 		if ( ! has_post_thumbnail( $post->ID ) ) {
@@ -74,34 +124,39 @@ class Avada_Head {
 
 	/**
 	 * Add X-UA-Compatible meta when needed.
+	 *
+	 * @access  public
 	 */
 	public function x_ua_meta() {
 
-		if ( isset( $_SERVER['HTTP_USER_AGENT'] ) && ( false !== strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE' ) ) ) : ?>
+		if ( isset( $_SERVER['HTTP_USER_AGENT'] ) && ( false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'MSIE' ) ) ) : ?>
 			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<?php endif;
 
 	}
 
 	/**
-	 * Set the document title separator
+	 * Set the document title separator.
+	 *
+	 * @access  public
 	 */
 	public function document_title_separator() {
 		return '-';
 	}
-	
+
 	/**
 	 * Avada favicon as set in theme options
 	 * These are added to the <head> of the page using the 'wp_head' action.
 	 *
-	 * @since 	4.0
-	 * @return 	void
+	 * @access  public
+	 * @since   4.0
+	 * @return  void
 	 */
 	public function insert_favicons() {
-		
+
 		if ( '' != Avada()->settings->get( 'favicon', 'url' ) ) : ?>
 			<link rel="shortcut icon" href="<?php echo Avada()->settings->get( 'favicon', 'url' ); ?>" type="image/x-icon" />
-		<?php endif; 
+		<?php endif;
 
 		if ( '' != Avada()->settings->get( 'iphone_icon', 'url' ) ) : ?>
 			<!-- For iPhone -->
@@ -122,9 +177,26 @@ class Avada_Head {
 			<!-- For iPad Retina display -->
 			<link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?php echo Avada()->settings->get( 'ipad_icon_retina', 'url' ); ?>">
 		<?php endif;
-		
+
 	}
-	
+
+	/**
+	 * Fixes YOAST SEO plugin issues.
+	 *
+	 * @access public
+	 * @since 5.0.3
+	 * @param string $metadesc The description.
+	 * @return string
+	 */
+	public function yoast_metadesc_helper( $metadesc ) {
+		if ( '' === $metadesc ) {
+			global $post;
+
+			$metadesc = Avada()->blog->get_content_stripped_and_excerpted( 55, $post->post_content );
+		}
+
+		return $metadesc;
+	}
 }
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

@@ -1,3 +1,10 @@
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <?php get_header(); ?>
 <div id="content" <?php Avada()->layout->add_class( 'content_class' ); ?> <?php Avada()->layout->add_style( 'content_style' ); ?>>
 	<?php if ( have_posts() && 0 != strlen( trim( get_search_query() ) ) ) : ?>
@@ -52,12 +59,12 @@
 							'depth'          => 1,
 							'container'      => false,
 							'menu_class'     => 'error-menu list-icon list-icon-arrow ' . $circle_class,
-							'echo'           => 1
+							'echo'           => 1,
 						) ); ?>
 					</div>
 					<div class="fusion-column col-lg-4 col-md-4 col-sm-4">
 						<h3><?php esc_html_e( 'Try again', 'Avada' ); ?></h3>
-						<p><?php esc_html_e('If you want to rephrase your query, here is your chance:', 'Avada' ); ?></p>
+						<p><?php esc_html_e( 'If you want to rephrase your query, here is your chance:', 'Avada' ); ?></p>
 						<?php echo get_search_form( false ); ?>
 					</div>
 				</div>
@@ -68,4 +75,4 @@
 <?php do_action( 'avada_after_content' ); ?>
 <?php get_footer();
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

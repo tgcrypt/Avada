@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Header
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + header
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_header( $sections ) {
 
@@ -39,8 +43,8 @@ function avada_options_section_header( $sections ) {
 						'choices'     => array(
 							'Top'   => esc_html__( 'Top', 'Avada' ),
 							'Left'  => esc_html__( 'Left', 'Avada' ),
-							'Right' => esc_html__( 'Right', 'Avada' )
-						)
+							'Right' => esc_html__( 'Right', 'Avada' ),
+						),
 					),
 					'header_layout' => array(
 						'label'       => esc_html__( 'Select a Header Layout', 'Avada' ),
@@ -49,12 +53,13 @@ function avada_options_section_header( $sections ) {
 						'default'     => 'v1',
 						'type'        => 'radio-image',
 						'choices' => array(
-							'v1' => get_template_directory_uri().'/assets/images/patterns/header1.png',
-							'v2' => get_template_directory_uri().'/assets/images/patterns/header2.png',
-							'v3' => get_template_directory_uri().'/assets/images/patterns/header3.png',
-							'v4' => get_template_directory_uri().'/assets/images/patterns/header4.png',
-							'v5' => get_template_directory_uri().'/assets/images/patterns/header5.png',
-							'v6' => get_template_directory_uri().'/assets/images/patterns/header6.png',
+							'v1' => Avada::$template_dir_url . '/assets/images/patterns/header1.png',
+							'v2' => Avada::$template_dir_url . '/assets/images/patterns/header2.png',
+							'v3' => Avada::$template_dir_url . '/assets/images/patterns/header3.png',
+							'v4' => Avada::$template_dir_url . '/assets/images/patterns/header4.png',
+							'v5' => Avada::$template_dir_url . '/assets/images/patterns/header5.png',
+							'v6' => Avada::$template_dir_url . '/assets/images/patterns/header6.png',
+							'v7' => Avada::$template_dir_url . '/assets/images/patterns/header7.png',
 						),
 						'required'    => array(
 							array(
@@ -282,7 +287,7 @@ function avada_options_section_header( $sections ) {
 					),
 					'header_banner_code' => array(
 						'label'       => esc_html__( 'Banner Code For Content 3', 'Avada' ),
-						'description' => esc_html__( 'This content will display if you have "Banner" selected for the Header Content 3 option above. Add HTML banner code for Header Content 3. Shortcodes, like buttons, can be used here also.', 'Avada' ),
+						'description' => esc_html__( 'This content will display if you have "Banner" selected for the Header Content 3 option above. Add HTML banner code for Header Content 3. Elements, like buttons, can be used here also.', 'Avada' ),
 						'id'          => 'header_banner_code',
 						'default'     => '',
 						'type'        => 'code',
@@ -314,7 +319,7 @@ function avada_options_section_header( $sections ) {
 						'id'          => 'header_bg_image',
 						'default'     => '',
 						'mod'         => '',
-						'type'        => 'media'
+						'type'        => 'media',
 					),
 					'header_bg_full' => array(
 						'label'       => esc_html__( '100% Background Image', 'Avada' ),
@@ -662,7 +667,7 @@ function avada_options_section_header( $sections ) {
 					),
 					'header_sticky_shrinkage' => array(
 						'label'       => esc_html__( 'Sticky Header Animation', 'Avada' ),
-						'description' => esc_html__( 'Turn on to allow the sticky header to animate to a smaller height when activated. Only works with header v1 - v3 and v6.', 'Avada' ),
+						'description' => esc_html__( 'Turn on to allow the sticky header to animate to a smaller height when activated. Only works with header v1 - v3, v6 and v7.', 'Avada' ),
 						'id'          => 'header_sticky_shrinkage',
 						'default'     => '1',
 						'type'        => 'switch',
@@ -704,7 +709,7 @@ function avada_options_section_header( $sections ) {
 								'setting'  => 'header_position',
 								'operator' => '=',
 								'value'    => 'Top',
-							),							
+							),
 							array(
 								'setting'  => 'header_layout',
 								'operator' => '!=',
@@ -733,6 +738,20 @@ function avada_options_section_header( $sections ) {
 						'id'          => 'header_sticky_bg_color',
 						'type'        => 'color-alpha',
 						'default'     => '#ffffff',
+						'required'    => array(
+							array(
+								'setting'  => 'header_sticky',
+								'operator' => '!=',
+								'value'    => 0,
+							),
+						),
+					),
+					'header_sticky_menu_color' => array(
+						'label'       => esc_html__( 'Sticky Header Menu Font Color', 'Avada' ),
+						'description' => esc_html__( 'Controls the color for main menu text in the sticky header.', 'Avada' ),
+						'id'          => 'header_sticky_menu_color',
+						'type'        => 'color',
+						'default'     => ( isset( $settings['menu_first_color'] ) && ! empty( $settings['menu_first_color'] ) ) ? $settings['menu_first_color'] : '#333333',
 						'required'    => array(
 							array(
 								'setting'  => 'header_sticky',

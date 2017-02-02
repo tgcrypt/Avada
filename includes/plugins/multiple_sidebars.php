@@ -1,4 +1,5 @@
 <?php
+
 /*
 Plugin Name: Sidebar Generator
 Plugin URI: http://www.getson.info
@@ -26,33 +27,51 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class sidebar_generator {
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
 
-	public function __construct(){
+/**
+ * The Sidebar Generator.
+ */
+class Sidebar_Generator {
 
-		add_action( 'init', array( 'sidebar_generator', 'init' ) );
-		// add_action( 'admin_menu', array( 'sidebar_generator', 'admin_menu' ) );
-		add_action( 'widgets_admin_page', array( 'sidebar_generator', 'admin_page' ) );
-		add_action( 'admin_enqueue_scripts', array( 'sidebar_generator', 'admin_enqueue_scripts' ) );
-		add_action( 'admin_print_scripts', array( 'sidebar_generator', 'admin_print_scripts' ) );
-		add_action( 'wp_ajax_add_sidebar', array( 'sidebar_generator', 'add_sidebar' ) );
-		add_action( 'wp_ajax_remove_sidebar', array( 'sidebar_generator', 'remove_sidebar' ) );
+	/**
+	 * The class constructor.
+	 *
+	 * @access public
+	 */
+	public function __construct() {
 
-		//save posts/pages
-		add_action( 'edit_post', array( 'sidebar_generator', 'save_form' ) );
-		add_action( 'publish_post', array( 'sidebar_generator', 'save_form' ) );
-		add_action( 'save_post', array( 'sidebar_generator', 'save_form' ) );
-		add_action( 'edit_page_form', array( 'sidebar_generator', 'save_form' ) );
+		add_action( 'init', array( $this, 'init' ) );
+		add_action( 'widgets_admin_page', array( $this, 'admin_page' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		add_action( 'admin_print_scripts', array( $this, 'admin_print_scripts' ) );
+		add_action( 'wp_ajax_add_sidebar', array( $this, 'add_sidebar' ) );
+		add_action( 'wp_ajax_remove_sidebar', array( $this, 'remove_sidebar' ) );
+
+		// Save posts/pages.
+		add_action( 'edit_post', array( $this, 'save_form' ) );
+		add_action( 'publish_post', array( $this, 'save_form' ) );
+		add_action( 'save_post', array( $this, 'save_form' ) );
+		add_action( 'edit_page_form', array( $this, 'save_form' ) );
 
 	}
 
-	public static function init(){
-		//go through each sidebar and register it
-		$sidebars = sidebar_generator::get_sidebars();
+	/**
+	 * Initializes the sidebar registration.
+	 *
+	 * @access public
+	 */
+	public function init() {
+
+		// Go through each sidebar and register it.
+		$sidebars = Sidebar_Generator::get_sidebars();
 
 		if ( is_array( $sidebars ) ) {
 			foreach ( $sidebars as $sidebar ) {
-				$sidebar_class = sidebar_generator::name_to_class( $sidebar );
+				$sidebar_class = Sidebar_Generator::name_to_class( $sidebar );
 				register_sidebar( array(
 					'name'          => $sidebar,
 					'id'            => 'avada-custom-sidebar-' . strtolower( $sidebar_class ),
@@ -63,31 +82,38 @@ class sidebar_generator {
 				) );
 			}
 		}
+
 	}
 
-	public static function add_meta_boxes() {
-		$post_types = get_post_types( array( 'public' => true ) );
+	/**
+	 * Enqueues the necessary scripts.
+	 *
+	 * @access public
+	 */
+	public function admin_enqueue_scripts() {
 
-		foreach ( $post_types as $post_type ) {
-			add_meta_box( 'sbg_box', esc_html__( 'Sidebar', 'Avada' ), array( 'sidebar_generator', 'edit_form' ), $post_type, 'side' );
-		}
-	}
-
-	public static function admin_enqueue_scripts() {
 		wp_enqueue_script( array( 'sack' ) );
+
 	}
 
-	public static function admin_print_scripts() { ?>
+	/**
+	 * Prints some additional scripts.
+	 *
+	 * @access public
+	 */
+	public function admin_print_scripts() {
+
+		?>
 		<script>
 			function add_sidebar( sidebar_name ) {
-				var mysack = new sack("<?php echo admin_url( 'admin-ajax.php' ); ?>" );
+				var mysack = new sack( "<?php echo admin_url( 'admin-ajax.php' ); ?>" );
 
-			  	mysack.execute = 1;
-			  	mysack.method  = 'POST';
-			  	mysack.setVar( "action", "add_sidebar" );
-			  	mysack.setVar( "sidebar_name", sidebar_name );
-			  	//mysack.encVar( "cookie", document.cookie, false );
-			  	mysack.onError = function() { alert('Ajax error. Cannot add sidebar' )};
+				mysack.execute = 1;
+				mysack.method  = 'POST';
+				mysack.setVar( 'action', 'add_sidebar' );
+				mysack.setVar( 'sidebar_name', sidebar_name );
+				// mysack.encVar( 'cookie', document.cookie, false );
+				mysack.onError = function() { alert( 'Ajax error. Cannot add sidebar' ) };
 			  	mysack.runAJAX();
 				return true;
 			}
@@ -95,34 +121,42 @@ class sidebar_generator {
 			function remove_sidebar( sidebar_name,num ) {
 				var mysack = new sack("<?php echo admin_url( 'admin-ajax.php' ); ?>" );
 
-			  	mysack.execute = 1;
-			  	mysack.method = 'POST';
-			  	mysack.setVar( "action", "remove_sidebar" );
-			  	mysack.setVar( "sidebar_name", sidebar_name );
-			  	mysack.setVar( "row_number", num );
-			  	//mysack.encVar( "cookie", document.cookie, false );
-			  	mysack.onError = function() { alert('Ajax error. Cannot remove sidebar' )};
+				mysack.execute = 1;
+				mysack.method  = 'POST';
+				mysack.setVar( 'action', 'remove_sidebar' );
+			  	mysack.setVar( 'sidebar_name', sidebar_name );
+			  	mysack.setVar( 'row_number', num );
+			  	//mysack.encVar( 'cookie', document.cookie, false );
+			  	mysack.onError = function() { alert( 'Ajax error. Cannot remove sidebar' ) };
 			  	mysack.runAJAX();
-				//alert('hi!:::'+sidebar_name);
+				// alert( 'hi!:::'+sidebar_name );
 				return true;
 			}
 		</script>
 		<?php
+
 	}
 
-	public static function add_sidebar(){
-		$sidebars = sidebar_generator::get_sidebars();
+	/**
+	 * Adds the sidebar.
+	 *
+	 * @access public
+	 */
+	public function add_sidebar() {
+
+		$sidebars = Sidebar_Generator::get_sidebars();
 		$name     = str_replace( array( "\n", "\r", "\t" ), '', $_POST['sidebar_name'] );
 		$counter  = ( is_array( $sidebars ) && ! empty( $sidebars ) ) ? count( $sidebars ) + 1 : 1;
-		$id       = sidebar_generator::name_to_class( $name );
+		$id       = Sidebar_Generator::name_to_class( $name );
 
 		if ( isset( $sidebars[ $id ] ) ) {
-			die("alert('" . esc_html__( 'Widget Section already exists, please use a different name.', 'Avada' ) . "')" );
+			die( "alert('" . esc_html__( 'Widget Section already exists, please use a different name.', 'Avada' ) . "')" );
 		}
 
 		$sidebars[ $id ] = $name;
-		sidebar_generator::update_sidebars( $sidebars );
+		Sidebar_Generator::update_sidebars( $sidebars );
 
+		$id = 'fusion-' . strtolower( Sidebar_Generator::name_to_class( $name ) );
 		$js = "
 		var tbl = document.getElementById('sbg_table');
 		var lastRow = tbl.rows.length;
@@ -161,11 +195,18 @@ class sidebar_generator {
 		";
 
 		die( "$js" );
+
 	}
 
-	public static function remove_sidebar(){
-		$sidebars = sidebar_generator::get_sidebars();
-		$name     = str_replace( array( "\n", "\r", "\t" ), '', $_POST['sidebar_name'] );
+	/**
+	 * Removes a sidebar.
+	 *
+	 * @access public
+	 */
+	public function remove_sidebar() {
+
+		$sidebars = Sidebar_Generator::get_sidebars();
+		$id       = str_replace( array( "\n", "\r", "\t" ), '', $_POST['sidebar_name'] );
 		$counter  = '1';
 
 		if ( is_array( $sidebars ) && ! empty( $sidebars ) ) {
@@ -173,13 +214,12 @@ class sidebar_generator {
 		}
 		$no_widget_text = esc_html__( 'No Widget Sections defined.', 'Avada' );
 
-		$id = sidebar_generator::name_to_class( $name );
 		if ( ! isset( $sidebars[ $id ] ) ) {
 			die( 'alert("' . esc_html__( 'Sidebar does not exist.', 'Avada' ) . '")' );
 		}
 		$row_number = $_POST['row_number'];
 		unset( $sidebars[ $id ] );
-		sidebar_generator::update_sidebars( $sidebars );
+		Sidebar_Generator::update_sidebars( $sidebars );
 		$js = "
 			var tbl = document.getElementById('sbg_table');
 
@@ -196,55 +236,56 @@ class sidebar_generator {
 			location.reload();
 		";
 		die( $js );
+
 	}
 
-	public static function admin_menu() {
-		add_theme_page( esc_html__( 'Widget Sections', 'Avada' ), esc_html__( 'Widget Sections' ), 'manage_options', 'multiple_sidebars', array( 'sidebar_generator', 'admin_page' ) );
-	}
+	/**
+	 * Adds the admin page.
+	 *
+	 * @access public
+	 */
+	public function admin_page() {
+		?>
 
-	public static function admin_page() { ?>
 		<script>
-		function remove_sidebar_link(name,num){
-			answer = confirm( "<?php esc_html_e( 'Are you sure you want to remove', 'Avada' ); ?> " + name + "?\n<?php esc_html_e( 'This will remove any widgets you have assigned to this widget section.', 'Avada' ); ?>" );
-				if ( answer ) {
-					//alert('AJAX REMOVE');
-					remove_sidebar( name, num );
-				} else {
-					return false;
-				}
+		function remove_sidebar_link( name, num ) {
+			answer = confirm( '<?php esc_attr_e( 'Are you sure you want to remove', 'Avada' ); ?> ' + name + '?\n<?php esc_attr_e( 'This will remove any widgets you have assigned to this widget section.', 'Avada' ); ?>' );
+			if ( answer ) {
+				remove_sidebar( name, num );
+			} else {
+				return false;
 			}
-			function add_sidebar_link(){
-				var sidebar_name = prompt( "<?php esc_html_e( 'Widget Section Name:', 'Avada' ); ?>","" );
-				//alert(sidebar_name);
-				if ( sidebar_name === null || sidebar_name == '' ) {
-					return;
-				}
+		}
+		function add_sidebar_link() {
+			var sidebar_name = prompt( '<?php esc_html_e( 'Widget Section Name:', 'Avada' ); ?>', '' );
+			if ( sidebar_name === null || sidebar_name == '' ) {
+				return;
+			}
 
-				add_sidebar( sidebar_name );
-			}
+			add_sidebar( sidebar_name );
+		}
 		</script>
+
 		<div class="postbox" style="max-width:1719px;">
 			<h2 class="hndle ui-sortable-handle" style="padding: 15px 12px; margin: 0;">
-				<span><?php esc_html_e( 'Widget Sections', 'Avada' ); ?></span>
+				<span><?php esc_attr_e( 'Widget Sections', 'Avada' ); ?></span>
 			</h2>
 			<div class="inside" style="margin-bottom: 0;">
 				<table class="widefat page" id="sbg_table">
 					<tr>
-						<th><?php esc_html_e( 'Widget Section Name', 'Avada' ); ?></th>
-						<th><?php esc_html_e( 'CSS Class', 'Avada' ); ?></th>
-						<th><?php esc_html_e( 'Remove', 'Avada' ); ?></th>
+						<th><?php esc_attr_e( 'Widget Section Name', 'Avada' ); ?></th>
+						<th><?php esc_attr_e( 'CSS Class', 'Avada' ); ?></th>
+						<th><?php esc_attr_e( 'Remove', 'Avada' ); ?></th>
 					</tr>
-					<?php
-					$sidebars = sidebar_generator::get_sidebars();
-					?>
+					<?php $sidebars = Sidebar_Generator::get_sidebars(); ?>
 					<?php if ( is_array( $sidebars ) && ! empty( $sidebars ) ) : ?>
 						<?php $cnt = 0; ?>
 						<?php foreach ( $sidebars as $sidebar ) : ?>
 							<?php $alt = ( 0 == $cnt % 2 ) ? 'alternate' : ''; ?>
 							<tr class="<?php echo $alt; ?>">
 								<td><?php echo $sidebar; ?></td>
-								<td><?php echo sidebar_generator::name_to_class( $sidebar ); ?></td>
-								<td><a href="javascript:void(0);" onclick="return remove_sidebar_link('<?php echo $sidebar; ?>',<?php echo $cnt + 1; ?>);" title="<?php esc_html_e( 'Remove this Widget Section', 'Avada' ); ?>"><?php esc_attr_e( 'remove', 'Avada' ); ?></a></td>
+								<td><?php echo 'fusion-' . strtolower( Sidebar_Generator::name_to_class( $sidebar ) ); ?></td>
+								<td><a href="javascript:void(0);" onclick="return remove_sidebar_link('<?php echo Sidebar_Generator::name_to_class( $sidebar ); ?>',<?php echo $cnt + 1; ?>);" title="<?php esc_html_e( 'Remove this Widget Section', 'Avada' ); ?>"><?php esc_attr_e( 'remove', 'Avada' ); ?></a></td>
 							</tr>
 							<?php $cnt++; ?>
 						<?php endforeach; ?>
@@ -258,29 +299,53 @@ class sidebar_generator {
 			</div>
 		</div>
 		<?php
+
 	}
 
 	/**
-	 * for saving the pages/post
-	*/
-	public static function save_form( $post_id ) {
+	 * For saving the pages/post.
+	 *
+	 * @access public
+	 * @param string|int $post_id The post ID.
+	 */
+	public function save_form( $post_id ) {
+
 		if ( isset( $_POST['sbg_edit'] ) ) {
 			$is_saving = $_POST['sbg_edit'];
 			if ( ! empty( $is_saving ) ) {
+
 				delete_post_meta( $post_id, 'sbg_selected_sidebar' );
 				delete_post_meta( $post_id, 'sbg_selected_sidebar_replacement' );
-				add_post_meta( $post_id, 'sbg_selected_sidebar', $_POST['sidebar_generator'] );
-				add_post_meta( $post_id, 'sbg_selected_sidebar_replacement', $_POST['sidebar_generator_replacement'] );
+
+				if ( isset( $_POST['sidebar_generator'] ) ) {
+					add_post_meta( $post_id, 'sbg_selected_sidebar', $_POST['sidebar_generator'] );
+				}
+				if ( isset( $_POST['sidebar_generator_replacement'] ) ) {
+					add_post_meta( $post_id, 'sbg_selected_sidebar_replacement', $_POST['sidebar_generator_replacement'] );
+				}
 
 				delete_post_meta( $post_id, 'sbg_selected_sidebar_2' );
 				delete_post_meta( $post_id, 'sbg_selected_sidebar_2_replacement' );
-				add_post_meta( $post_id, 'sbg_selected_sidebar_2', $_POST['sidebar_2_generator'] );
-				add_post_meta( $post_id, 'sbg_selected_sidebar_2_replacement', $_POST['sidebar_2_generator_replacement'] );
+
+				if ( isset( $_POST['sidebar_2_generator'] ) ) {
+					add_post_meta( $post_id, 'sbg_selected_sidebar_2', $_POST['sidebar_2_generator'] );
+				}
+				if ( isset( $_POST['sidebar_2_generator_replacement'] ) ) {
+					add_post_meta( $post_id, 'sbg_selected_sidebar_2_replacement', $_POST['sidebar_2_generator_replacement'] );
+				}
 			}
 		}
 	}
 
-	public static function edit_form() {
+	/**
+	 * For saving the pages/post.
+	 *
+	 * @static
+	 * @access public
+	 * @param array $post_type_options Array of theme options relevant for page.
+	 */
+	public static function edit_form( $post_type_options ) {
+
 		global $post;
 		$screen  = get_current_screen();
 		$post_id = $post;
@@ -313,37 +378,39 @@ class sidebar_generator {
 			<input name="sbg_edit" type="hidden" value="sbg_edit" />
 			<div class="pyre_desc">
 				<label><?php esc_html_e( 'Select Sidebar 1:', 'Avada' ); ?></label>
-				<p><?php esc_html_e( 'Select sidebar 1 that will display on this page. Choose "No Sidebar" for full width.', 'Avada' ); ?></p>
+				<p><?php esc_html_e( 'Select sidebar 1 that will display on this page. Choose "No Sidebar" for full width.', 'Avada' ); ?>
+					<?php if ( ! empty( $post_type_options ) && Avada()->settings->get( $post_type_options['global'] ) ) : ?>
+						<?php echo Avada()->settings->get_default_description( $post_type_options['sidebar'], '', 'sidebar' ); ?>
+					<?php endif; ?>
+				</p>
 			</div>
 			<div class="pyre_field">
 				<?php global $wp_registered_sidebars; ?>
-				<?php //var_dump($wp_registered_sidebars); ?>
 				<?php for ( $i = 0; $i < 1; $i++ ) : ?>
-					<div class="fusion-shortcodes-arrow">&#xf107;</div>
-					<select name="sidebar_generator[<?php echo $i; ?>]" style="display: none;">
+					<select name="sidebar_generator[<?php echo $i; ?>]" style="display: none !important; width:100%">
 						<option value="0"<?php echo ( '' == $selected_sidebar[ $i ] ) ? ' selected' : ''; ?>><?php esc_html__( 'WP Default Sidebar', 'Avada' ); ?></option>
-						<?php $sidebars = $wp_registered_sidebars; // sidebar_generator::get_sidebars(); ?>
+						<?php $sidebars = $wp_registered_sidebars; ?>
 						<?php if ( is_array( $sidebars ) && ! empty( $sidebars ) ) : ?>
 							<?php foreach ( $sidebars as $sidebar ) : ?>
 								<?php if ( $selected_sidebar[ $i ] == $sidebar['name'] ) : ?>
 									<?php if ( 'Blog Sidebar' == $sidebar['name'] || esc_html__( 'Blog Sidebar', 'Avada' ) == $sidebar['name'] ) : ?>
-										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>" selected><?php esc_html_e( 'Default Sidebar', 'Avada' ); ?></option>
+										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>" selected><?php echo esc_html( 'Default Sidebar', 'Avada' ); ?></option>
 									<?php else : ?>
-										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>" selected><?php esc_html_e( $sidebar['name'] ); ?></option>
+										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>" selected><?php echo esc_html( $sidebar['name'] ); ?></option>
 									<?php endif; ?>
 								<?php else : ?>
 									<?php if ( 'Blog Sidebar' == $sidebar['name'] || esc_html__( 'Blog Sidebar', 'Avada' ) == $sidebar['name'] ) : ?>
-										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>"><?php esc_html_e( 'Default Sidebar', 'Avada' ); ?></option>
+										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>"><?php echo esc_html( 'Default Sidebar', 'Avada' ); ?></option>
 									<?php else : ?>
-										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>"><?php esc_html_e( $sidebar['name'] ); ?></option>
+										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>"><?php echo esc_html( $sidebar['name'] ); ?></option>
 									<?php endif; ?>
 								<?php endif; ?>
 							<?php endforeach; ?>
 						<?php endif; ?>
 					</select>
-					<select name="sidebar_generator_replacement[<?php echo $i; ?>]">
+					<select name="sidebar_generator_replacement[<?php echo $i; ?>]" style="width:100%" id="pyre_sidebar_1">
 						<option value="" <?php echo ( '' == $selected_sidebar_replacement[ $i ] && 'post' != $screen->post_type ) ? ' selected' : ''; ?>><?php esc_html_e( 'No Sidebar', 'Avada' ); ?></option>
-						<?php $sidebar_replacements = $wp_registered_sidebars; //sidebar_generator::get_sidebars(); ?>
+						<?php $sidebar_replacements = $wp_registered_sidebars; ?>
 						<?php if ( is_array( $sidebar_replacements ) && ! empty( $sidebar_replacements ) ) : ?>
 							<?php foreach ( $sidebar_replacements as $sidebar ) : ?>
 								<?php if ( '0' == $selected_sidebar_replacement[ $i ] ) : ?>
@@ -356,14 +423,14 @@ class sidebar_generator {
 									<?php if ( 'Blog Sidebar' == $sidebar['name'] || esc_html__( 'Blog Sidebar', 'Avada' ) == $sidebar['name'] ) : ?>
 										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>" selected><?php esc_html_e( 'Default Sidebar', 'Avada' ); ?></option>
 									<?php else : ?>
-										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>" selected><?php esc_html_e( $sidebar['name'] ); ?></option>
+										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>" selected><?php echo esc_html( $sidebar['name'] ); ?></option>
 									<?php endif; ?>
 								<?php else : ?>
 									<?php if ( 'Blog Sidebar' == $sidebar['name'] || esc_html__( 'Blog Sidebar', 'Avada' ) == $sidebar['name'] ) : ?>
 										<?php $selected = ( '' != $selected_sidebar_replacement[ $i ] && 'post' == $screen->post_type ) ? ' selected' : ''; ?>
 										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>"<?php echo $selected; ?>><?php esc_html_e( 'Default Sidebar', 'Avada' ); ?></option>
 									<?php else : ?>
-										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>"/><?php esc_html_e( $sidebar['name'] ); ?></option>
+										<option value="<?php echo esc_attr( $sidebar['name'] ); ?>"/><?php echo esc_html( $sidebar['name'] ); ?></option>
 									<?php endif; ?>
 								<?php endif; ?>
 							<?php endforeach; ?>
@@ -373,18 +440,24 @@ class sidebar_generator {
 			</div>
 		</div>
 		<div class="pyre_metabox_field">
+			<div class="avada-dependency">
+				<span class="hidden" data-value="" data-field="sidebar_1" data-comparison="!="></span>
+			</div>
 			<input name="sbg_edit" type="hidden" value="sbg_edit" />
 			<div class="pyre_desc">
 				<label><?php esc_html_e( 'Select Sidebar 2:', 'Avada' ); ?></label>
-				<p><?php esc_html_e( 'Select sidebar 2 that will display on this page. Sidebar 2 can only be used if sidebar 1 is selected.', 'Avada' ); ?></p>
+				<p><?php esc_html_e( 'Select sidebar 2 that will display on this page. Sidebar 2 can only be used if sidebar 1 is selected.', 'Avada' ); ?>
+				<?php if ( ! empty( $post_type_options ) && Avada()->settings->get( $post_type_options['global'] ) ) : ?>
+					<?php echo Avada()->settings->get_default_description( $post_type_options['sidebar'] . '_2', '', 'sidebar' ); ?>
+				<?php endif; ?>
+				</p>
 			</div>
 			<div class="pyre_field">
-				<?php global $wp_registered_sidebars; //var_dump($wp_registered_sidebars); ?>
+				<?php global $wp_registered_sidebars; ?>
 				<?php for ( $i = 0; $i < 1; $i++ ) : ?>
-					<div class="fusion-shortcodes-arrow">&#xf107;</div>
-					<select name="sidebar_2_generator[<?php echo $i; ?>]" style="display: none;">
+					<select name="sidebar_2_generator[<?php echo $i; ?>]" style="display: none !important; width:100%">
 						<option value="0"<?php echo ( '' == $selected_sidebar_2[ $i ] ) ? ' selected' : ''; ?>><?php esc_html_e( 'WP Default Sidebar', 'Avada' ); ?></option>
-						<?php $sidebars = $wp_registered_sidebars; // sidebar_generator::get_sidebars(); ?>
+						<?php $sidebars = $wp_registered_sidebars; ?>
 						<?php if ( is_array( $sidebars ) && ! empty( $sidebars ) ) : ?>
 							<?php foreach ( $sidebars as $sidebar ) : ?>
 								<?php if ( $selected_sidebar_2[ $i ] == $sidebar['name'] ) : ?>
@@ -403,9 +476,9 @@ class sidebar_generator {
 							<?php endforeach; ?>
 						<?php endif; ?>
 					</select>
-					<select name="sidebar_2_generator_replacement[<?php echo $i; ?>]">
+					<select name="sidebar_2_generator_replacement[<?php echo $i; ?>]" style="width:100%">
 						<option value=""<?php echo ( '' == $selected_sidebar_replacement[ $i ] ) ? ' selected' : ''; ?>><?php esc_html_e( 'No Sidebar', 'Avada' ); ?></option>
-						<?php $sidebar_replacements = $wp_registered_sidebars; //sidebar_generator::get_sidebars(); ?>
+						<?php $sidebar_replacements = $wp_registered_sidebars; ?>
 						<?php if ( is_array( $sidebar_replacements ) && ! empty( $sidebar_replacements ) ) : ?>
 							<?php foreach ( $sidebar_replacements as $sidebar ) : ?>
 								<?php if ( $selected_sidebar_2_replacement[ $i ] == $sidebar['name'] ) : ?>
@@ -428,16 +501,22 @@ class sidebar_generator {
 			</div>
 		</div>
 		<?php
+
 	}
 
 	/**
-	 * called by the action get_sidebar. this is what places this into the theme
+	 * Called by the action get_sidebar. this is what places this into the theme.
+	 *
+	 * @static
+	 * @access public
+	 * @param string $name The sidebat name.
 	 */
-	public static function get_sidebar( $name = '0' ){
+	public static function get_sidebar( $name = '0' ) {
+
 		if ( ! is_singular() ) {
 			$sidebar = ( '0' != $name ) ? $name : 'avada-blog-sidebar';
 			dynamic_sidebar( $sidebar );
-			return; // dont do anything
+			return; // Dont do anything.
 		}
 		wp_reset_query();
 		global $wp_query;
@@ -446,24 +525,24 @@ class sidebar_generator {
 		$selected_sidebar_replacement = get_post_meta( $post->ID, 'sbg_selected_sidebar_replacement', true );
 		$did_sidebar = false;
 
-		// this page uses a generated sidebar
+		// This page uses a generated sidebar.
 		if ( ! $name && '' != $selected_sidebar && '0' != $selected_sidebar ) {
 			if ( is_array( $selected_sidebar ) && ! empty( $selected_sidebar ) ) {
-				$sizeof_selected_sidebar = sizeof( $selected_sidebar );
+				$sizeof_selected_sidebar = count( $selected_sidebar );
 				for ( $i = 0; $i < $sizeof_selected_sidebar; $i++ ) {
 					if ( '0' == $name && '0' == $selected_sidebar[ $i ] && '0' == $selected_sidebar_replacement[ $i ] ) {
-						dynamic_sidebar( 'avada-blog-sidebar' ); //default behavior
+						dynamic_sidebar( 'avada-blog-sidebar' ); // Default behavior.
 						$did_sidebar = true;
 						break;
 					} elseif ( '0' == $name && '0' == $selected_sidebar[ $i ] || 'Blog Sidebar' == $selected_sidebar[ $i ] || esc_html__( 'Blog Sidebar', 'Avada' ) == $selected_sidebar[ $i ] ) {
-						// we are replacing the default sidebar with something
-						dynamic_sidebar( $selected_sidebar_replacement[ $i ] ); //default behavior
+						// We are replacing the default sidebar with something.
+						dynamic_sidebar( $selected_sidebar_replacement[ $i ] ); // Default behavior.
 						$did_sidebar = true;
 						break;
 					} elseif ( $name == $selected_sidebar[ $i ] ) {
-						//we are replacing this $name
+						// We are replacing this $name.
 						$did_sidebar = true;
-						dynamic_sidebar( $selected_sidebar_replacement[ $i ] ); //default behavior
+						dynamic_sidebar( $selected_sidebar_replacement[ $i ] ); // Default behavior.
 						break;
 					}
 				}
@@ -471,7 +550,7 @@ class sidebar_generator {
 			if ( true == $did_sidebar ) {
 				return;
 			}
-			//go through without finding any replacements, lets just send them what they asked for
+			// Go through without finding any replacements, lets just send them what they asked for.
 			$sidebar = ( '0' != $name ) ? $name : 'avada-blog-sidebar';
 			dynamic_sidebar( $sidebar );
 			return;
@@ -479,16 +558,22 @@ class sidebar_generator {
 			$sidebar = ( '0' != $name ) ? $name : 'avada-blog-sidebar';
 			dynamic_sidebar( $sidebar );
 		}
+
 	}
 
 	/**
-	 * called by the action get_sidebar. this is what places this into the theme
+	 * Called by the action get_sidebar. this is what places this into the theme.
+	 *
+	 * @static
+	 * @access public
+	 * @param string $name The sidebar name.
 	 */
 	public static function get_sidebar_2( $name = '0' ) {
+
 		if ( ! is_singular() ) {
 			$sidebar = ( '0' != $name ) ? $name : 'avada-blog-sidebar';
 			dynamic_sidebar( $sidebar );
-			return; //dont do anything
+			return; // Dont do anything.
 		}
 
 		wp_reset_query();
@@ -498,24 +583,24 @@ class sidebar_generator {
 		$selected_sidebar_replacement = get_post_meta( $post->ID, 'sbg_selected_sidebar_2_replacement', true );
 		$did_sidebar = false;
 
-		// this page uses a generated sidebar
+		// This page uses a generated sidebar.
 		if ( ! $name && '' != $selected_sidebar && '0' != $selected_sidebar ) {
 			if ( is_array( $selected_sidebar ) && ! empty( $selected_sidebar ) ) {
-				$sizeof_selected_sidebar = sizeof( $selected_sidebar );
+				$sizeof_selected_sidebar = count( $selected_sidebar );
 				for ( $i = 0; $i < $sizeof_selected_sidebar; $i++ ) {
 					if ( '0' == $name && '0' == $selected_sidebar[ $i ] && '0' == $selected_sidebar_replacement[ $i ] ) {
-						dynamic_sidebar( 'avada-blog-sidebar' ); // default behavior
+						dynamic_sidebar( 'avada-blog-sidebar' ); // Default behavior.
 						$did_sidebar = true;
 						break;
 					} elseif ( '0' == $name && '0' == $selected_sidebar[ $i ] || 'Blog Sidebar' == $selected_sidebar[ $i ] || esc_html__( 'Blog Sidebar', 'Avada' ) == $selected_sidebar[ $i ] ) {
-						//we are replacing the default sidebar with something
-						dynamic_sidebar( $selected_sidebar_replacement[ $i ] ); // default behavior
+						// We are replacing the default sidebar with something.
+						dynamic_sidebar( $selected_sidebar_replacement[ $i ] ); // Default behavior.
 						$did_sidebar = true;
 						break;
 					} elseif ( $name == $selected_sidebar[ $i ] ) {
-						// we are replacing this $name
+						// We are replacing this $name.
 						$did_sidebar = true;
-						dynamic_sidebar( $selected_sidebar_replacement[ $i ] ); // default behavior
+						dynamic_sidebar( $selected_sidebar_replacement[ $i ] ); // Default behavior.
 						break;
 					}
 				}
@@ -523,7 +608,7 @@ class sidebar_generator {
 			if ( true == $did_sidebar ) {
 				return;
 			}
-			//go through without finding any replacements, lets just send them what they asked for
+			// Go through without finding any replacements, lets just send them what they asked for.
 			$sidebar = ( '0' != $name ) ? $name : 'avada-blog-sidebar';
 			dynamic_sidebar( $sidebar );
 			return;
@@ -531,37 +616,75 @@ class sidebar_generator {
 			$sidebar = ( '0' != $name ) ? $name : 'avada-blog-sidebar';
 			dynamic_sidebar( $sidebar );
 		}
+
 	}
 
 	/**
-	 * replaces array of sidebar names
+	 * Replaces array of sidebar names.
+	 *
+	 * @static
+	 * @access public
+	 * @param array $sidebar_array The sidebar array.
 	 */
 	public static function update_sidebars( $sidebar_array ) {
+
 		update_option( 'sbg_sidebars', $sidebar_array );
+
 	}
 
 	/**
-	 * gets the generated sidebars
+	 * Gets the generated sidebars.
+	 *
+	 * @static
+	 * @access public
 	 */
 	public static function get_sidebars() {
+
 		return get_option( 'sbg_sidebars' );
+
 	}
 
-	public static function name_to_class($name){
-		$class = str_replace( array( ' ', ',', '.', '"', "'", '/', "\\", '+', '=', ')', '(', '*', '&', '^', '%', '$', '#', '@', '!', '~', '`', '<', '>', '?', '[', ']', '{', '}', '|', ':', ), '', $name );
+	/**
+	 * Converts a sidebar name to a class.
+	 *
+	 * @static
+	 * @access public
+	 * @param string $name The sidebar name.
+	 * @return string
+	 */
+	public static function name_to_class( $name ) {
+
+		$class = str_replace( array( ' ', ',', '.', '"', "'", '/', '\\', '+', '=', ')', '(', '*', '&', '^', '%', '$', '#', '@', '!', '~', '`', '<', '>', '?', '[', ']', '{', '}', '|', ':' ), '', $name );
 		return sanitize_html_class( $class );
+
 	}
-
 }
-$sbg = new sidebar_generator;
+$sbg = new Sidebar_Generator;
 
+/**
+ * Gets a generated sidebar.
+ *
+ * @param string $name The sidebar name.
+ * @return true
+ */
 function generated_dynamic_sidebar( $name = '0' ) {
-	sidebar_generator::get_sidebar( $name );
+
+	Sidebar_Generator::get_sidebar( $name );
 	return true;
-}
-function generated_dynamic_sidebar_2( $name = '0' ) {
-	sidebar_generator::get_sidebar_2( $name );
-	return true;
+
 }
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/**
+ * Gets a generated sidebar.
+ *
+ * @param string $name The sidebar name.
+ * @return true
+ */
+function generated_dynamic_sidebar_2( $name = '0' ) {
+
+	Sidebar_Generator::get_sidebar_2( $name );
+	return true;
+
+}
+
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

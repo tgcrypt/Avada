@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Background settings
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + background
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_background( $sections ) {
 
@@ -118,6 +122,19 @@ function avada_options_section_background( $sections ) {
 				'icon'        => true,
 				'type'        => 'sub-section',
 				'fields'      => array(
+					'boxed_mode_backgrounds_important_note_info' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
+						'label'       => '',
+						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The layout is set to "Wide" on the Layout tab. However, there are boxed mode options below that are still visible due to having a fusion page option dependency. Click the link in the option description to learn more.', 'Avada' ) . '</div>',
+						'id'          => 'boxed_mode_backgrounds_important_note_info',
+						'type'        => 'custom',
+						'required'    => array(
+							array(
+								'setting'  => 'layout',
+								'operator' => '!=',
+								'value'    => 'Boxed',
+							),
+						),
+					),
 					'bg_image' => array(
 						'label'           => esc_html__( 'Background Image For Outer Areas In Boxed Mode', 'Avada' ),
 						'description'     => esc_html__( 'Select an image to use for the outer background area in boxed mode.', 'Avada' ),
@@ -125,6 +142,13 @@ function avada_options_section_background( $sections ) {
 						'default'         => '',
 						'mod'             => '',
 						'type'            => 'media',
+						'required'        => array(
+							array(
+								'setting'  => 'layout',
+								'operator' => '==',
+								'value'    => 'Boxed',
+							),
+						),
 					),
 					'bg_full' => array(
 						'label'           => esc_html__( '100% Background Image', 'Avada' ),
@@ -133,6 +157,11 @@ function avada_options_section_background( $sections ) {
 						'default'         => '0',
 						'type'            => 'switch',
 						'required'        => array(
+							array(
+								'setting'  => 'layout',
+								'operator' => '==',
+								'value'    => 'Boxed',
+							),
 							array(
 								'setting'  => 'bg_image',
 								'operator' => '!=',
@@ -172,6 +201,11 @@ function avada_options_section_background( $sections ) {
 						),
 						'required'    => array(
 							array(
+								'setting'  => 'layout',
+								'operator' => '==',
+								'value'    => 'Boxed',
+							),
+							array(
 								'setting'  => 'bg_image',
 								'operator' => '!=',
 								'value'    => '',
@@ -202,6 +236,13 @@ function avada_options_section_background( $sections ) {
 						'id'              => 'bg_color',
 						'default'         => '#d7d6d6',
 						'type'            => 'color-alpha',
+						'required'        => array(
+							array(
+								'setting'  => 'layout',
+								'operator' => '==',
+								'value'    => 'Boxed',
+							),
+						),
 					),
 					'bg_pattern_option' => array(
 						'label'           => esc_html__( 'Background Pattern', 'Avada' ),
@@ -209,6 +250,13 @@ function avada_options_section_background( $sections ) {
 						'id'              => 'bg_pattern_option',
 						'default'         => '0',
 						'type'            => 'switch',
+						'required'        => array(
+							array(
+								'setting'  => 'layout',
+								'operator' => '==',
+								'value'    => 'Boxed',
+							),
+						),
 					),
 					'bg_pattern' => array(
 						'label'           => esc_html__( 'Select a Background Pattern', 'Avada' ),
@@ -216,34 +264,39 @@ function avada_options_section_background( $sections ) {
 						'default'         => 'pattern1',
 						'type'            => 'radio-image',
 						'choices'         => array(
-							'pattern1'  => get_template_directory_uri().'/assets/images/patterns/pattern1.png',
-							'pattern2'  => get_template_directory_uri().'/assets/images/patterns/pattern2.png',
-							'pattern3'  => get_template_directory_uri().'/assets/images/patterns/pattern3.png',
-							'pattern4'  => get_template_directory_uri().'/assets/images/patterns/pattern4.png',
-							'pattern5'  => get_template_directory_uri().'/assets/images/patterns/pattern5.png',
-							'pattern6'  => get_template_directory_uri().'/assets/images/patterns/pattern6.png',
-							'pattern7'  => get_template_directory_uri().'/assets/images/patterns/pattern7.png',
-							'pattern8'  => get_template_directory_uri().'/assets/images/patterns/pattern8.png',
-							'pattern9'  => get_template_directory_uri().'/assets/images/patterns/pattern9.png',
-							'pattern10' => get_template_directory_uri().'/assets/images/patterns/pattern10.png',
-							'pattern11' => get_template_directory_uri().'/assets/images/patterns/pattern11.png',
-							'pattern12' => get_template_directory_uri().'/assets/images/patterns/pattern12.png',
-							'pattern13' => get_template_directory_uri().'/assets/images/patterns/pattern13.png',
-							'pattern14' => get_template_directory_uri().'/assets/images/patterns/pattern14.png',
-							'pattern15' => get_template_directory_uri().'/assets/images/patterns/pattern15.png',
-							'pattern16' => get_template_directory_uri().'/assets/images/patterns/pattern16.png',
-							'pattern17' => get_template_directory_uri().'/assets/images/patterns/pattern17.png',
-							'pattern18' => get_template_directory_uri().'/assets/images/patterns/pattern18.png',
-							'pattern19' => get_template_directory_uri().'/assets/images/patterns/pattern19.png',
-							'pattern20' => get_template_directory_uri().'/assets/images/patterns/pattern20.png',
-							'pattern21' => get_template_directory_uri().'/assets/images/patterns/pattern21.png',
-							'pattern22' => get_template_directory_uri().'/assets/images/patterns/pattern22.png',
+							'pattern1'  => Avada::$template_dir_url . '/assets/images/patterns/pattern1.png',
+							'pattern2'  => Avada::$template_dir_url . '/assets/images/patterns/pattern2.png',
+							'pattern3'  => Avada::$template_dir_url . '/assets/images/patterns/pattern3.png',
+							'pattern4'  => Avada::$template_dir_url . '/assets/images/patterns/pattern4.png',
+							'pattern5'  => Avada::$template_dir_url . '/assets/images/patterns/pattern5.png',
+							'pattern6'  => Avada::$template_dir_url . '/assets/images/patterns/pattern6.png',
+							'pattern7'  => Avada::$template_dir_url . '/assets/images/patterns/pattern7.png',
+							'pattern8'  => Avada::$template_dir_url . '/assets/images/patterns/pattern8.png',
+							'pattern9'  => Avada::$template_dir_url . '/assets/images/patterns/pattern9.png',
+							'pattern10' => Avada::$template_dir_url . '/assets/images/patterns/pattern10.png',
+							'pattern11' => Avada::$template_dir_url . '/assets/images/patterns/pattern11.png',
+							'pattern12' => Avada::$template_dir_url . '/assets/images/patterns/pattern12.png',
+							'pattern13' => Avada::$template_dir_url . '/assets/images/patterns/pattern13.png',
+							'pattern14' => Avada::$template_dir_url . '/assets/images/patterns/pattern14.png',
+							'pattern15' => Avada::$template_dir_url . '/assets/images/patterns/pattern15.png',
+							'pattern16' => Avada::$template_dir_url . '/assets/images/patterns/pattern16.png',
+							'pattern17' => Avada::$template_dir_url . '/assets/images/patterns/pattern17.png',
+							'pattern18' => Avada::$template_dir_url . '/assets/images/patterns/pattern18.png',
+							'pattern19' => Avada::$template_dir_url . '/assets/images/patterns/pattern19.png',
+							'pattern20' => Avada::$template_dir_url . '/assets/images/patterns/pattern20.png',
+							'pattern21' => Avada::$template_dir_url . '/assets/images/patterns/pattern21.png',
+							'pattern22' => Avada::$template_dir_url . '/assets/images/patterns/pattern22.png',
 						),
 						'required'    => array(
 							array(
 								'setting'  => 'bg_pattern_option',
 								'operator' => '==',
 								'value'    => '1',
+							),
+							array(
+								'setting'  => 'layout',
+								'operator' => '==',
+								'value'    => 'Boxed',
 							),
 						),
 					),

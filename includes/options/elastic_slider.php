@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Elastic Slider
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + elastic_slider
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_elastic_slider( $sections ) {
 
@@ -15,7 +19,7 @@ function avada_options_section_elastic_slider( $sections ) {
 		'priority' => 20,
 		'icon'     => 'el-icon-photo-alt',
 		'fields'   => array(
-			'tfes_disabled_note' => array(
+			'tfes_disabled_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 				'label'       => '',
 				'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Elastic Slider is disabled in Advanced > Theme Features section. Please enable it to see the options.', 'Avada' ) . '</div>',
 				'id'          => 'tfes_disabled_note',

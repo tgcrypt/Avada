@@ -274,7 +274,7 @@ if ( ! class_exists( 'AvadaReduxFramework_typography' ) ) {
 				$multi = ( isset( $this->field['multi']['weight'] ) && $this->field['multi']['weight'] ) ? ' multiple="multiple"' : "";
 				echo '<select' . $multi . ' data-placeholder="' . __( 'Style', 'avadaredux-framework' ) . '" class="avadaredux-typography avadaredux-typography-style select ' . $this->field['class'] . '" original-title="' . __( 'Font style', 'avadaredux-framework' ) . '" id="' . $this->field['id'] . '_style" data-id="' . $this->field['id'] . '" data-value="' . $style . '">';
 
-				if ( empty( $this->value['subset'] ) || empty( $this->value['font-weight'] ) ) {
+				if ( empty( $this->value['subsets'] ) || empty( $this->value['font-weight'] ) ) {
 					echo '<option value=""></option>';
 				}
 
@@ -285,8 +285,8 @@ if ( ! class_exists( 'AvadaReduxFramework_typography' ) ) {
 					'900' => 'Bolder'
 				);
 
-				if ( ! isset( $this->value['font-weight'] ) && isset( $this->value['subset'] ) ) {
-					$this->value['font-weight'] = $this->value['subset'];
+				if ( ! isset( $this->value['font-weight'] ) && isset( $this->value['subsets'] ) ) {
+					$this->value['font-weight'] = $this->value['subsets'];
 				}
 
 				foreach ( $nonGStyles as $i => $style ) {
@@ -294,8 +294,8 @@ if ( ! class_exists( 'AvadaReduxFramework_typography' ) ) {
 						$this->value['font-weight'] = false;
 					}
 
-					if ( ! isset( $this->value['subset'] ) ) {
-						$this->value['subset'] = false;
+					if ( ! isset( $this->value['subsets'] ) ) {
+						$this->value['subsets'] = false;
 					}
 
 					echo '<option value="' . $i . '" ' . selected( $this->value['font-weight'], $i, false ) . '>' . $style . '</option>';
@@ -499,7 +499,7 @@ if ( ! class_exists( 'AvadaReduxFramework_typography' ) ) {
 						if ( $isGoogleFont == true && isset( $fontFamily ) && is_array( $fontFamily ) && isset( $fontFamily[0] ) ) {
 							$this->parent->typography_preview[ $fontFamily[0] ] = array(
 								'font-style' => array( $this->value['font-weight'] . $this->value['font-style'] ),
-								'subset'     => array( $this->value['subset'] )
+								'subset'     => array( $this->value['subsets'] )
 							);
 
 							$protocol = ( ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443 ) ? "https:" : "http:";
@@ -625,15 +625,6 @@ if ( ! class_exists( 'AvadaReduxFramework_typography' ) ) {
 		 * @since AvadaReduxFramework 3.1.8
 		 */
 		function makeGoogleWebfontString( $fonts ) {
-
-			$custom_fonts = Avada()->settings->get( 'custom_fonts' );
-			if ( ! empty( $custom_fonts ) && isset( $custom_fonts['name'] ) ) {
-				foreach ( $fonts as $key => $value ) {
-					if ( in_array( $key, $custom_fonts['name'] ) ) {
-						unset( $fonts[ $key ] );
-					}
-				}
-			}
 
 			$link    = "";
 			$subsets = array();
@@ -833,6 +824,16 @@ if ( ! class_exists( 'AvadaReduxFramework_typography' ) ) {
 					// Then it's a Google font, so process it for output.
 					if ( ! array_key_exists( $lcFont, $lcFonts ) ) {
 						$family = $font['font-family'];
+
+						// Don't add the font if it's a custom font.
+						$custom_fonts = Avada()->settings->get( 'custom_fonts' );
+						if ( ! empty( $custom_fonts ) && isset( $custom_fonts['name'] ) ) {
+							foreach ( $custom_fonts['name'] as $key => $name ) {
+								if ( $name == $font['font-family'] ) {
+									return;
+								}
+							}
+						}
 
 						// Strip out spaces in font names and replace with with plus signs
 						// TODO?: This method doesn't respect spaces after commas, hence the reason

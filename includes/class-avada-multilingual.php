@@ -1,39 +1,82 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * A helper class that depending on the active multilingual plugin
  * will get the available languages as well as the active language.
  * Currently handles compatibility with WPML & PolyLang.
+ *
+ * @since 4.0.0
  */
 class Avada_Multilingual {
 
-	// Are we using WPML?
+	/**
+	 * Are we using WPML?
+	 *
+	 * @static
+	 * @access  private
+	 * @var  bool
+	 */
 	private static $is_wpml = false;
-	// Are we using PolyLang?
+
+	/**
+	 * Are we using PolyLang?
+	 *
+	 * @static
+	 * @access  private
+	 * @var  bool
+	 */
 	private static $is_pll = false;
-	// An array of all available languages
+
+	/**
+	 * An array of all available languages.
+	 *
+	 * @static
+	 * @access  private
+	 * @var  array
+	 */
 	private static $available_languages = array();
-	// The active language
+
+	/**
+	 * The active language.
+	 *
+	 * @static
+	 * @access  private
+	 * @var  string
+	 */
 	private static $active_language = 'en';
-	// The "main" language
+
+	/**
+	 * The "main" language.
+	 *
+	 * @static
+	 * @access  private
+	 * @var  string
+	 */
 	private static $main_language = 'en';
 
 	/**
 	 * The main class constructor.
 	 * Sets the static properties of this object.
+	 *
+	 * @access  public
 	 */
 	public function __construct() {
 
 		// Set the $is_pll property.
 		self::$is_pll = self::is_pll();
-		// Set the $is_wpml property
+		// Set the $is_wpml property.
 		self::$is_wpml = self::is_wpml();
 
-		// Set the $available_languages property
+		// Set the $available_languages property.
 		self::set_available_languages();
-		// Set the $main_language properly
+		// Set the $main_language properly.
 		self::set_main_language();
-		// Set the $active_language property
+		// Set the $active_language property.
 		self::set_active_language();
 
 	}
@@ -50,7 +93,7 @@ class Avada_Multilingual {
 	}
 
 	/**
-	 * Gets the $active_language protected property
+	 * Gets the $active_language protected property.
 	 */
 	public static function get_active_language() {
 		self::set_active_language();
@@ -58,18 +101,18 @@ class Avada_Multilingual {
 	}
 
 	/**
-	 * Sets the active language
+	 * Sets the active language.
 	 *
-	 * @param string|bool
+	 * @param string|bool $lang The language code to set.
 	 */
 	public static function set_active_language( $lang = false ) {
 
 		if ( is_string( $lang ) && ! empty( $lang ) ) {
 			self::$active_language = $lang;
 		}
-		// If we have not defined a language, then autodetect
+		// If we have not defined a language, then autodetect.
 		if ( false == $lang || empty( $lang ) ) {
-			// No need to proceed if both WPML & PLL are inactive
+			// No need to proceed if both WPML & PLL are inactive.
 			if ( ! self::$is_pll && ! self::$is_wpml ) {
 				return 'en';
 			}
@@ -90,12 +133,24 @@ class Avada_Multilingual {
 						self::$active_language = pll_default_language( 'slug' );
 					}
 				}
+			} else {
+				if ( function_exists( 'PLL' ) ) {
+					$pll_obj = PLL();
+					if ( is_object( $pll_obj ) && property_exists( $pll_obj, 'curlang' ) ) {
+						if ( is_object( $pll_obj->curlang ) && property_exists( $pll_obj->curlang, 'slug' ) ) {
+							self::$active_language = $pll_obj->curlang->slug;
+						} elseif ( false === $pll_obj->curlang ) {
+							self::$active_language = 'all';
+							Avada::set_language_is_all( true );
+						}
+					}
+				}
 			}
 		}
 	}
 
 	/**
-	 * Gets the $available_languages protected property
+	 * Gets the $available_languages protected property.
 	 */
 	public static function get_available_languages() {
 		if ( empty( self::$available_languages ) ) {
@@ -105,12 +160,12 @@ class Avada_Multilingual {
 	}
 
 	/**
-	 * Get the available languages from WPML
+	 * Get the available languages from WPML.
 	 *
 	 * @return array
 	 */
 	private static function get_available_languages_wpml() {
-		// Do not continue processing if we're not using WPML
+		// Do not continue processing if we're not using WPML.
 		if ( ! self::$is_wpml ) {
 			return array();
 		}
@@ -124,7 +179,7 @@ class Avada_Multilingual {
 	}
 
 	/**
-	 * Gets the default language
+	 * Gets the default language.
 	 *
 	 * @return string
 	 */
@@ -134,7 +189,7 @@ class Avada_Multilingual {
 	}
 
 	/**
-	 * Sets the $main_language based on the active plugin
+	 * Sets the $main_language based on the active plugin.
 	 *
 	 * @return void
 	 */
@@ -147,7 +202,7 @@ class Avada_Multilingual {
 	}
 
 	/**
-	 * Get the default language for WPML
+	 * Get the default language for WPML.
 	 *
 	 * @return string
 	 */
@@ -157,7 +212,7 @@ class Avada_Multilingual {
 	}
 
 	/**
-	 * Get the default language for PolyLang
+	 * Get the default language for PolyLang.
 	 *
 	 * @return string
 	 */
@@ -166,20 +221,20 @@ class Avada_Multilingual {
 	}
 
 	/**
-	 * Get the available languages from PolyLang
+	 * Get the available languages from PolyLang.
 	 *
 	 * @return array
 	 */
 	private static function get_available_languages_pll() {
-		// Do not continue processing if we're not using PLL
+		// Do not continue processing if we're not using PLL.
 		if ( ! self::$is_pll ) {
 			return array();
 		}
 
 		global $polylang;
-		// Get the PLL languages object
+		// Get the PLL languages object.
 		$pll_languages_obj = $polylang->model->get_languages_list();
-		// Parse the object and get a usable array
+		// Parse the object and get a usable array.
 		$pll_languages = array();
 		foreach ( $pll_languages_obj as $pll_language_obj ) {
 			$pll_languages[] = $pll_language_obj->slug;
@@ -189,7 +244,7 @@ class Avada_Multilingual {
 	}
 
 	/**
-	 * Determine if we're using PolyLang
+	 * Determine if we're using PolyLang.
 	 *
 	 * @return bool
 	 */

@@ -670,4 +670,4 @@ if( ! class_exists( 'WXR_Parser_Regex' ) ) {
 	}
 }
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

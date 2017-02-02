@@ -40,18 +40,18 @@
 
 
 this.imagePreview = function(){
-	jQuery(".theme").hover(function(e){
-		jQuery(this).find(".screenshot-hover")
-			.css("visibility","visible");
+	jQuery( '.theme' ).hover( function( e ){
+		jQuery( this ).find( '.screenshot-hover' )
+			.css( 'visibility', 'visible' );
     },
 	function(){
-		jQuery(this).find(".screenshot-hover")
-			.css("visibility","visible");
+		jQuery( this ).find( '.screenshot-hover' )
+			.css( 'visibility', 'visible' );
     });
 };
 
 // starting the script on page load
-jQuery(document).ready(function(){
+jQuery( document ).ready( function(){
 	imagePreview();
 
 	jQuery( '.help_tip' ).tipTip({
@@ -75,7 +75,7 @@ jQuery(document).ready(function(){
 
 			} else {
 
-				jQuery('tr', jQuery( this ) ).each(function(){
+				jQuery( 'tr', jQuery( this ) ).each(function(){
 
 					var label       = jQuery( this ).find( 'td:eq(0)' ).data( 'export-label' ) || jQuery( this ).find( 'td:eq(0)' ).text();
 					var the_name    = jQuery.trim( label ).replace( /(<([^>]+)>)/ig, '' ); // Remove HTML
@@ -107,8 +107,8 @@ jQuery(document).ready(function(){
 		});
 
 		try {
-			jQuery( "#debug-report" ).slideDown();
-			jQuery( "#debug-report textarea" ).val( report ).focus().select();
+			jQuery( '#debug-report' ).slideDown();
+			jQuery( '#debug-report textarea' ).val( report ).focus().select();
 			jQuery( this ).parent().fadeOut();
 			return false;
 		} catch( e ){
@@ -135,96 +135,103 @@ jQuery(document).ready(function(){
 
 jQuery(document).ready(function(e) {
 
-	jQuery( '.avada-demo-themes .theme' ).on( 'mouseover', function() {
-		jQuery( this ).find( '.screenshot-hover' ).css( 'left', '' );
+	if ( jQuery( 'body' ).hasClass( 'avada_page_avada-demos' ) ) {
+		// if clicked on import data button
+		jQuery( '.button-install-demo' ).live( 'click', function(e) {
+			var $selected_demo = jQuery( this ).data( 'demo-id' ),
+				$loading_icon = jQuery( '.preview-' + $selected_demo ),
+				$success_icon = jQuery( '.success-' + $selected_demo ),
+				$warning_icon = jQuery( '.warning-' + $selected_demo ),
+				$disable_preview = jQuery( '.preview-all' );
 
-		var $screenshot_width = jQuery( this ).width();
-			$wrapping_container_width = jQuery( this ).parents( '.avada-demo-themes' ).width(),
-			$screenshot_percentage_width = 100 * $screenshot_width / $wrapping_container_width,
-			$preview = jQuery( this ).find( '.screenshot-hover' ),
-			$preview_position_left = $preview.offset().left,
-			$preview_width = $preview.outerWidth(),
-			$preview_position_right = $preview_position_left + $preview_width,
-			$window_position_right = jQuery( window ).width();
-
-		if ( $preview_position_right > $window_position_right ) {
-			//$preview.css( 'left', parseInt( $preview.css( 'left' ) ) - ( $preview_position_right - $window_position_right ) );
-			if ( $screenshot_percentage_width < 31 ) {
-				$preview.css( 'left', ( $preview_width - $screenshot_width ) / -2 );
+			if ( $selected_demo == 'classic' ) {
+				var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA CLASSIC DEMO REQUIREMENTS:\n\n• Memory Limit of 256 MB and max execution time (php time limit) of 300 seconds.\n\n• Fusion Core, Revolution Slider and LayerSlider must be activated for sliders to import.' );
+			} else if ( $selected_demo == 'cafe' ) {
+				var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
+			} else if ( $selected_demo == 'church' ) {
+				var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• The Events Calendar Plugin must be activated for all event data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
+			} else if ( $selected_demo == 'modern_shop' ) {
+				var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• WooCommerce must be activated for all shop data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
+			}  else if ( $selected_demo == 'classic_shop' ) {
+				var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core and Revolution Slider must be activated for sliders to import.\n\n• WooCommerce must be activated for all shop data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
+			} else if ( $selected_demo == 'landing_product' ) {
+				var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core and Revolution Slider must be activated for sliders to import.\n\n• WooCommerce must be activated for all shop data to import.' );
+			}  else if ( $selected_demo == 'forum' ) {
+				var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• bbPress must be activated for all forum data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
+			} else if ( $selected_demo == 'technology' ) {
+				var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 256 MB and max execution time (php time limit) of 300 seconds.\n\n• Fusion Core and LayerSlider must be activated for sliders to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
 			} else {
-				$preview.css( 'left', '-380px' );
+				var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
 			}
-		} else if ( $preview_position_left < 0 ) {
-			$preview.css( 'left', '175px' );
-		}
-	});
+			if ( $confirm == true ) {
+				$loading_icon.show();
+				$disable_preview.show();
 
+				var data = {
+					action: 'fusion_import_demo_data',
+					demo_type: $selected_demo
+				};
 
-	// if clicked on import data button
-	jQuery( '.button-install-demo' ).live( 'click', function(e) {
-		var $selected_demo = jQuery( this ).data( 'demo-id' ),
-			$loading_icon = jQuery( '.preview-' + $selected_demo ),
-			$success_icon = jQuery( '.success-' + $selected_demo ),
-			$warning_icon = jQuery( '.warning-' + $selected_demo ),
-			$disable_preview = jQuery( '.preview-all' );
+				jQuery( '.importer-notice' ).hide();
 
-		if ( $selected_demo == 'classic' ) {
-			var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA CLASSIC DEMO REQUIREMENTS:\n\n• Memory Limit of 256 MB and max execution time (php time limit) of 300 seconds.\n\n• Fusion Core, Revolution Slider and LayerSlider must be activated for sliders to import.\n\n• Woocommerce must be activated for shop data to import.' );
-		} else if ( $selected_demo == 'cafe' ) {
-			var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
-		} else if ( $selected_demo == 'church' ) {
-			var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• The Events Calendar Plugin must be activated for all event data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
-		} else if ( $selected_demo == 'modern_shop' ) {
-			var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• WooCommerce must be activated for all shop data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
-		}  else if ( $selected_demo == 'classic_shop' ) {
-			var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core and Revolution Slider must be activated for sliders to import.\n\n• WooCommerce must be activated for all shop data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
-		} else if ( $selected_demo == 'landing_product' ) {
-			var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core and Revolution Slider must be activated for sliders to import.\n\n• WooCommerce must be activated for all shop data to import.' );
-		}  else if ( $selected_demo == 'forum' ) {
-			var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• bbPress must be activated for all forum data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
-		} else {
-			var $confirm = window.confirm( 'WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + $selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• Contact Form 7 plugin must be activated for the form to import.' );
-		}
-		if ( $confirm == true ) {
-			$loading_icon.show();
-			$disable_preview.show();
+				jQuery.post( ajaxurl, data, function( $response ) {
+					if( $response && $response.indexOf( 'imported' ) == -1 ) {
+						jQuery( '.importer-notice-1' ).attr( 'style', 'display:block !important' );
+						$warning_icon.show();
+						setTimeout( function() {
+							$warning_icon.hide();
+							$disable_preview.hide();
+						}, 4000 );
+					} else {
+						jQuery( '.importer-notice-2' ).attr( 'style', 'display:block !important' );
+						$success_icon.show();
+						setTimeout( function() {
+							$success_icon.hide();
+							$disable_preview.hide();
+						}, 4000 );
+					}
+					$loading_icon.hide();
+				}).fail( function() {
+					jQuery( '.importer-notice-3' ).attr( 'style', 'display:block !important' );
+						$warning_icon.show();
+						setTimeout( function() {
+							$warning_icon.hide();
+							$disable_preview.hide();
+						}, 4000 );
+					$loading_icon.hide();
 
-			var data = {
-				action: 'fusion_import_demo_data',
-				demo_type: $selected_demo
-			};
+				});
+			}
 
-			jQuery( '.importer-notice' ).hide();
+			e.preventDefault();
+		});
+	}
 
-			jQuery.post( ajaxurl, data, function( $response ) {
-				if( $response && $response.indexOf( 'imported' ) == -1 ) {
-					jQuery( '.importer-notice-1' ).attr( 'style', 'display:block !important' );
-					$warning_icon.show();
-					setTimeout( function() {
-						$warning_icon.hide();
-						$disable_preview.hide();
-					}, 4000 );
-				} else {
-					jQuery( '.importer-notice-2' ).attr( 'style', 'display:block !important' );
-					$success_icon.show();
-					setTimeout( function() {
-						$success_icon.hide();
-						$disable_preview.hide();
-					}, 4000 );
-				}
-				$loading_icon.hide();
-			}).fail( function() {
-				jQuery( '.importer-notice-3' ).attr( 'style', 'display:block !important' );
-					$warning_icon.show();
-					setTimeout( function() {
-						$warning_icon.hide();
-						$disable_preview.hide();
-					}, 4000 );
-				$loading_icon.hide();
+	if ( jQuery( 'body' ).hasClass( 'avada_page_avada-plugins' ) ) {
+		var $confirm;
+		jQuery( '.avada-install-plugins .theme-actions .button-primary.disabled' ).on( 'click', function( e ) {
+			e.preventDefault();
 
-			});
-		}
+			if ( jQuery( this ).hasClass( 'fusion-builder' ) ) {
+				$confirm = window.alert( 'ERROR:\n\nFusion Builder Plugin can only be installed and activated if Fusion Core plugin is at version 3.0 or higher. Your version of Fusion Core is ' + jQuery( this ).data( 'version' ) + '. Please update Fusion Core first.' );
+			} else {
+				$confirm = window.alert( 'ERROR:\n\nThis plugin can only be installed or updated, after you have successfully completed the Avada product registration on the "Product Registration" tab.' );
+			}
+		});
 
-		e.preventDefault();
-	});
+		jQuery( '#manage-plugins' ).on( 'click', function( e ) {
+			e.preventDefault();
+
+			var $href     = jQuery( this ).attr( 'href' ),
+				$hrefHash = $href.substr( $href.indexOf( '#' ) ).slice( 1 ),
+				$target   = jQuery( '#' + $hrefHash ),
+				$adminbarHeight = jQuery( '#wpadminbar' ).height();
+				$newScrollPosition = $target.offset().top - $adminbarHeight;
+				$adminbarHeight;
+
+			jQuery( 'html, body' ).animate({
+				scrollTop: $newScrollPosition
+			}, 450 );
+		});
+	}
 });

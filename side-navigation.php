@@ -1,5 +1,13 @@
 <?php
-// Template Name: Side Navigation
+/**
+ * Template Name: Side Navigation
+ * Used for pages with a side-nav.
+ */
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
 ?>
 
 <?php get_header(); ?>
@@ -26,4 +34,4 @@
 <?php wp_reset_query(); ?>
 <?php get_footer();
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

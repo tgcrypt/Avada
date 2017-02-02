@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Mobile settings
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + mobile
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_responsive( $sections ) {
 
@@ -38,6 +42,7 @@ function avada_options_section_responsive( $sections ) {
 					'min'  => '360',
 					'max'  => '2000',
 					'step' => '1',
+					'edit' => 'yes',
 				),
 				'required'    => array(
 					array(
@@ -72,6 +77,26 @@ function avada_options_section_responsive( $sections ) {
 				'description' => esc_html__( 'Controls when the site content area changes to the mobile layout. This includes all content below the header including the footer.', 'Avada' ),
 				'id'          => 'content_break_point',
 				'default'     => '800',
+				'type'        => 'slider',
+				'choices'     => array(
+					'min'  => '0',
+					'max'  => '2000',
+					'step' => '1',
+					'edit' => 'yes',
+				),
+				'required'    => array(
+					array(
+						'setting'  => 'responsive',
+						'operator' => '==',
+						'value'    => '1',
+					),
+				),
+			),
+			'sidebar_break_point' => array(
+				'label'       => esc_html__( 'Sidebar Responsive Breakpoint', 'Avada' ),
+				'description' => esc_html__( 'Controls when sidebars change to the mobile layout.', 'Avada' ),
+				'id'          => 'sidebar_break_point',
+				'default'     => ( isset( $settings['content_break_point'] ) && ! empty( $settings['content_break_point'] ) ) ? $settings['content_break_point'] : '800',
 				'type'        => 'slider',
 				'choices'     => array(
 					'min'  => '0',
@@ -144,11 +169,11 @@ function avada_options_section_responsive( $sections ) {
 				'choices'         => array(
 					'min'  => '0',
 					'max'  => '2',
-					'step' => '.01'
+					'step' => '.01',
 				),
 			),
 			'typography_factor' => array(
-				'label'       => esc_html__( 'Mininum Font Size Factor', 'Avada' ),
+				'label'       => esc_html__( 'Minimum Font Size Factor', 'Avada' ),
 				'description' => esc_html__( 'Minimum font factor is used to determine the minimum distance between headings and body font by a multiplying value.', 'Avada' ),
 				'id'          => 'typography_factor',
 				'default'     => '1.5',
@@ -168,7 +193,7 @@ function avada_options_section_responsive( $sections ) {
 				'choices'     => array(
 					'min'  => '0',
 					'max'  => '4',
-					'step' => '.01'
+					'step' => '.01',
 				),
 			),
 		),

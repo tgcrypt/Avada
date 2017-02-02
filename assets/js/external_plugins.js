@@ -2303,7 +2303,7 @@ function makeArray( obj ) {
         navSelector: 'div.navigation',
         contentSelector: null, // rename to pageFragment
         extraScrollPx: 150,
-        itemSelector: 'div.post',
+        itemSelector: 'div.post, article.post',
         animate: false,
         pathParse: undefined,
         dataType: 'html',

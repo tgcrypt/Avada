@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Social Media
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + social_media
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_social_media( $sections ) {
 
@@ -23,13 +27,13 @@ function avada_options_section_social_media( $sections ) {
 				'fields'      => array(
 					'social_media_icons_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> This tab controls the social networks that display in the header and footer. Add the network of your choice along with your unique URL. Each network you wish to display must be added here to show up in the header and footer. These settings do not control the avada social widget, social link shortcode or person shortcode.', 'Avada' ) . '</div>',
+						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> This tab controls the social networks that display in the header and footer. Add the network of your choice along with your unique URL. Each network you wish to display must be added here to show up in the header and footer. These settings do not control the avada social widget, social link element or person element.', 'Avada' ) . '</div>',
 						'id'          => 'social_media_icons_important_note_info',
 						'type'        => 'custom',
 					),
 					'social_media_icons' => array(
 						'label'      => esc_html__( 'Social Media Links', 'Avada' ),
-						'description'=> esc_html__( 'Social media links use a repeater field and allow one network per field. Click the "Add" button to add additional fields.', 'Avada' ),
+						'description' => esc_html__( 'Social media links use a repeater field and allow one network per field. Click the "Add" button to add additional fields.', 'Avada' ),
 						'id'         => 'social_media_icons',
 						'default'    => array(),
 						'type'       => 'repeater',
@@ -90,7 +94,7 @@ function avada_options_section_social_media( $sections ) {
 							'Bottom' => esc_html__( 'Bottom', 'Avada' ),
 							'Left'   => esc_html__( 'Left', 'Avada' ),
 							'None'   => esc_html__( 'None', 'Avada' ),
-						)
+						),
 					),
 					'header_social_links_color_type' => array(
 						'label'       => esc_html__( 'Header Social Icon Color Type', 'Avada' ),
@@ -257,7 +261,7 @@ function avada_options_section_social_media( $sections ) {
 								'setting'  => 'footer_social_links_color_type',
 								'operator' => '==',
 								'value'    => 'custom',
-							)
+							),
 						),
 					),
 					'footer_social_links_boxed' => array(
@@ -295,7 +299,7 @@ function avada_options_section_social_media( $sections ) {
 								'setting'  => 'footer_social_links_color_type',
 								'operator' => '==',
 								'value'    => 'custom',
-							)
+							),
 						),
 					),
 					'footer_social_links_boxed_radius' => array(
@@ -356,7 +360,7 @@ function avada_options_section_social_media( $sections ) {
 						'description' => esc_html__( 'Controls the color of the tagline text in the social sharing boxes.', 'Avada' ),
 						'id'          => 'sharing_box_tagline_text_color',
 						'default'     => '#333333',
-						'type'        => 'color'
+						'type'        => 'color',
 					),
 					'social_bg_color' => array(
 						'label'       => esc_html__( 'Sharing Box Background Color', 'Avada' ),
@@ -370,7 +374,7 @@ function avada_options_section_social_media( $sections ) {
 						'description' => '',
 						'id'          => 'social_share_box_icon_info',
 						'icon'        => true,
-						'type'        => 'info'
+						'type'        => 'info',
 					),
 					'sharing_social_links_font_size' => array(
 						'label'       => esc_html__( 'Sharing Box Icon Font Size', 'Avada' ),
@@ -391,7 +395,7 @@ function avada_options_section_social_media( $sections ) {
 							'Bottom' => esc_html__( 'Bottom', 'Avada' ),
 							'Left'   => esc_html__( 'Left', 'Avada' ),
 							'None'   => esc_html__( 'None', 'Avada' ),
-						)
+						),
 					),
 					'sharing_social_links_color_type' => array(
 						'label'       => esc_html__( 'Sharing Box Icon Color Type', 'Avada' ),
@@ -477,7 +481,7 @@ function avada_options_section_social_media( $sections ) {
 						'description' => '',
 						'id'          => 'social_share_box_links_title',
 						'icon'        => true,
-						'type'        => 'info'
+						'type'        => 'info',
 					),
 					'sharing_facebook' => array(
 						'label'       => esc_html__( 'Facebook', 'Avada' ),
@@ -540,7 +544,7 @@ function avada_options_section_social_media( $sections ) {
 						'description' => sprintf( esc_html__( 'Turn on to display %s in the social share box.', 'Avada' ), esc_html__( 'Email', 'Avada' ) ),
 						'id'          => 'sharing_email',
 						'default'     => '1',
-						'type'        => 'toggle'
+						'type'        => 'toggle',
 					),
 				),
 			),

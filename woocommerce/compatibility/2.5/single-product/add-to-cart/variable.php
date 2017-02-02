@@ -14,6 +14,7 @@
  * @package WooCommerce/Templates
  * @version 2.5.0
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -24,7 +25,7 @@ $attribute_keys = array_keys( $attributes );
 
 do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 
-<form class="variations_form cart" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->id ); ?>" data-product_variations="<?php echo htmlspecialchars( json_encode( $available_variations ) ) ?>">
+<form class="variations_form cart" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->id ); ?>" data-product_variations="<?php echo htmlspecialchars( wp_json_encode( $available_variations ) ) ?>">
 	<?php do_action( 'woocommerce_before_variations_form' ); ?>
 
 	<?php if ( empty( $available_variations ) && false !== $available_variations ) : ?>
@@ -43,7 +44,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 						</td>
 					</tr>
 		        <?php endforeach;?>
-				<?php //Avada edit ?>
+				<?php // Avada edit. ?>
 				  <tr>
 					<td class="label"></td>
 					<td class="value">
@@ -63,12 +64,13 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 		<div class="single_variation_wrap">
 			<?php
 				/**
-				 * woocommerce_before_single_variation Hook.
+				 * The woocommerce_before_single_variation Hook.
 				 */
 				do_action( 'woocommerce_before_single_variation' );
 
 				/**
-				 * woocommerce_single_variation hook. Used to output the cart button and placeholder for variation data.
+				 * The woocommerce_single_variation hook. Used to output the cart button and placeholder for variation data.
+				 *
 				 * @since 2.4.0
 				 * @hooked woocommerce_single_variation - 10 Empty div for variation data.
 				 * @hooked woocommerce_single_variation_add_to_cart_button - 20 Qty and cart button.
@@ -76,7 +78,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 				do_action( 'woocommerce_single_variation' );
 
 				/**
-				 * woocommerce_after_single_variation Hook.
+				 * The woocommerce_after_single_variation Hook.
 				 */
 				do_action( 'woocommerce_after_single_variation' );
 			?>
@@ -90,4 +92,4 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 
 <?php do_action( 'woocommerce_after_add_to_cart_form' );
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

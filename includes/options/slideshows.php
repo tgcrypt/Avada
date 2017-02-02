@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Slideshows settings
  *
- * @var  array   any existing settings
- * @return array  existing sections + slideshows
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_slideshows( $sections ) {
 
@@ -13,7 +17,7 @@ function avada_options_section_slideshows( $sections ) {
 		'label'    => esc_html__( 'Slideshows', 'Avada' ),
 		'id'       => 'heading_slideshows',
 		'priority' => 19,
-		'icon'     => 'el-icon-photo-alt',
+		'icon'     => 'el-icon-picture',
 		'fields'   => array(
 			'posts_slideshow_number' => array(
 				'label'       => esc_html__( 'Posts Slideshow Images', 'Avada' ),
@@ -32,18 +36,18 @@ function avada_options_section_slideshows( $sections ) {
 				'description' => esc_html__( 'Turn on to autoplay the slideshows.', 'Avada' ),
 				'id'          => 'slideshow_autoplay',
 				'default'     => '1',
-				'type'        => 'switch'
+				'type'        => 'switch',
 			),
 			'slideshow_smooth_height' => array(
 				'label'       => esc_html__( 'Smooth Height', 'Avada' ),
 				'description' => esc_html__( 'Turn on to enable smooth height on slideshows when using images with different heights. Please note, smooth height is disabled on blog grid layout.', 'Avada' ),
 				'id'          => 'slideshow_smooth_height',
 				'default'     => '0',
-				'type'        => 'switch'
+				'type'        => 'switch',
 			),
 			'slideshow_speed' => array(
 				'label'       => esc_html__( 'Slideshow Speed', 'Avada' ),
-				'description' => esc_html__( 'Controls the speed of slideshows for the [slider] shortcode and sliders within posts. ex: 1000 = 1 second.', 'Avada' ),
+				'description' => esc_html__( 'Controls the speed of slideshows for the slider element and sliders within posts. ex: 1000 = 1 second.', 'Avada' ),
 				'id'          => 'slideshow_speed',
 				'default'     => '7000',
 				'type'        => 'slider',
@@ -55,10 +59,10 @@ function avada_options_section_slideshows( $sections ) {
 			),
 			'pagination_video_slide' => array(
 				'label'       => esc_html__( 'Pagination Circles Below Video Slides', 'Avada' ),
-				'description' => esc_html__( 'Turn on to show pagination circles below a video slide for the [slider] shortcode. Turn off to hide them on video slides.', 'Avada' ),
+				'description' => esc_html__( 'Turn on to show pagination circles below a video slide for the slider element. Turn off to hide them on video slides.', 'Avada' ),
 				'id'          => 'pagination_video_slide',
 				'default'     => '0',
-				'type'        => 'switch'
+				'type'        => 'switch',
 			),
 
 			'slider_nav_box_dimensions' => array(

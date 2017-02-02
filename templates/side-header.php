@@ -1,7 +1,13 @@
 <?php
-/**
- * avada_before_header_wrapper hook
- */
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
+<?php
+
+// The avada_before_header_wrapper hook.
 do_action( 'avada_before_header_wrapper' );
 
 $sticky_header_logo = ( Avada()->settings->get( 'sticky_header_logo' ) ) ? true : false;
@@ -12,9 +18,7 @@ $mobile_logo        = ( Avada()->settings->get( 'mobile_logo' ) ) ? true : false
 <div id="side-header" class="clearfix fusion-mobile-menu-design-<?php echo strtolower( Avada()->settings->get( 'mobile_menu_design' ) ); ?> fusion-sticky-logo-<?php echo $sticky_header_logo; ?> fusion-mobile-logo-<?php echo $mobile_logo; ?> fusion-sticky-menu-<?php echo has_nav_menu( 'sticky_navigation' ); ?><?php echo ( Avada()->settings->get( 'header_shadow' ) ) ? ' header-shadow' : ''; ?>">
 	<div class="side-header-wrapper">
 		<?php
-		/**
-		 * avada_header_inner_before
-		 */
+		// The avada_header_inner_before hook.
 		do_action( 'avada_header_inner_before' );
 		?>
 		<?php $mobile_logo = ( Avada()->settings->get( 'mobile_logo' ) ) ? true : false; ?>
@@ -52,9 +56,7 @@ $mobile_logo        = ( Avada()->settings->get( 'mobile_logo' ) ) ? true : false
 		<?php endif; ?>
 
 		<?php
-		/**
-		 * avada_header_inner_after
-		 */
+		// The avada_header_inner_after hook.
 		do_action( 'avada_header_inner_after' );
 		?>
 	</div>
@@ -62,9 +64,7 @@ $mobile_logo        = ( Avada()->settings->get( 'mobile_logo' ) ) ? true : false
 	<div class="side-header-border"></div>
 </div>
 <?php
-/**
- * avada_after_header_wrapper hook
- */
+// The avada_after_header_wrapper hook.
 do_action( 'avada_after_header_wrapper' );
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

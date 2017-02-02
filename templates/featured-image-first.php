@@ -1,8 +1,14 @@
+<?php
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <?php ob_start(); ?>
-<?php if ( 'related' == $type && 'fixed' == $post_featured_image_size && get_post_thumbnail_id( $post_id ) ) :
+<?php if ( 'related' === $type && 'fixed' === $post_featured_image_size && get_post_thumbnail_id( $post_id ) ) :
 
 	/**
-	 * Resize images for use as related posts
+	 * Resize images for use as related posts.
 	 */
 	$image = Fusion_Image_Resizer::image_resize( array(
 		'width'  => '500',
@@ -26,8 +32,10 @@
 	<?php elseif ( get_post_meta( $post_id, 'pyre_video', true ) ) : ?>
 
 		<?php
+		$image_size_class .= ' fusion-video'
+
 		/**
-		 * Show the video if one is set
+		 * Show the video if one is set.
 		 */
 		?>
 		<div class="full-video">
@@ -38,9 +46,9 @@
 
 		<?php
 		/**
-		 * avada_placeholder_image hook
+		 * The avada_placeholder_image hook.
 		 *
-		 * @hooked avada_render_placeholder_image - 10 (outputs the HTML for the placeholder image)
+		 * @hooked avada_render_placeholder_image - 10 (outputs the HTML for the placeholder image).
 		 */
 		?>
 		<?php do_action( 'avada_placeholder_image', $post_featured_image_size ); ?>

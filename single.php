@@ -1,23 +1,30 @@
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <?php get_header(); ?>
 
 <div id="content" <?php Avada()->layout->add_style( 'content_style' ); ?>>
 
-	<?php if ( ( Avada()->settings->get( 'blog_pn_nav' ) && 'no' != get_post_meta( $post->ID, 'pyre_post_pagination', true ) ) || ( ! Avada()->settings->get( 'blog_pn_nav' ) && 'yes' == get_post_meta( $post->ID, 'pyre_post_pagination', true ) ) ): ?>
+	<?php if ( ( Avada()->settings->get( 'blog_pn_nav' ) && 'no' != get_post_meta( $post->ID, 'pyre_post_pagination', true ) ) || ( ! Avada()->settings->get( 'blog_pn_nav' ) && 'yes' == get_post_meta( $post->ID, 'pyre_post_pagination', true ) ) ) : ?>
 		<div class="single-navigation clearfix">
 			<?php previous_post_link( '%link', esc_attr__( 'Previous', 'Avada' ) ); ?>
 			<?php next_post_link( '%link', esc_attr__( 'Next', 'Avada' ) ); ?>
 		</div>
 	<?php endif; ?>
 
-	<?php while( have_posts() ) : the_post(); ?>
-		<div id="post-<?php the_ID(); ?>" <?php post_class( 'post' ); ?>>
+	<?php while ( have_posts() ) : the_post(); ?>
+		<article id="post-<?php the_ID(); ?>" <?php post_class( 'post' ); ?>>
 			<?php $full_image = ''; ?>
 			<?php if ( 'above' == Avada()->settings->get( 'blog_post_title' ) ) : ?>
 				<?php echo avada_render_post_title( $post->ID, false, '', '2' ); ?>
 			<?php elseif ( 'disabled' == Avada()->settings->get( 'blog_post_title' ) && Avada()->settings->get( 'disable_date_rich_snippet_pages' ) ) : ?>
 				<span class="entry-title" style="display: none;"><?php the_title(); ?></span>
-			<?php endif; ?>			
-			
+			<?php endif; ?>
+
 			<?php if ( ! post_password_required( $post->ID ) ) : ?>
 				<?php if ( Avada()->settings->get( 'featured_images_single' ) ) : ?>
 					<?php if ( 0 < avada_number_of_featured_images() || get_post_meta( $post->ID, 'pyre_video', true ) ) : ?>
@@ -41,14 +48,14 @@
 												<span class="screen-reader-text"><?php esc_attr_e( 'View Larger Image', 'Avada' ); ?></span>
 												<?php echo get_the_post_thumbnail( $post->ID, 'full' ); ?>
 											</a>
-										<?php else: ?>
+										<?php else : ?>
 											<?php echo get_the_post_thumbnail( $post->ID, 'full' ); ?>
 										<?php endif; ?>
-									</li>									
+									</li>
 								<?php endif; ?>
 								<?php $i = 2; ?>
 								<?php while ( $i <= Avada()->settings->get( 'posts_slideshow_number' ) ) : ?>
-									<?php $attachment_new_id = kd_mfi_get_featured_image_id( 'featured-image-' . $i, 'post'); ?>
+									<?php $attachment_new_id = kd_mfi_get_featured_image_id( 'featured-image-' . $i, 'post' ); ?>
 									<?php if ( $attachment_new_id ) : ?>
 										<?php $attachment_image = wp_get_attachment_image_src( $attachment_new_id, 'full' ); ?>
 										<?php $full_image       = wp_get_attachment_image_src( $attachment_new_id, 'full' ); ?>
@@ -58,7 +65,7 @@
 												<a href="<?php echo $full_image[0]; ?>" data-rel="iLightbox[gallery<?php the_ID(); ?>]" title="<?php echo get_post_field( 'post_excerpt', $attachment_new_id ); ?>" data-title="<?php echo get_post_field( 'post_title', $attachment_new_id ); ?>" data-caption="<?php echo get_post_field( 'post_excerpt', $attachment_new_id ); ?>">
 													<?php echo wp_get_attachment_image( $attachment_new_id, 'full' ); ?>
 												</a>
-											<?php else: ?>
+											<?php else : ?>
 												<?php echo wp_get_attachment_image( $attachment_new_id, 'full' ); ?>
 											<?php endif; ?>
 										</li>
@@ -106,16 +113,16 @@
 				echo avada_render_related_posts( get_post_type() );
 				?>
 
-				<?php if ( ( Avada()->settings->get( 'blog_comments' ) && 'no' != get_post_meta($post->ID, 'pyre_post_comments', true ) ) || ( ! Avada()->settings->get( 'blog_comments' ) && 'yes' == get_post_meta( $post->ID, 'pyre_post_comments', true ) ) ) : ?>
+				<?php if ( ( Avada()->settings->get( 'blog_comments' ) && 'no' != get_post_meta( $post->ID, 'pyre_post_comments', true ) ) || ( ! Avada()->settings->get( 'blog_comments' ) && 'yes' == get_post_meta( $post->ID, 'pyre_post_comments', true ) ) ) : ?>
 					<?php wp_reset_query(); ?>
 					<?php comments_template(); ?>
 				<?php endif; ?>
 			<?php endif; ?>
-		</div>
+		</article>
 	<?php endwhile; ?>
 	<?php wp_reset_query(); ?>
 </div>
 <?php do_action( 'avada_after_content' ); ?>
 <?php get_footer();
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

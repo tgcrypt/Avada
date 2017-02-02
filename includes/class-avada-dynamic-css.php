@@ -1,63 +1,58 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
+/**
+ * Handle generating the dynamic CSS.
+ *
+ * @since 3.8.5
+ */
 class Avada_Dynamic_CSS {
 
+	/**
+	 * The mode we'll be using (file/inline).
+	 *
+	 * @static
+	 * @access public
+	 * @var string
+	 */
 	public static $mode;
 
+	/**
+	 * Constructor.
+	 *
+	 * @access public
+	 */
 	public function __construct() {
 
 		$this->add_options();
 
-		// Set mode
-		add_action( 'wp', array( $this, 'set_mode' ) );
+		// Set mode.
+		add_action( 'wp', array( __CLASS__, 'set_mode' ), 20 );
 
 		// When a post is saved, reset its caches to force-regenerate the CSS.
 		add_action( 'save_post', array( $this, 'reset_post_transient' ) );
 		add_action( 'save_post', array( $this, 'post_update_option' ) );
 
-		// When we change the options, reset all caches so that all CSS can be re-generated
-		add_action( 'avada_save_options', array( $this, 'reset_all_transients' ) );
-		add_action( 'avada_save_options', array( $this, 'clear_cache' ) );
-		add_action( 'avada_save_options', array( $this, 'global_reset_option' ) );
-		add_action( 'avada_save_options', array( $this, 'clear_cache' ) );
+		// When we change the options, reset all caches so that all CSS can be re-generated.
+		add_action( 'avada_save_options', array( $this, 'reset_all_caches' ) );
 		add_action( 'customize_save_after', array( $this, 'reset_all_caches' ) );
 
-		// Add the CSS
+		// Add the CSS.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_dynamic_css' ), 11 );
 		add_action( 'wp_head', array( $this, 'add_inline_css' ), 999 );
 
 	}
 
 	/**
-	 * get the current page ID.
-	 *
-	 * @return  int the current page ID.
-	 */
-	public static function page_id() {
-		global $post;
-		$id = false;
-		if ( isset( $post ) ) {
-			// If this is a  singular page/post then set ID to the page ID.
-			// If not, then set it to false.
-			$id = ( is_singular() ) ? $post->ID : false;
-			// If we're on the WooCommerce shop page, get the ID of the page
-			// using the 'woocommerce_shop_page_id' option
-			if ( function_exists( 'is_shop' ) && is_shop() ) {
-				$id = get_option( 'woocommerce_shop_page_id' );
-			}
-			// If we're on the posts page, get the ID of the page
-			// using the 'page_for_posts' option.
-			if ( is_home() ) {
-				$id = get_option( 'page_for_posts' );
-			}
-		}
-		return $id;
-	}
-
-	/**
 	 * Determine if we're using file mode or inline mode.
 	 *
-	 * @return  string file/inline
+	 * @static
+	 * @access public
+	 * @return string file/inline.
 	 */
 	public static function set_mode() {
 
@@ -89,7 +84,7 @@ class Avada_Dynamic_CSS {
 					$mode = ( file_exists( self::file( 'path' ) ) ) ? 'file' : 'inline';
 				}
 			} else {
-				// It's been less than 5 seconds since we last compiled a CSS file
+				// It's been less than 5 seconds since we last compiled a CSS file.
 				// In order to prevent server meltdowns on weak servers we'll use inline mode instead.
 				$mode = 'inline';
 			}
@@ -102,13 +97,15 @@ class Avada_Dynamic_CSS {
 	/**
 	 * Enqueue the dynamic CSS.
 	 *
-	 * @return  void
+	 * @access public
+	 * @return void
 	 */
 	public function enqueue_dynamic_css() {
 
+		$ver = Avada::get_theme_version();
 		if ( 'file' == self::$mode ) {
 			// Yay! we're using a file for our CSS, so enqueue it.
-			wp_enqueue_style( 'avada-dynamic-css', self::file( 'uri' ), array( 'avada-stylesheet' ) );
+			wp_enqueue_style( 'avada-dynamic-css', self::file( 'uri' ), array( 'avada-stylesheet' ), $ver );
 		}
 		// In case of no file mode, the CSS file is not enqueued
 		// but it is added in header.php
@@ -118,17 +115,14 @@ class Avada_Dynamic_CSS {
 	/**
 	 * This function takes care of creating the CSS.
 	 *
-	 * @return  bool 	true/false depending on whether the file is successfully created or not.
+	 * @static
+	 * @access private
+	 * @return bool true/false depending on whether the file is successfully created or not.
 	 */
-	public static function make_css() {
+	private static function make_css() {
 
 		global $wp_filesystem;
-
-		// Instantiate the Wordpress filesystem.
-		if ( empty( $wp_filesystem ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/file.php' );
-			WP_Filesystem();
-		}
+		Avada_Helper::init_filesystem();
 
 		// Creates the content of the CSS file.
 		// We're adding a warning at the top of the file to prevent users from editing it.
@@ -142,24 +136,23 @@ class Avada_Dynamic_CSS {
 
 			if ( function_exists( 'domain_mapping_siteurl' ) && function_exists( 'get_original_url' ) ) {
 
-				// The mapped domain of the site
+				// The mapped domain of the site.
 				$mapped_domain   = domain_mapping_siteurl( false );
 				$mapped_domain   = str_replace( 'https://', '//', $mapped_domain );
 				$mapped_domain   = str_replace( 'http://', '//', $mapped_domain );
 
-				// The original domain of the site
+				// The original domain of the site.
 				$original_domain = get_original_url( 'siteurl' );
 				$original_domain = str_replace( 'https://', '//', $original_domain );
 				$original_domain = str_replace( 'http://', '//', $original_domain );
 
-				// Replace original domain with mapped domain
+				// Replace original domain with mapped domain.
 				$content = str_replace( $original_domain, $mapped_domain, $content );
 
 			}
-
 		}
 
-		// Replace wp-content url with relative path
+		// Replace wp-content url with relative path.
 		$upload_dir = wp_upload_dir();
 		$content    = str_replace( $upload_dir['baseurl'], '..', $content );
 		$content    = str_replace( content_url(), '../..', $content );
@@ -170,14 +163,14 @@ class Avada_Dynamic_CSS {
 
 		// Since we've already checked if the file is writable in the can_write() method (called by the mode() method)
 		// it's safe to continue without any additional checks as to the validity of the file.
-		if ( ! $wp_filesystem->put_contents( self::file( 'path' ), $content, FS_CHMOD_FILE ) ) {
-			// Writing to the file failed
+		if ( ! $wp_filesystem->put_contents( self::file( 'path' ), $content ) ) {
+			// Writing to the file failed.
 			return false;
 		} else {
 			// Writing to the file succeeded.
 			// Update the opion in the db so that we know the css for this post has been successfully generated
 			// and then return true.
-			$page_id = ( self::page_id() ) ? self::page_id() : 'global';
+			$page_id = ( Avada()->get_page_id() ) ? Avada()->get_page_id() : 'global';
 			$option  = get_option( 'avada_dynamic_css_posts', array() );
 			$option[ $page_id ] = true;
 			update_option( 'avada_dynamic_css_posts', $option );
@@ -189,12 +182,14 @@ class Avada_Dynamic_CSS {
 
 	}
 
-	/*
+	/**
 	 * Determines if the CSS file is writable.
 	 *
+	 * @static
+	 * @access private
 	 * @return bool
 	 */
-	public static function can_write() {
+	private static function can_write() {
 
 		// Get the blog ID.
 		$blog_id = 1;
@@ -205,9 +200,9 @@ class Avada_Dynamic_CSS {
 
 		// Get the upload directory for this site.
 		$upload_dir = wp_upload_dir();
-		// If this is a multisite installation, append the blogid to the filename
+		// If this is a multisite installation, append the blogid to the filename.
 		$blog_id = ( is_multisite() && $blog_id > 1 ) ? '_blog-' . $blog_id : null;
-		$page_id = ( self::page_id() ) ? self::page_id() : 'global';
+		$page_id = ( Avada()->get_page_id() ) ? Avada()->get_page_id() : 'global';
 
 		$file_name   = '/avada' . $blog_id . '-' . $page_id . '.css';
 		$folder_path = $upload_dir['basedir'] . DIRECTORY_SEPARATOR . 'avada-styles';
@@ -235,7 +230,7 @@ class Avada_Dynamic_CSS {
 				if ( file_exists( $folder_path . $file_name ) ) {
 					// File exists. Is it writable?
 					if ( ! is_writable( $folder_path . $file_name ) ) {
-						// Nope, it's not writable
+						// Nope, it's not writable.
 						return false;
 					}
 				}
@@ -253,18 +248,17 @@ class Avada_Dynamic_CSS {
 	}
 
 
-	/*
-	 * Gets the css path or url to the stylesheet
+	/**
+	 * Gets the css path or url to the stylesheet.
 	 *
-	 * @var 	string 	path/url
-	 * @return 	string  path or url to the file depending on the $target var.
-	 *
+	 * @static
+	 * @access private
+	 * @param string $target path/url.
+	 * @return string Path or url to the file depending on the $target var.
 	 */
-	public static function file( $target = 'path' ) {
+	private static function file( $target = 'path' ) {
 
-		/**
-		 * Get the blog ID
-		 */
+		// Get the blog ID.
 		if ( is_multisite() ) {
 			$current_site = get_blog_details();
 			$blog_id = $current_site->blog_id;
@@ -274,17 +268,17 @@ class Avada_Dynamic_CSS {
 
 		// Get the upload directory for this site.
 		$upload_dir = wp_upload_dir();
-		// If this is a multisite installation, append the blogid to the filename
+		// If this is a multisite installation, append the blogid to the filename.
 		$blog_id = ( is_multisite() && $blog_id > 1 ) ? '_blog-' . $blog_id : null;
-		$page_id = ( self::page_id() ) ? self::page_id() : 'global';
+		$page_id = ( Avada()->get_page_id() ) ? Avada()->get_page_id() : 'global';
 
 		$file_name   = 'avada' . $blog_id . '-' . $page_id . '.css';
 		$folder_path = $upload_dir['basedir'] . DIRECTORY_SEPARATOR . 'avada-styles';
 		// The complete path to the file.
 		$file_path = $folder_path . DIRECTORY_SEPARATOR . $file_name;
-		// Get the URL directory of the stylesheet
+		// Get the URL directory of the stylesheet.
 		$css_uri_folder = $upload_dir['baseurl'];
-		// Build the URL of the file
+		// Build the URL of the file.
 		$css_uri = trailingslashit( $css_uri_folder ) . 'avada-styles/' . $file_name;
 		// Take care of domain mapping.
 		// When using domain mapping we have to make sure that the URL to the file
@@ -297,7 +291,7 @@ class Avada_Dynamic_CSS {
 			}
 		}
 		// Strip protocols from the URL.
-		// Make sure we don't have any issues with sites using HTTPS/SSL
+		// Make sure we don't have any issues with sites using HTTPS/SSL.
 		$css_uri = str_replace( 'https://', '//', $css_uri );
 		$css_uri = str_replace( 'http://', '//', $css_uri );
 
@@ -315,11 +309,12 @@ class Avada_Dynamic_CSS {
 	/**
 	 * Reset ALL CSS transient caches.
 	 *
-	 * @return  void
+	 * @access public
+	 * @return void
 	 */
 	public function reset_all_transients() {
 		global $wpdb;
-		// Build the query to delete all avada transients and execute the required SQL
+		// Build the query to delete all avada transients and execute the required SQL.
 		$sql = "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_avada_dynamic_css_%'";
 		$wpdb->query( $sql );
 	}
@@ -327,8 +322,8 @@ class Avada_Dynamic_CSS {
 	/**
 	 * Reset the dynamic CSS transient for a post.
 	 *
-	 * @param  $post_id       the ID of the post that's being reset.
-	 * @return  void
+	 * @access public
+	 * @param int $post_id The ID of the post that's being reset.
 	 */
 	public function reset_post_transient( $post_id ) {
 		delete_transient( 'avada_dynamic_css_' . $post_id );
@@ -337,9 +332,9 @@ class Avada_Dynamic_CSS {
 	/**
 	 * Create settings.
 	 *
-	 * @return  void
+	 * @access private
 	 */
-	public function add_options() {
+	private function add_options() {
 		// The 'avada_dynamic_css_posts' option will hold an array of posts that have had their css generated.
 		// We can use that to keep track of which pages need their CSS to be recreated and which don't.
 		add_option( 'avada_dynamic_css_time', array(), '', 'yes' );
@@ -351,7 +346,9 @@ class Avada_Dynamic_CSS {
 	 * Update the avada_dynamic_css_posts option when a post is saved.
 	 * This adds the current post's ID in the array of IDs that the 'avada_dynamic_css_posts' option has.
 	 *
-	 * @return  void
+	 * @access public
+	 * @param int $post_id The post ID.
+	 * @return void
 	 */
 	public function post_update_option( $post_id ) {
 		$option = get_option( 'avada_dynamic_css_posts', array() );
@@ -361,7 +358,9 @@ class Avada_Dynamic_CSS {
 
 	/**
 	 * Update the avada_dynemic_css_posts option when the theme options are saved.
-	 * This basically empties the array of page IDS from the 'avada_dynamic_css_posts' option
+	 * This basically empties the array of page IDS from the 'avada_dynamic_css_posts' option.
+	 *
+	 * @access public
 	 */
 	public function global_reset_option() {
 		update_option( 'avada_dynamic_css_posts', array() );
@@ -370,24 +369,27 @@ class Avada_Dynamic_CSS {
 	/**
 	 * Do we need to update the CSS file?
 	 *
-	 * @return  bool
+	 * @static
+	 * @access public
+	 * @param string $mode The compiling mode we're using.
+	 * @return bool
 	 */
-	public static function needs_update() {
+	public static function needs_update( $mode = 'file' ) {
 
-		// Get the 'avada_dynamic_css_posts' option from the DB
+		// Get the 'avada_dynamic_css_posts' option from the DB.
 		$option  = get_option( 'avada_dynamic_css_posts', array() );
-		// Get the current page ID
-		$page_id = ( self::page_id() ) ? self::page_id() : 'global';
+		// Get the current page ID.
+		$page_id = ( Avada()->get_page_id() ) ? Avada()->get_page_id() : 'global';
 		// If the CSS file does not exist then we definitely need to regenerate the CSS.
-		if ( ! file_exists( self::file( 'path' ) ) ) {
+		if ( 'file' == $mode && ! file_exists( self::file( 'path' ) ) ) {
 			return true;
 		}
 
 		// Check if the time of the dynamic-css.php file is newer than the css file itself.
 		// If yes, then we need to update the css.
 		// This is primarily added here for development purposes.
-		$dynamic_css_script = get_template_directory() . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'dynamic_css.php';
-		if ( filemtime( $dynamic_css_script ) > filemtime( self::file( 'path' ) ) ) {
+		$dynamic_css_script = Avada::$template_dir_path . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'dynamic_css.php';
+		if ( 'file' == $mode && filemtime( $dynamic_css_script ) > filemtime( self::file( 'path' ) ) ) {
 			return true;
 		}
 		// If the current page ID exists in the array of pages defined in the 'avada_dynamic_css_posts' option
@@ -401,9 +403,11 @@ class Avada_Dynamic_CSS {
 	 * Update the 'avada_dynamic_css_time' option.
 	 * This will save in the db the last time that the compiler has run.
 	 *
-	 * @return  void
+	 * @static
+	 * @access private
+	 * @return void
 	 */
-	public static function update_saved_time() {
+	private static function update_saved_time() {
 		update_option( 'avada_dynamic_css_time', time() );
 	}
 
@@ -413,28 +417,34 @@ class Avada_Dynamic_CSS {
 	 *  - WordPress Total Cache
 	 *  - WPEngine
 	 *  - Varnish
+	 *
+	 * @access public
 	 */
 	public function clear_cache() {
 
-		// if W3 Total Cache is being used, clear the cache
+		// If W3 Total Cache is being used, clear the cache.
 		if ( function_exists( 'w3tc_pgcache_flush' ) ) {
 			w3tc_pgcache_flush();
 		}
-
-		// if WP Super Cache is being used, clear the cache
-		else if ( function_exists( 'wp_cache_clean_cache' ) ) {
+		// if WP Super Cache is being used, clear the cache.
+		if ( function_exists( 'wp_cache_clean_cache' ) ) {
 			global $file_prefix;
 			wp_cache_clean_cache( $file_prefix );
 		}
-
-		//  Clear caches on WPEngine-hosted sites
-		else if ( class_exists( 'WpeCommon' ) ) {
+		// If SG CachePress is installed, rese its caches.
+		if ( class_exists( 'SG_CachePress_Supercacher' ) ) {
+			if ( is_callable( array( 'SG_CachePress_Supercacher', 'purge_cache' ) ) ) {
+				SG_CachePress_Supercacher::purge_cache();
+			}
+		}
+		// Clear caches on WPEngine-hosted sites.
+		if ( class_exists( 'WpeCommon' ) ) {
 			WpeCommon::purge_memcached();
 			WpeCommon::clear_maxcdn_cache();
 			WpeCommon::purge_varnish_cache();
 		}
 
-		// Clear Varnish caches
+		// Clear Varnish caches.
 		if ( Avada()->settings->get( 'dynamic_css_compiler' ) && Avada()->settings->get( 'cache_server_ip' ) ) {
 			$this->clear_varnish_cache( self::file( 'url' ) );
 		}
@@ -442,18 +452,19 @@ class Avada_Dynamic_CSS {
 	}
 
 	/**
-	 * Clear varnish cache for the dynamic CSS file
+	 * Clear varnish cache for the dynamic CSS file.
 	 *
-	 * @param  $url     the URL of the file whose cache we want to reset
-	 * @return  void
+	 * @access public
+	 * @param string $url The URL of the file whose cache we want to reset.
+	 * @return void
 	 */
 	public function clear_varnish_cache( $url ) {
-		// Parse the URL for proxy proxies
-		$p = parse_url( $url );
+		// Parse the URL for proxy proxies.
+		$p = wp_parse_url( $url );
 
 		$varnish_x_purgemethod = ( isset( $p['query'] ) && ( 'vhp=regex' == $p['query'] ) ) ? 'regex' : 'default';
 
-		// Build a varniship
+		// Build a varniship.
 		$varniship = get_option( 'vhp_varnish_ip' );
 		if ( Avada()->settings->get( 'cache_server_ip' ) ) {
 			$varniship = Avada()->settings->get( 'cache_server_ip' );
@@ -461,29 +472,30 @@ class Avada_Dynamic_CSS {
 			$varniship = VHP_VARNISH_IP;
 		}
 		// If we made varniship, let it sail.
-		$purgeme = ( isset( $varniship ) && $varniship != null ) ? $varniship : $p['host'];
+		$purgeme = ( isset( $varniship ) && null != $varniship ) ? $varniship : $p['host'];
 
 		wp_remote_request( 'http://' . $purgeme,
 			array(
 				'method'  => 'PURGE',
 				'headers' => array(
 					'host'           => $p['host'],
-					'X-Purge-Method' => $varnish_x_purgemethod
-				)
+					'X-Purge-Method' => $varnish_x_purgemethod,
+				),
 			)
 		);
 	}
 
 	/**
-	 * Add Inline CSS
+	 * Add Inline CSS.
 	 *
-	 * @return  void
+	 * @access public
+	 * @return void
 	 */
 	public function add_inline_css() {
 		global $wp_customize;
-		// Inline Dynamic CSS
+		// Inline Dynamic CSS.
 		// This is here because we need it after all Avada CSS
-		// and W3TC can combine it incorrectly
+		// and W3TC can combine it incorrectly.
 		if ( 'inline' == self::$mode || $wp_customize ) {
 			echo "<style id='avada-stylesheet-inline-css' type='text/css'>" . avada_dynamic_css_cached() . '</style>';
 		}
@@ -492,17 +504,16 @@ class Avada_Dynamic_CSS {
 
 	/**
 	 * This is just a facilitator that will allow us to reset everything.
-	 * Its only job is calling the other methods from this class and reset parts of our caches
+	 * Its only job is calling the other methods from this class and reset parts of our caches.
 	 *
-	 * @return  void
+	 * @access public
+	 * @return void
 	 */
 	public function reset_all_caches() {
 		$this->reset_all_transients();
 		$this->clear_cache();
 		$this->global_reset_option();
-		$this->clear_cache();
 	}
-
 }
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

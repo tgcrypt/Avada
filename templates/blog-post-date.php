@@ -1,3 +1,10 @@
+<?php
+
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <div class="fusion-date-box">
 	<span class="fusion-date">
 		<?php echo get_the_time( Avada()->settings->get( 'alternate_date_format_day' ) ); ?>

@@ -1,7 +1,17 @@
 <?php
-// Template Name: 100% Width
+/**
+ * Template Name: 100% Width
+ * A full-width template.
+ */
+
 ?>
 
+<?php
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
 <?php get_header(); ?>
 <div id="content" class="full-width">
 	<?php while ( have_posts() ) : the_post(); ?>
@@ -23,4 +33,4 @@
 </div>
 <?php get_footer();
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

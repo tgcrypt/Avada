@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Blog settings
  *
- * @var  array   any existing settings
- * @return array  existing sections + blog
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_blog( $sections ) {
 
@@ -25,7 +29,7 @@ function avada_options_section_blog( $sections ) {
 				'fields'      => array(
 					'general_blog_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab only control the assigned blog page in settings > reading, or the blog archives, not the blog shortcode. The only options on this tab that work with the blog shortcode are the Date Format options and Load More Post Button Color.', 'Avada' ) . '</div>',
+						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab only control the assigned blog page in settings > reading, or the blog archives, not the blog element. The only options on this tab that work with the blog element are the Date Format options and Load More Post Button Color.', 'Avada' ) . '</div>',
 						'id'          => 'general_blog_important_note_info',
 						'type'        => 'custom',
 					),
@@ -114,7 +118,7 @@ function avada_options_section_blog( $sections ) {
 					),
 					'blog_load_more_posts_button_bg_color' => array(
 						'label'       => esc_html__( 'Load More Posts Button Color', 'Avada' ),
-						'description' => esc_html__( 'Controls the background color of the load more button for ajax post loading. Also works with the blog shortcode.', 'Avada' ),
+						'description' => esc_html__( 'Controls the background color of the load more button for ajax post loading. Also works with the blog element.', 'Avada' ),
 						'id'          => 'blog_load_more_posts_button_bg_color',
 						'default'     => '#ebeaea',
 						'type'        => 'color-alpha',
@@ -179,35 +183,35 @@ function avada_options_section_blog( $sections ) {
 						'description' => esc_html__( 'Turn on to strip HTML content from the excerpt for the assigned blog page in "settings > reading" or blog archive pages.', 'Avada' ),
 						'id'          => 'strip_html_excerpt',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'featured_images' => array(
 						'label'       => esc_html__( 'Featured Image / Video on Blog Archive Page', 'Avada' ),
 						'description' => esc_html__( 'Turn on to display featured images and videos on the blog archive pages.', 'Avada' ),
 						'id'          => 'featured_images',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'alternate_date_format_month_year' => array(
 						'label'       => esc_html__( 'Blog Alternate Layout Month and Year Format', 'Avada' ),
-						'description' => wp_kses_post( __( 'Controls the month and year format for blog alternate layouts. <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Formatting Date and Time</a>', 'Avada' ) ),
+						'description' => wp_kses_post( __( 'Controls the month and year format for blog alternate layouts. <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank" rel="noopener noreferrer">Formatting Date and Time</a>', 'Avada' ) ),
 						'id'          => 'alternate_date_format_month_year',
 						'default'     => 'm, Y',
-						'type'        => 'text'
+						'type'        => 'text',
 					),
 					'alternate_date_format_day' => array(
 						'label'       => esc_html__( 'Blog Alternate Layout Day Format', 'Avada' ),
-						'description' => wp_kses_post( __( 'Controls the day format for blog alternate layouts. <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Formatting Date and Time</a>', 'Avada' ) ),
+						'description' => wp_kses_post( __( 'Controls the day format for blog alternate layouts. <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank" rel="noopener noreferrer">Formatting Date and Time</a>', 'Avada' ) ),
 						'id'          => 'alternate_date_format_day',
 						'default'     => 'j',
-						'type'        => 'text'
+						'type'        => 'text',
 					),
 					'timeline_date_format' => array(
 						'label'       => esc_html__( 'Blog Timeline Layout Date Format', 'Avada' ),
-						'description' => wp_kses_post( __( 'Controls the timeline label format for blog timeline layouts. <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Formatting Date</a>', 'Avada' ) ),
+						'description' => wp_kses_post( __( 'Controls the timeline label format for blog timeline layouts. <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank" rel="noopener noreferrer">Formatting Date</a>', 'Avada' ) ),
 						'id'          => 'timeline_date_format',
 						'default'     => 'F Y',
-						'type'        => 'text'
+						'type'        => 'text',
 					),
 				),
 			),
@@ -238,21 +242,20 @@ function avada_options_section_blog( $sections ) {
 						'description' => esc_html__( 'Turn on to display the previous/next post pagination for single blog posts.', 'Avada' ),
 						'id'          => 'blog_pn_nav',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'blog_post_title' => array(
-						'label'           => esc_html__( 'Post Title', 'Avada' ),
-						'description'     => esc_html__( 'Controls if the post title displays above or below the featured post image or is disabled.', 'Avada' ),
-						'id'              => 'blog_post_title',
-						'default'         => 'below',
-						'type'            => 'radio-buttonset',
-						'choices'         => array(
-							'below'       => esc_html__( 'Below ', 'Avada' ),
-							'above'       => esc_html__( 'Above', 'Avada' ),
-							'disabled'    => esc_html__( 'Disabled', 'Avada' ),
+						'label'       => esc_html__( 'Post Title', 'Avada' ),
+						'description' => esc_html__( 'Controls if the post title displays above or below the featured post image or is disabled.', 'Avada' ),
+						'id'          => 'blog_post_title',
+						'default'     => 'below',
+						'type'        => 'radio-buttonset',
+						'choices'     => array(
+							'below'    => esc_html__( 'Below ', 'Avada' ),
+							'above'    => esc_html__( 'Above', 'Avada' ),
+							'disabled' => esc_html__( 'Disabled', 'Avada' ),
 						),
-					),					
-					
+					),
 					'author_info' => array(
 						'label'       => esc_html__( 'Author Info Box', 'Avada' ),
 						'description' => esc_html__( 'Turn on to display the author info box below posts.', 'Avada' ),
@@ -265,21 +268,21 @@ function avada_options_section_blog( $sections ) {
 						'description' => esc_html__( 'Turn on to display the social sharing box.', 'Avada' ),
 						'id'          => 'social_sharing_box',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'related_posts' => array(
 						'label'       => esc_html__( 'Related Posts', 'Avada' ),
 						'description' => esc_html__( 'Turn on to display related posts.', 'Avada' ),
 						'id'          => 'related_posts',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'blog_comments' => array(
 						'label'       => esc_html__( 'Comments', 'Avada' ),
 						'description' => esc_html__( 'Turn on to display comments.', 'Avada' ),
 						'id'          => 'blog_comments',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 				),
 			),
@@ -293,7 +296,7 @@ function avada_options_section_blog( $sections ) {
 				'fields'      => array(
 					'blog_meta_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The on/off meta options on this tab only control the assigned blog page in settings > reading, or the blog archives, not the blog shortcode. The only options on this tab that work with the blog shortcode are the Meta Data Font Size and Date Format options.', 'Avada' ) . '</div>',
+						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The on/off meta options on this tab only control the assigned blog page in settings > reading, or the blog archives, not the blog element. The only options on this tab that work with the blog element are the Meta Data Font Size and Date Format options.', 'Avada' ) . '</div>',
 						'id'          => 'blog_meta_important_note_info',
 						'type'        => 'custom',
 					),
@@ -302,7 +305,7 @@ function avada_options_section_blog( $sections ) {
 						'description' => esc_html__( 'Turn on to display post meta on blog posts. If set to "On", you can also control individual meta items below. If set to "Off" all meta items will be disabled.', 'Avada' ),
 						'id'          => 'post_meta',
 						'default'     => '1',
-						'type'        => 'switch'
+						'type'        => 'switch',
 					),
 					'post_meta_author' => array(
 						'label'       => esc_html__( 'Post Meta Author', 'Avada' ),
@@ -397,7 +400,7 @@ function avada_options_section_blog( $sections ) {
 					),
 					'date_format' => array(
 						'label'       => esc_html__( 'Date Format', 'Avada' ),
-						'description' => wp_kses_post( __( 'Controls the date format for date meta data.  <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Formatting Date and Time</a>', 'Avada' ) ),
+						'description' => wp_kses_post( __( 'Controls the date format for date meta data.  <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank" rel="noopener noreferrer">Formatting Date and Time</a>', 'Avada' ) ),
 						'id'          => 'date_format',
 						'default'     => 'F jS, Y',
 						'type'        => 'text',

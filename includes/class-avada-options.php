@@ -1,27 +1,56 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
+/**
+ * Gets the options from separate files and unites them.
+ */
 class Avada_Options {
 
-	private static $instance = null;
-
+	/**
+	 * An array of section names.
+	 * We'll be using those to load all other files containing the options.
+	 *
+	 * @access public
+	 * @var array
+	 */
 	public $section_names = array();
-	public $sections      = array();
-
-	private static $fields;
-
-	public static function get_instance() {
-		if ( null == self::$instance ) {
-			self::$instance = new Avada_Options();
-		}
-		return self::$instance;
-	}
 
 	/**
-	 * The class constructor
+	 * An array of our sections.
+	 *
+	 * @access public
+	 * @var array
 	 */
-	public function __construct() {
-		Avada::$is_updating = ( $_GET && isset( $_GET['avada_update'] ) && '1' == $_GET['avada_update'] ) ? true : false;
+	public $sections      = array();
 
+	/**
+	 * An array of our fields.
+	 *
+	 * @access private
+	 * @var array
+	 */
+	private static $fields;
+
+	/**
+	 * The class instance.
+	 *
+	 * @static
+	 * @access private
+	 * @var null|object
+	 */
+	private static $instance = null;
+
+	/**
+	 * The class constructor.
+	 *
+	 * @access public
+	 */
+	private function __construct() {
+		Avada::$is_updating = ( $_GET && isset( $_GET['avada_update'] ) && '1' == $_GET['avada_update'] ) ? true : false;
 
 		/**
 		 * The array of sections by ID.
@@ -40,7 +69,6 @@ class Avada_Options {
 			'sidebars',
 			'background',
 			'typography',
-			'shortcode_styling',
 			'blog',
 			'portfolio',
 			'social_media',
@@ -57,36 +85,47 @@ class Avada_Options {
 			'custom_css',
 		);
 
-		/**
-		 * Include the section files
-		 */
+		// Include the section files.
 		$this->include_files();
 
-		/**
-		 * Set the $sections
-		 */
+		// Set the $sections.
 		$this->set_sections();
 
-		/**
-		 * Set the $fields
-		 */
+		// Set the $fields.
 		$this->set_fields();
 
 	}
 
 	/**
-	 * Include required files
+	 * Returns a single instance of the object (singleton).
+	 *
+	 * @access public
+	 * @return object
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new Avada_Options();
+		}
+		return self::$instance;
+	}
+
+	/**
+	 * Include required files.
+	 *
+	 * @access public
 	 */
 	public function include_files() {
 
 		foreach ( $this->section_names as $section ) {
-			include_once get_template_directory() . '/includes/options/' . $section . '.php';
+			include_once Avada::$template_dir_path . '/includes/options/' . $section . '.php';
 		}
 
 	}
 
 	/**
 	 * Set the sections.
+	 *
+	 * @access public
 	 */
 	public function set_sections() {
 
@@ -95,7 +134,7 @@ class Avada_Options {
 			$sections = call_user_func( 'avada_options_section_' . $section, $sections );
 		}
 
-		$this->sections = $sections;
+		$this->sections = apply_filters( 'avada_options_sections', $sections );
 
 	}
 
@@ -104,50 +143,46 @@ class Avada_Options {
 	 * This will contain simply the field IDs and nothing more than that.
 	 * We'll be using this to check if a setting belongs to Avada or not.
 	 *
-	 * @return  array
+	 * @access public
+	 * @return array
 	 */
 	public function fields_array() {
-		/**
-		 * Get the options object
-		 */
-		$avada_new_options = Avada()->options;
+
+		// Get the options object.
+		$avada_new_options = Avada::$options;
 		$fields = array();
-		/**
-		 * start parsing sections
-		 */
+
+		// Start parsing sections.
 		foreach ( $avada_new_options->sections as $section ) {
-			/**
-			 * Make sure we have defined fields for this section.
-			 * No need to proceed otherwise
-			 */
-			if ( isset( $section['fields'] ) ) {
-				/**
-				 * start parsing the fields inside the section
-				 */
-				foreach ( $section['fields'] as $field ) {
-					/**
-					 * Make sure a field-type has been defined
-					 */
-					if ( isset( $field['type'] ) ) {
-						/**
-						 * For normal fields, we'll just add the field ID to our array.
-						 */
-						if ( ! in_array( $field['type'], array( 'sub-section', 'accordion' ) ) ) {
-							if ( isset( $field['id'] ) ) {
-								$fields[] = $field['id'];
-							}
-						}
-						/**
-						 * For sub-sections & accordions we'll have to parse the sub-fields and add them to our array
-						 */
-						else {
-							if ( isset( $field['fields'] ) ) {
-								foreach ( $field['fields'] as $sub_field ) {
-									if ( isset( $sub_field['id'] ) ) {
-										$fields[] = $sub_field['id'];
-									}
-								}
-							}
+
+			// Make sure we have defined fields for this section.
+			// No need to proceed otherwise.
+			if ( ! isset( $section['fields'] ) ) {
+				continue;
+			}
+
+			// Start parsing the fields inside the section.
+			foreach ( $section['fields'] as $field ) {
+
+				// Make sure a field-type has been defined.
+				if ( ! isset( $field['type'] ) ) {
+					continue;
+				}
+
+				// For normal fields, we'll just add the field ID to our array.
+				if ( ! in_array( $field['type'], array( 'sub-section', 'accordion' ) ) ) {
+					if ( isset( $field['id'] ) ) {
+						$fields[] = $field['id'];
+					}
+				} else {
+
+					// For sub-sections & accordions we'll have to parse the sub-fields and add them to our array.
+					if ( ! isset( $field['fields'] ) ) {
+						continue;
+					}
+					foreach ( $field['fields'] as $sub_field ) {
+						if ( isset( $sub_field['id'] ) ) {
+							$fields[] = $sub_field['id'];
 						}
 					}
 				}
@@ -156,21 +191,28 @@ class Avada_Options {
 		return $fields;
 	}
 
+	/**
+	 * Sets the fields.
+	 *
+	 * @access public
+	 */
 	public function set_fields() {
-		/**
-		 * Start parsing the sections
-		 */
+
+		// Start parsing the sections.
 		foreach ( $this->sections as $section ) {
 			if ( ! isset( $section['fields'] ) ) {
 				continue;
 			}
+
 			// Start parsing the fields.
 			foreach ( $section['fields'] as $field ) {
 				if ( ! isset( $field['id'] ) ) {
 					continue;
 				}
-				// This is a sub-section or an accordion
+
+				// This is a sub-section or an accordion.
 				if ( isset( $field['type'] ) && in_array( $field['type'], array( 'sub-section', 'accordion' ) ) ) {
+
 					// Start parsing the fields inside the sub-section/accordion.
 					foreach ( $field['fields'] as $sub_field ) {
 						if ( ! isset( $sub_field['id'] ) ) {
@@ -179,15 +221,21 @@ class Avada_Options {
 						self::$fields[ $sub_field['id'] ] = $sub_field;
 					}
 				} else {
-					/**
-					 * This is not a section, continue processing.
-					 */
+
+					// This is not a section, continue processing.
 					self::$fields[ $field['id'] ] = $field;
 				}
 			}
 		}
 	}
 
+	/**
+	 * Returns the static $fields property.
+	 *
+	 * @static
+	 * @access public
+	 * @return array
+	 */
 	public static function get_option_fields() {
 		return self::$fields;
 	}

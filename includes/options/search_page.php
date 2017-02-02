@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Search Page
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + search_page
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_search_page( $sections ) {
 
@@ -39,19 +43,19 @@ function avada_options_section_search_page( $sections ) {
 				'choices'     => array(
 					'Posts and Pages'         => esc_html__( 'All Post Types and Pages', 'Avada' ),
 					'all_post_types_no_pages' => esc_html__( 'All Post Types without Pages', 'Avada' ),
-					'Only Pages'              => esc_html__( 'Only Pages', 'Avada' ),					
+					'Only Pages'              => esc_html__( 'Only Pages', 'Avada' ),
 					'Only Posts'              => esc_html__( 'Only Blog Posts', 'Avada' ),
 					'portfolio_items'         => esc_html__( 'Only Portfolio Items', 'Avada' ),
 					'woocommerce_products'    => esc_html__( 'Only WooCommerce Products', 'Avada' ),
 					'tribe_events'            => esc_html__( 'Events Calendar Posts', 'Avada' ),
-				)
+				),
 			),
 			'search_excerpt' => array(
 				'label'       => esc_html__( 'Search Results Excerpt', 'Avada' ),
 				'description' => esc_html__( 'Turn on to display the excerpt for search results.', 'Avada' ),
 				'id'          => 'search_excerpt',
 				'default'     => '1',
-				'type'        => 'switch'
+				'type'        => 'switch',
 			),
 			'search_results_per_page' => array(
 				'label'       => esc_html__( 'Number of Search Results Per Page', 'Avada' ),
@@ -70,7 +74,7 @@ function avada_options_section_search_page( $sections ) {
 				'description' => esc_html__( 'Turn on to display featured images for search results.', 'Avada' ),
 				'id'          => 'search_featured_images',
 				'default'     => '1',
-				'type'        => 'switch'
+				'type'        => 'switch',
 			),
 			'search_new_search_position' => array(
 				'label'       => esc_html__( 'Search Field Position', 'Avada' ),
@@ -81,8 +85,8 @@ function avada_options_section_search_page( $sections ) {
 				'choices'     => array(
 					'top'    => esc_html__( 'Above Results', 'Avada' ),
 					'bottom' => esc_html__( 'Below Results', 'Avada' ),
-					'hidden' => esc_html__( 'Hide', 'Avada' )
-				)
+					'hidden' => esc_html__( 'Hide', 'Avada' ),
+				),
 			),
 		),
 	);

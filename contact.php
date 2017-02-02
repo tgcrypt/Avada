@@ -1,12 +1,22 @@
 <?php
-// Template Name: Contact
+/**
+ * Template Name: Contact
+ * This tempalte file is used for contact pages.
+ */
+
 ?>
 
-<?php get_header(); ?>
-
 <?php
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+?>
+
+<?php get_header();
+
 /**
- * Instantiate the Avada_Contact class
+ * Instantiate the Avada_Contact class.
  */
 $avada_contact = new Avada_Contact();
 ?>
@@ -18,7 +28,7 @@ $avada_contact = new Avada_Contact();
 			<div class="post-content">
 				<?php the_content(); ?>
 
-				<?php if ( ! Avada()->settings->get( 'email_address' ) ) : // Email address not set ?>
+				<?php if ( ! Avada()->settings->get( 'email_address' ) ) : // Email address not set. ?>
 					<?php if ( shortcode_exists( 'alert' ) ) : ?>
 						<?php echo do_shortcode( '[alert type="error" accent_color="" background_color="" border_size="1px" icon="" box_shadow="yes" animation_type="0" animation_direction="down" animation_speed="0.1" class="" id=""]' . esc_html__( 'Form email address is not set in Theme Options. Please fill in a valid address to make contact form work.', 'Avada' ) . '[/alert]' ); ?>
 					<?php else : ?>
@@ -27,7 +37,7 @@ $avada_contact = new Avada_Contact();
 					<br />
 				<?php endif; ?>
 
-				<?php if ( $avada_contact->has_error ) : //If errors are found ?>
+				<?php if ( $avada_contact->has_error ) : // If errors are found. ?>
 					<?php if ( shortcode_exists( 'alert' ) ) : ?>
 						<?php echo do_shortcode( '[alert type="error" accent_color="" background_color="" border_size="1px" icon="" box_shadow="yes" animation_type="0" animation_direction="down" animation_speed="0.1" class="" id=""]' . esc_html__( 'Please check if you\'ve filled all the fields with valid information. Thank you.', 'Avada' ) . '[/alert]' ); ?>
 					<?php else : ?>
@@ -36,7 +46,7 @@ $avada_contact = new Avada_Contact();
 					<br />
 				<?php endif; ?>
 
-				<?php if ( $avada_contact->email_sent ) : //If email is sent ?>
+				<?php if ( $avada_contact->email_sent ) : // If email is sent. ?>
 					<?php if ( shortcode_exists( 'alert' ) ) : ?>
 						<?php echo do_shortcode( '[alert type="success" accent_color="" background_color="" border_size="1px" icon="" box_shadow="yes" animation_type="0" animation_direction="down" animation_speed="0.1" class="" id=""]' . sprintf( __( 'Thank you %s for using our contact form! Your email was successfully sent!', 'Avada' ), '<strong>' . $avada_contact->name . '</strong>' ) . '[/alert]' ); ?>
 					<?php else : ?>
@@ -84,4 +94,4 @@ $avada_contact = new Avada_Contact();
 <?php do_action( 'avada_after_content' ); ?>
 <?php get_footer();
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

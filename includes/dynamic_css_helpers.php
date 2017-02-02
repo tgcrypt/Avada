@@ -1,7 +1,16 @@
 <?php
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Helper function.
- * Merge and combine the CSS elements
+ * Merge and combine the CSS elements.
+ *
+ * @param  string|array $elements An array of our elements.
+ *                                If we use a string then it is directly returned.
+ * @return  string
  */
 function avada_implode( $elements = array() ) {
 
@@ -9,7 +18,7 @@ function avada_implode( $elements = array() ) {
 		return $elements;
 	}
 
-	// Make sure our values are unique
+	// Make sure our values are unique.
 	$elements = array_unique( $elements );
 	// Sort elements alphabetically.
 	// This way all duplicate items will be merged in the final CSS array.
@@ -21,12 +30,16 @@ function avada_implode( $elements = array() ) {
 }
 
 /**
- * Maps elements from dynamic css to the selector
+ * Maps elements from dynamic css to the selector.
+ *
+ * @param  array  $elements The elements.
+ * @param  string $selector The selector.
+ * @return  array
  */
 function avada_map_selector( $elements, $selector ) {
 	$array = array();
 
-	foreach( $elements as $element ) {
+	foreach ( $elements as $element ) {
 		$array[] = $element . $selector;
 	}
 
@@ -36,83 +49,76 @@ function avada_map_selector( $elements, $selector ) {
 /**
  * Get the array of dynamically-generated CSS and convert it to a string.
  * Parses the array and adds quotation marks to font families and prefixes for browser-support.
+ *
+ * @param  array $css The CSS array.
+ * @return  string
  */
 function avada_dynamic_css_parser( $css ) {
 	/**
-	 * Prefixes
+	 * Prefixes.
 	 */
 	foreach ( $css as $media_query => $elements ) {
 		foreach ( $elements as $element => $style_array ) {
 			foreach ( $style_array as $property => $value ) {
-				// font family
-				if ( 'font-family' == $property ) {
+				// Font family.
+				if ( 'font-family' === $property ) {
 					if ( false === strpos( $value, ',' ) && false === strpos( $value, "'" ) && false === strpos( $value, '"' ) ) {
 						$value = "'" . $value . "'";
 					}
-					$css[$media_query][$element]['font-family'] = $value;
-				} 
-				// border-radius
+					$css[ $media_query ][ $element ]['font-family'] = $value;
+				} // border-radius.
 				elseif ( 'border-radius' == $property ) {
-					$css[$media_query][$element]['-webkit-border-radius'] = $value;
-				}
-				// box-shadow
+					$css[ $media_query ][ $element ]['-webkit-border-radius'] = $value;
+				} // box-shadow.
 				elseif ( 'box-shadow' == $property ) {
-					$css[$media_query][$element]['-webkit-box-shadow'] = $value;
-					$css[$media_query][$element]['-moz-box-shadow']    = $value;
-				}
-				// box-sizing
+					$css[ $media_query ][ $element ]['-webkit-box-shadow'] = $value;
+					$css[ $media_query ][ $element ]['-moz-box-shadow']    = $value;
+				} // box-sizing.
 				elseif ( 'box-sizing' == $property ) {
-					$css[$media_query][$element]['-webkit-box-sizing'] = $value;
-					$css[$media_query][$element]['-moz-box-sizing']    = $value;
-				}
-				// text-shadow
+					$css[ $media_query ][ $element ]['-webkit-box-sizing'] = $value;
+					$css[ $media_query ][ $element ]['-moz-box-sizing']    = $value;
+				} // text-shadow.
 				elseif ( 'text-shadow' == $property ) {
-					$css[$media_query][$element]['-webkit-text-shadow'] = $value;
-					$css[$media_query][$element]['-moz-text-shadow']    = $value;
-				}
-				// transform
+					$css[ $media_query ][ $element ]['-webkit-text-shadow'] = $value;
+					$css[ $media_query ][ $element ]['-moz-text-shadow']    = $value;
+				} // transform.
 				elseif ( 'transform' == $property ) {
-					$css[$media_query][$element]['-webkit-transform'] = $value;
-					$css[$media_query][$element]['-moz-transform']    = $value;
-					$css[$media_query][$element]['-ms-transform']     = $value;
-					$css[$media_query][$element]['-o-transform']      = $value;
-				}
-				// background-size
+					$css[ $media_query ][ $element ]['-webkit-transform'] = $value;
+					$css[ $media_query ][ $element ]['-moz-transform']    = $value;
+					$css[ $media_query ][ $element ]['-ms-transform']     = $value;
+					$css[ $media_query ][ $element ]['-o-transform']      = $value;
+				} // background-size.
 				elseif ( 'background-size' == $property ) {
-					$css[$media_query][$element]['-webkit-background-size'] = $value;
-					$css[$media_query][$element]['-moz-background-size']    = $value;
-					$css[$media_query][$element]['-ms-background-size']     = $value;
-					$css[$media_query][$element]['-o-background-size']      = $value;
-				}
-				// transition
+					$css[ $media_query ][ $element ]['-webkit-background-size'] = $value;
+					$css[ $media_query ][ $element ]['-moz-background-size']    = $value;
+					$css[ $media_query ][ $element ]['-ms-background-size']     = $value;
+					$css[ $media_query ][ $element ]['-o-background-size']      = $value;
+				} // transition.
 				elseif ( 'transition' == $property ) {
-					$css[$media_query][$element]['-webkit-transition'] = $value;
-					$css[$media_query][$element]['-moz-transition']    = $value;
-					$css[$media_query][$element]['-ms-transition']     = $value;
-					$css[$media_query][$element]['-o-transition']      = $value;
-				}
-				// transition-property
+					$css[ $media_query ][ $element ]['-webkit-transition'] = $value;
+					$css[ $media_query ][ $element ]['-moz-transition']    = $value;
+					$css[ $media_query ][ $element ]['-ms-transition']     = $value;
+					$css[ $media_query ][ $element ]['-o-transition']      = $value;
+				} // transition-property.
 				elseif ( 'transition-property' == $property ) {
-					$css[$media_query][$element]['-webkit-transition-property'] = $value;
-					$css[$media_query][$element]['-moz-transition-property']    = $value;
-					$css[$media_query][$element]['-ms-transition-property']     = $value;
-					$css[$media_query][$element]['-o-transition-property']      = $value;
-				}
-				// linear-gradient
+					$css[ $media_query ][ $element ]['-webkit-transition-property'] = $value;
+					$css[ $media_query ][ $element ]['-moz-transition-property']    = $value;
+					$css[ $media_query ][ $element ]['-ms-transition-property']     = $value;
+					$css[ $media_query ][ $element ]['-o-transition-property']      = $value;
+				} // linear-gradient.
 				elseif ( is_array( $value ) ) {
 					foreach ( $value as $subvalue ) {
 						if ( false !== strpos( $subvalue, 'linear-gradient' ) ) {
-							$css[$media_query][$element][$property][] = '-webkit-' . $subvalue;
-							$css[$media_query][$element][$property][] = '-moz-' . $subvalue;
-							$css[$media_query][$element][$property][] = '-ms-' . $subvalue;
-							$css[$media_query][$element][$property][] = '-o-' . $subvalue;
-						}
-						// calc
+							$css[ $media_query ][ $element ][ $property ][] = '-webkit-' . $subvalue;
+							$css[ $media_query ][ $element ][ $property ][] = '-moz-' . $subvalue;
+							$css[ $media_query ][ $element ][ $property ][] = '-ms-' . $subvalue;
+							$css[ $media_query ][ $element ][ $property ][] = '-o-' . $subvalue;
+						} // calc.
 						elseif ( 0 === stripos( $subvalue, 'calc' ) ) {
-							$css[$media_query][$element][$property][] = '-webkit-' . $subvalue;
-							$css[$media_query][$element][$property][] = '-moz-' . $subvalue;
-							$css[$media_query][$element][$property][] = '-ms-' . $subvalue;
-							$css[$media_query][$element][$property][] = '-o-' . $subvalue;
+							$css[ $media_query ][ $element ][ $property ][] = '-webkit-' . $subvalue;
+							$css[ $media_query ][ $element ][ $property ][] = '-moz-' . $subvalue;
+							$css[ $media_query ][ $element ][ $property ][] = '-ms-' . $subvalue;
+							$css[ $media_query ][ $element ][ $property ][] = '-o-' . $subvalue;
 						}
 					}
 				}
@@ -121,7 +127,7 @@ function avada_dynamic_css_parser( $css ) {
 	}
 
 	/**
-	 * Process the array of CSS properties and produce the final CSS
+	 * Process the array of CSS properties and produce the final CSS.
 	 */
 	$final_css = '';
 	foreach ( $css as $media_query => $styles ) {
@@ -130,15 +136,15 @@ function avada_dynamic_css_parser( $css ) {
 
 		foreach ( $styles as $style => $style_array ) {
 			$final_css .= $style . '{';
-				foreach ( $style_array as $property => $value ) {
-					if ( is_array( $value ) ) {
-						foreach ( $value as $sub_value ) {
-							$final_css .= $property . ':' . $sub_value . ';';
-						}
-					} else {
-						$final_css .= $property . ':' . $value . ';';
+			foreach ( $style_array as $property => $value ) {
+				if ( is_array( $value ) ) {
+					foreach ( $value as $sub_value ) {
+						$final_css .= $property . ':' . $sub_value . ';';
 					}
+				} else {
+					$final_css .= $property . ':' . $value . ';';
 				}
+			}
 			$final_css .= '}';
 		}
 
@@ -152,7 +158,7 @@ function avada_dynamic_css_parser( $css ) {
 
 /**
  * Returns the dynamic CSS.
- * If possible, it also caches the CSS using WordPress transients
+ * If possible, it also caches the CSS using WordPress transients.
  *
  * @return  string  the dynamically-generated CSS.
  */
@@ -160,15 +166,15 @@ function avada_dynamic_css_cached() {
 	/**
 	 * Get the page ID
 	 */
-	$c_pageID = Avada()->dynamic_css->page_id();
+	$c_page_id = Avada()->get_page_id();
 
 	/**
-	 * do we have WP_DEBUG set to true?
+	 * Do we have WP_DEBUG set to true?
 	 * If yes, then do not cache.
 	 */
 	$cache = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? false : true;
 	/**
-	 * If the dynamic_css_db_caching option is not set
+	 * If the dynamic_css_db_caching option is not set.
 	 * or set to off, then do not cache.
 	 */
 	$cache = ( $cache && ( null == Avada()->settings->get( 'dynamic_css_db_caching' ) || ! Avada()->settings->get( 'dynamic_css_db_caching' ) ) ) ? false : $cache;
@@ -193,27 +199,36 @@ function avada_dynamic_css_cached() {
 
 	if ( $cache ) {
 		/**
-		 * Build the transient name
+		 * Build the transient name.
 		 */
-		$transient_name = ( $c_pageID ) ? 'avada_dynamic_css_' . $c_pageID : 'avada_dynamic_css_global';
+		$transient_name = ( $c_page_id ) ? 'avada_dynamic_css_' . $c_page_id : 'avada_dynamic_css_global';
 
 		/**
-		 * Check if the dynamic CSS needs updating
+		 * Check if the dynamic CSS needs updating.
 		 * If it does, then calculate the CSS and then update the transient.
 		 */
-		if ( Avada_Dynamic_CSS::needs_update() ) {
+		if ( Avada_Dynamic_CSS::needs_update( $mode ) ) {
 			/**
-			 * Calculate the dynamic CSS
+			 * Calculate the dynamic CSS.
 			 */
 			$dynamic_css = avada_dynamic_css_parser( avada_dynamic_css_array() );
 			/**
-			 * Append the user-entered dynamic CSS
+			 * Append the user-entered dynamic CSS.
 			 */
 			$dynamic_css .= wp_strip_all_tags( Avada()->settings->get( 'custom_css' ) );
+
+			$dynamic_css .= '/* cached */';
 			/**
-			 * Set the transient for an hour
+			 * Set the transient for an hour.
 			 */
 			set_transient( $transient_name, $dynamic_css, 60 * 60 );
+
+			if ( 'inline' === $mode ) {
+				$page_id = ( $c_page_id > 0 ) ? $c_page_id : 'global';
+				$option  = get_option( 'avada_dynamic_css_posts', array() );
+				$option[ $page_id ] = true;
+				update_option( 'avada_dynamic_css_posts', $option );
+			}
 		} else {
 			/**
 			 * Check if the transient exists.
@@ -221,27 +236,28 @@ function avada_dynamic_css_cached() {
 			 */
 			if ( false === ( $dynamic_css = get_transient( $transient_name ) ) ) {
 				/**
-				 * Calculate the dynamic CSS
+				 * Calculate the dynamic CSS.
 				 */
 				$dynamic_css = avada_dynamic_css_parser( avada_dynamic_css_array() );
 				/**
-				 * Append the user-entered dynamic CSS
+				 * Append the user-entered dynamic CSS.
 				 */
 				$dynamic_css .= wp_strip_all_tags( Avada()->settings->get( 'custom_css' ) );
+
+				$dynamic_css .= '/* cached */';
 				/**
-				 * Set the transient for an hour
+				 * Set the transient for an hour.
 				 */
 				set_transient( $transient_name, $dynamic_css, 60 * 60 );
 			}
 		}
-
 	} else {
 		/**
-		 * Calculate the dynamic CSS
+		 * Calculate the dynamic CSS.
 		 */
 		$dynamic_css = avada_dynamic_css_parser( avada_dynamic_css_array() );
 		/**
-		 * Append the user-entered dynamic CSS
+		 * Append the user-entered dynamic CSS.
 		 */
 		$dynamic_css .= wp_strip_all_tags( Avada()->settings->get( 'custom_css' ) );
 	}
@@ -251,20 +267,23 @@ function avada_dynamic_css_cached() {
 }
 
 /**
- * Takes care of adding custom fonts using @font-face
+ * Takes care of adding custom fonts using @font-face.
+ *
+ * @param  string $css The CSS.
+ * @return  string
  */
 function avada_custom_fonts_font_faces( $css = '' ) {
-	// Get the options
+	// Get the options.
 	$options   = get_option( Avada::get_option_name(), array() );
 	$font_face = '';
-	// Make sure 'custom_fonts' are defined
+	// Make sure 'custom_fonts' are defined.
 	if ( isset( $options['custom_fonts'] ) ) {
 		$custom_fonts = $options['custom_fonts'];
-		// Make sure we have titles for our fonts
+		// Make sure we have titles for our fonts.
 		if ( isset( $custom_fonts['name'] ) && is_array( $custom_fonts['name'] ) ) {
 			foreach ( $custom_fonts['name'] as $key => $label ) {
 				$label = trim( $label );
-				// Make sure we have some files to work with
+				// Make sure we have some files to work with.
 				if (
 					( isset( $custom_fonts['woff'] ) && isset( $custom_fonts['woff'][ $key ] ) ) ||
 					( isset( $custom_fonts['woff2'] ) && isset( $custom_fonts['woff2'][ $key ] ) ) ||
@@ -275,43 +294,43 @@ function avada_custom_fonts_font_faces( $css = '' ) {
 					$firstfile = true;
 					$font_face .= '@font-face{';
 						$font_face .= 'font-family:';
-						// If font-name has a space, then it must be wrapped in double-quotes
-						if ( false !== strpos( $label, ' ' ) ) {
-							$font_face .= '"' . $label . '";';
-						} else {
-							$font_face .= $label . ';';
-						}
-						// Start adding sources
+						// If font-name has a space, then it must be wrapped in double-quotes.
+					if ( false !== strpos( $label, ' ' ) ) {
+						$font_face .= '"' . $label . '";';
+					} else {
+						$font_face .= $label . ';';
+					}
+						// Start adding sources.
 						$font_face .= 'src:';
-						// Add .eot file
-						if ( isset( $custom_fonts['eot'] ) && isset( $custom_fonts['eot'][ $key ] ) && $custom_fonts['eot'][ $key ]['url'] ) {
-							$font_face .= 'url("' . str_replace( array( 'http://', 'https://' ), '//', $custom_fonts['eot'][ $key ]['url'] ) . '?#iefix") format("embedded-opentype")';
-							$firstfile = false;
-						}
-						// Add .woff file
-						if ( isset( $custom_fonts['woff'] ) && isset( $custom_fonts['woff'][ $key ] ) && $custom_fonts['woff'][ $key ]['url'] ) {
-							$font_face .= ( $firstfile ) ? '' : ',';
-							$font_face .= 'url("' . str_replace( array( 'http://', 'https://' ), '//', $custom_fonts['woff'][ $key ]['url'] ) . '") format("woff")';
-							$firstfile = false;
-						}
-						// Add .woff2 file
-						if ( isset( $custom_fonts['woff2'] ) && isset( $custom_fonts['woff2'][ $key ]['url'] ) && $custom_fonts['woff2'][ $key ]['url'] ) {
-							$font_face .= ( $firstfile ) ? '' : ',';
-							$font_face .= 'url("' . str_replace( array( 'http://', 'https://' ), '//', $custom_fonts['woff2'][ $key ]['url'] ) . '") format("woff2")';
-							$firstfile = false;
-						}
-						// Add .ttf file
-						if ( isset( $custom_fonts['ttf'] ) && isset( $custom_fonts['ttf'][ $key ] ) && $custom_fonts['ttf'][ $key ]['url'] ) {
-							$font_face .= ( $firstfile ) ? '' : ',';
-							$font_face .= 'url("' . str_replace( array( 'http://', 'https://' ), '//', $custom_fonts['ttf'][ $key ]['url'] ) . '") format("truetype")';
-							$firstfile = false;
-						}
-						// Add .svg file
-						if ( isset( $custom_fonts['svg'] ) && isset( $custom_fonts['svg'][ $key ] ) && $custom_fonts['svg'][ $key ]['url'] ) {
-							$font_face .= ( $firstfile ) ? '' : ',';
-							$font_face .= 'url("' . str_replace( array( 'http://', 'https://' ), '//', $custom_fonts['svg'][ $key ]['url'] ) . '") format("svg")';
-							$firstfile = false;
-						}
+						// Add .eot file.
+					if ( isset( $custom_fonts['eot'] ) && isset( $custom_fonts['eot'][ $key ] ) && $custom_fonts['eot'][ $key ]['url'] ) {
+						$font_face .= 'url("' . str_replace( array( 'http://', 'https://' ), '//', $custom_fonts['eot'][ $key ]['url'] ) . '?#iefix") format("embedded-opentype")';
+						$firstfile = false;
+					}
+						// Add .woff file.
+					if ( isset( $custom_fonts['woff'] ) && isset( $custom_fonts['woff'][ $key ] ) && $custom_fonts['woff'][ $key ]['url'] ) {
+						$font_face .= ( $firstfile ) ? '' : ',';
+						$font_face .= 'url("' . str_replace( array( 'http://', 'https://' ), '//', $custom_fonts['woff'][ $key ]['url'] ) . '") format("woff")';
+						$firstfile = false;
+					}
+						// Add .woff2 file.
+					if ( isset( $custom_fonts['woff2'] ) && isset( $custom_fonts['woff2'][ $key ]['url'] ) && $custom_fonts['woff2'][ $key ]['url'] ) {
+						$font_face .= ( $firstfile ) ? '' : ',';
+						$font_face .= 'url("' . str_replace( array( 'http://', 'https://' ), '//', $custom_fonts['woff2'][ $key ]['url'] ) . '") format("woff2")';
+						$firstfile = false;
+					}
+						// Add .ttf file.
+					if ( isset( $custom_fonts['ttf'] ) && isset( $custom_fonts['ttf'][ $key ] ) && $custom_fonts['ttf'][ $key ]['url'] ) {
+						$font_face .= ( $firstfile ) ? '' : ',';
+						$font_face .= 'url("' . str_replace( array( 'http://', 'https://' ), '//', $custom_fonts['ttf'][ $key ]['url'] ) . '") format("truetype")';
+						$firstfile = false;
+					}
+						// Add .svg file.
+					if ( isset( $custom_fonts['svg'] ) && isset( $custom_fonts['svg'][ $key ] ) && $custom_fonts['svg'][ $key ]['url'] ) {
+						$font_face .= ( $firstfile ) ? '' : ',';
+						$font_face .= 'url("' . str_replace( array( 'http://', 'https://' ), '//', $custom_fonts['svg'][ $key ]['url'] ) . '") format("svg")';
+						$firstfile = false;
+					}
 						$font_face .= ';font-weight: normal;font-style: normal;';
 					$font_face .= '}';
 				}
@@ -324,14 +343,18 @@ add_filter( 'avada_dynamic_css', 'avada_custom_fonts_font_faces' );
 
 
 /**
- * Avada body, h1, h2, h3, h4, h5, h6 typography
+ * Avada body, h1, h2, h3, h4, h5, h6 typography.
  */
 
-// CSS classes that inherit Avada's body typography settings
+/**
+ * CSS classes that inherit Avada's body typography settings.
+ *
+ * @return array
+ */
 function avada_get_body_typography_elements() {
 	$typography_elements = array();
 
-	// css classes that inherit body font size
+	// CSS classes that inherit body font size.
 	$typography_elements['size'] = array(
 		'body',
 		'.sidebar .slide-excerpt h2',
@@ -351,7 +374,7 @@ function avada_get_body_typography_elements() {
 		'.review blockquote q',
 
 	);
-	// css classes that inherit body font color
+	// CSS classes that inherit body font color.
 	$typography_elements['color'] = array(
 		'body',
 		'.post .post-content',
@@ -382,7 +405,7 @@ function avada_get_body_typography_elements() {
 		'.fusion-main-menu .fusion-custom-menu-item-contents',
 
 	);
-	// css classes that inherit body font
+	// CSS classes that inherit body font.
 	$typography_elements['family'] = array(
 		'body',
 		'#nav ul li ul li a',
@@ -408,11 +431,12 @@ function avada_get_body_typography_elements() {
 		'.gform_page_footer input[type=button]',
 		'.fusion-main-menu .sub-menu',
 		'.fusion-main-menu .sub-menu li a',
+		'.fusion-megamenu-wrapper li .fusion-megamenu-title-disabled',
 		'.fusion-megamenu-wrapper .fusion-megamenu-submenu > a:hover',
 		'.fusion-megamenu-widgets-container',
 	);
 
-	// css classes that inherit body font
+	// CSS classes that inherit body font.
 	$typography_elements['line-height'] = array(
 		'body',
 		'#nav ul li ul li a',
@@ -437,6 +461,7 @@ function avada_get_body_typography_elements() {
 		'.gform_page_footer input[type=button]',
 		'.fusion-main-menu .sub-menu',
 		'.fusion-main-menu .sub-menu li a',
+		'.fusion-megamenu-wrapper li .fusion-megamenu-title-disabled',
 		'.fusion-megamenu-wrapper .fusion-megamenu-submenu > a:hover',
 		'.fusion-megamenu-widgets-container',
 		'.fusion-accordian .panel-body',
@@ -448,28 +473,32 @@ function avada_get_body_typography_elements() {
 	return $typography_elements;
 }
 
-// CSS classes that inherit Avada's H1 typography settings
+/**
+ * CSS classes that inherit Avada's H1 typography settings.
+ *
+ * @return array
+ */
 function avada_get_h1_typography_elements() {
 	$typography_elements = array();
 
-	// css classes that inherit h1 size
+	// CSS classes that inherit h1 size.
 	$typography_elements['size'] = array(
-		//'h1',
+		// 'h1',
 		'.post-content h1',
 		'.fusion-modal h1',
 		'.fusion-widget-area h1',
 	);
-	// css classes that inherit h1 font family
+	// CSS classes that inherit h1 font family.
 	$typography_elements['family'] = array(
-		//'h1',
+		// 'h1',
 		'.post-content h1',
 		'.fusion-page-title-bar h1',
 		'.fusion-modal h1',
 		'.fusion-widget-area h1',
 	);
-	// css classes that inherit h1 color
+	// CSS classes that inherit h1 color.
 	$typography_elements['color'] = array(
-		//'h1',
+		// 'h1',
 		'.post-content h1',
 		'.title h1',
 		'.fusion-post-content h1',
@@ -480,13 +509,17 @@ function avada_get_h1_typography_elements() {
 	return $typography_elements;
 }
 
-// CSS classes that inherit Avada's H2 typography settings
+/**
+ * CSS classes that inherit Avada's H2 typography settings.
+ *
+ * @return array
+ */
 function avada_get_h2_typography_elements() {
 	$typography_elements = array();
 
-	// css classes that inherit h2 size
+	// CSS classes that inherit h2 size.
 	$typography_elements['size'] = array(
-		//'h2',
+		// 'h2',
 		'#wrapper .post-content h2',
 		'#wrapper .fusion-title h2',
 		'#wrapper #main .post-content .fusion-title h2',
@@ -499,9 +532,9 @@ function avada_get_h2_typography_elements() {
 		'.fusion-modal h2',
 		'.fusion-widget-area h2',
 	);
-	// css classes that inherit h2 color
+	// CSS classes that inherit h2 color.
 	$typography_elements['color'] = array(
-		//'h2',
+		// 'h2',
 		'#main .post h2',
 		'.post-content h2',
 		'.fusion-title h2',
@@ -511,9 +544,9 @@ function avada_get_h2_typography_elements() {
 		'.fusion-modal h2',
 		'.fusion-widget-area h2',
 	);
-	// css classes that inherit h2 font family
+	// CSS classes that inherit h2 font family.
 	$typography_elements['family'] = array(
-		//'h2',
+		// 'h2',
 		'#main .post h2',
 		'.post-content h2',
 		'.fusion-title h2',
@@ -529,13 +562,17 @@ function avada_get_h2_typography_elements() {
 	return $typography_elements;
 }
 
-// CSS classes that inherit Avada's H3 typography settings
+/**
+ * CSS classes that inherit Avada's H3 typography settings.
+ *
+ * @return array
+ */
 function avada_get_h3_typography_elements() {
 	$typography_elements = array();
 
-	// css classes that inherit h3 font family
+	// CSS classes that inherit h3 font family.
 	$typography_elements['family'] = array(
-		//'h3',
+		// 'h3',
 		'.post-content h3',
 		'.project-content h3',
 		'.sidebar .widget h3',
@@ -546,18 +583,18 @@ function avada_get_h3_typography_elements() {
 		'.fusion-title h3',
 		'.fusion-widget-area h3',
 	);
-	// css classes that inherit h3 size
+	// CSS classes that inherit h3 size.
 	$typography_elements['size'] = array(
-		//'h3',
+		// 'h3',
 		'.post-content h3',
 		'.project-content h3',
 		'.fusion-modal h3',
 		'.fusion-widget-area h3',
 	);
 
-	// css classes that inherit h3 color
+	// CSS classes that inherit h3 color.
 	$typography_elements['color'] = array(
-		//'h3',
+		// 'h3',
 		'.post-content h3',
 		'.sidebar .widget h3',
 		'.project-content h3',
@@ -571,13 +608,17 @@ function avada_get_h3_typography_elements() {
 	return $typography_elements;
 }
 
-// CSS classes that inherit Avada's H4 typography settings
+/**
+ * CSS classes that inherit Avada's H4 typography settings.
+ *
+ * @return array
+ */
 function avada_get_h4_typography_elements() {
 	$typography_elements = array();
 
-	// css classes that inherit h4 size
+	// CSS classes that inherit h4 size.
 	$typography_elements['size'] = array(
-		//'h4',
+		// 'h4',
 		'.post-content h4',
 		'.fusion-portfolio-post .fusion-portfolio-content h4',
 		'.fusion-rollover .fusion-rollover-content .fusion-rollover-title',
@@ -590,9 +631,9 @@ function avada_get_h4_typography_elements() {
 		'.fusion-modal h4',
 		'.fusion-widget-area h4',
 	);
-	// css classes that inherit h4 color
+	// CSS classes that inherit h4 color.
 	$typography_elements['color'] = array(
-		//'h4',
+		// 'h4',
 		'.post-content h4',
 		'.project-content .project-info h4',
 		'.share-box h4',
@@ -606,9 +647,9 @@ function avada_get_h4_typography_elements() {
 		'.fusion-modal h4',
 		'.fusion-widget-area h4',
 	);
-	// css classes that inherit h4 font family
+	// CSS classes that inherit h4 font family.
 	$typography_elements['family'] = array(
-		//'h4',
+		// 'h4',
 		'.post-content h4',
 		'table th',
 		'.fusion-megamenu-title',
@@ -623,23 +664,33 @@ function avada_get_h4_typography_elements() {
 		'.fusion-content-widget-area h4',
 	);
 
+	$typography_elements['line-height'] = array(
+		// 'h4',
+		'.project-content .project-info .project-terms',
+		'.project-info-box span',
+	);
+
 	return $typography_elements;
 }
 
-// CSS classes that inherit Avada's H5 typography settings
+/**
+ * CSS classes that inherit Avada's H5 typography settings.
+ *
+ * @return array
+ */
 function avada_get_h5_typography_elements() {
 	$typography_elements = array();
 
-	// css classes that inherit h5 size
+	// CSS classes that inherit h5 size.
 	$typography_elements['size'] = array(
-		//'h5',
+		// 'h5',
 		'.post-content h5',
 		'.fusion-modal h5',
 		'.fusion-widget-area h5',
 	);
-	// css classes that inherit h5 color
+	// CSS classes that inherit h5 color.
 	$typography_elements['color'] = array(
-		//'h5',
+		// 'h5',
 		'.post-content h5',
 		'.fusion-title h5',
 		'.title h5',
@@ -647,9 +698,9 @@ function avada_get_h5_typography_elements() {
 		'.fusion-modal h5',
 		'.fusion-widget-area h5',
 	);
-	// css classes that inherit h5 font family
+	// CSS classes that inherit h5 font family.
 	$typography_elements['family'] = array(
-		//'h5',
+		// 'h5',
 		'.post-content h5',
 		'.fusion-modal h5',
 		'.fusion-widget-area h5',
@@ -658,20 +709,24 @@ function avada_get_h5_typography_elements() {
 	return $typography_elements;
 }
 
-// CSS classes that inherit Avada's H6 typography settings
+/**
+ * CSS classes that inherit Avada's H6 typography settings.
+ *
+ * @return array
+ */
 function avada_get_h6_typography_elements() {
 	$typography_elements = array();
 
-	// css classes that inherit h6 size
+	// CSS classes that inherit h6 size.
 	$typography_elements['size'] = array(
-		//'h6',
+		// 'h6',
 		'.post-content h6',
 		'.fusion-modal h6',
 		'.fusion-widget-area h6',
 	);
-	// css classes that inherit h6 color
+	// CSS classes that inherit h6 color.
 	$typography_elements['color'] = array(
-		//'h6',
+		// 'h6',
 		'.post-content h6',
 		'.fusion-title h6',
 		'.title h6',
@@ -679,9 +734,9 @@ function avada_get_h6_typography_elements() {
 		'.fusion-modal h6',
 		'.fusion-widget-area h6',
 	);
-	// css classes that inherit h6 font family
+	// CSS classes that inherit h6 font family.
 	$typography_elements['family'] = array(
-		//'h6',
+		// 'h6',
 		'.post-content h6',
 		'.fusion-modal h6',
 		'.fusion-widget-area h6',
@@ -690,19 +745,96 @@ function avada_get_h6_typography_elements() {
 	return $typography_elements;
 }
 
-// CSS classes that inherit Avada's button typography settings
+/**
+ * CSS classes that inherit Avada's button typography settings.
+ *
+ * @return array
+ */
 function avada_get_button_typography_elements() {
 	$typography_elements = array();
 
-	// css classes that inherit h3 font family
+	// CSS classes that inherit h3 font family.
 	$typography_elements['family'] = array(
 		'.fusion-button',
 		'.fusion-load-more-button',
 		'.comment-form input[type="submit"]',
 		'.ticket-selector-submit-btn[type="submit"]',
-		'.woocommerce .cart-collaterals .checkout-button',			
+		'.woocommerce .cart-collaterals .checkout-button',
 		'.woocommerce-MyAccount-content form .button',
+		'.woocommerce.add_to_cart_inline .button',
 	);
 
 	return $typography_elements;
+}
+
+/**
+ * Combines google-fonts & fallback fonts.
+ *
+ * @since 5.0.0
+ * @param array $typo_array The typography setting as saved in the db.
+ * @return string
+ */
+function avada_combined_font_family( $typo_array = array() ) {
+
+	$google_font    = isset( $typo_array['font-family'] ) ? $typo_array['font-family'] : false;
+	$fallback_fonts = isset( $typo_array['font-backup'] ) ? $typo_array['font-backup'] : false;
+
+	// Exit early by returning the fallback font
+	// in case no google-font is defined.
+	if ( false === $google_font ) {
+		return avada_format_font_family( $fallback_fonts );
+	}
+
+	// Exit early returning the google font
+	// in case no fallback font is defined.
+	if ( false === $fallback_fonts || '' === $fallback_fonts ) {
+		return avada_format_font_family( $google_font );
+	}
+
+	// Return the sum of the font-families properly formatted.
+	return avada_format_font_family( $google_font . ', ' . $fallback_fonts );
+
+}
+
+/**
+ * Formats the font-family for CSS use.
+ *
+ * @since 5.0.3
+ * @param string $family The font-family to use.
+ * @return string
+ */
+function avada_format_font_family( $family ) {
+
+	// Make sure nothing malicious comes through.
+	$family = wp_strip_all_tags( $family );
+
+	// Remove quotes and double-quotes.
+	// We'll add these back later if they are indeed needed.
+	$family = str_replace( '"', '', $family );
+	$family = str_replace( "'", '', $family );
+
+	if ( empty( $family ) ) {
+		return '';
+	}
+
+	$families = array();
+	// If multiple font-families, make sure each-one of them is sanitized separately.
+	if ( false !== strpos( $family, ',' ) ) {
+		$families = explode( ',', $family );
+		foreach ( $families as $key => $value ) {
+			$value = trim( $value );
+			// Add quotes if needed.
+			if ( false !== strpos( $value, ' ' ) ) {
+				$value = '"' . $value . '"';
+			}
+			$families[ $key ] = $value;
+		}
+		$family = implode( ', ', $families );
+	} else {
+		// Add quotes if needed.
+		if ( false !== strpos( $family, ' ' ) ) {
+			$family = '"' . $family . '"';
+		}
+	}
+	return $family;
 }

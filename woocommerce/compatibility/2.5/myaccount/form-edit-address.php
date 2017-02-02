@@ -81,4 +81,4 @@ wc_get_template( 'myaccount/my-orders.php', array( 'order_count' => $order_count
 
 <?php do_action( 'woocommerce_after_my_account' );
 
-// Omit closing PHP tag to avoid "Headers already sent" issues.
+/* Omit closing PHP tag to avoid "Headers already sent" issues. */

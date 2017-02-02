@@ -1,11 +1,15 @@
 <?php
 
+// Do not allow directly accessing this file.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 'Direct script access denied.' );
+}
+
 /**
  * Custom CSS settings
  *
- * @var  array  	any existing settings
- * @return array 	existing sections + custom_css
- *
+ * @param array $sections An array of our sections.
+ * @return array
  */
 function avada_options_section_custom_css( $sections ) {
 
@@ -26,7 +30,7 @@ function avada_options_section_custom_css( $sections ) {
 					'height'   => 450,
 					'theme'    => 'chrome',
 					'minLines' => 40,
-					'maxLines' => 50
+					'maxLines' => 50,
 				),
 			),
 		),
