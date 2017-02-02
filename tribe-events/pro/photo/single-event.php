@@ -25,7 +25,10 @@ global $post;
 	<div class="fusion-flexslider flexslider fusion-post-slideshow">
 		<ul class="slides">
 			<li class="hover-type-<?php echo Avada()->settings->get( 'ec_hover_type' ); ?>">
-				<a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'full' ); ?></a>
+				<a href="<?php the_permalink(); ?>">
+					<span class="screen-reader-text"><?php printf( esc_attr__( 'Go to "%s"', 'Avada' ), get_the_title( $post ) ); ?></span>
+					<?php the_post_thumbnail( 'full' ); ?>
+				</a>
 			</li>
 		</ul>
 	</div>
@@ -68,13 +71,13 @@ global $post;
 			<div class="fusion-meta-info">
 				<div class="fusion-alignleft">
 					<?php
-						if ( ! Avada()->settings->get( 'post_meta_read' ) ) {
+						if ( Avada()->settings->get( 'post_meta_read' ) ) {
 							$link_target = '';
-							if( fusion_get_page_option( 'link_icon_target', get_the_ID() ) == 'yes' ||
+							if ( fusion_get_page_option( 'link_icon_target', get_the_ID() ) == 'yes' ||
 								fusion_get_page_option( 'post_links_target', get_the_ID() ) == 'yes' ) {
 								$link_target = ' target="_blank"';
 							}
-							echo sprintf( '<a href="%s" class="fusion-read-more"%s>%s</a>', get_permalink(), $link_target, __( 'Find Out More', 'Avada' ) );
+							printf( '<a href="%s" class="fusion-read-more"%s>%s</a>', get_permalink(), $link_target, esc_html__( 'Find Out More', 'Avada' ) );
 						}
 					?>
 				</div>

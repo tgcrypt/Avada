@@ -41,7 +41,7 @@ get_currentuserinfo();
 <?php wc_get_template( 'myaccount/my-downloads.php' ); ?>
 
 <?php
-if( ! isset( $order_count ) ) {
+if ( ! isset( $order_count ) ) {
 	$order_count = 5;
 }
 wc_get_template( 'myaccount/my-orders.php', array( 'order_count' => $order_count ) ); ?>

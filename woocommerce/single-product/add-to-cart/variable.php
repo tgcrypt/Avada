@@ -43,7 +43,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 						</td>
 					</tr>
 		        <?php endforeach;?>
-				  <?php //Avada edit ?>
+				<?php //Avada edit ?>
 				  <tr>
 					<td class="label"></td>
 					<td class="value">
@@ -51,7 +51,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 						<div class="single_variation_wrap">
 							<div class="single_variation"></div>
 						</div>
-						<?php echo end( $attribute_keys ) === $attribute_name ? '<a class="reset_variations" href="#">' . __( 'Clear selection', 'woocommerce' ) . '</a>' : ''; ?>
+						<?php echo end( $attribute_keys ) === $attribute_name ? '<a class="reset_variations" href="#">' . esc_html__( 'Clear selection', 'Avada' ) . '</a>' : ''; ?>
 						</div>
 					</td>
 				</tr>

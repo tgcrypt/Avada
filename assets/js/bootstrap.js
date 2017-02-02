@@ -736,7 +736,7 @@
 
 			// ThemeFusion edit for Avada theme: needed for mobile tabs setup
 			if ( element.parent( '.nav-tabs' ).length ) {
-				element.parents( '.fusion-tabs' ).find( '.nav' ).find( 'a[href=' + element.find( 'a' ).attr( 'href' ) + ']' ).parent().addClass( 'active' );
+				element.parents( '.fusion-tabs' ).find( '.nav' ).find( 'a[href="' + element.find( 'a' ).attr( 'href' ) + '"]' ).parent().addClass( 'active' );
 			}
 
 			if (transition) {

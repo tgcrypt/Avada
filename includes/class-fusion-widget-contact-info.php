@@ -2,15 +2,15 @@
 
 class Fusion_Widget_Contact_Info extends WP_Widget {
 
-	function __construct() {
+	public function __construct() {
 
-		$widget_ops  = array('classname' => 'contact_info', 'description' => '');
-		$control_ops = array('id_base' => 'contact_info-widget');
-		parent::__construct('contact_info-widget', 'Avada: Contact Info', $widget_ops, $control_ops);
+		$widget_ops  = array( 'classname' => 'contact_info', 'description' => '' );
+		$control_ops = array( 'id_base' => 'contact_info-widget' );
+		parent::__construct( 'contact_info-widget', 'Avada: Contact Info', $widget_ops, $control_ops );
 
 	}
 
-	function widget( $args, $instance ) {
+	public function widget( $args, $instance ) {
 
 		extract( $args );
 
@@ -54,7 +54,7 @@ class Fusion_Widget_Contact_Info extends WP_Widget {
 
 	}
 
-	function update( $new_instance, $old_instance ) {
+	public function update( $new_instance, $old_instance ) {
 
 		$instance = $old_instance;
 
@@ -72,7 +72,7 @@ class Fusion_Widget_Contact_Info extends WP_Widget {
 
 	}
 
-	function form( $instance ) {
+	public function form( $instance ) {
 
 		$defaults = array(
 			'title'    => 'Contact Info',
@@ -83,7 +83,7 @@ class Fusion_Widget_Contact_Info extends WP_Widget {
 			'email'    => '',
 			'emailtxt' => '',
 			'web'      => '',
-			'webtxt'   => ''
+			'webtxt'   => '',
 		);
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 

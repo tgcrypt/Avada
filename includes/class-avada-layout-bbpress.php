@@ -119,8 +119,8 @@ class Avada_Layout_bbPress extends Avada_Layout {
 	public function add_search_page_search_form() {
 		?>
 		<div class="search-page-search-form search-page-search-form-top">
-			<h2><?php echo __('Need a new search?', 'Avada'); ?></h2>
-			<p><?php echo __('If you didn\'t find what you were looking for, try a new search!', 'Avada'); ?></p>
+			<h2><?php _e('Need a new search?', 'Avada'); ?></h2>
+			<p><?php _e('If you didn\'t find what you were looking for, try a new search!', 'Avada'); ?></p>
 			<form role="search" method="get" class="bbp-search-form seach-form searchform" action="<?php bbp_search_url(); ?>">
 				<div class="search-table">
 					<label class="screen-reader-text hidden" for="bbp_search"><?php _e( 'Search for:', 'bbpress' ); ?></label>

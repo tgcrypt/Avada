@@ -1,84 +1,118 @@
-<?php
+<?php while ( have_posts() ): the_post(); ?>
 
-// Render the content of the portfolio page
-while ( have_posts() ): the_post();
-
-	ob_start();
-	post_class( 'fusion-portfolio-page-content' );
-	$post_classes = ob_get_clean();
-
-	echo sprintf( '<div id="post-%s" %s>', get_the_ID(), $post_classes );
-		// Render the rich snippets
+	<div id="post-<?php echo get_the_ID(); ?>" <?php post_class( 'fusion-portfolio-page-content' ); ?>>
+		<?php
+		/**
+		 * Render the rich snippets
+		 */
 		echo avada_render_rich_snippets_for_pages();
+		?>
 
-		// Render the featured images
+		<?php
+		/**
+		 * Render the featured images
+		 */
 		echo avada_featured_images_for_pages();
+		?>
 
-		// Portfolio page content
-		echo '<div class="post-content">';
-			the_content();
-			avada_link_pages();
-		echo '</div>';
-	echo '</div>';
+		<?php
+		/**
+		 * Portfolio page content
+		 */
+		?>
+		<div class="post-content">
+			<?php the_content(); ?>
+			<?php avada_link_pages(); ?>
+		</div>
+	</div>
 
-	// Set the ID of the portfolio page as variable to have it in the posts loop
+	<?php
+	/**
+	 * Set the ID of the portfolio page as variable to have it in the posts loop
+	 */
 	$current_page_id = $post->ID;
+	?>
 
-	// Get the page template slug for later check for text layouts
+	<?php
+	/**
+	 * Get the page template slug for later check for text layouts
+	 */
 	$current_page_template = str_replace( '.php', '', get_page_template_slug( $current_page_id ) );
+	?>
 
-	// Get the boxed/unboxed setting for text layouts
-	if ( strpos( $current_page_template, 'text' ) ) {
-		$current_page_text_layout = fusion_get_option( 'portfolio_text_layout', 'portfolio_text_layout', $current_page_id );
-	} else {
-		$current_page_text_layout = 'unboxed';
-	}
+	<?php
+	/**
+	 * Get the number of columns
+	 */
+	$current_page_columns = avada_get_portfolio_columns( $current_page_template );
+	?>
 
-endwhile;
+	<?php
+	/**
+	 * Get the boxed/unboxed setting for text layouts
+	 */
+	$current_page_text_layout = ( strpos( $current_page_template, 'text' ) ) ? fusion_get_option( 'portfolio_text_layout', 'portfolio_text_layout', $current_page_id ) : 'unboxed';
+	?>
 
-// Check if we have paged content
-$paged = 1;
-if(  is_front_page() ) {
-	if ( get_query_var( 'page' ) ) {
-		$paged = get_query_var( 'page' );
-	}
+<?php endwhile; ?>
+
+<?php
+/**
+ * Check if we have paged content
+ */
+if (  is_front_page() ) {
+	$paged = ( get_query_var( 'page' ) ) ? get_query_var( 'page' ) : 1;
 } else {
-	if ( get_query_var( 'paged') ) {
-		$paged = get_query_var( 'paged');
-	}
+	$paged = ( get_query_var( 'paged') ) ? get_query_var( 'paged') : 1;
 }
+?>
 
-// Initialize the args that will be needed for th portfolio posts query
+<?php
+/**
+ * Initialize the args that will be needed for th portfolio posts query
+ */
 $args = array(
-	'post_type' 		=> 'avada_portfolio',
-	'paged' 			=> $paged,
-	'posts_per_page' 	=> Avada()->settings->get( 'portfolio_items' ),
+	'post_type'      => 'avada_portfolio',
+	'paged'          => $paged,
+	'posts_per_page' => Avada()->settings->get( 'portfolio_items' ),
 );
+?>
 
-// If placeholder images are disabled, add the _thumbnail_id meta key to the query to only retrieve posts with featured images
+<?php
+/**
+ * If placeholder images are disabled,
+ * add the _thumbnail_id meta key to the query to only retrieve posts with featured images.
+ */
 if ( ! Avada()->settings->get( 'featured_image_placeholder' ) ) {
 	$args['meta_key'] = '_thumbnail_id';
 }
+?>
 
-// Get the categories set by user to be included
+<?php
+/**
+ * Get the categories set by user to be included.
+ */
 $categories_to_display_ids = fusion_get_page_option( 'portfolio_category', get_the_ID() );
+?>
 
-// If "All categories" was selected in page options, clear that array entry
-if ( is_array( $categories_to_display_ids ) &&
-	 $categories_to_display_ids[0] == 0
-) {
+<?php
+/**
+ * If "All categories" was selected in page options, clear that array entry.
+ */
+if ( is_array( $categories_to_display_ids ) && 0 == $categories_to_display_ids[0] ) {
 	unset( $categories_to_display_ids[0] );
 	$categories_to_display_ids = array_values( $categories_to_display_ids );
 }
+?>
 
-// If no categories are chosen or "All categories", we need to load all available categories
-$show_all_categories = FALSE;
-
-if ( ! is_array( $categories_to_display_ids ) ||
-	count( $categories_to_display_ids ) == 0
-) {
-	$show_all_categories = TRUE;
-
+<?php
+/**
+ * If no categories are chosen or "All categories",
+ * we need to load all available categories.
+ */
+$show_all_categories = false;
+if ( ! is_array( $categories_to_display_ids ) || 0 == count( $categories_to_display_ids ) ) {
+	$show_all_categories = true;
 	$terms = get_terms( 'portfolio_category' );
 
 	if ( ! is_array( $categories_to_display_ids ) ) {
@@ -89,119 +123,166 @@ if ( ! is_array( $categories_to_display_ids ) ||
 		$categories_to_display_ids[] = $term->term_id;
 	}
 }
+?>
 
-// Get the category slugs and names
+<?php
+/**
+ * Get the category slugs and names.
+ */
 $categories_to_display_slugs_names = array();
-if ( is_array( $categories_to_display_ids ) &&
-	count( $categories_to_display_ids ) > 0
-) {
+if ( is_array( $categories_to_display_ids ) && 0 < count( $categories_to_display_ids ) ) {
 	foreach ( $categories_to_display_ids as $category_id ) {
-
 		$category_object = get_term( $category_id, 'portfolio_category' );
-
 		// Only add the category to the slugs and names array if they have posts assigned to them
-		if ( $category_object->count > 0 ) {
+		if ( 0 < $category_object->count ) {
 			$categories_to_display_slugs_names[$category_object->slug] = $category_object->name;
 		}
 	}
 }
+?>
 
-// Sort the category slugs alphabetically
-if ( is_array( $categories_to_display_slugs_names ) &&
-	! function_exists( 'TO_activated' )
-) {
+<?php
+// Sort the category slugs alphabetically.
+if ( is_array( $categories_to_display_slugs_names ) && ! function_exists( 'TO_activated' ) ) {
 	asort( $categories_to_display_slugs_names );
-}
+// Sort them according to custom taxonomy order plugin, if it is installed
+} else if ( is_array( $categories_to_display_slugs_names ) && function_exists( 'TO_activated' ) ) {
+	$term_names = array();
+	$terms = get_terms( 'portfolio_category' );
 
-// Add the correct term ids to the args array
-if ( $categories_to_display_ids ){
+	foreach ( $terms as $term ) {
+		$term_names[$term->slug] = $term->name;
+	}
+
+	$categories_to_display_slugs_names = Avada_Sanitize::order_array_like_array( $categories_to_display_slugs_names, $term_names );
+}
+?>
+
+<?php
+/**
+ * Add the correct term ids to the args array.
+ */
+if ( ! empty( $categories_to_display_ids ) ) {
 	$args['tax_query'][] = array(
 		'taxonomy' => 'portfolio_category',
-		'field' => 'id',
-		'terms' => $categories_to_display_ids
+		'field'    => 'id',
+		'terms'    => $categories_to_display_ids
 	);
 }
+?>
 
-// Retrieve the portfolio posts that fit the arguments
+<?php
+/**
+ * Retrieve the portfolio posts that fit the arguments
+ */
 $portfolio_posts_to_display = new WP_Query( $args );
+?>
 
-// Check if the page is passowrd protected
-if ( ! post_password_required( $current_page_id ) ) {
+<?php
+/**
+ * Check if the page is passowrd protected.
+ */
+?>
+<?php if ( ! post_password_required( $current_page_id ) ) : ?>
+	<?php
+	/**
+	 * Check if we can display filters
+	 */
+	?>
+	<?php if ( is_array( $categories_to_display_slugs_names ) && ! empty( $categories_to_display_slugs_names ) && 'no' != fusion_get_page_option( 'portfolio_filters', $current_page_id ) ) : ?>
+		<?php
+		/**
+		 * First add the "All" filter then loop through all chosen categories
+		 */
+		?>
+		<ul class="fusion-filters clearfix">
+			<?php
+			/**
+			 * Check if the "All" filter should be displayed.
+			 */
+			?>
+			<?php if ( 'yes' == fusion_get_page_option( 'portfolio_filters', $current_page_id ) ) : ?>
+				<li class="fusion-filter fusion-filter-all fusion-active">
+					<a data-filter="*" href="#"><?php echo apply_filters( 'avada_portfolio_all_filter_name', esc_html__( 'All', 'Avada' ) ); ?></a>
+				</li>
+				<?php $first_filter = false; ?>
+			<?php else : ?>
+				<?php $first_filter = true; ?>
+			<?php endif; ?>
 
-	// Check if we can display filters
-	if ( is_array( $categories_to_display_slugs_names ) &&
-		! empty( $categories_to_display_slugs_names ) &&
-		fusion_get_page_option( 'portfolio_filters', $current_page_id ) != 'no'
-	) {
-
-		// First add the "All" filter then loop through all chosen categories
-		echo '<ul class="fusion-filters clearfix">';
-
-			// Check if the "All" filter should be displayed
-			if ( fusion_get_page_option( 'portfolio_filters', $current_page_id ) == 'yes' ) {
-				echo sprintf( '<li class="fusion-filter fusion-filter-all fusion-active"><a data-filter="*" href="#">%s</a></li>', apply_filters( 'avada_portfolio_all_filter_name', __( 'All', 'Avada' ) ) );
-
-				$first_filter = FALSE;
-			} else {
-				$first_filter = TRUE;
-			}
-
-			foreach ( $categories_to_display_slugs_names as $category_tax_slug => $category_tax_name ) {
-				// Set the first category filter to active, if the all filter isn't shown
+			<?php foreach ( $categories_to_display_slugs_names as $category_tax_slug => $category_tax_name ) : ?>
+				<?php
+				/**
+				 * Set the first category filter to active, if the all filter isn't shown
+				 */
 				$active_class = '';
 				if ( $first_filter ) {
 					$active_class = ' fusion-active';
-					$first_filter = FALSE;
+					$first_filter = false;
 				}
+				?>
+				<li class="fusion-filter fusion-hidden<?php echo $active_class; ?>">
+					<a data-filter=".<?php echo urldecode( $category_tax_slug ); ?>" href="#"><?php echo $category_tax_name; ?></a>
+				</li>
+			<?php endforeach; ?>
+		</ul>
+	<?php endif; ?>
 
-				echo sprintf( '<li class="fusion-filter fusion-hidden%s"><a data-filter=".%s" href="#">%s</a></li>', $active_class, urldecode( $category_tax_slug ), $category_tax_name );
-			}
-		echo '</ul>';
-	}
-
-	// Get the correct featured image size
+	<?php
+	/**
+	 * Get the correct featured image size
+	 */
 	$post_featured_image_size = avada_get_portfolio_image_size( $current_page_id );
 	$post_featured_image_size_dimensions = avada_get_image_size_dimensions( $post_featured_image_size );
+	?>
 
-	// Set picture size as data attribute; needed for resizing placeholders
-	$data_picture_size = 'auto';
-	if ( $post_featured_image_size != 'full' ) {
-		$data_picture_size = 'fixed';
-	}
+	<?php
+	/**
+	 * Set picture size as data attribute; needed for resizing placeholders
+	 */
+	$data_picture_size = ( 'full' != $post_featured_image_size ) ? 'fixed' : 'auto';
+	?>
 
-	echo sprintf( '<div class="fusion-portfolio-wrapper" data-picturesize="%s" data-pages="%s">', $data_picture_size, $portfolio_posts_to_display->max_num_pages );
-
-		// For non one column layouts check if column spacing is used, and if, how big it is,
-		$custom_colulmn_spacing = FALSE;
+	<div class="fusion-portfolio-wrapper" data-picturesize="<?php echo $data_picture_size; ?>" data-pages="<?php echo $portfolio_posts_to_display->max_num_pages; ?>">
+		<?php
+		/**
+		 * For non one column layouts check if column spacing is used, and if, how big it is.
+		 */
+		$custom_colulmn_spacing = false;
 		if ( ! strpos( $current_page_template, 'one' ) ) {
 			// Page option set
-			if ( fusion_get_page_option( 'portfolio_column_spacing', $current_page_id ) != NULL ) {
-				$custom_colulmn_spacing = TRUE;
+			if ( fusion_get_page_option( 'portfolio_column_spacing', $current_page_id ) != null ) {
+				$custom_colulmn_spacing = true;
 				$column_spacing = fusion_get_page_option( 'portfolio_column_spacing', $current_page_id ) / 2;
-
-				echo sprintf( '<style type="text/css">.fusion-portfolio-wrapper{margin: 0 %spx;}.fusion-portfolio-wrapper .fusion-col-spacing{padding:%spx;}</style>', ( -1 ) * $column_spacing, $column_spacing );
 			// Page option not set, but theme option
-			} else if( Avada()->settings->get( 'portfolio_column_spacing' ) ) {
-				$custom_colulmn_spacing = TRUE;
+			} else if ( Avada()->settings->get( 'portfolio_column_spacing' ) ) {
+				$custom_colulmn_spacing = true;
 				$column_spacing = Avada()->settings->get( 'portfolio_column_spacing' ) / 2;
-
-				echo sprintf( '<style type="text/css">.fusion-portfolio-wrapper{margin: 0 %spx;}.fusion-portfolio-wrapper .fusion-col-spacing{padding:%spx;}</style>', ( -1 ) * $column_spacing, $column_spacing );
 			}
+			?>
+			<style type="text/css">.fusion-portfolio-wrapper{margin: 0 <?php echo ( -1 ) * $column_spacing; ?>px;}.fusion-portfolio-wrapper .fusion-col-spacing{padding:<?php echo $column_spacing; ?>px;}</style>
+			<?php
 		}
+		?>
 
-		// Loop through all the posts retrieved through our query based on chosen categories
-		while ( $portfolio_posts_to_display->have_posts() ) : $portfolio_posts_to_display->the_post();
+		<?php
+		/**
+		 * Loop through all the posts retrieved through our query based on chosen categories
+		 */
+		?>
+		<?php while ( $portfolio_posts_to_display->have_posts() ) : $portfolio_posts_to_display->the_post(); ?>
+			<?php
+			/**
+			 * Set the post permalink correctly.
+			 * this is important for prev/next navigation on single portfolio pages
+			 */
+			$post_permalink = ( ! empty( $categories_to_display_ids ) && ! $show_all_categories ) ? fusion_add_url_parameter( get_permalink(), 'portfolioID', $current_page_id ) : get_permalink();
+			?>
 
-			// Set the post permalink correctly; this is important for prev/next navigation on single portfolio pages
-			if ( $categories_to_display_ids &&
-				 ! $show_all_categories
-			) {
-				$post_permalink = fusion_add_url_parameter( get_permalink(), 'portfolioID', $current_page_id );
-			} else {
-				$post_permalink = get_permalink();
-			}
-
-			// Include the post categories as css classes for later useage with filters
+			<?php
+			/**
+			 * Include the post categories as css classes for later useage with filters
+			 */
 			$post_classes = '';
 			$post_categories = get_the_terms( $post->ID, 'portfolio_category' );
 
@@ -210,142 +291,174 @@ if ( ! post_password_required( $current_page_id ) ) {
 					$post_classes .= urldecode( $post_category->slug ) . ' ';
 				}
 			}
+			?>
 
-			// Add the col-spacing class if needed
+			<?php
+			/**
+			 * Add the col-spacing class if needed
+			 */
 			if ( $custom_colulmn_spacing ) {
 				$post_classes .= 'fusion-col-spacing';
 			}
+			?>
 
-			// Add correct post class for image orientation
-			if ( $post_featured_image_size == 'full' ) {
+			<?php
+			/**
+			 * Add correct post class for image orientation
+			 */
+			if ( 'full' == $post_featured_image_size ) {
 				$featured_image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );
-
 				$post_classes .= ' ' . avada_get_image_orientation_class( $featured_image );
 			}
+			?>
 
-			// Render the portfolio post
-			echo sprintf( '<div class="fusion-portfolio-post post-%s %s">', get_the_ID(), $post_classes );
+			<!-- the portfolio post -->
+			<div class="fusion-portfolio-post post-<?php echo get_the_ID(); ?> <?php echo $post_classes; ?>">
+				<?php
+				/**
+				 * Open fusion-portfolio-content-wrapper for text layouts
+				 */
+				?>
+				<?php if ( strpos( $current_page_template, 'text' ) ) : ?>
+					<div class="fusion-portfolio-content-wrapper">
+				<?php endif; ?>
 
-				// Open fusion-portfolio-content-wrapper for text layouts
-				if ( strpos( $current_page_template, 'text' ) ) {
-					echo '<div class="fusion-portfolio-content-wrapper">';
-				}
+					<?php
+					/**
+					 * Render the video set in page options if no featured image is present
+					 */
+					?>
+					<?php if ( ! has_post_thumbnail() && fusion_get_page_option( 'video', $post->ID ) ) : ?>
+						<?php
+						/**
+						 * For the portfolio one column layout we need a fixed max-width.
+						 * For all other layouts get the calculated max-width from the image size.
+						 */
+						$video_max_width = ( $current_page_template == 'portfolio-one-column' ) ? '540px' : $post_featured_image_size_dimensions['width'];
+						?>
 
-					// Render the video set in page options if no featured image is present
-					if ( ! has_post_thumbnail() &&
-						 fusion_get_page_option( 'video', $post->ID )
-					) {
+						<div class="fusion-image-wrapper fusion-video" style="max-width:<?php echo $video_max_width; ?>;">
+							<?php echo fusion_get_page_option( 'video', $post->ID ); ?>
+						</div>
+					<?php else : // On every other other layout render the featured image. ?>
 
-						// For the portfolio one column layout we need a fixed max-width
-						if ( $current_page_template == 'portfolio-one-column' ) {
-							$video_max_width = '540px';
-						// For all other layouts get the calculated max-width from the image size
-						} else {
-							$video_max_width = $post_featured_image_size_dimensions['width'];
+						<?php
+						if ( $post_featured_image_size == 'full' ) {
+							Avada()->images->set_grid_image_meta( array( 'layout' => 'portfolio_full', 'columns' => $current_page_columns ) );
 						}
+						$featured_image_markup = avada_render_first_featured_image_markup( $post->ID, $post_featured_image_size, $post_permalink, true );
+						Avada()->images->set_grid_image_meta( array() );
+						?>
 
-						printf( '<div class="fusion-image-wrapper fusion-video" style="max-width:%s;">', $video_max_width );
-							echo fusion_get_page_option( 'video', $post->ID );
-						echo '</div>';
-					// On every other other layout render the featured image
-					} else {
+						<?php echo $featured_image_markup; ?>
+					<?php endif; ?>
 
-						$featured_image_markup = avada_render_first_featured_image_markup( $post->ID, $post_featured_image_size, $post_permalink, TRUE );
-
-						/* Preparing real masonry
-						if ( has_post_thumbnail()
-						) {
-							$featured_image_markup = str_replace( '"fusion-image-wrapper"', sprintf( '"fusion-image-wrapper" style="background-image: url(%s);"', $featured_image[0] ), $featured_image_markup );
-						}
-						*/
-
-						echo $featured_image_markup;
-					}
-
-					// If we don't have a text layout and not a one column layout only render rich snippets
-					if ( ! strpos( $current_page_template, 'text' ) &&
-						 ! strpos( $current_page_template, 'one' )
-					) {
-						echo avada_render_rich_snippets_for_pages();
-					// If we have a text layout render its contents
-					} else {
-						echo '<div class="fusion-portfolio-content">';
-							// Render the post title
-							echo avada_render_post_title( $post->ID );
-
-							// Render the post categories
-							echo sprintf( '<h4>%s</h4>', get_the_term_list( $post->ID, 'portfolio_category', '', ', ', '') );
-							echo avada_render_rich_snippets_for_pages( false );
-
-							$post_content = '';
-							ob_start();
+					<?php
+					/**
+					 * If we don't have a text layout and not a one column layout only render rich snippets.
+					 * If we have a text layout render its contents
+					 */
+					?>
+					<?php if ( ! strpos( $current_page_template, 'text' ) && ! strpos( $current_page_template, 'one' ) ) : ?>
+						<?php echo avada_render_rich_snippets_for_pages(); ?>
+					<?php else : ?>
+						<div class="fusion-portfolio-content">
+							<?php echo avada_render_post_title( $post->ID ); ?>
+							<?php
 							/**
-							 * avada_portfolio_post_content hook
-							 *
-							 * @hooked avada_get_portfolio_content - 10 (outputs the post content)
+							 * Render the post categories
 							 */
-							do_action( 'avada_portfolio_post_content', $current_page_id );
-							$post_content = ob_get_clean();
+							?>
+							<h4><?php echo get_the_term_list( $post->ID, 'portfolio_category', '', ', ', '' ); ?></h4>
+							<?php echo avada_render_rich_snippets_for_pages( false ); ?>
 
-							// For boxed layouts add a content separator if there is a post content
-							if ( $current_page_text_layout == 'boxed' &&
-								 $post_content
-							) {
-								echo '<div class="fusion-content-sep"></div>';
-							}
+							<?php
+							/**
+							 * For boxed layouts add a content separator if there is a post content
+							 */
+							?>
+							<?php if ( 'boxed' == $current_page_text_layout && avada_get_portfolio_excerpt_length( $current_page_id ) !== '0' ) : ?>
+								<div class="fusion-content-sep"></div>
+							<?php endif; ?>
 
-							echo '<div class="fusion-post-content">';
+							<div class="fusion-post-content">
+								<?php
+								/**
+								 * avada_portfolio_post_content hook
+								 *
+								 * @hooked avada_get_portfolio_content - 10 (outputs the post content)
+								 */
+								do_action( 'avada_portfolio_post_content', $current_page_id );
+								?>
 
-								// Echo the post content
-								echo $post_content;
+								<?php
+								/**
+								 * On one column layouts render the "Learn More" and "View Project" buttons
+								 */
+								?>
+								<?php if ( strpos( $current_page_template, 'one' ) ) : ?>
+									<div class="fusion-portfolio-buttons">
+										<a href="<?php echo $post_permalink; ?>" class="fusion-button fusion-button-small fusion-button-default fusion-button-<?php echo strtolower( Avada()->settings->get( 'button_shape' ) ); ?> fusion-button-<?php echo strtolower( Avada()->settings->get( 'button_type' ) ); ?>">
+											<?php esc_html_e( 'Learn More', 'Avada' ); ?>
+										</a>
+										<?php if ( fusion_get_page_option( 'project_url', $post->ID ) ) : ?>
+											<a href="<?php echo fusion_get_page_option( 'project_url', $post->ID ); ?>" class="fusion-button fusion-button-small fusion-button-default fusion-button-<?php echo strtolower( Avada()->settings->get( 'button_shape' ) ); ?> fusion-button-<?php echo strtolower( Avada()->settings->get( 'button_type' ) ); ?>">
+												<?php esc_html_e( 'View Project', 'Avada' ); ?>
+											</a>
+										<?php endif; ?>
+									</div>
+								<?php endif; ?>
+							</div><!-- end post-content -->
 
-								// On one column layouts render the "Learn More" and "View Project" buttons
-								if ( strpos( $current_page_template, 'one' ) ) {
-									echo '<div class="fusion-portfolio-buttons">';
-										// Render "Learn More" button
-										echo sprintf( '<a href="%s" class="fusion-button fusion-button-small fusion-button-default fusion-button-%s fusion-button-%s">%s</a>',
-													  $post_permalink, strtolower( Avada()->settings->get( 'button_shape' ) ), strtolower( Avada()->settings->get( 'button_type' ) ), __( 'Learn More', 'Avada' ) );
+							<?php
+							/**
+							 * On unboxed one column layouts render a separator at the bottom of the post.
+							 */
+							?>
+							<?php if ( strpos( $current_page_template, 'one' ) && 'unboxed' == $current_page_text_layout ) : ?>
+								<div class="fusion-clearfix"></div>
+								<div class="fusion-separator sep-double"></div>
+							<?php endif; ?>
 
-										// Render the "View Project" button only is a project url was set
-										if ( fusion_get_page_option( 'project_url', $post->ID ) ) {
-											echo sprintf( '<a href="%s" class="fusion-button fusion-button-small fusion-button-default fusion-button-%s fusion-button-%s">%s</a>', fusion_get_page_option( 'project_url', $post->ID ),
-														  strtolower( Avada()->settings->get( 'button_shape' ) ), strtolower( Avada()->settings->get( 'button_type' ) ), __( ' View Project', 'Avada' ) );
-										}
-									echo '</div>';
-								}
+						</div><!-- end portfolio-content -->
 
-							echo '</div>'; // end post-content
+					<?php endif; ?>
 
-							// On unboxed one column layouts render a separator at the bottom of the post
-							if ( strpos( $current_page_template, 'one' ) &&
-								 $current_page_text_layout == 'unboxed'
-							) {
-								echo '<div class="fusion-clearfix"></div>';
-								echo '<div class="fusion-separator sep-double"></div>';
-							}
+				<?php
+				/**
+				 * Close fusion-portfolio-content-wrapper for text layouts.
+				 */
+				?>
+				<?php if ( strpos( $current_page_template, 'text' ) ) : ?>
+					</div>
+				<?php endif; ?>
 
-						echo '</div>'; // end portfolio-content
-					} // end template check
+			</div><!-- end portfolio-post -->
 
-				// Close fusion-portfolio-content-wrapper for text layouts
-				if ( strpos( $current_page_template, 'text' ) ) {
-					echo '</div>';
-				}
+		<?php endwhile; ?>
 
-			echo '</div>'; // end portfolio-post
-		endwhile;
-	echo '</div>'; // end portfolio-wrapper
+	</div><!-- end portfolio-wrapper -->
 
-	// If infinite scroll with "load more" button is used
-	if ( Avada()->settings->get( 'grid_pagination_type' ) == 'load_more_button' ) {
-		echo sprintf( '<div class="fusion-load-more-button fusion-clearfix">%s</div>', apply_filters( 'avada_load_more_posts_name', __( 'Load More Posts', 'Avada' ) ) );
-	}
+	<?php
+	/**
+	 * If infinite scroll with "load more" button is used
+	 */
+	?>
+	<?php if ( 'load_more_button' == Avada()->settings->get( 'grid_pagination_type' ) ) : ?>
+		<div class="fusion-load-more-button fusion-portfolio-button fusion-clearfix">
+			<?php echo apply_filters( 'avada_load_more_posts_name', esc_html__( 'Load More Posts', 'Avada' ) ); ?>
+		</div>
+	<?php endif; ?>
 
-	// Render the pagination
-	fusion_pagination( $portfolio_posts_to_display->max_num_pages, $range = 2, $portfolio_posts_to_display );
+	<?php
+	/**
+	 * Render the pagination
+	 */
+	fusion_pagination( $portfolio_posts_to_display->max_num_pages, 2, $portfolio_posts_to_display );
+	?>
 
-	wp_reset_query();
+	<?php wp_reset_query(); ?>
 
-} // password check
+<?php endif; // password check
 
 // Omit closing PHP tag to avoid "Headers already sent" issues.

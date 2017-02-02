@@ -24,7 +24,8 @@ module.exports = function(grunt) {
 					'animations.css': 'assets/less/theme/animations.less',
 					'assets/css/rtl.css': 'assets/less/theme/rtl.less',
 					'assets/css/woocommerce.css': 'assets/less/theme/woocommerce.less',
-					'assets/css/bbpress.css': 'assets/less/theme/bbpress.less'
+					'assets/css/bbpress.css': 'assets/less/theme/bbpress.less',
+					'includes/avadaredux/assets/style.css': 'includes/avadaredux/assets/style.less',
 				}
 			}
 		},
@@ -134,10 +135,37 @@ module.exports = function(grunt) {
 			target: {
 				options: {
 					type: 'wp-theme',
-					domainPath: 'languages'
+					domainPath: 'languages',
+					exclude: [
+						'includes/avadaredux/avadaredux-framework/.*'
+					]
 				}
 			}
-		}
+		},
+		// copy .pot to .po
+		copy: {
+			main: {
+				src: 'languages/Avada.pot',
+				dest: 'languages/Avada.po',
+			},
+		},
+		// Get json file from the google-fonts API
+		curl: {
+			'google-fonts-source': {
+				src: 'https://www.googleapis.com/webfonts/v1/webfonts?sort=alpha&key=AIzaSyCDiOc36EIOmwdwspLG3LYwCg9avqC5YLs',
+				dest: 'includes/avadaredux/custom-fields/typography/googlefonts.json'
+			}
+		},
+		// converts the googlefonts json file to a PHP array
+		json2php: {
+			convert: {
+				expand: true,
+				ext: '-array.php',
+				src: ['includes/avadaredux/custom-fields/typography/googlefonts.json']
+			}
+		},
+		// Delete the json array
+		clean: ['includes/avadaredux/custom-fields/typography/googlefonts.json']
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-less');
@@ -147,9 +175,14 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-wp-i18n');
+	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-curl');
+	grunt.loadNpmTasks('grunt-json2php');
+	grunt.loadNpmTasks('grunt-contrib-clean');
 
 	grunt.registerTask('watchCSS', ['watch:css']);
-	grunt.registerTask('default', ['less:development', 'concat:main', 'uglify:main', 'makepot']);
+	grunt.registerTask('default', ['less:development', 'concat:main', 'uglify:main', 'makepot', 'copy', 'po2mo']);
+	grunt.registerTask('googlefonts', ['curl:google-fonts-source', 'json2php', 'clean']);
 
 	grunt.registerTask('langUpdate', 'Update languages', function() {
 		shell.exec('tx pull -r avada.avadapo -a --minimum-perc=10');

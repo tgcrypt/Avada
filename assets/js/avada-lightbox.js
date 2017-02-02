@@ -16,7 +16,7 @@ var $il_instances	= [];
 */
 $avada_lightbox.initialize_lightbox = function() {
 
-	if( !Boolean( Number( js_local_vars.status_lightbox ) ) ) {
+	if( Number( js_local_vars.status_lightbox ) == 1 ) {
 
 		// For old prettyPhoto instances initialize caption and titles
 		$avada_lightbox.set_title_and_caption();
@@ -139,7 +139,7 @@ $avada_lightbox.activate_lightbox = function( $wrapper ) {
 
 				// Loop through the image extensions array to see if we have an image link
 				for ( var $i = 0; $i < $image_formats.length; $i++ ) {
-                    $image_formats_mask += String( jQuery( this ).attr( 'href' ) ).toLowerCase().indexOf( '.' + $image_formats[$i] );
+					$image_formats_mask += String( jQuery( this ).attr( 'href' ) ).toLowerCase().indexOf( '.' + $image_formats[$i] );
 				}
 
 				// If no image extension was found add the no lightbox class

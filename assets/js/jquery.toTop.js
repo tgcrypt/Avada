@@ -21,7 +21,7 @@
 			containerIDhash = '#' + settings.containerID,
 			containerHoverIDHash = '#'+settings.containerHoverID;
 
-		$('body').append('<div class="to-top-container"><a href="#" id="'+settings.containerID+'">'+settings.text+'</a></div>');
+		$('body').append('<div class="to-top-container"><a href="#" id="'+settings.containerID+'"><span class="screen-reader-text">'+toTopscreenReaderText.label+'</span>'+settings.text+'</a></div>');
 		$(containerIDhash).hide().on('click.UItoTop',function(){
 			$('html, body').animate({scrollTop:0}, settings.scrollSpeed, settings.easingType);
 			$('#'+settings.containerHoverID, this).stop().animate({'opacity': 0 }, settings.inDelay, settings.easingType);

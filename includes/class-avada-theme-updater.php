@@ -17,7 +17,7 @@ class Avada_Theme_Updater {
 		//set_site_transient('update_themes', null);
 
 		// Add notice that theme update is available
-		if( get_option( 'fusion_'. $this->theme_slug .'_update_available' ) ){
+		if ( get_option( 'fusion_'. $this->theme_slug .'_update_available' ) ){
 			add_action( 'admin_notices', array(&$this, 'update_notice') );
 		}
 	}
@@ -26,7 +26,7 @@ class Avada_Theme_Updater {
 		global $wp_filesystem;
 		$avada_options = get_option( 'Avada_Key' );
 
-		if( empty( $transient->checked ) )  {
+		if ( empty( $transient->checked ) )  {
 			return $transient;
 		}
 
@@ -36,7 +36,7 @@ class Avada_Theme_Updater {
 			'version' => $transient->checked[$this->theme_slug]
 		);
 
-		if( $this->api_url == 'http://updates.theme-fusion.com/avada-theme.php' ) {
+		if ( $this->api_url == 'http://updates.theme-fusion.com/avada-theme.php' ) {
 			$request_args['item_code'] = '2833226';
 			$request_args['envato_username'] = $avada_options['tf_username'];
 			$request_args['api_key'] = $avada_options['tf_api'];
@@ -47,11 +47,11 @@ class Avada_Theme_Updater {
 		$raw_response = wp_remote_post( $this->api_url, $request_string );
 
 		$response = null;
-		if( ! is_wp_error( $raw_response ) && ( $raw_response['response']['code'] == 200 ) ) {
+		if ( ! is_wp_error( $raw_response ) && ( $raw_response['response']['code'] == 200 ) ) {
 			$response = json_decode( $raw_response['body'], true );
 		}
 
-		if( ! empty( $response ) ) { // Feed the update data into WP updater
+		if ( ! empty( $response ) ) { // Feed the update data into WP updater
 			$transient->response[$this->theme_slug] = $response;
 		}
 
@@ -81,7 +81,8 @@ class Avada_Theme_Updater {
 		$theme_settings_link = admin_url( 'themes.php' );
 
 		if ( $pagenow == 'themes.php' || $pagenow == 'update-core.php' ) {
-			if( function_exists('wp_get_theme') ) {
+			$theme_name = 'Avada';
+			if ( function_exists('wp_get_theme') ) {
 				$theme_name = '<strong>'. wp_get_theme() .'</strong>';
 			}
 			echo '<div class="updated">

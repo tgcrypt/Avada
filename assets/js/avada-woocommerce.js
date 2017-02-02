@@ -141,6 +141,10 @@ jQuery( window ).load(
             }
         );
 
+		jQuery( '.woocommerce .images #carousel a' ).click( function(e) {
+			e.preventDefault();
+		});
+
         // Make sure the variation image is also changed in the thumbs carousel and for lightbox
 		jQuery( '.variations_form' ).on( 'change', '.variations select', function( event ) {
 			var $variations_form = jQuery( this ).parents( '.variations_form' );
@@ -172,6 +176,11 @@ jQuery( window ).load(
 					$slider.resize();
 				}
 
+				var $slider = jQuery( '.images #carousel' ).data( 'flexslider' );
+				if ( $slider ) {
+					$slider.resize();
+				}
+
 				$variations_form.find( '.variations .single_variation_wrap .woocommerce-variation-description' ).remove();
 
 			}, 1 );
@@ -193,6 +202,8 @@ jQuery( window ).load(
 );
 
 jQuery( document ).ready( function() {
+	jQuery( '.variations_form > .single_variation_wrap .woocommerce-variation' ).remove();
+
 	jQuery( 'body' ).on( 'click', '.add_to_cart_button', function(e) {
 		var $add_to_cart_button = jQuery( this );
 
@@ -218,11 +229,6 @@ jQuery( document ).ready( function() {
 	jQuery('.catalog-ordering .sort-count .current-li a').html(jQuery('.catalog-ordering .sort-count ul li.current a').html());
 	jQuery('.woocommerce .shop_table .variation dd').after('<br />');
 	jQuery('.woocommerce .avada-myaccount-data th.order-actions').text(js_local_vars.order_actions);
-
-	jQuery( 'body.rtl .woocommerce .wc-forward' ).each( function() {
-		var checkout_button = jQuery( this );
-		checkout_button.val( '\u2190 ' + checkout_button.val().replace( '\u2192', '' ) );
-	});
 
 	// My account page error check
 	if ( jQuery( '.avada_myaccount_user' ).length && jQuery( '.woocommerce-error' ).length && ! jQuery( '.avada-myaccount-nav' ).find( '.active' ).children().hasClass( 'address' ) ) {
@@ -259,9 +265,6 @@ jQuery( document ).ready( function() {
 			jQuery(this).attr('placeholder', jQuery(this).parent().find('label[for='+name+']').text());
 		}
 	});
-
-
-
 
 	if(jQuery('.woocommerce #reviews #comments .comment_container .comment-text').length ) {
 		jQuery('.woocommerce #reviews #comments .comment_container').append('<div class="clear"></div>');
@@ -328,12 +331,6 @@ jQuery( document ).ready( function() {
 		return false;
 	});
 
-
-
-
-
-
-
 	jQuery( 'body' ).on( 'click', '.woocommerce-checkout-nav a,.continue-checkout', function(e) {
 		var $admin_bar_height = ( jQuery( '#wpadminbar' ).length ) ? jQuery( '#wpadminbar' ).height() : 0,
 			$header_div_children = jQuery( '.fusion-header-wrapper').find( 'div' ),
@@ -351,14 +348,16 @@ jQuery( document ).ready( function() {
 			var $data_name = jQuery( this ).attr( 'data-name' ),
 				$name = $data_name;
 
-			if ( $data_name != '#order_review' ) {
+			if ( $data_name == 'order_review' ) {
+				$name = '#' + $data_name;
+			} else {
 				$name = '.' + $data_name;
 			}
 
 			jQuery( 'form.checkout .col-1, form.checkout .col-2, form.checkout #order_review_heading, form.checkout #order_review' ).hide();
 
 			jQuery( 'form.checkout' ).find( $name ).fadeIn();
-			if( $name == '#order_review' ) {
+			if( $name == 'order_review' ) {
 				jQuery( 'form.checkout' ).find( '#order_review_heading ').fadeIn();
 			}
 

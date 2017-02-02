@@ -5,12 +5,6 @@ class Avada_Template {
 	 * The class constructor
 	 */
 	public function __construct() {
-
-		global $content_width;
-		if ( ! isset( $content_width ) || empty( $content_width ) ) {
-			$content_width = '669';
-		}
-
 		add_filter( 'body_class', array( $this, 'body_classes' ) );
 	}
 
@@ -60,7 +54,7 @@ class Avada_Template {
 		$sidebar_1 = get_post_meta( $c_pageID, 'sbg_selected_sidebar_replacement', true );
 		$sidebar_2 = get_post_meta( $c_pageID, 'sbg_selected_sidebar_2_replacement', true );
 
-		if ( is_single() && ! is_singular( 'avada_portfolio' ) && ! is_singular( 'product' ) && ! is_bbpress()  && ! is_buddypress() && ! is_singular( 'tribe_events' ) && ! is_singular( 'tribe_organizer' ) && ! is_singular( 'tribe_venue' ) ) {
+		if ( is_single() && ! is_singular( 'avada_portfolio' ) && ! is_singular( 'product' ) && ! ( class_exists( 'bbPress' ) && is_bbpress() ) && ! ( class_exists( 'BuddyPress' ) && is_buddypress() ) && ! is_singular( 'tribe_events' ) && ! is_singular( 'tribe_organizer' ) && ! is_singular( 'tribe_venue' ) ) {
 
 			if ( Avada()->settings->get( 'posts_global_sidebar' ) ) {
 				$sidebar_1 = ( 'None' != Avada()->settings->get( 'posts_sidebar' ) ) ? array( Avada()->settings->get( 'posts_sidebar' ) ) : '';
@@ -95,14 +89,14 @@ class Avada_Template {
 
 			}
 
-		} else if( is_singular( 'tribe_events' ) ) {
+		} else if ( is_singular( 'tribe_events' ) ) {
 
 			if ( Avada()->settings->get( 'ec_global_sidebar' ) ) {
 				$sidebar_1 = ( 'None' != Avada()->settings->get( 'ec_sidebar' ) ) ? array( Avada()->settings->get( 'ec_sidebar' ) ) : '';
 				$sidebar_2 = ( 'None' != Avada()->settings->get( 'ec_sidebar_2' ) ) ? array( Avada()->settings->get( 'ec_sidebar_2' ) ) : '';
 			}
 
-		} else if( is_singular( 'tribe_venue' ) || is_singular( 'tribe_organizer' ) ) {
+		} else if ( is_singular( 'tribe_venue' ) || is_singular( 'tribe_organizer' ) ) {
 
 			$sidebar_1 = ( 'None' != Avada()->settings->get( 'ec_sidebar' ) ) ? array( Avada()->settings->get( 'ec_sidebar' ) ) : '';
 			$sidebar_2 = ( 'None' != Avada()->settings->get( 'ec_sidebar_2' ) ) ? array( Avada()->settings->get( 'ec_sidebar_2' ) ) : '';
@@ -113,7 +107,7 @@ class Avada_Template {
 			$sidebar_2 = Avada()->settings->get( 'blog_archive_sidebar_2' );
 		}
 
-		if ( is_archive() && ( ! is_buddypress() && ! is_bbpress() && ( class_exists( 'WooCommerce' ) && ! is_shop() ) || ! class_exists( 'WooCommerce' ) ) && !is_post_type_archive( 'avada_portfolio' ) && ! is_tax( 'portfolio_category' ) && ! is_tax( 'portfolio_skills' )  && ! is_tax( 'portfolio_tags' ) && ! is_tax( 'product_cat') && ! is_tax( 'product_tag' ) ) {
+		if ( is_archive() && ( ! ( class_exists( 'BuddyPress' ) && is_buddypress() ) && ! ( class_exists( 'bbPress' ) && is_bbpress() ) && ( class_exists( 'WooCommerce' ) && ! is_shop() ) || ! class_exists( 'WooCommerce' ) ) && ! is_post_type_archive( 'avada_portfolio' ) && ! is_tax( 'portfolio_category' ) && ! is_tax( 'portfolio_skills' )  && ! is_tax( 'portfolio_tags' ) && ! is_tax( 'product_cat' ) && ! is_tax( 'product_tag' ) ) {
 			$sidebar_1 = Avada()->settings->get( 'blog_archive_sidebar' );
 			$sidebar_2 = Avada()->settings->get( 'blog_archive_sidebar_2' );
 		}
@@ -133,7 +127,7 @@ class Avada_Template {
 			$sidebar_2 = Avada()->settings->get( 'search_sidebar_2' );
 		}
 
-		if ( ( is_bbpress() || is_buddypress() ) && ! bbp_is_forum_archive() && ! bbp_is_topic_archive() && ! bbp_is_user_home() && ! bbp_is_search() ) {
+		if ( ( ( class_exists( 'bbPress' ) && is_bbpress() ) || ( class_exists( 'BuddyPress' ) && is_buddypress() ) ) && ! ( class_exists( 'bbPress' ) && bbp_is_forum_archive() ) && ! ( class_exists( 'bbPress' ) && bbp_is_topic_archive() ) && ! ( class_exists( 'bbPress' ) && bbp_is_user_home() ) && ! ( class_exists( 'bbPress' ) && bbp_is_search() ) ) {
 			$sidebar_1 = Avada()->settings->get( 'ppbress_sidebar' );
 			$sidebar_2 = Avada()->settings->get( 'ppbress_sidebar_2' );
 
@@ -146,7 +140,7 @@ class Avada_Template {
 			}
 		}
 
-		if ( ( is_bbpress() || is_buddypress() ) && ( bbp_is_forum_archive() || bbp_is_topic_archive() || bbp_is_user_home() || bbp_is_search() ) ) {
+		if ( ( ( class_exists( 'bbPress' ) && is_bbpress() ) || ( class_exists( 'BuddyPress' ) && is_buddypress() ) ) && ( class_exists( 'bbPress' ) && ( bbp_is_forum_archive() || bbp_is_topic_archive() || bbp_is_user_home() || bbp_is_search() ) ) ) {
 			$sidebar_1 = Avada()->settings->get( 'ppbress_sidebar' );
 			$sidebar_2 = Avada()->settings->get( 'ppbress_sidebar_2' );
 		}
@@ -187,10 +181,10 @@ class Avada_Template {
 		if ( ! Avada()->settings->get( 'header_sticky_mobile' ) ) {
 			$classes[] = 'no-mobile-sticky-header';
 		}
-		if ( Avada()->settings->get( 'mobile_slidingbar_widgets' ) ) {
+		if ( ! Avada()->settings->get( 'mobile_slidingbar_widgets' ) ) {
 			$classes[] = 'no-mobile-slidingbar';
 		}
-		if ( Avada()->settings->get( 'status_totop' ) ) {
+		if ( ! Avada()->settings->get( 'status_totop' ) ) {
 			$classes[] = 'no-totop';
 		}
 		if ( ! Avada()->settings->get( 'status_totop_mobile' ) ) {
@@ -218,8 +212,12 @@ class Avada_Template {
 			$classes[] = 'double-sidebars';
 		}
 
-		if ( is_page_template( 'side-navigation.php' ) && is_array( $sidebar_2 ) && $sidebar_2[0] ) {
-			$classes[] = 'double-sidebars';
+		if ( is_page_template( 'side-navigation.php' ) ) {
+			$classes[] = 'has-sidebar';
+		
+			if( is_array( $sidebar_2 ) && $sidebar_2[0] ) {
+				$classes[] = 'double-sidebars';
+			}
 		}
 
 		if ( is_home() ) {
@@ -231,7 +229,7 @@ class Avada_Template {
 			}
 		}
 
-		if ( is_archive() && ( ! is_buddypress() && ! is_bbpress() && ( class_exists( 'WooCommerce' ) && ! is_shop() ) || ! class_exists( 'WooCommerce' ) ) && ! is_tax( 'portfolio_category' ) && ! is_tax( 'portfolio_skills' )  && ! is_tax( 'portfolio_tags' ) && ! is_tax( 'product_cat') && ! is_tax( 'product_tag' ) ) {
+		if ( is_archive() && ( ! ( class_exists( 'BuddyPress' ) && is_buddypress() ) && ! ( class_exists( 'bbPress' ) && is_bbpress() ) && ( class_exists( 'WooCommerce' ) && ! is_shop() ) || ! class_exists( 'WooCommerce' ) ) && ! is_tax( 'portfolio_category' ) && ! is_tax( 'portfolio_skills' )  && ! is_tax( 'portfolio_tags' ) && ! is_tax( 'product_cat' ) && ! is_tax( 'product_tag' ) ) {
 			if ( 'None' != $sidebar_1 ) {
 				$classes[] = 'has-sidebar';
 			}
@@ -267,7 +265,7 @@ class Avada_Template {
 			}
 		}
 
-		if ( ( is_bbpress() || is_buddypress() ) && ! bbp_is_forum_archive() && ! bbp_is_topic_archive() && ! bbp_is_user_home() && ! bbp_is_search() ) {
+		if ( ( ( class_exists( 'bbPress' ) && is_bbpress() ) || ( class_exists( 'BuddyPress' ) && is_buddypress() ) ) && ( class_exists( 'bbPress' ) && ! bbp_is_forum_archive() ) && ( class_exists( 'bbPress' ) && ! bbp_is_topic_archive() ) && ! ( class_exists( 'bbPress' ) && bbp_is_user_home() ) && ( class_exists( 'bbPress' ) && ! bbp_is_search() ) ) {
 			if ( Avada()->settings->get( 'bbpress_global_sidebar' ) ) {
 				if ( 'None' != $sidebar_1 ) {
 					$classes[] = 'has-sidebar';
@@ -285,7 +283,7 @@ class Avada_Template {
 			}
 		}
 
-		if ( ( is_bbpress() || is_buddypress() ) && ( bbp_is_forum_archive() || bbp_is_topic_archive() || bbp_is_user_home() || bbp_is_search() ) ) {
+		if ( ( ( class_exists( 'bbPress' ) && is_bbpress() ) || ( class_exists( 'BuddyPress' ) && is_buddypress() ) ) && ( class_exists( 'bbPress' ) && ( bbp_is_forum_archive() || bbp_is_topic_archive() || bbp_is_user_home() || bbp_is_search() ) ) ) {
 			if ( 'None' != $sidebar_1 ) {
 				$classes[] = 'has-sidebar';
 			}
@@ -315,7 +313,7 @@ class Avada_Template {
 			$classes[] = 'menu-text-align-' . strtolower( Avada()->settings->get( 'menu_text_align' ) );
 		}
 
-		if( class_exists( 'WooCommerce' ) ) {
+		if ( class_exists( 'WooCommerce' ) ) {
 			$classes[] = 'fusion-woo-product-design-' . Avada()->settings->get( 'woocommerce_product_box_design' );
 		}
 
@@ -323,7 +321,7 @@ class Avada_Template {
 
 		$classes[] = 'fusion-image-hovers';
 
-		if( Avada()->settings->get( 'pagination_text_display') ) {
+		if ( Avada()->settings->get( 'pagination_text_display' ) ) {
 			$classes[] = 'fusion-show-pagination-text';
 		} else {
 			$classes[] = 'fusion-hide-pagination-text';
@@ -353,57 +351,57 @@ class Avada_Template {
 			</div>
 		<?php
 	}
-	
+
 	public function title_template( $content = '', $size = '2', $content_align = 'left' ) {
-		$margin_top	= Avada()->settings->get( 'title_top_margin' );
-		$margin_bottom	= Avada()->settings->get( 'title_bottom_margin' );
+		$margin_top	= Avada()->settings->get( 'title_margin', 'top' );
+		$margin_bottom	= Avada()->settings->get( 'title_margin', 'bottom' );
 		$sep_color = Avada()->settings->get( 'title_border_color' );
 		$style_type	= Avada()->settings->get( 'title_style_type' );
 		$size_array = array( '1' => 'one', '2' => 'two', '3' => 'three', '4' => 'four', '5' => 'five', '6' => 'six' );
 		$classes = '';
 		$styles = '';
 		$sep_styles = '';
-		
+
 		$classes_array = explode( ' ', $style_type );
 		foreach ( $classes_array as $class ) {
 			$classes .= ' sep-' . $class;
-		}		
-		
+		}
+
 		if ( $margin_top ) {
 			$styles .= sprintf( 'margin-top:%s;', Avada_Sanitize::get_value_with_unit( $margin_top ) );
 		}
 		if ( $margin_bottom ) {
 			$styles .= sprintf( 'margin-bottom:%s;', Avada_Sanitize::get_value_with_unit( $margin_bottom ) );
-		}		
-		
-		if ( strpos( $style_type, 'underline' ) !== FALSE || 
+		}
+
+		if ( strpos( $style_type, 'underline' ) !== FALSE ||
 			 strpos( $style_type, 'none' ) !== FALSE
 		) {
-		
+
 			if ( strpos( $style_type, 'underline' ) !== false ) {
 				if ( $sep_color ) {
 					$styles .= 'border-bottom-color:' . $sep_color;
 				}
 			} elseif ( strpos( $style_type, 'none' ) !== false ) {
 				$classes .= ' fusion-sep-none';
-			}		
-		
-			$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><h%s class="title-heading-%s">%s</h%s></div>', $size_array[$size], 
+			}
+
+			$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><h%s class="title-heading-%s">%s</h%s></div>', $size_array[$size],
 							 $classes, $styles, $size, $content_align, $content, $size );
 		} else {
 			if ( $content_align == 'right' ) {
-				$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><div class="title-sep-container"><div class="title-sep%s"></div></div><h%s class="title-heading-%s">%s</h%s></div>', 
-								 $size_array[$size], $classes, $styles, $classes, $size, $content_align, $content, $size );								
+				$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><div class="title-sep-container"><div class="title-sep%s"></div></div><h%s class="title-heading-%s">%s</h%s></div>',
+								 $size_array[$size], $classes, $styles, $classes, $size, $content_align, $content, $size );
 			} elseif ( $content_align == 'center' ) {
-				$html = sprintf( '<div class="fusion-title fusion-title-center fusion-title-size-%s%s" style="%s"><div class="title-sep-container title-sep-container-left"><div class="title-sep%s"></div></div><h%s class="title-heading-%s">%s</h%s><div class="title-sep-container title-sep-container-right"><div class="title-sep%s"></div></div></div>', 
-								 $size_array[$size], $classes, $styles, $classes, $size, $content_align, $content, $size, $classes );	
-			} else {	 
-				$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><h%s class="title-heading-%s">%s</h%s><div class="title-sep-container"><div class="title-sep%s"></div></div></div>', 
+				$html = sprintf( '<div class="fusion-title fusion-title-center fusion-title-size-%s%s" style="%s"><div class="title-sep-container title-sep-container-left"><div class="title-sep%s"></div></div><h%s class="title-heading-%s">%s</h%s><div class="title-sep-container title-sep-container-right"><div class="title-sep%s"></div></div></div>',
+								 $size_array[$size], $classes, $styles, $classes, $size, $content_align, $content, $size, $classes );
+			} else {
+				$html = sprintf( '<div class="fusion-title fusion-title-size-%s%s" style="%s"><h%s class="title-heading-%s">%s</h%s><div class="title-sep-container"><div class="title-sep%s"></div></div></div>',
 								 $size_array[$size], $classes, $styles, $size, $content_align, $content, $size, $classes );
 			}
 		}
 		return $html;
-	}	
+	}
 }
 
 // Omit closing PHP tag to avoid "Headers already sent" issues.

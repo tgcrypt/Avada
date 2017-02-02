@@ -1,33 +1,37 @@
 <?php
 $avada_theme = wp_get_theme();
-if($avada_theme->parent_theme) {
+if ($avada_theme->parent_theme) {
 	$template_dir =  basename(get_template_directory());
 	$avada_theme = wp_get_theme($template_dir);
 }
-$avada_version = $avada_theme->get( 'Version' );
+$avada_version = Avada()->get_version();
 $theme_fusion_url = 'https://theme-fusion.com/';
 ?>
 <div class="wrap about-wrap avada-wrap">
-	<h1><?php echo __( "Welcome to Avada!", "Avada" ); ?></h1>
-	<div class="about-text"><?php echo __( "Avada is now installed and ready to use!  Get ready to build something beautiful. Please register your purchase to get support and automatic theme updates. Read below for additional information. We hope you enjoy it! <a href='//www.youtube.com/embed/dn6g_gJDAIk?rel=0&TB_iframe=true&height=540&width=960' class='thickbox' title='Guided Tour of Avada'>Watch Our Quick Guided Tour!</a>", "Avada" ); ?></div>
-	<div class="avada-logo"><span class="avada-version"><?php echo __( "Version", "Avada" ); ?> <?php echo $avada_version; ?></span></div>
+	<h1><?php _e( "Welcome to Avada!", "Avada" ); ?></h1>
+	<div class="about-text"><?php printf( esc_html__( 'Avada is now installed and ready to use! Get ready to build something beautiful. Please register your purchase to get support and automatic theme updates. Read below for additional information. We hope you enjoy it! %s', 'Avada' ), '<a href="//www.youtube.com/embed/dn6g_gJDAIk?rel=0&TB_iframe=true&height=540&width=960" class="thickbox" title="' . esc_attr__( 'Guided Tour of Avada', 'Avada' ) . '">' . esc_attr__( 'Watch Our Quick Guided Tour!', 'Avada' ) . '</a>' ); ?></div>
+	<div class="avada-logo"><span class="avada-version"><?php _e( "Version", "Avada" ); ?> <?php echo $avada_version; ?></span></div>
 	<h2 class="nav-tab-wrapper">
-		<?php
-		printf( '<a href="%s" class="nav-tab">%s</a>', admin_url( 'admin.php?page=avada' ), __( "Product Registration", "Avada" ) );
-		printf( '<a href="%s" class="nav-tab">%s</a>', admin_url( 'admin.php?page=avada-support' ), __( "Support", "Avada" ) );
-		printf( '<a href="%s" class="nav-tab">%s</a>', admin_url( 'admin.php?page=avada-demos' ), __( "Install Demos", "Avada" ) );
-		printf( '<a href="%s" class="nav-tab">%s</a>', admin_url( 'admin.php?page=avada-plugins' ), __( "Plugins", "Avada" ) );
-		printf( '<a href="#" class="nav-tab nav-tab-active">%s</a>', __( "System Status", "Avada" ) );
-		?>
+		<a href="<?php echo admin_url( 'admin.php?page=avada' ); ?>" class="nav-tab"><?php esc_attr_e( 'Product Registration', 'Avada' ); ?></a>
+		<a href="<?php echo admin_url( 'admin.php?page=avada-support' ); ?>" class="nav-tab"><?php esc_attr_e( 'Support', 'Avada' ); ?></a>
+		<a href="<?php echo admin_url( 'admin.php?page=avada-demos' ); ?>" class="nav-tab"><?php esc_attr_e( 'Install Demos', 'Avada' ); ?></a>
+		<a href="<?php echo admin_url( 'admin.php?page=avada-plugins' ); ?>" class="nav-tab"><?php esc_attr_e( 'Plugins', 'Avada' ); ?></a>
+		<a href="#" class="nav-tab nav-tab-active"><?php esc_attr_e( 'System Status', 'Avada' ); ?></a>
 	</h2>
 	<div class="avada-system-status">
-		<div class="updated system-status-debug" style="display: block !important;">
-			<p><a href="#" class="button-primary debug-report"><?php _e( 'Get System Report', 'Avada' ); ?></a> <?php _e( 'Click the button to produce a report, then copy and paste into your support ticket.', 'Avada' ); ?></p>
+		<table class="widefat fusion-system-status-debug" cellspacing="0">
+			<tbody>
+				<tr>
+					<td colspan="3" data-export-label="Avada Versions">
+						<span class="get-system-status"><a href="#" class="button-primary debug-report"><?php _e( 'Get System Report', 'Avada' ); ?></a><span class="system-report-msg"><?php _e( 'Click the button to produce a report, then copy and paste into your support ticket.', 'Avada' ); ?></span></span>
 
-			<div id="debug-report">
-				<textarea readonly="readonly"></textarea>
-				<p class="submit"><button id="copy-for-support" class="button-primary" href="#" data-tip="<?php _e( 'Copied!', 'Avada' ); ?>"><?php _e( 'Copy for Support', 'Avada' ); ?></button></p>
-			</div>
+						<div id="debug-report">
+							<textarea readonly="readonly"></textarea>
+							<p class="submit"><button id="copy-for-support" class="button-primary" href="#" data-tip="<?php _e( 'Copied!', 'Avada' ); ?>"><?php _e( 'Copy for Support', 'Avada' ); ?></button></p>
+						</div>
+					</td>
+				</tr>
+			</tbody>
 		</div>
 		<h3 class="screen-reader-text"><?php _e( 'Avada Versions', 'Avada' ); ?></h3>
 		<table class="widefat" cellspacing="0">
@@ -40,21 +44,62 @@ $theme_fusion_url = 'https://theme-fusion.com/';
 				<tr>
 					<td data-export-label="Current Version"><?php _e( 'Current Version:', 'Avada' ); ?></td>
 					<td class="help">&nbsp;</td>
-					<td><?php echo Avada()->get_theme_verion(); ?></td>
+					<td><?php echo Avada()->get_theme_version(); ?></td>
 				</tr>
 				<tr>
-					<td data-export-label="Previous Version"><?php _e( 'Previous Version:', 'Avada' ); ?></td>
+					<td data-export-label="Previous Version"><?php _e( 'Update History:', 'Avada' ); ?></td>
 					<td class="help">&nbsp;</td>
 					<?php $previous_version = get_option( 'avada_previous_version', false );
 					if ( ! $previous_version ) {
-						$previous_version = __( 'No previous version could be detected', 'Avada' );
+						$previous_version = __( 'No previous versions could be detected', 'Avada' );
+					} else {
+						if ( is_array( $previous_version ) ) {
+							$previous_version = implode( ' <span style="font-size:1em;line-height:inherit;" class="dashicons dashicons-arrow-right-alt"></span> ', $previous_version );
+						}
 					}
 					?>
 					<td><?php echo $previous_version; ?></td>
 				</tr>
+				<?php
+				$show_400_migration = false;
+				$previous_version = get_option( 'avada_previous_version', false );
+				if ( is_array( $previous_version ) ) {
+					foreach ( $previous_version as $ver ) {
+						if ( version_compare( $ver, '4.0.0', '<' ) ) {
+							$show_400_migration = true;
+						}
+						$last_version = $ver;
+					}
+				} else {
+					if ( version_compare( $previous_version, '4.0.0', '<' ) ) {
+						$show_400_migration = true;
+					}
+					$last_version = $previous_version;
+				}
+				?>
+				<?php if ( $show_400_migration ) : ?>
+					<?php $latest_version = ( empty( $last_version ) || ! $last_version ) ? esc_attr__( 'Previous Version', 'Avada' ) : sprintf( esc_attr__( 'Version %s', 'Avada' ), $last_version ); ?>
+					<tr>
+						<td></td>
+						<td class="help">&nbsp;</td>
+						<td>
+							<a id="avada-manual-migration-trigger" href="#">
+								<?php printf( esc_attr__( 'Run Manual Migration From %s to Version 4.0', 'Avada' ), $latest_version ); ?>
+							</a>
+						</td>
+						<script type="text/javascript">
+						jQuery( '#avada-manual-migration-trigger' ).on( 'click', function() {
+							var migration_response = confirm( "<?php printf( esc_attr__( 'Warning: By clicking OK, all changes made to your theme options after installing Avada 4.0 will be lost. Your Theme Options will be reset to the values from %s and then migrated again to 4.0.', 'Avada' ), $latest_version ); ?>" );
+							if ( migration_response == true ) {
+								window.location= "<?php echo admin_url( 'index.php?avada_update=1&ver=400&new=1' ); ?>";
+							}
+						});
+						</script>
+					</tr>
+				<?php endif; ?>
 			</tbody>
 		</table>
-		
+
 		<h3 class="screen-reader-text"><?php _e( 'WordPress Environment', 'Avada' ); ?></h3>
 		<table class="widefat" cellspacing="0">
 			<thead>
@@ -159,13 +204,13 @@ $theme_fusion_url = 'https://theme-fusion.com/';
 						$menu_items_count = array( "0" => "0" );
 						foreach( $registered_navs as $handle => $registered_nav ) {
 							$menu = wp_get_nav_menu_object( $registered_nav );
-							if( $menu ) {
+							if ( $menu ) {
 								$menu_items_count[] = $menu->count;
 							}
 						}
 
 						$max_items = max( $menu_items_count );
-						if( ! fusion_get_theme_option( 'disable_megamenu' ) ) {
+						if ( Avada()->settings->get( 'disable_megamenu' ) ) {
 							$required_input_vars = $max_items * 20;
 						} else {
 							$required_input_vars = $max_items * 12;
@@ -189,7 +234,7 @@ $theme_fusion_url = 'https://theme-fusion.com/';
 		If enabled on your server, Suhosin may need to be configured to increase its data submission limits.', 'Avada'  ) . '">[?]</a>'; ?></td>
 						<td><?php echo extension_loaded( 'suhosin' ) ? '&#10004;' : '&ndash;'; ?></td>
 					</tr>
-					<?php if( extension_loaded( 'suhosin' ) ): ?>
+					<?php if ( extension_loaded( 'suhosin' ) ): ?>
 					<tr>
 						<td data-export-label="Suhosin Post Max Vars"><?php _e( 'Suhosin Post Max Vars:', 'Avada' ); ?></td>
 						<td class="help"><?php echo '<a href="#" class="help_tip" data-tip="' . esc_attr__( 'The maximum number of variables your server can use for a single function to avoid overloads.', 'Avada'  ) . '">[?]</a>'; ?></td>
@@ -198,13 +243,13 @@ $theme_fusion_url = 'https://theme-fusion.com/';
 						$menu_items_count = array( "0" => "0" );
 						foreach( $registered_navs as $handle => $registered_nav ) {
 							$menu = wp_get_nav_menu_object( $registered_nav );
-							if( $menu ) {
+							if ( $menu ) {
 								$menu_items_count[] = $menu->count;
 							}
 						}
 
 						$max_items = max( $menu_items_count );
-						if( ! fusion_get_theme_option( 'disable_megamenu' ) ) {
+						if ( Avada()->settings->get( 'disable_megamenu' ) ) {
 							$required_input_vars = $max_items * 20;
 						} else {
 							$required_input_vars = ini_get( 'suhosin.post.max_vars' );
@@ -229,13 +274,13 @@ $theme_fusion_url = 'https://theme-fusion.com/';
 						$menu_items_count = array( "0" => "0" );
 						foreach( $registered_navs as $handle => $registered_nav ) {
 							$menu = wp_get_nav_menu_object( $registered_nav );
-							if( $menu ) {
+							if ( $menu ) {
 								$menu_items_count[] = $menu->count;
 							}
 						}
 
 						$max_items = max( $menu_items_count );
-						if( ! fusion_get_theme_option( 'disable_megamenu' ) ) {
+						if ( Avada()->settings->get( 'disable_megamenu' ) ) {
 							$required_input_vars = $max_items * 20;
 						} else {
 							$required_input_vars = ini_get( 'suhosin.request.max_vars' );
@@ -298,17 +343,34 @@ $theme_fusion_url = 'https://theme-fusion.com/';
 					<td data-export-label="WP Remote Get"><?php _e( 'WP Remote Get:', 'Avada' ); ?></td>
 					<td class="help"><?php echo '<a href="#" class="help_tip" data-tip="' . esc_attr__( 'Avada uses this method to communicate with different APIs, e.g. Google, Twitter, Facebook.', 'Avada'  ) . '">[?]</a>'; ?></td>
 					<?php $response = wp_remote_get( 'http://theme-fusion.com/avada/test.php', array( 'decompress' => false ) ); ?>
-					<td><?php echo ( ! is_wp_error( $response ) && $response['response']['code'] >= 200 && $response['response']['code'] < 300 ) ? '<mark class="yes">&#10004;</mark>' : '<mark class="error">wp_remote_get() failed. Some theme features may not work. Please contact your hosting provider.</mark>'; ?></td>
+					<td><?php echo ( ! is_wp_error( $response ) && $response['response']['code'] >= 200 && $response['response']['code'] < 300 ) ? '<mark class="yes">&#10004;</mark>' : '<mark class="error">wp_remote_get() failed. Some theme features may not work. Please contact your hosting provider and make sure that http://theme-fusion.com/avada/test.php is not blocked.</mark>'; ?></td>
 				</tr>
 				<tr>
 					<td data-export-label="WP Remote Post"><?php _e( 'WP Remote Post:', 'Avada' ); ?></td>
 					<td class="help"><?php echo '<a href="#" class="help_tip" data-tip="' . esc_attr__( 'Avada uses this method to communicate with different APIs, e.g. Google, Twitter, Facebook.', 'Avada'  ) . '">[?]</a>'; ?></td>
 					<?php $response = wp_remote_post( 'http://theme-fusion.com/avada/test.php', array( 'decompress' => false ) ); ?>
-					<td><?php echo ( ! is_wp_error( $response ) && $response['response']['code'] >= 200 && $response['response']['code'] < 300 ) ? '<mark class="yes">&#10004;</mark>' : '<mark class="error">wp_remote_post() failed. Some theme features may not work. Please contact your hosting provider.</mark>'; ?></td>
+					<td><?php echo ( ! is_wp_error( $response ) && $response['response']['code'] >= 200 && $response['response']['code'] < 300 ) ? '<mark class="yes">&#10004;</mark>' : '<mark class="error">wp_remote_post() failed. Some theme features may not work. Please contact your hosting provider and make sure that http://theme-fusion.com/avada/test.php is not blocked.</mark>'; ?></td>
+				</tr>
+				<tr>
+					<td data-export-label="GD Library"><?php _e( 'GD Library:', 'Avada' ); ?></td>
+					<td class="help"><?php echo '<a href="#" class="help_tip" data-tip="' . esc_attr__( 'Avada uses this library to resize images and speed up your site\'s loading time', 'Avada'  ) . '">[?]</a>'; ?></td>
+					<td>
+						<?php
+						$info = esc_attr__( 'Not Installed', 'Avada' );
+						if ( extension_loaded( 'gd' ) && function_exists( 'gd_info' ) ) {
+							$info = esc_attr__( 'Installed', 'Avada' );
+							$gd_info = gd_info();
+							if ( isset( $gd_info['GD Version'] ) ) {
+								$info = $gd_info['GD Version'];
+							}
+						}
+						echo $info;
+						?>
+					</td>
 				</tr>
 			</tbody>
 		</table>
-		
+
 		<h3 class="screen-reader-text"><?php _e( 'Active Plugins', 'Avada' ); ?></h3>
 		<table class="widefat" cellspacing="0" id="status">
 			<thead>
@@ -343,7 +405,7 @@ $theme_fusion_url = 'https://theme-fusion.com/';
 						<tr>
 							<td><?php echo $plugin_name; ?></td>
 							<td class="help">&nbsp;</td>
-							<td><?php echo sprintf( _x( 'by %s', 'by author', 'Avada' ), $plugin_data['Author'] ) . ' &ndash; ' . esc_html( $plugin_data['Version'] ) . $version_string . $network_string; ?></td>
+							<td><?php printf( _x( 'by %s', 'by author', 'Avada' ), $plugin_data['Author'] ) . ' &ndash; ' . esc_html( $plugin_data['Version'] ) . $version_string . $network_string; ?></td>
 						</tr>
 						<?php
 					}
@@ -354,6 +416,6 @@ $theme_fusion_url = 'https://theme-fusion.com/';
 	</div>
 	<div class="avada-thanks">
 		<hr />
-		<p class="description"><?php echo __( "Thank you for choosing Avada. We are honored and are fully dedicated to making your experience perfect.", "Avada" ); ?></p>
+		<p class="description"><?php _e( "Thank you for choosing Avada. We are honored and are fully dedicated to making your experience perfect.", "Avada" ); ?></p>
 	</div>
 </div>

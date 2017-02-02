@@ -20,7 +20,7 @@ function avada_comment( $comment, $args, $depth ) {
  * Kept for backwards-compatibility
  */
 function avada_get_the_password_form() {
-	return Avada()->template->get_the_password_form();
+	return get_the_password_form();
 }
 
 /**
@@ -28,7 +28,7 @@ function avada_get_the_password_form() {
  * This is simply a wrapper for the content method in the Avada_Blog class
  * Kept for backwards-compatibility
  */
-if( ! function_exists( 'tf_content' ) ) :
+if ( ! function_exists( 'tf_content' ) ) :
 function tf_content( $limit, $strip_html ) {
 	Avada()->blog->content( $limit, $strip_html );
 }
@@ -83,7 +83,7 @@ if ( ! function_exists( 'avada_get_slider_type' ) ) {
 add_filter( 'avada_load_more_posts_name', 'avada_handle_deprecated_load_more_posts_filter' );
 function avada_handle_deprecated_load_more_posts_filter( $text ) {
 	$load_more_posts_text = apply_filters( 'avada_load_more_pots_name', '' );
-	
+
 	if ( $load_more_posts_text ) {
 		return $load_more_posts_text;
 	} else {
@@ -99,7 +99,7 @@ function avada_handle_deprecated_load_more_posts_filter( $text ) {
 add_filter( 'avada_read_more_name', 'avada_handle_deprecated_blog_read_more_link_filter' );
 function avada_handle_deprecated_blog_read_more_link_filter( $text ) {
 	$read_more_text = apply_filters( 'avada_blog_read_more_link', '' );
-	
+
 	if ( $read_more_text ) {
 		return $read_more_text;
 	} else {
@@ -110,6 +110,11 @@ function avada_handle_deprecated_blog_read_more_link_filter( $text ) {
 add_action( 'avada_before_main_container', 'avada_handle_deprecated_before_main_action' );
 function avada_handle_deprecated_before_main_action() {
 	do_action( 'avada_before_main' );
+}
+
+add_action( 'avada_after_content', 'avada_handle_deprecated_after_content_action' );
+function avada_handle_deprecated_after_content_action() {
+	do_action( 'fusion_after_content' );
 }
 
 

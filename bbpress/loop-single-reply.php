@@ -51,7 +51,7 @@
 
 				<?php do_action( 'bbp_theme_before_reply_admin_links' ); ?>
 
-				<?php bbp_reply_admin_links( array ( 'after' => '<span class="admin_links_sep"> | </span></span>') ); ?>
+				<?php bbp_reply_admin_links( array( 'after' => '<span class="admin_links_sep"> | </span></span>' ) ); ?>
 
 				<?php do_action( 'bbp_theme_after_reply_admin_links' ); ?>
 

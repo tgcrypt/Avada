@@ -2,7 +2,7 @@
 
 class Fusion_Widget_Facebook_Page extends WP_Widget {
 
-	function __construct() {
+	public function __construct() {
 
 		$widget_ops = array(
 			'classname'   => 'facebook_like',
@@ -14,12 +14,11 @@ class Fusion_Widget_Facebook_Page extends WP_Widget {
 
 	}
 
-	function widget( $args, $instance ) {
+	public function widget( $args, $instance ) {
 
 		extract( $args );
 
 		$title        = apply_filters( 'widget_title', isset( $instance['title'] ) ? $instance['title'] : '' );
-		$app_id       = isset( $instance['app_id'] ) ? $instance['app_id'] : '';
 		$language     = get_locale();
 		$page_url     = isset( $instance['page_url'] ) ? $instance['page_url'] : '';
 		$widget_width = isset( $instance['width'] ) ? $instance['width'] : 268;
@@ -56,14 +55,14 @@ class Fusion_Widget_Facebook_Page extends WP_Widget {
 			  js.src = "//connect.facebook.net/<?php echo $language; ?>/sdk.js#xfbml=1&version=v2.5";
 			  fjs.parentNode.insertBefore(js, fjs);
 			}(document, 'script', 'facebook-jssdk'));
-			
+
 			window.fbAsyncInit = function() {
 				fusion_resize_page_widget();
-			
+
 				jQuery( window ).resize(function() {
 					fusion_resize_page_widget();
 				});
-				
+
 				function fusion_resize_page_widget() {
 					var $container_width = jQuery( '.<?php echo $args['widget_id']; ?>' ).width();
 
@@ -84,7 +83,7 @@ class Fusion_Widget_Facebook_Page extends WP_Widget {
 
 	}
 
-	function update( $new_instance, $old_instance ) {
+	public function update( $new_instance, $old_instance ) {
 
 		$instance = $old_instance;
 
@@ -100,11 +99,10 @@ class Fusion_Widget_Facebook_Page extends WP_Widget {
 
 	}
 
-	function form( $instance ) {
+	public function form( $instance ) {
 
 		$defaults = array(
 			'title'        => __( 'Find us on Facebook', 'Avada' ),
-			'app_id'       => '',
 			'page_url'     => '',
 			'width'        => '268',
 			'show_faces'   => 'on',
@@ -113,7 +111,7 @@ class Fusion_Widget_Facebook_Page extends WP_Widget {
 			'small_header' => false
 		);
 
-		$instance = wp_parse_args( ( array ) $instance, $defaults ); ?>
+		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 
 		<h4 style="line-height: 1.6em;"><?php _e( 'IMPORTANT: Facebook has abandoned color scheme option for the page plugin, thus the option is also no longer available in the widget.', 'Avada' ); ?></a></h4>
 

@@ -33,6 +33,7 @@ class Fusion_Widget_Flickr extends WP_Widget {
 			echo $before_title . $title . $after_title;
 		}
 		?>
+		<div id="fusion-<?php echo $args['widget_id']; ?>-images"></div>
 
 		<?php if ( $screen_name && $number && $api ) : ?>
 
@@ -64,7 +65,8 @@ class Fusion_Widget_Flickr extends WP_Widget {
 					photo.title + '"src="' + t_url + '"/>' + '</a></div>';
 				}
 
-				document.write(s);
+				$container = document.getElementById( 'fusion-<?php echo $args['widget_id']; ?>-images' );
+				$container.innerHTML = s;
 			}
 			</script>
 

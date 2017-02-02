@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php global $woocommerce; ?>
-<html class="<?php echo ( ! Avada()->settings->get( 'smooth_scrolling' ) ) ? 'no-overflow-y' : ''; ?>" <?php language_attributes(); ?>>
+<html class="<?php echo ( Avada()->settings->get( 'smooth_scrolling' ) ) ? 'no-overflow-y' : ''; ?>" <?php language_attributes(); ?>>
 <head>
 	<?php if ( isset( $_SERVER['HTTP_USER_AGENT'] ) && ( false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'MSIE' ) ) ) : ?>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -29,7 +29,7 @@
 	$viewport = '';
 	if ( Avada()->settings->get( 'responsive' ) && $isiPad ) {
 		$viewport = '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />';
-	} else if( Avada()->settings->get( 'responsive' ) ) {
+	} else if ( Avada()->settings->get( 'responsive' ) ) {
 		if ( Avada()->settings->get( 'mobile_zoom' ) ) {
 			$viewport .= '<meta name="viewport" content="width=device-width, initial-scale=1" />';
 		} else {
@@ -40,30 +40,6 @@
 	$viewport = apply_filters( 'avada_viewport_meta', $viewport );
 	echo $viewport;
 	?>
-
-	<?php if ( Avada()->settings->get( 'favicon' ) ) : ?>
-		<link rel="shortcut icon" href="<?php echo Avada()->settings->get( 'favicon' ); ?>" type="image/x-icon" />
-	<?php endif; ?>
-
-	<?php if ( Avada()->settings->get( 'iphone_icon' ) ) : ?>
-		<!-- For iPhone -->
-		<link rel="apple-touch-icon-precomposed" href="<?php echo Avada()->settings->get( 'iphone_icon' ); ?>">
-	<?php endif; ?>
-
-	<?php if ( Avada()->settings->get( 'iphone_icon_retina' ) ) : ?>
-		<!-- For iPhone 4 Retina display -->
-		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo Avada()->settings->get( 'iphone_icon_retina' ); ?>">
-	<?php endif; ?>
-
-	<?php if ( Avada()->settings->get( 'ipad_icon' ) ) : ?>
-		<!-- For iPad -->
-		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo Avada()->settings->get( 'ipad_icon' ); ?>">
-	<?php endif; ?>
-
-	<?php if ( Avada()->settings->get( 'ipad_icon_retina' ) ) : ?>
-		<!-- For iPad Retina display -->
-		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?php echo Avada()->settings->get( 'ipad_icon_retina' ); ?>">
-	<?php endif; ?>
 
 	<?php wp_head(); ?>
 
@@ -179,10 +155,8 @@ if ( 'modern' == Avada()->settings->get( 'mobile_menu_design' ) ) {
 				if ( class_exists( 'WooCommerce' ) && is_shop() ) {
 					$slider_page_id = get_option( 'woocommerce_shop_page_id' );
 				}
-				
-				if ( ( get_post_status( $slider_page_id ) == 'publish' && ! post_password_required() ) || 
-					 ( get_post_status( $slider_page_id ) == 'private' && current_user_can( 'read_private_pages' ) ) 
-				) {				
+
+				if ( ( 'publish' == get_post_status( $slider_page_id ) && ! post_password_required() ) || ( current_user_can( 'read_private_pages' ) && in_array( get_post_status( $slider_page_id ), array( 'private', 'draft', 'pending' ) ) ) ) {
 					avada_slider( $slider_page_id );
 				}
 			} ?>
@@ -204,30 +178,67 @@ if ( 'modern' == Avada()->settings->get( 'mobile_menu_design' ) ) {
 			<script type="text/javascript">var RecaptchaOptions = { theme : '<?php echo Avada()->settings->get( 'recaptcha_color_scheme' ); ?>' };</script>
 		<?php endif; ?>
 
-		<?php if ( is_page_template( 'contact.php' ) && Avada()->settings->get( 'gmap_address' ) && ! Avada()->settings->get( 'status_gmap' ) ) : ?>
+		<?php if ( is_page_template( 'contact.php' ) && Avada()->settings->get( 'gmap_address' ) && Avada()->settings->get( 'status_gmap' ) ) : ?>
 			<?php
-			$map_popup             = ( ! Avada()->settings->get( 'map_popup' ) )        ? 'yes' : 'no';
-			$map_scrollwheel       = ( ! Avada()->settings->get( 'map_scrollwheel' ) )  ? 'yes' : 'no';
-			$map_scale             = ( ! Avada()->settings->get( 'map_scale' ) )        ? 'yes' : 'no';
-			$map_zoomcontrol       = ( ! Avada()->settings->get( 'map_zoomcontrol' ) )  ? 'yes' : 'no';
-			$address_pin           = ( ! Avada()->settings->get( 'map_pin' ) )          ? 'yes' : 'no';
+			$map_popup             = ( ! Avada()->settings->get( 'map_popup' ) )          ? 'yes' : 'no';
+			$map_scrollwheel       = ( Avada()->settings->get( 'map_scrollwheel' ) )    ? 'yes' : 'no';
+			$map_scale             = ( Avada()->settings->get( 'map_scale' ) )          ? 'yes' : 'no';
+			$map_zoomcontrol       = ( Avada()->settings->get( 'map_zoomcontrol' ) )    ? 'yes' : 'no';
+			$address_pin           = ( Avada()->settings->get( 'map_pin' ) )            ? 'yes' : 'no';
 			$address_pin_animation = ( Avada()->settings->get( 'gmap_pin_animation' ) ) ? 'yes' : 'no';
 			?>
 			<div id="fusion-gmap-container">
-				<?php echo Avada()->google_map->render_map( array( 'address' => Avada()->settings->get( 'gmap_address' ), 'type' => Avada()->settings->get( 'gmap_type' ), 'address_pin' => $address_pin, 'animation' => $address_pin_animation, 'map_style' => Avada()->settings->get( 'map_styling' ), 'overlay_color' => Avada()->settings->get( 'map_overlay_color' ), 'infobox' => Avada()->settings->get( 'map_infobox_styling' ), 'infobox_background_color' => Avada()->settings->get( 'map_infobox_bg_color' ), 'infobox_text_color' => Avada()->settings->get( 'map_infobox_text_color' ), 'infobox_content' => htmlentities( Avada()->settings->get( 'map_infobox_content' ) ), 'icon' => Avada()->settings->get( 'map_custom_marker_icon' ), 'width' => Avada()->settings->get( 'gmap_width' ), 'height' => Avada()->settings->get( 'gmap_height' ), 'zoom' => Avada()->settings->get( 'map_zoom_level' ), 'scrollwheel' => $map_scrollwheel, 'scale' => $map_scale, 'zoom_pancontrol' => $map_zoomcontrol, '"popup' => $map_popup ) ); ?>
+				<?php echo Avada()->google_map->render_map( array(
+					'address'                  => Avada()->settings->get( 'gmap_address' ),
+					'type'                     => Avada()->settings->get( 'gmap_type' ),
+					'address_pin'              => $address_pin,
+					'animation'                => $address_pin_animation,
+					'map_style'                => Avada()->settings->get( 'map_styling' ),
+					'overlay_color'            => Avada()->settings->get( 'map_overlay_color' ),
+					'infobox'                  => Avada()->settings->get( 'map_infobox_styling' ),
+					'infobox_background_color' => Avada()->settings->get( 'map_infobox_bg_color' ),
+					'infobox_text_color'       => Avada()->settings->get( 'map_infobox_text_color' ),
+					'infobox_content'          => htmlentities( Avada()->settings->get( 'map_infobox_content' ) ),
+					'icon'                     => Avada()->settings->get( 'map_custom_marker_icon' ),
+					'width'                    => Avada()->settings->get( 'gmap_dimensions', 'width' ),
+					'height'                   => Avada()->settings->get( 'gmap_dimensions', 'height' ),
+					'zoom'                     => Avada()->settings->get( 'map_zoom_level' ),
+					'scrollwheel'              => $map_scrollwheel,
+					'scale'                    => $map_scale,
+					'zoom_pancontrol'          => $map_zoomcontrol,
+					'popup'                    => $map_popup
+				) ); ?>
 			</div>
 		<?php endif; ?>
 
-		<?php if ( is_page_template( 'contact-2.php' ) && Avada()->settings->get( 'gmap_address' ) && ! Avada()->settings->get( 'status_gmap' ) ) : ?>
+		<?php if ( is_page_template( 'contact-2.php' ) && Avada()->settings->get( 'gmap_address' ) && Avada()->settings->get( 'status_gmap' ) ) : ?>
 			<?php
-			$map_popup             = ( Avada()->settings->get( 'map_popup' ) )          ? 'yes' : 'no';
-			$map_scrollwheel       = ( ! Avada()->settings->get( 'map_scrollwheel' ) )  ? 'yes' : 'no';
-			$map_scale             = ( ! Avada()->settings->get( 'map_scale' ) )        ? 'yes' : 'no';
-			$map_zoomcontrol       = ( ! Avada()->settings->get( 'map_zoomcontrol' ) )  ? 'yes' : 'no';
+			$map_popup             = ( ! Avada()->settings->get( 'map_popup' ) )          ? 'yes' : 'no';
+			$map_scrollwheel       = ( Avada()->settings->get( 'map_scrollwheel' ) )    ? 'yes' : 'no';
+			$map_scale             = ( Avada()->settings->get( 'map_scale' ) )          ? 'yes' : 'no';
+			$map_zoomcontrol       = ( Avada()->settings->get( 'map_zoomcontrol' ) )    ? 'yes' : 'no';
 			$address_pin_animation = ( Avada()->settings->get( 'gmap_pin_animation' ) ) ? 'yes' : 'no';
 			?>
 			<div id="fusion-gmap-container">
-				<?php echo Avada()->google_map->render_map( array( 'address' => Avada()->settings->get( 'gmap_address' ), 'type' => Avada()->settings->get( 'gmap_type' ), 'map_style' => Avada()->settings->get( 'map_styling' ), 'animation' => $address_pin_animation, 'overlay_color' => Avada()->settings->get( 'map_overlay_color' ), 'infobox' => Avada()->settings->get( 'map_infobox_styling' ), 'infobox_background_color' => Avada()->settings->get( 'map_infobox_bg_color' ), 'infobox_text_color' => Avada()->settings->get( 'map_infobox_text_color' ), 'infobox_content' => htmlentities( Avada()->settings->get( 'map_infobox_content' ) ), 'icon' => Avada()->settings->get( 'map_custom_marker_icon' ), 'width' => Avada()->settings->get( 'gmap_width' ), 'height' => Avada()->settings->get( 'gmap_height' ), 'zoom' => Avada()->settings->get( 'map_zoom_level' ), 'scrollwheel' => $map_scrollwheel, 'scale' => $map_scale, 'zoom_pancontrol' => $map_zoomcontrol, '"popup' => $map_popup ) ); ?>
+				<?php echo Avada()->google_map->render_map( array(
+					'address'                  => Avada()->settings->get( 'gmap_address' ),
+					'type'                     => Avada()->settings->get( 'gmap_type' ),
+					'map_style'                => Avada()->settings->get( 'map_styling' ),
+					'animation'                => $address_pin_animation,
+					'overlay_color'            => Avada()->settings->get( 'map_overlay_color' ),
+					'infobox'                  => Avada()->settings->get( 'map_infobox_styling' ),
+					'infobox_background_color' => Avada()->settings->get( 'map_infobox_bg_color' ),
+					'infobox_text_color'       => Avada()->settings->get( 'map_infobox_text_color' ),
+					'infobox_content'          => htmlentities( Avada()->settings->get( 'map_infobox_content' ) ),
+					'icon'                     => Avada()->settings->get( 'map_custom_marker_icon' ),
+					'width'                    => Avada()->settings->get( 'gmap_dimensions', 'width' ),
+					'height'                   => Avada()->settings->get( 'gmap_dimensions', 'height' ),
+					'zoom'                     => Avada()->settings->get( 'map_zoom_level' ),
+					'scrollwheel'              => $map_scrollwheel,
+					'scale'                    => $map_scale,
+					'zoom_pancontrol'          => $map_zoomcontrol,
+					'popup'                    => $map_popup
+				) ); ?>
 			</div>
 		<?php endif; ?>
 		<?php
@@ -241,7 +252,7 @@ if ( 'modern' == Avada()->settings->get( 'mobile_menu_design' ) ) {
 			$page_template = ( is_array( $custom_fields ) && ! empty( $custom_fields ) ) ? $custom_fields[0] : '';
 		}
 
-		if ( get_post_type( $c_pageID ) == 'tribe_events' && tribe_get_option( 'tribeEventsTemplate', 'default' ) == '100-width.php' ) {
+		if ( 'tribe_events' == get_post_type( $c_pageID ) && '100-width.php' == tribe_get_option( 'tribeEventsTemplate', 'default' ) ) {
 			$page_template = '100-width.php';
 		}
 
@@ -249,9 +260,9 @@ if ( 'modern' == Avada()->settings->get( 'mobile_menu_design' ) ) {
 			is_page_template( '100-width.php' ) ||
 			is_page_template( 'blank.php' ) ||
 			'100-width.php' == $page_template ||
-			( ( '1' == fusion_get_option( 'portfolio_width_100', 'portfolio_width_100', $c_pageID ) || 'yes' == fusion_get_option( 'portfolio_width_100', 'portfolio_width_100', $c_pageID ) ) && ( 'avada_portfolio' == get_post_type( $c_pageID ) ) ) ||
-			( ( '1' == fusion_get_option( 'blog_width_100', 'portfolio_width_100', $c_pageID ) || 'yes' == fusion_get_option( 'blog_width_100', 'portfolio_width_100', $c_pageID ) ) && ( 'post' == get_post_type( $c_pageID ) ) ) ||
-			( 'yes' == fusion_get_page_option( 'portfolio_width_100', $c_pageID ) && ( 'post' != get_post_type( $c_pageID ) && 'avada_portfolio' != get_post_type( $c_pageID ) ) ) ||
+			( ( '1' == fusion_get_option( 'portfolio_width_100', 'portfolio_width_100', $c_pageID ) || 'yes' == fusion_get_option( 'portfolio_width_100', 'portfolio_width_100', $c_pageID ) ) && is_singular( 'avada_portfolio' ) ) ||
+			( ( '1' == fusion_get_option( 'blog_width_100', 'portfolio_width_100', $c_pageID ) || 'yes' == fusion_get_option( 'blog_width_100', 'portfolio_width_100', $c_pageID ) ) && is_singular( 'post' ) ) ||
+			( 'yes' == fusion_get_page_option( 'portfolio_width_100', $c_pageID ) && ! is_singular( array( 'post', 'avada_portfolio' ) ) ) ||
 			( avada_is_portfolio_template() && 'yes' == get_post_meta( $c_pageID, 'pyre_portfolio_width_100', true ) )
 		) {
 			$main_css = 'padding-left:0px;padding-right:0px;';

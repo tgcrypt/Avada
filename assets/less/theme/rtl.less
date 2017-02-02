@@ -100,6 +100,8 @@ Table of Contents
 	.pagination-next:after,
 	.woocommerce-pagination .next:after {
 		content: @left-arrow-small;
+		left: -5px;
+		right: auto;
 		padding-left: 0;
 		padding-right: 5px;
 	}
@@ -409,6 +411,40 @@ Table of Contents
 				order: 1;
 			}
 		}
+		
+		&.fusion-header-v6 {
+			.fusion-logo {
+				-ms-flex-order: 2;
+				-webkit-order: 2;
+				order: 2;
+			}
+
+			.fusion-flyout-menu-icons {
+				-ms-flex-order: 1;
+				-webkit-order: 1;
+				order: 1;
+			}
+
+			.fusion-flyout-menu-icons {
+				.fusion-flyout-menu-toggle {
+					-ms-flex-order: 1;
+					-webkit-order: 1;
+					order: 1;
+				}
+
+				.fusion-flyout-search-toggle {
+					-ms-flex-order: 2;
+					-webkit-order: 2;
+					order: 2;
+				}
+
+				.fusion-flyout-cart-wrapper {
+					-ms-flex-order: 3;
+					-webkit-order: 3;
+					order: 3;
+				}
+			}
+		}		
 	}
 
 	.fusion-logo-right {
@@ -421,6 +457,40 @@ Table of Contents
 			.fusion-header-content-3-wrapper {
 				-webkit-order: 2;
 				order: 2;
+			}
+		}
+		
+		&.fusion-header-v6 {
+			.fusion-logo {
+				-ms-flex-order: 1;
+				-webkit-order: 1;
+				order: 1;
+			}
+
+			.fusion-flyout-menu-icons {
+				-ms-flex-order: 2;
+				-webkit-order: 2;
+				order: 2;
+			}
+
+			.fusion-flyout-menu-icons {
+				.fusion-flyout-menu-toggle {
+					-ms-flex-order: 3;
+					-webkit-order: 3;
+					order: 3;
+				}
+
+				.fusion-flyout-search-toggle {
+					-ms-flex-order: 2;
+					-webkit-order: 2;
+					order: 2;
+				}
+
+				.fusion-flyout-cart-wrapper {
+					-ms-flex-order: 1;
+					-webkit-order: 1;
+					order: 1;
+				}
 			}
 		}
 	}
@@ -1197,9 +1267,16 @@ Table of Contents
 		margin-right: 20px;
 		margin-left: 0;
 	}
+	
+	.summary .cart .product-addon,
+	.summary .cart #product-addons-total {
+		margin-left: 20px;
+		margin-right: 0;
+	}	
+
 	.summary .cart .quantity {
 		float: right;
-		margin-left: 10px;
+		margin-left: 20px;
 		margin-right: 0;
 	}
 
@@ -1253,6 +1330,9 @@ Table of Contents
 		text-align: left;
 	}
 	form.checkout #place_order {
+		float: left;
+	}
+	.payment_methods li img {
 		float: left;
 	}
 	.avada-myaccount-data .digital-downloads li:before,
@@ -1538,8 +1618,6 @@ Table of Contents
 	}
 	.single_variation_wrap .variations_button .button {
 		float: right;
-		margin-left: 0;
-		margin-right: 10px;
 	}
 	.variations .label {
 		padding-left: 15px;
@@ -1661,8 +1739,17 @@ Table of Contents
 		margin-left: 0;
 		margin-right: 15px;
 	}
+	
+	.widget_shopping_cart_content .buttons a {
+		float: right;
+		
+		&:before {
+			float: right;
+		}
+	}
+	
 
-/* WooCommerce
+/* Events Calendar
 ================================================================================================= */
 	#tribe-events {
 
@@ -1826,6 +1913,12 @@ Table of Contents
 			.tribe-events-event-cost {
 				left: 0;
 				right: auto;
+			}
+			
+			.tribe-events-gmap:before {
+				float: right;
+				margin-left: 5px;
+				margin-right: 0;
 			}
 		}
 

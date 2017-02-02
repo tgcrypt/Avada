@@ -56,7 +56,7 @@ Table of Contents
 ================================================================================================= */
   /* WooCommerce
 ================================================================================================= */
-  /* WooCommerce
+  /* Events Calendar
 ================================================================================================= */
 }
 .rtl .fusion-layout-column {
@@ -115,6 +115,8 @@ Table of Contents
 .rtl .pagination-next:after,
 .rtl .woocommerce-pagination .next:after {
   content: '\f104';
+  left: -5px;
+  right: auto;
   padding-left: 0;
   padding-right: 5px;
 }
@@ -365,6 +367,36 @@ Table of Contents
   -ms-flex-order: 1;
       order: 1;
 }
+.rtl .fusion-logo-left.fusion-header-v6 .fusion-logo,
+.rtl .fusion-logo-center.fusion-header-v6 .fusion-logo {
+  -ms-flex-order: 2;
+  -webkit-order: 2;
+  order: 2;
+}
+.rtl .fusion-logo-left.fusion-header-v6 .fusion-flyout-menu-icons,
+.rtl .fusion-logo-center.fusion-header-v6 .fusion-flyout-menu-icons {
+  -ms-flex-order: 1;
+  -webkit-order: 1;
+  order: 1;
+}
+.rtl .fusion-logo-left.fusion-header-v6 .fusion-flyout-menu-icons .fusion-flyout-menu-toggle,
+.rtl .fusion-logo-center.fusion-header-v6 .fusion-flyout-menu-icons .fusion-flyout-menu-toggle {
+  -ms-flex-order: 1;
+  -webkit-order: 1;
+  order: 1;
+}
+.rtl .fusion-logo-left.fusion-header-v6 .fusion-flyout-menu-icons .fusion-flyout-search-toggle,
+.rtl .fusion-logo-center.fusion-header-v6 .fusion-flyout-menu-icons .fusion-flyout-search-toggle {
+  -ms-flex-order: 2;
+  -webkit-order: 2;
+  order: 2;
+}
+.rtl .fusion-logo-left.fusion-header-v6 .fusion-flyout-menu-icons .fusion-flyout-cart-wrapper,
+.rtl .fusion-logo-center.fusion-header-v6 .fusion-flyout-menu-icons .fusion-flyout-cart-wrapper {
+  -ms-flex-order: 3;
+  -webkit-order: 3;
+  order: 3;
+}
 .rtl .fusion-logo-right.fusion-header-v4 .fusion-logo-link {
   -webkit-order: 1;
   -ms-flex-order: 1;
@@ -374,6 +406,31 @@ Table of Contents
   -webkit-order: 2;
   -ms-flex-order: 2;
       order: 2;
+}
+.rtl .fusion-logo-right.fusion-header-v6 .fusion-logo {
+  -ms-flex-order: 1;
+  -webkit-order: 1;
+  order: 1;
+}
+.rtl .fusion-logo-right.fusion-header-v6 .fusion-flyout-menu-icons {
+  -ms-flex-order: 2;
+  -webkit-order: 2;
+  order: 2;
+}
+.rtl .fusion-logo-right.fusion-header-v6 .fusion-flyout-menu-icons .fusion-flyout-menu-toggle {
+  -ms-flex-order: 3;
+  -webkit-order: 3;
+  order: 3;
+}
+.rtl .fusion-logo-right.fusion-header-v6 .fusion-flyout-menu-icons .fusion-flyout-search-toggle {
+  -ms-flex-order: 2;
+  -webkit-order: 2;
+  order: 2;
+}
+.rtl .fusion-logo-right.fusion-header-v6 .fusion-flyout-menu-icons .fusion-flyout-cart-wrapper {
+  -ms-flex-order: 1;
+  -webkit-order: 1;
+  order: 1;
 }
 .rtl .fusion-header-v1 .fusion-main-menu > ul > li,
 .rtl .fusion-header-v2 .fusion-main-menu > ul > li,
@@ -932,9 +989,14 @@ Table of Contents
   margin-right: 20px;
   margin-left: 0;
 }
+.rtl .summary .cart .product-addon,
+.rtl .summary .cart #product-addons-total {
+  margin-left: 20px;
+  margin-right: 0;
+}
 .rtl .summary .cart .quantity {
   float: right;
-  margin-left: 10px;
+  margin-left: 20px;
   margin-right: 0;
 }
 .rtl .single_variation_price_reset .single_variation_wrap {
@@ -986,6 +1048,9 @@ Table of Contents
   text-align: left;
 }
 .rtl form.checkout #place_order {
+  float: left;
+}
+.rtl .payment_methods li img {
   float: left;
 }
 .rtl .avada-myaccount-data .digital-downloads li:before,
@@ -1271,8 +1336,6 @@ Table of Contents
 }
 .rtl .single_variation_wrap .variations_button .button {
   float: right;
-  margin-left: 0;
-  margin-right: 10px;
 }
 .rtl .variations .label {
   padding-left: 15px;
@@ -1385,6 +1448,12 @@ Table of Contents
   float: left;
   margin-left: 0;
   margin-right: 15px;
+}
+.rtl .widget_shopping_cart_content .buttons a {
+  float: right;
+}
+.rtl .widget_shopping_cart_content .buttons a:before {
+  float: right;
 }
 .rtl #tribe-events #tribe-bar-form #tribe-bar-views + .tribe-bar-filters {
   left: 16.6667%;
@@ -1505,6 +1574,11 @@ Table of Contents
 .rtl #tribe-events .tribe-events-list .tribe-events-event-cost {
   left: 0;
   right: auto;
+}
+.rtl #tribe-events .tribe-events-list .tribe-events-gmap:before {
+  float: right;
+  margin-left: 5px;
+  margin-right: 0;
 }
 .rtl #tribe-events .tribe-events-grid .column.first,
 .rtl #tribe-events .tribe-events-grid .tribe-week-grid-hours {

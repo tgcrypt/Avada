@@ -7,10 +7,11 @@ class Avada_Head {
 		// add_action( 'wp_head', array( $this, 'the_meta' ) );
 		// add_action( 'wp_head', array( $this, 'insert_og_meta' ), 5 );
 		// add_filter( 'language_attributes', array( $this, 'add_opengraph_doctype' ) );
-		
+
 		add_filter( 'document_title_separator', array( $this, 'document_title_separator' ) );
+		add_action( 'wp_head', array( $this, 'insert_favicons' ), 2 );
 	}
-	
+
 	/**
 	 * Adding the Open Graph in the Language Attributes
 	 */
@@ -29,7 +30,7 @@ class Avada_Head {
 		$settings = Avada::settings();
 
 		// Early exit if we don't need to continue any further
-		if ( $settings['status_opengraph'] ) {
+		if ( ! Avada()->settings->get( 'status_opengraph' ) ) {
 			return;
 		}
 
@@ -40,7 +41,7 @@ class Avada_Head {
 
 		$image = '';
 		if ( ! has_post_thumbnail( $post->ID ) ) {
-			if ( $settings['logo'] ) {
+			if ( isset( $settings['logo'] ) && $settings['logo'] ) {
 				$image = $settings['logo'];
 			}
 		} else {
@@ -48,6 +49,9 @@ class Avada_Head {
 			$image = esc_attr( $thumbnail_src[0] );
 		}
 
+		if ( is_array( $image ) ) {
+			$image = ( isset( $image['url'] ) && '' != $image['url'] ) ? $image['url'] : '';
+		}
 		?>
 
 		<meta property="og:title" content="<?php echo strip_tags( str_replace( array( '"', "'" ), array( '&quot;', '&#39;' ), $post->post_title ) ); ?>"/>
@@ -57,7 +61,13 @@ class Avada_Head {
 		<meta property="og:description" content="<?php echo Avada()->blog->get_content_stripped_and_excerpted( 55, $post->post_content ); ?>"/>
 
 		<?php if ( '' != $image ) : ?>
-			<meta property="og:image" content="<?php echo $image; ?>"/>
+			<?php if ( is_array( $image ) ) : ?>
+				<?php if ( isset( $image['url'] ) ) : ?>
+					<meta property="og:image" content="<?php echo $image['url']; ?>"/>
+				<?php endif; ?>
+			<?php else : ?>
+				<meta property="og:image" content="<?php echo $image; ?>"/>
+			<?php endif; ?>
 		<?php endif;
 
 	}
@@ -79,6 +89,42 @@ class Avada_Head {
 	public function document_title_separator() {
 		return '-';
 	}
+	
+	/**
+	 * Avada favicon as set in theme options
+	 * These are added to the <head> of the page using the 'wp_head' action.
+	 *
+	 * @since 	4.0
+	 * @return 	void
+	 */
+	public function insert_favicons() {
+		
+		if ( '' != Avada()->settings->get( 'favicon', 'url' ) ) : ?>
+			<link rel="shortcut icon" href="<?php echo Avada()->settings->get( 'favicon', 'url' ); ?>" type="image/x-icon" />
+		<?php endif; 
+
+		if ( '' != Avada()->settings->get( 'iphone_icon', 'url' ) ) : ?>
+			<!-- For iPhone -->
+			<link rel="apple-touch-icon-precomposed" href="<?php echo Avada()->settings->get( 'iphone_icon', 'url' ); ?>">
+		<?php endif;
+
+		if ( '' != Avada()->settings->get( 'iphone_icon_retina', 'url' ) ) : ?>
+			<!-- For iPhone 4 Retina display -->
+			<link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo Avada()->settings->get( 'iphone_icon_retina', 'url' ); ?>">
+		<?php endif;
+
+		if ( '' != Avada()->settings->get( 'ipad_icon', 'url' ) ) : ?>
+			<!-- For iPad -->
+			<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo Avada()->settings->get( 'ipad_icon', 'url' ); ?>">
+		<?php endif;
+
+		if ( '' != Avada()->settings->get( 'ipad_icon_retina' ) ) : ?>
+			<!-- For iPad Retina display -->
+			<link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?php echo Avada()->settings->get( 'ipad_icon_retina', 'url' ); ?>">
+		<?php endif;
+		
+	}
+	
 }
 
 // Omit closing PHP tag to avoid "Headers already sent" issues.

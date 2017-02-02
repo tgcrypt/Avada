@@ -27,10 +27,10 @@ jQuery( document ).ready(
         }
 
         var $smooth_active = js_local_vars.smooth_scrolling,
-        	$smooth_cache = ( $smooth_active == 0 ) ? true : false;
+        	$smooth_cache = ( $smooth_active == 1 ) ? true : false;
 
 		setTimeout ( function() {
-	        if ( $smooth_active == 0 && ! Modernizr.mq( 'screen and (max-width: ' + ( 800 + parseInt( js_local_vars.side_header_width ) ) +  'px)' ) && jQuery( 'body' ).outerHeight( true ) > jQuery( window ).height() && ! navigator.userAgent.match( /(Android|iPod|iPhone|iPad|IEMobile|Opera Mini)/ ) ) {
+	        if ( $smooth_active == 1 && ! Modernizr.mq( 'screen and (max-width: ' + ( 800 + parseInt( js_local_vars.side_header_width ) ) +  'px)' ) && jQuery( 'body' ).outerHeight( true ) > jQuery( window ).height() && ! navigator.userAgent.match( /(Android|iPod|iPhone|iPad|IEMobile|Opera Mini)/ ) ) {
 	            nice_scroll_init();
 			} else {
                 jQuery( 'html' ).removeClass( 'no-overflow-y' );   
@@ -40,9 +40,9 @@ jQuery( document ).ready(
 
         jQuery( window ).resize( function() {
             var $smooth_active = js_local_vars.smooth_scrolling,
-            	$smooth_cache = ( $smooth_active == 0 ) ? true : false;
+            	$smooth_cache = ( $smooth_active == 1 ) ? true : false;
 
-            if ( $smooth_active == 0 && ! Modernizr.mq( 'screen and (max-width: ' + ( 800 + parseInt( js_local_vars.side_header_width ) ) +  'px)' ) && jQuery( 'body' ).outerHeight( true ) > jQuery( window ).height() && ! navigator.userAgent.match( /(Android|iPod|iPhone|iPad|IEMobile|Opera Mini)/ ) ) {
+            if ( $smooth_active == 1 && ! Modernizr.mq( 'screen and (max-width: ' + ( 800 + parseInt( js_local_vars.side_header_width ) ) +  'px)' ) && jQuery( 'body' ).outerHeight( true ) > jQuery( window ).height() && ! navigator.userAgent.match( /(Android|iPod|iPhone|iPad|IEMobile|Opera Mini)/ ) ) {
                 nice_scroll_init();
             } else {
                 jQuery( 'html' ).getNiceScroll().remove();

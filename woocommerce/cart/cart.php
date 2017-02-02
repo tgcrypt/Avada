@@ -129,8 +129,11 @@ do_action( 'woocommerce_before_cart' ); ?>
 	<div class="cart-totals-buttons">
 		<?php woocommerce_cart_totals(); ?>
 		<input type="submit" class="fusion-button button-default button-medium button default medium" name="update_cart" value="<?php _e( 'Update Cart', 'woocommerce' ); ?>" />
+		<?php if ( is_rtl() ) : ?>
+		<input type="submit" class="checkout-button fusion-button button-default button-medium button default medium alt wc-forward" name="proceed" value="<?php _e( 'Proceed to Checkout', 'woocommerce' ); ?> &larr;" />
+		<?php else: ?>
 		<input type="submit" class="checkout-button fusion-button button-default button-medium button default medium alt wc-forward" name="proceed" value="<?php _e( 'Proceed to Checkout', 'woocommerce' ); ?> &rarr;" />
-
+		<?php endif; ?>
 		<?php do_action( 'woocommerce_cart_actions' ); ?>
 	</div>
 </div>

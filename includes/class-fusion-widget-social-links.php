@@ -2,52 +2,53 @@
 
 class Fusion_Widget_Social_Links extends WP_Widget {
 
-	function __construct() {
+	public function __construct() {
 
 		$widget_ops  = array( 'classname' => 'social_links', 'description' => '' );
 		$control_ops = array( 'id_base' => 'social_links-widget' );
 
 		parent::__construct( 'social_links-widget', 'Avada: Social Links', $widget_ops, $control_ops );
-
 	}
 
-	function widget( $args, $instance ) {
+	public function widget( $args, $instance ) {
 
 		extract( $args );
+
 		$title     = apply_filters( 'widget_title', isset( $instance['title'] ) ? $instance['title'] : '' );
 		$add_class = '';
 		$style     = '';
 		$nofollow  = ( Avada()->settings->get( 'nofollow_social_links' ) ) ? ' rel="nofollow"' : '';
+		$to_social_networks = Avada()->settings->get( 'social_media_icons' );
 
-		if ( ! isset( $instance['tooltip_pos'] ) || ! $instance['tooltip_pos'] ) {
-			$instance['tooltip_pos'] = Avada()->settings->get( 'social_links_tooltip_placement' );
-		}
-
-		if ( ! isset( $instance['icon_color'] ) || ! $instance['icon_color'] ) {
-			$instance['icon_color'] = Avada()->settings->get( 'social_links_icon_color' );
-		}
-
-		if ( ! isset( $instance['boxed_icon'] ) || ! $instance['boxed_icon'] ) {
-			$instance['boxed_icon'] = Avada()->settings->get( 'social_links_boxed' );
-		}
-
-		if ( ! isset( $instance['boxed_color'] ) || ! $instance['boxed_color'] ) {
-			$instance['boxed_color'] = Avada()->settings->get( 'social_links_box_color' );
-		}
-
-		if ( ! isset( $instance['boxed_icon_radius'] ) || ! $instance['boxed_icon_radius'] ) {
-			$instance['boxed_icon_radius'] = intval( Avada()->settings->get( 'social_links_boxed_radius' ) ) . 'px';
-		}
-
-		if ( ! isset($instance['linktarget']) || empty($instance['linktarget'] ) ) {
-			$instance['linktarget'] = '_self';
-		}
-
-		if ( ! isset( $instance['tooltip_pos'] ) ) {
+		if ( ! isset( $instance['tooltip_pos'] ) || '' == $instance['tooltip_pos'] ) {
 			$instance['tooltip_pos'] = 'top';
 		}
 
-		if ( isset( $instance['boxed_icon'] )  && isset( $instance['boxed_icon_radius'] ) && 'Yes' == $instance['boxed_icon'] && ( $instance['boxed_icon_radius'] || '0' === $instance['boxed_icon_radius'] ) ) {
+		if ( ! isset( $instance['icon_color'] ) || '' == $instance['icon_color'] ) {
+			$instance['icon_color'] = '#bebdbd';
+		}
+
+		if ( ! isset( $instance['boxed_icon'] ) || '' == $instance['boxed_icon'] ) {
+			$instance['boxed_icon'] = 'Yes';
+		}
+
+		if ( ! isset( $instance['boxed_color'] ) || '' == $instance['boxed_color'] ) {
+			$instance['boxed_color'] = '#e8e8e8';
+		}
+
+		if ( ! isset( $instance['boxed_icon_radius'] ) || '' == $instance['boxed_icon_radius'] ) {
+			$instance['boxed_icon_radius'] = '4px';
+		}
+
+		if ( ! isset($instance['linktarget']) || '' == $instance['linktarget'] ) {
+			$instance['linktarget'] = '_self';
+		}
+
+		if ( ! isset( $instance['color_type'] ) || '' == $instance['color_type'] ) {
+			$instance['color_type'] = 'custom';
+		}
+
+		if ( isset( $instance['boxed_icon'] ) && isset( $instance['boxed_icon_radius'] ) && 'Yes' == $instance['boxed_icon'] && ( $instance['boxed_icon_radius'] || '0' === $instance['boxed_icon_radius'] ) ) {
 			$instance['boxed_icon_radius'] = ( 'round' == $instance['boxed_icon_radius'] ) ? '50%' : $instance['boxed_icon_radius'];
 			$style .= 'border-radius:' . $instance['boxed_icon_radius'] . ';';
 		}
@@ -56,7 +57,7 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 			$style .= 'padding:' . $instance['boxed_icon_padding'] . ';';
 		}
 
-		if ( isset ( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] ) {
+		if ( isset( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] ) {
 			$add_class .= ' boxed-icons';
 		}
 
@@ -66,40 +67,59 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 
 		$style .= 'font-size:' . $instance['icons_font_size'] . ';';
 
+		$social_networks = array();
 		foreach ( $instance as $name => $value ) {
-			if ( false !== strpos( $name, '_link' ) ) {
-				$social_networks[ $name ] = str_replace( '_link', '', $name );
-			}
-		}
 
-		if ( Avada()->settings->get( 'social_sorter' ) ) {
-			$order         = Avada()->settings->get( 'social_sorter' );
-			$ordered_array = explode( ',', $order );
+			if ( false !== strpos( $name, '_link' ) && $value ) {
+				$new_value = str_replace( '_link', '', $name );
 
-			if ( isset( $ordered_array ) && $ordered_array && is_array( $ordered_array ) ) {
-				$social_networks_old = $social_networks;
-				$social_networks     = array();
-
-				foreach ( $ordered_array as $key => $field_order ) {
-
-					$field_order_number = str_replace( 'social_sorter_', '', $field_order );
-					$find_the_field     = Avada()->settings->get( 'social_sorter_' . $field_order_number );
-					$field_name         = str_replace( '_link', '', Avada()->settings->get( 'social_sorter_' . $field_order_number ) );
-					$field_name         = ( 'email' == $field_name ) ? 'mail' : $field_name;
-					$field_name         = ( 'facebook' == $field_name ) ? 'fb' : $field_name;
-					$field_name         = $field_name . '_link';
-
-					if ( ! isset( $social_networks_old[ $field_name ] ) ) {
-						continue;
-					}
-
-					$social_networks[ $field_name ] = $social_networks_old[ $field_name ];
-
+				if ( 'facebook' == $new_value ) {
+					$new_value = 'fb';
+				} elseif ( 'gplus' == $new_value ) {
+					$new_value = 'google';
 				}
+				$social_networks[ $name ] = $new_value;
+			}
+		}
 
+		$social_networks_ordered = array();
+
+		if ( $to_social_networks ) {
+			// Loop through the set social networks and order them according to the Theme Options > Social Media tab ordering
+			// Append those icons that are not set in Theme Options at the end
+			foreach ( $social_networks as $name => $value ) {
+
+				$social_network_position = array_search( $value, $to_social_networks['icon'] );
+
+				if ( $social_network_position || 0 === $social_network_position ) {
+					$social_networks_ordered[ $social_network_position ] = $name;
+					unset( $social_networks[ $name ] );
+				} else {
+					$social_networks[ $name ] = $value . '_link';
+				}
 			}
 
+			// Make sure all custom icons from Theme Options > Social Media tab are included, if the widget option is set
+			if ( isset( $instance['show_custom'] ) && 'Yes' == $instance['show_custom'] ) {
+				$custom_icon_indices = array_keys( $to_social_networks['icon'], 'custom' );
+
+				foreach ( $custom_icon_indices as $name => $index ) {
+
+					$network_icon_height = $to_social_networks['custom_source'][$index]['height'];
+					$network_icon_width	= $to_social_networks['custom_source'][$index]['width'];
+
+					$social_networks_ordered[ $index ] = array(
+						'network_name'			=> $to_social_networks['custom_title'][$index],
+						'network_icon'			=> $to_social_networks['custom_source'][$index]['url'],
+						'network_icon_height'	=> $network_icon_height,
+						'network_icon_width'	=> $network_icon_width,
+						'network_link'			=> $to_social_networks['url'][$index],
+					);
+				}
+			}
 		}
+		ksort( $social_networks_ordered );
+		$social_networks_ordered = array_merge( $social_networks_ordered, $social_networks );
 
 		$icon_colors     = array();
 		$icon_colors_max = 1;
@@ -116,60 +136,86 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 			$box_colors     = explode( '|', $instance['boxed_color'] );
 			$box_colors_max = count( $box_colors );
 		}
+
+		echo $before_widget;
+
+		if ( $title ) :
+			echo $before_title . $title . $after_title;
+		endif;
 		?>
 
-		<?php echo $before_widget; ?>
-		<?php if ( $title ) : ?>
-			<?php echo $before_title . $title . $after_title; ?>
-		<?php endif; ?>
-
 		<div class="fusion-social-networks<?php echo $add_class; ?>">
+
 			<div class="fusion-social-networks-wrapper">
-				<?php $icon_color_count = 0; ?>
-				<?php $box_color_count  = 0; ?>
+				<?php
+				$icon_color_count = 0;
+				$box_color_count  = 0;
 
-				<?php foreach ( $social_networks as $name => $value ) : ?>
+				foreach ( $social_networks_ordered as $name => $value ) {
 
-					<?php if ( $instance[ $name ] ) : ?>
+					if ( is_string( $value ) ) {
+						$name = $value;
+						$value = str_replace( '_link', '', $value );
 
-						<?php $value = ( 'fb' == $value ) ? 'facebook' : $value; ?>
-						<?php $value = ( 'rss' == $value ) ? 'feed' : $value; ?>
-						<?php $value = ( 'google' == $value ) ? 'googleplus' : $value; ?>
+						$value = ( 'fb' == $value ) ? 'facebook' : $value;
+						$value = ( 'google' == $value ) ? 'googleplus' : $value;
+						$value = ( 'email' == $value ) ? 'mail' : $value;
 
-						<?php $tooltip = $value; ?>
-						<?php $tooltip = ( 'googleplus' == $tooltip ) ? 'Google+' : $tooltip; ?>
+						$tooltip = $value;
+						$tooltip = ( 'googleplus' == $tooltip ) ? 'Google+' : $tooltip;
+					} else {
+						$tooltip = $value['network_name'];
+					}
 
-						<?php $icon_style = ''; ?>
-						<?php $box_style  = ''; ?>
+					$icon_style = '';
+					$box_style  = '';
 
-						<?php if ( isset( $icon_colors[ $icon_color_count ] ) && $icon_colors[ $icon_color_count ] ) : ?>
-							<?php $icon_style = 'color:' . trim( $icon_colors[ $icon_color_count ] ) . ';'; ?>
-						<?php elseif ( isset( $icon_colors[ ( $icon_colors_max - 1 ) ] ) ) : ?>
-							<?php $icon_style = 'color:' . trim( $icon_colors[ ( $icon_colors_max - 1 ) ] ) . ';'; ?>
-						<?php endif; ?>
+					if ( 'brand' == $instance['color_type'] ) {
+						// if not custom social icon
+						if ( is_string( $value ) ) {
+							// Get a list of all the available social networks
+							$social_icon_boxed_colors  = Avada_Data::fusion_social_icons( false, true );
+							$social_icon_boxed_colors['googleplus'] = array( 'label' => 'Google+', 'color' => '#dc4e41' );
+							$social_icon_boxed_colors['mail'] = array( 'label' => esc_html__( 'Email Address', 'fusion-core' ), 'color' => '#000000' );
 
-						<?php if ( isset ( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] && isset( $box_colors[ $box_color_count ] ) && $box_colors[ $box_color_count ] ) : ?>
-							<?php $box_style = 'background-color:' . trim( $box_colors[ $box_color_count ] ) . ';border-color:' . trim( $box_colors[ $box_color_count ] ) . ';'; ?>
-						<?php elseif ( isset( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] && isset( $box_colors[ ( $box_colors_max - 1 ) ] ) && ( ! isset( $box_colors[ $box_color_count ] ) || ! $box_colors[ $box_color_count ] ) ) : ?>
-							<?php $box_style = 'background-color:' . trim( $box_colors[ ( $box_colors_max - 1 ) ] ) . ';border-color:' . trim( $box_colors[ ( $box_colors_max - 1 ) ] ) . ';'; ?>
-						<?php endif; ?>
+							$color = ( 'Yes' == $instance['boxed_icon'] ) ? '#ffffff' : $social_icon_boxed_colors[$value]['color'];
+							$bg_color = ( 'Yes' == $instance['boxed_icon'] ) ? $social_icon_boxed_colors[$value]['color'] : '';
 
-						<?php if ( 'none' != strtolower( $instance['tooltip_pos'] ) ) : ?>
-							<a class="fusion-social-network-icon fusion-tooltip fusion-<?php echo $value; ?> fusion-icon-<?php echo $value; ?>" href="<?php echo $instance[ $name ]; ?>" data-placement="<?php echo strtolower( $instance['tooltip_pos'] ); ?>" data-title="<?php echo ucwords( $tooltip ); ?>" data-toggle="tooltip" data-original-title="" title="<?php echo ucwords( $tooltip ); ?>" <?php echo $nofollow; ?> target="<?php echo $instance['linktarget']; ?>" style="<?php echo $style; ?><?php echo $icon_style; ?><?php echo $box_style; ?>"></a>
-						<?php else : ?>
-							<a class="fusion-social-network-icon fusion-tooltip fusion-<?php echo $value; ?> fusion-icon-<?php echo $value; ?>" href="<?php echo $instance[ $name ]; ?>" title="<?php echo ucwords( $tooltip ); ?>" <?php echo $nofollow; ?> target="<?php echo $instance['linktarget']; ?>" style="<?php echo $style; ?><?php echo $icon_style; ?><?php echo $box_style; ?>"></a>
-						<?php endif; ?>
+							$icon_style = 'color:' . $color . ';';
+							$box_style = 'background-color:' . $bg_color . ';border-color:' . $bg_color . ';';
+						}
+					} else {
+						if ( isset( $icon_colors[ $icon_color_count ] ) && $icon_colors[ $icon_color_count ] ) {
+							$icon_style = 'color:' . trim( $icon_colors[ $icon_color_count ] ) . ';';
+						} elseif ( isset( $icon_colors[ ( $icon_colors_max - 1 ) ] ) ) {
+							$icon_style = 'color:' . trim( $icon_colors[ ( $icon_colors_max - 1 ) ] ) . ';';
+						}
 
-						<?php $icon_color_count++; ?>
-						<?php $box_color_count++; ?>
+						if ( isset( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] && isset( $box_colors[ $box_color_count ] ) && $box_colors[ $box_color_count ] ) {
+							$box_style = 'background-color:' . trim( $box_colors[ $box_color_count ] ) . ';border-color:' . trim( $box_colors[ $box_color_count ] ) . ';';
+						} elseif ( isset( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] && isset( $box_colors[ ( $box_colors_max - 1 ) ] ) && ( ! isset( $box_colors[ $box_color_count ] ) || ! $box_colors[ $box_color_count ] ) ) {
+							$box_style = 'background-color:' . trim( $box_colors[ ( $box_colors_max - 1 ) ] ) . ';border-color:' . trim( $box_colors[ ( $box_colors_max - 1 ) ] ) . ';';
+						}
+					}
 
-					<?php endif; ?>
+					$tooltip_params = ' ';
+					if ( 'none' != strtolower( $instance['tooltip_pos'] ) ) {
+						$tooltip_params = sprintf( ' data-placement="%s" data-title="%s" data-toggle="tooltip" data-original-title="" ', strtolower( $instance['tooltip_pos'] ), ucwords( $tooltip ) );
+					}
 
-				<?php endforeach; ?>
+					if ( is_string( $value ) ) : ?>
+						<a class="fusion-social-network-icon fusion-tooltip fusion-<?php echo $value; ?> fusion-icon-<?php echo $value; ?>" href="<?php echo $instance[ $name ]; ?>"<?php echo $tooltip_params; ?>title="<?php echo ucwords( $tooltip ); ?>" <?php echo $nofollow; ?> target="<?php echo $instance['linktarget']; ?>" style="<?php echo $style; echo $icon_style; echo $box_style; ?>"></a>
 
-				<?php if ( isset( $instance['show_custom'] ) && 'Yes' == $instance['show_custom'] && Avada()->settings->get( 'custom_icon_name' ) && Avada()->settings->get( 'custom_icon_image' ) ) : ?>
-					<a class="fusion-social-network-icon fusion-tooltip" target="<?php echo $instance['linktarget']; ?>" href="<?php echo Avada()->settings->get( 'custom_icon_link' ); ?>"<?php echo $nofollow; ?> data-placement="<?php echo strtolower( $instance['tooltip_pos'] ); ?>" data-title="<?php echo Avada()->settings->get( 'custom_icon_name' ); ?>" data-toggle="tooltip" data-original-title="" title="" style="<?php echo $style; ?>"><img src="<?php echo Avada()->settings->get( 'custom_icon_image' ); ?>" alt="<?php echo Avada()->settings->get( 'custom_icon_name' ); ?>" /></a>
-				<?php endif; ?>
+					<?php else : ?>
+
+						<a class="fusion-social-network-icon fusion-tooltip" target="<?php echo $instance['linktarget']; ?>" href="<?php echo $value['network_link']; ?>"<?php echo $nofollow; echo $tooltip_params; ?>title="" style="<?php echo $style; ?>"><img src="<?php echo $value['network_icon']; ?>" height="<?php echo $value['network_icon_height']; ?>" width="<?php echo $value['network_icon_width']; ?>" alt="<?php echo $value['network_name']; ?>" /></a>
+					<?php endif;
+
+					$icon_color_count++;
+					$box_color_count++;
+
+				}
+				?>
 			</div>
 		</div>
 
@@ -177,7 +223,7 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 
 	}
 
-	function update( $new_instance, $old_instance ) {
+	public function update( $new_instance, $old_instance ) {
 
 		$instance = $old_instance;
 
@@ -187,6 +233,7 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 		$instance['icon_color']         = $new_instance['icon_color'];
 		$instance['boxed_icon']         = $new_instance['boxed_icon'];
 		$instance['boxed_color']        = $new_instance['boxed_color'];
+		$instance['color_type']         = $new_instance['color_type'];
 		$instance['boxed_icon_radius']  = $new_instance['boxed_icon_radius'];
 		$instance['boxed_icon_padding'] = $new_instance['boxed_icon_padding'];
 		$instance['tooltip_pos']        = $new_instance['tooltip_pos'];
@@ -215,12 +262,14 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 		$instance['dropbox_link']       = $new_instance['dropbox_link'];
 		$instance['soundcloud_link']    = $new_instance['soundcloud_link'];
 		$instance['vk_link']            = $new_instance['vk_link'];
+		$instance['xing_link']          = $new_instance['xing_link'];
+		$instance['email_link']         = $new_instance['email_link'];
 
 		return $instance;
 
 	}
 
-	function form( $instance ) {
+	public function form( $instance ) {
 
 		$defaults = array(
 			'title'              => __( 'Get Social', 'Avada' ),
@@ -229,6 +278,7 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 			'icon_color'         => '',
 			'boxed_icon'         => 'No',
 			'boxed_color'        => '',
+			'color_type'         => 'custom',
 			'boxed_icon_radius'  => '4px',
 			'boxed_icon_padding' => '8px',
 			'tooltip_pos'        => 'top',
@@ -253,14 +303,17 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 			'skype_link'         => '',
 			'instagram_link'     => '',
 			'vk_link'            => '',
+			'xing_link'          => '',
 			'dropbox_link'       => '',
 			'soundcloud_link'    => '',
 			'paypal_link'        => '',
+			'email_link'         => '',
 			'show_custom'        => 'No',
 		);
 
-		$instance = wp_parse_args((array) $instance, $defaults);
+		$instance = wp_parse_args( (array) $instance, $defaults );
 		?>
+
 		<p>
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'Avada' ); ?></label>
 			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" />
@@ -277,6 +330,14 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 		</p>
 
 		<p>
+			<label for="<?php echo $this->get_field_id( 'color_type' ); ?>"><?php _e( 'Icons Color Type:', 'Avada' ); ?></label>
+			<select id="<?php echo $this->get_field_id( 'color_type' ); ?>" name="<?php echo $this->get_field_name( 'color_type' ); ?>" class="widefat" style="width:100%;">
+				<option value="custom" <?php echo ( 'custom' == $instance['color_type'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'Custom Color', 'Avada' ); ?></option>
+				<option value="brand" <?php echo ( 'brand' == $instance['color_type'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'Brand Colors', 'Avada' ); ?></option>
+			</select>
+		</p>
+
+		<p class="avada-widget-color-type-option-child">
 			<label for="<?php echo $this->get_field_id( 'icon_color' ); ?>"><?php _e( 'Icons Color Hex Code:', 'Avada' ); ?></label>
 			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'icon_color' ); ?>" name="<?php echo $this->get_field_name( 'icon_color' ); ?>" value="<?php echo $instance['icon_color']; ?>" />
 		</p>
@@ -284,22 +345,22 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id( 'boxed_icon' ); ?>"><?php _e( 'Icons Boxed:', 'Avada' ); ?></label>
 			<select id="<?php echo $this->get_field_id( 'boxed_icon' ); ?>" name="<?php echo $this->get_field_name( 'boxed_icon' ); ?>" class="widefat" style="width:100%;">
-				<option value="No" <?php if ( 'No' == $instance['boxed_icon'] ) echo 'selected="selected"'; ?>><?php _e( 'No', 'Avada' ); ?></option>
-				<option value="Yes" <?php if ( 'Yes' == $instance['boxed_icon'] ) echo 'selected="selected"'; ?>><?php _e( 'Yes', 'Avada' ); ?></option>
+				<option value="No" <?php echo ( 'No' == $instance['boxed_icon'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'No', 'Avada' ); ?></option>
+				<option value="Yes" <?php echo ( 'Yes' == $instance['boxed_icon'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'Yes', 'Avada' ); ?></option>
 			</select>
 		</p>
 
-		<p>
+		<p class="avada-widget-color-type-option-child avada-widget-boxed-icon-background">
 			<label for="<?php echo $this->get_field_id( 'boxed_color' ); ?>"><?php _e( 'Boxed Icons Background Color Hex Code:', 'Avada' ); ?></label>
 			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'boxed_color' ); ?>" name="<?php echo $this->get_field_name( 'boxed_color' ); ?>" value="<?php echo $instance['boxed_color']; ?>" />
 		</p>
 
-		<p>
+		<p class="avada-widget-boxed-icon-option-child">
 			<label for="<?php echo $this->get_field_id( 'boxed_icon_radius' ); ?>"><?php _e( 'Boxed Icons Radius:', 'Avada' ); ?></label>
 			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'boxed_icon_radius' ); ?>" name="<?php echo $this->get_field_name( 'boxed_icon_radius' ); ?>" value="<?php echo $instance['boxed_icon_radius']; ?>" />
 		</p>
 
-		<p>
+		<p class="avada-widget-boxed-icon-option-child">
 			<label for="<?php echo $this->get_field_id( 'boxed_icon_padding' ); ?>"><?php _e( 'Boxed Icons Padding:', 'Avada' ); ?></label>
 			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'boxed_icon_padding' ); ?>" name="<?php echo $this->get_field_name( 'boxed_icon_padding' ); ?>" value="<?php echo $instance['boxed_icon_padding']; ?>" />
 		</p>
@@ -307,143 +368,93 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id( 'tooltip_pos' ); ?>"><?php _e( 'Tooltip Position:', 'Avada' ); ?></label>
 			<select id="<?php echo $this->get_field_id( 'tooltip_pos' ); ?>" name="<?php echo $this->get_field_name( 'tooltip_pos' ); ?>" class="widefat" style="width:100%;">
-				<option value="Top" <?php if ( 'Top' == $instance['tooltip_pos']) echo 'selected="selected"'; ?>><?php _e( 'Top', 'Avada' ); ?></option>
-				<option value="Right" <?php if ( 'Right' == $instance['tooltip_pos']) echo 'selected="selected"'; ?>><?php _e( 'Right', 'Avada' ); ?></option>
-				<option value="Bottom" <?php if ( 'Bottom' == $instance['tooltip_pos']) echo 'selected="selected"'; ?>><?php _e( 'Bottom', 'Avada' ); ?></option>
-				<option value="Left" <?php if ( 'Left' == $instance['tooltip_pos']) echo 'selected="selected"'; ?>><?php _e( 'Left', 'Avada' ); ?></option>
-				<option value="None" <?php if ( 'None' == $instance['tooltip_pos']) echo 'selected="selected"'; ?>><?php _e( 'None', 'Avada' ); ?></option>
+				<option value="Top" <?php echo ( 'Top' == $instance['tooltip_pos'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'Top', 'Avada' ); ?></option>
+				<option value="Right" <?php echo ( 'Right' == $instance['tooltip_pos'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'Right', 'Avada' ); ?></option>
+				<option value="Bottom" <?php echo ( 'Bottom' == $instance['tooltip_pos'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'Bottom', 'Avada' ); ?></option>
+				<option value="Left" <?php echo ( 'Left' == $instance['tooltip_pos'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'Left', 'Avada' ); ?></option>
+				<option value="None" <?php echo ( 'None' == $instance['tooltip_pos'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'None', 'Avada' ); ?></option>
 			</select>
 		</p>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'show_custom' ); ?>"><?php _e( 'Show Custom Icon:', 'Avada' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'show_custom' ); ?>"><?php _e( 'Show Custom Icons:', 'Avada' ); ?></label>
 			<select id="<?php echo $this->get_field_id( 'show_custom' ); ?>" name="<?php echo $this->get_field_name( 'show_custom' ); ?>" class="widefat" style="width:100%;">
-				<option value="No" <?php if ( 'No' == $instance['show_custom'] ) echo 'selected="selected"'; ?>><?php _e( 'No', 'Avada' ); ?></option>
-				<option value="Yes" <?php if ( 'Yes' == $instance['show_custom'] ) echo 'selected="selected"'; ?>><?php _e( 'Yes', 'Avada' ); ?></option>
+				<option value="No" <?php echo ( 'No' == $instance['show_custom'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'No', 'Avada' ); ?></option>
+				<option value="Yes" <?php echo ( 'Yes' == $instance['show_custom'] ) ? 'selected="selected"' : ''; ?>><?php _e( 'Yes', 'Avada' ); ?></option>
 			</select>
 		</p>
 
-		<p>
-			<label for="<?php echo $this->get_field_id( 'rss_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'RSS' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'rss_link' ); ?>" name="<?php echo $this->get_field_name( 'rss_link' ); ?>" value="<?php echo $instance['rss_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'fb_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Facebook' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'fb_link' ); ?>" name="<?php echo $this->get_field_name( 'fb_link' ); ?>" value="<?php echo $instance['fb_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'twitter_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Twitter' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'twitter_link' ); ?>" name="<?php echo $this->get_field_name( 'twitter_link' ); ?>" value="<?php echo $instance['twitter_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'dribbble_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Dribbble' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'dribbble_link' ); ?>" name="<?php echo $this->get_field_name( 'dribbble_link' ); ?>" value="<?php echo $instance['dribbble_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'google_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Google+' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'google_link' ); ?>" name="<?php echo $this->get_field_name( 'google_link' ); ?>" value="<?php echo $instance['google_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'linkedin_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'LinkedIn' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'linkedin_link' ); ?>" name="<?php echo $this->get_field_name( 'linkedin_link' ); ?>" value="<?php echo $instance['linkedin_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'blogger_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Blogger' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'blogger_link' ); ?>" name="<?php echo $this->get_field_name( 'blogger_link' ); ?>" value="<?php echo $instance['blogger_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'tumblr_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Tumblr' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'tumblr_link' ); ?>" name="<?php echo $this->get_field_name( 'tumblr_link' ); ?>" value="<?php echo $instance['tumblr_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'reddit_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Reddit' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'reddit_link' ); ?>" name="<?php echo $this->get_field_name( 'reddit_link' ); ?>" value="<?php echo $instance['reddit_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'yahoo_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Yahoo' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'yahoo_link' ); ?>" name="<?php echo $this->get_field_name( 'yahoo_link' ); ?>" value="<?php echo $instance['yahoo_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'deviantart_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Deviantart' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'deviantart_link' ); ?>" name="<?php echo $this->get_field_name( 'deviantart_link' ); ?>" value="<?php echo $instance['deviantart_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'vimeo_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Vimeo' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'vimeo_link' ); ?>" name="<?php echo $this->get_field_name( 'vimeo_link' ); ?>" value="<?php echo $instance['vimeo_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'youtube_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Youtube' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'youtube_link' ); ?>" name="<?php echo $this->get_field_name( 'youtube_link' ); ?>" value="<?php echo $instance['youtube_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'pinterest_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Pinterest' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'pinterest_link' ); ?>" name="<?php echo $this->get_field_name( 'pinterest_link' ); ?>" value="<?php echo $instance['pinterest_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'digg_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Digg' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'digg_link' ); ?>" name="<?php echo $this->get_field_name( 'digg_link' ); ?>" value="<?php echo $instance['digg_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'flickr_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Flickr' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'flickr_link' ); ?>" name="<?php echo $this->get_field_name( 'flickr_link' ); ?>" value="<?php echo $instance['flickr_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'forrst_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Forrst' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'forrst_link' ); ?>" name="<?php echo $this->get_field_name( 'forrst_link' ); ?>" value="<?php echo $instance['forrst_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'myspace_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Myspace' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'myspace_link' ); ?>" name="<?php echo $this->get_field_name( 'myspace_link' ); ?>" value="<?php echo $instance['myspace_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'skype_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Skype' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'skype_link' ); ?>" name="<?php echo $this->get_field_name( 'skype_link' ); ?>" value="<?php echo $instance['skype_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'instagram_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Instagram' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'instagram_link' ); ?>" name="<?php echo $this->get_field_name( 'instagram_link' ); ?>" value="<?php echo $instance['instagram_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'vk_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'VK' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'vk_link' ); ?>" name="<?php echo $this->get_field_name( 'vk_link' ); ?>" value="<?php echo $instance['vk_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'paypal_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'PayPal' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'paypal_link' ); ?>" name="<?php echo $this->get_field_name( 'paypal_link' ); ?>" value="<?php echo $instance['paypal_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'dropbox_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Dropbox' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'dropbox_link' ); ?>" name="<?php echo $this->get_field_name( 'dropbox_link' ); ?>" value="<?php echo $instance['dropbox_link']; ?>" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'soundcloud_link' ); ?>"><?php printf( __( '%s Link:', 'Avada' ), 'Soundcloud' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'soundcloud_link' ); ?>" name="<?php echo $this->get_field_name( 'soundcloud_link' ); ?>" value="<?php echo $instance['soundcloud_link']; ?>" />
-		</p>
 		<?php
+		// Create social network fields
+		$social_networks_full_array = Avada_Data::fusion_social_icons( false, true );
 
+		foreach ( $social_networks_full_array as $key => $value ) {
+
+			if ( 'facebook' == $key ) {
+				$key = 'fb';
+			} elseif ( 'gplus' == $key ) {
+				$key = 'google';
+			}
+
+			echo '<p>';
+			echo '<label for="' . $this->get_field_id( $key . '_link' ) . '">' . sprintf( __( '%s Link:', 'Avada' ), $value['label'] ) . '</label>';
+			echo '<input class="widefat" type="text" id="' . $this->get_field_id( $key . '_link' ) . '" name="' . $this->get_field_name( $key . '_link' ) . '" value="' . $instance[$key . '_link'] . '" />';
+			echo '</p>';
+
+		}
+
+		$color_type_id  = $this->get_field_id( 'color_type' );
+		$boxed_icon_id = $this->get_field_id( 'boxed_icon' );
+		?>
+		<script type="text/javascript">
+			jQuery(document).ready(function($){
+				var $color_type_field = $("#<?php echo $color_type_id; ?>");
+				var $boxed_icon_field = $("#<?php echo $boxed_icon_id; ?>");
+
+				function checkBoxedIcons() {
+					var color_type = $color_type_field.val();
+					var boxed_icon = $boxed_icon_field.val();
+
+					if ( boxed_icon === 'No' ) {
+						$boxed_icon_field.parent().parent().find('.avada-widget-boxed-icon-option-child').hide();
+						$boxed_icon_field.parent().parent().find('.avada-widget-boxed-icon-background').hide();
+					} else {
+						$boxed_icon_field.parent().parent().find('.avada-widget-boxed-icon-option-child').show();
+
+						if ( color_type === 'custom' ) {
+							$boxed_icon_field.parent().parent().find('.avada-widget-boxed-icon-background').show();
+						}
+					}
+				}
+
+				function checkColorType() {
+					var color_type = $color_type_field.val();
+					var boxed_icon = $boxed_icon_field.val();
+
+					if ( color_type === 'brand' ) {
+						$color_type_field.parent().parent().find('.avada-widget-color-type-option-child').hide();
+					} else {
+						$color_type_field.parent().parent().find('.avada-widget-color-type-option-child').show();
+
+						if ( boxed_icon === 'No' ) {
+							$boxed_icon_field.parent().parent().find('.avada-widget-boxed-icon-background').hide();
+						}
+					}
+				}
+
+				checkColorType();
+				checkBoxedIcons();
+
+				$color_type_field.on('change', function() {
+					checkColorType();
+				});
+				$boxed_icon_field.on('change', function() {
+					checkBoxedIcons();
+				});
+
+			});
+		</script>
+		<?php
 	}
 
 }

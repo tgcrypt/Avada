@@ -57,17 +57,17 @@ if ( ! comments_open() ) {
 					$commenter = wp_get_current_commenter();
 
 					$comment_form = array(
-						'title_reply'          => have_comments() ? __( 'Add a review', 'woocommerce' ) : __( 'Be the first to review', 'woocommerce' ) . ' &ldquo;' . get_the_title() . '&rdquo;',
-						'title_reply_to'       => __( 'Leave a Reply to %s', 'woocommerce' ),
+						'title_reply'          => have_comments() ? esc_html__( 'Add a review', 'woocommerce' ) : esc_html__( 'Be the first to review', 'woocommerce' ) . ' &ldquo;' . get_the_title() . '&rdquo;',
+						'title_reply_to'       => esc_html__( 'Leave a Reply to %s', 'woocommerce' ),
 						'comment_notes_before' => '',
 						'comment_notes_after'  => '',
 						'fields'               => array(
-							'author' => '<p class="comment-form-author">' . '<label for="author">' . __( 'Name', 'woocommerce' ) . ' <span class="required">*</span></label> ' .
+							'author' => '<p class="comment-form-author">' . '<label for="author">' . esc_html__( 'Name', 'woocommerce' ) . ' <span class="required">*</span></label> ' .
 							            '<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30" aria-required="true" /></p>',
-							'email'  => '<p class="comment-form-email"><label for="email">' . __( 'Email', 'woocommerce' ) . ' <span class="required">*</span></label> ' .
+							'email'  => '<p class="comment-form-email"><label for="email">' . esc_html__( 'Email', 'woocommerce' ) . ' <span class="required">*</span></label> ' .
 							            '<input id="email" name="email" type="text" value="' . esc_attr(  $commenter['comment_author_email'] ) . '" size="30" aria-required="true" /></p>',
 						),
-						'label_submit'  => __( 'Submit', 'woocommerce' ),
+						'label_submit'  => esc_html__( 'Submit', 'woocommerce' ),
 						'logged_in_as'  => '',
 						'comment_field' => ''
 					);
@@ -77,17 +77,17 @@ if ( ! comments_open() ) {
 					}
 
 					if ( get_option( 'woocommerce_enable_review_rating' ) === 'yes' ) {
-						$comment_form['comment_field'] = '<p class="comment-form-rating"><label for="rating">' . __( 'Your Rating', 'woocommerce' ) .'</label><select name="rating" id="rating">
-							<option value="">' . __( 'Rate&hellip;', 'woocommerce' ) . '</option>
-							<option value="5">' . __( 'Perfect', 'woocommerce' ) . '</option>
-							<option value="4">' . __( 'Good', 'woocommerce' ) . '</option>
-							<option value="3">' . __( 'Average', 'woocommerce' ) . '</option>
-							<option value="2">' . __( 'Not that bad', 'woocommerce' ) . '</option>
-							<option value="1">' . __( 'Very Poor', 'woocommerce' ) . '</option>
+						$comment_form['comment_field'] = '<p class="comment-form-rating"><label for="rating">' . esc_html__( 'Your Rating', 'woocommerce' ) .'</label><select name="rating" id="rating">
+							<option value="">' . esc_html__( 'Rate&hellip;', 'woocommerce' ) . '</option>
+							<option value="5">' . esc_html__( 'Perfect', 'woocommerce' ) . '</option>
+							<option value="4">' . esc_html__( 'Good', 'woocommerce' ) . '</option>
+							<option value="3">' . esc_html__( 'Average', 'woocommerce' ) . '</option>
+							<option value="2">' . esc_html__( 'Not that bad', 'woocommerce' ) . '</option>
+							<option value="1">' . esc_html__( 'Very Poor', 'woocommerce' ) . '</option>
 						</select></p>';
 					}
 
-					$comment_form['comment_field'] .= '<p class="comment-form-comment"><label for="comment">' . __( 'Your Review', 'woocommerce' ) . '</label><textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>';
+					$comment_form['comment_field'] .= '<p class="comment-form-comment"><label for="comment">' . esc_html__( 'Your Review', 'woocommerce' ) . '</label><textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>';
 
 					comment_form( apply_filters( 'woocommerce_product_review_comment_form_args', $comment_form ) );
 				?>

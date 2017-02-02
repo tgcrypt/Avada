@@ -13,14 +13,14 @@ global $woocommerce_loop;
 
 
 // Reset according to sidebar or fullwidth pages
-if( empty( $woocommerce_loop['columns'] ) ) {
-	if( is_shop() || is_product_category() || is_product_tag() || is_tax( 'product_brand' ) ) {
+if ( empty( $woocommerce_loop['columns'] ) ) {
+	if ( is_shop() || is_product_category() || is_product_tag() || is_tax( 'product_brand' ) ) {
 
-		if( is_shop() ) {
+		if ( is_shop() ) {
 			$woocommerce_loop['columns'] = Avada()->settings->get( 'woocommerce_shop_page_columns' );
 		}
 
-		if( is_product_category() ||
+		if ( is_product_category() ||
 			is_product_tag() ||
 			is_tax( 'product_brand' )
 		) {

@@ -1104,8 +1104,8 @@
 	// Primary Controls
 	controlNav: true,			   //Boolean: Create navigation for paging control of each clide? Note: Leave true for manualControls usage
 	directionNav: true,			 //Boolean: Create navigation for previous/next navigation? (true/false)
-	prevText: "Previous",		   //String: Set the text for the "previous" directionNav item
-	nextText: "Next",			   //String: Set the text for the "next" directionNav item
+	prevText: "&#xf104;",		   //String: Set the text for the "previous" directionNav item
+	nextText: "&#xf105;",		//String: Set the text for the "next" directionNav item
 
 	// Secondary Navigation
 	keyboard: true,				 //Boolean: Allow slider navigating via keyboard left/right keys

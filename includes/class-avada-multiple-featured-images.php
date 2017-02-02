@@ -3,7 +3,7 @@
 class Avada_Multiple_Featured_Images {
 
 	public function __construct() {
-		if( is_admin() ) {
+		if ( is_admin() ) {
 			add_action( 'after_setup_theme', array( $this, 'generate' ) );
 		}
 	}

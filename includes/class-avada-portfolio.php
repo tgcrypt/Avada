@@ -28,7 +28,7 @@ class Avada_Portfolio {
 	 * Set portfolio width and assign a class to the content div
 	 */
 	public function set_portfolio_single_width( $classes ) {
-		if( is_singular( 'avada_portfolio') ) {
+		if ( is_singular( 'avada_portfolio') ) {
 			if ( fusion_get_option( 'portfolio_featured_image_width', 'width', Avada::c_pageID() ) == 'half' ) {
 				$portfolio_width = 'half';
 			} else {
@@ -50,7 +50,7 @@ class Avada_Portfolio {
 	 * Set portfolio page template classes
 	 */
 	public function set_portfolio_page_template_classes( $classes ) {
-		if(
+		if (
 			is_page_template( 'portfolio-one-column.php') ||
 			is_page_template( 'portfolio-two-column.php') ||
 			is_page_template( 'portfolio-three-column.php') ||

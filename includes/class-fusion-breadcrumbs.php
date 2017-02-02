@@ -62,15 +62,25 @@ class Fusion_Breadcrumbs {
 	private $error_prefix;
 
 	/**
+	 * @var bool
+	 */
+	private $show_post_type_archive;
+
+	/**
 	 * @var string The HTML markup
 	 */
 	private $html_markup;
+
+	/**
+	 * The one, true instance of this object
+	 */
+	private static $instance = null;
 
 
 	/**
 	 * Class Constructor
 	 */
-	public function __construct() {
+	private function __construct() {
 
 		// Initialize object variables
 		$this->post    = get_post( get_queried_object_id() );
@@ -90,7 +100,7 @@ class Fusion_Breadcrumbs {
 
 		// Setup a filter for changeable variables and meger it with the defaults
 		$args     = apply_filters( 'fusion_breadcrumbs_defaults', $defaults );
-		$defaults =  wp_parse_args( $args, $defaults );
+		$defaults = wp_parse_args( $args, $defaults );
 
 		$this->home_prefix            = $defaults['home_prefix'];
 		$this->separator              = $defaults['separator'];
@@ -100,6 +110,13 @@ class Fusion_Breadcrumbs {
 		$this->tag_archive_prefix     = $defaults['tag_archive_prefix'];
 		$this->search_prefix          = $defaults['search_prefix'];
 		$this->error_prefix           = $defaults['error_prefix'];
+	}
+
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new Fusion_Breadcrumbs();
+		}
+		return self::$instance;
 	}
 
 	/**
@@ -151,7 +168,7 @@ class Fusion_Breadcrumbs {
 		}
 
 		// Single Posts and Pages (of all post types)
-		if ( is_singular() ) {		
+		if ( is_singular() ) {
 			// If the post type of the current post has an archive link, display the archive breadcrumb
 			if ( isset( $this->post->post_type ) && get_post_type_archive_link( $this->post->post_type ) && $this->show_post_type_archive ) {
 				$this->html_markup .= $this->get_post_type_archive();
@@ -160,8 +177,9 @@ class Fusion_Breadcrumbs {
 			// If the post doesn't have parents
 			if ( isset( $this->post->post_parent ) && 0 == $this->post->post_parent ) {
 				$this->html_markup .= $this->get_post_terms();
+			}
 			// If there are parents; mostly for pages
-			} else {
+			else {
 				$this->html_markup .= $this->get_post_ancestors();
 			}
 
@@ -176,63 +194,72 @@ class Fusion_Breadcrumbs {
 
 			// Custom post types archives
 			if ( is_post_type_archive() ) {
-				$this->html_markup .= $this->get_post_type_archive( FALSE );
+				$this->html_markup .= $this->get_post_type_archive( false );
 
 				// Search on custom post type (e.g. Woocommerce)
 				if ( is_search() ) {
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'search' );
 				}
+			}
 			// Taxonomy Archives
-			} elseif ( is_tax() || is_tag() || is_category() ) {
+			elseif ( is_tax() || is_tag() || is_category() ) {
 				if ( is_tag() ) { // If we have a tag archive, add the tag prefix
 					$this->html_markup .= $this->tag_archive_prefix;
 				}
 				$this->html_markup .= $this->get_taxonomies();
 				$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'term' );
+			}
 			// Date Archives
-			} elseif ( is_date() ) {
+			elseif ( is_date() ) {
 				global $wp_locale;
 				// Set variables
 				$year = esc_html( get_query_var( 'year' ) );
-				if ( is_month() || is_day() ) {
-					$month      = get_query_var( 'monthnum' );
-					$month_name = $wp_locale->get_month( $month );
-				}
+				$month      = get_query_var( 'monthnum' );
+				$month_name = $wp_locale->get_month( $month );
+
 				// Year Archive, only is a leaf
 				if ( is_year() ) {
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'year' );
+				}
 				// Month Archive, needs year link and month leaf
-				} elseif ( is_month() ) {
+				elseif ( is_month() ) {
 					$this->html_markup .= $this->get_single_breadcrumb_markup( $year, get_year_link( $year ) );
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'month' );
+				}
 				// Day Archive, needs year and month link and day leaf
-				} elseif ( is_day() ) {
+				elseif ( is_day() ) {
 					$this->html_markup .= $this->get_single_breadcrumb_markup( $year, get_year_link( $year ) );
 					$this->html_markup .= $this->get_single_breadcrumb_markup( $month_name, get_month_link( $year, $month ) );
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'day' );
 				}
+			}
 			// Author Archives
-			} elseif ( is_author() ) {
+			elseif ( is_author() ) {
 				$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'author' );
+			}
 			// Search Page
-			} elseif ( is_search() ) {
+			elseif ( is_search() ) {
 				$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'search' );
+			}
 			// 404 Page
-			} elseif ( is_404() ) {
+			elseif ( is_404() ) {
 				// Special treatment for Events Calendar to avoid 404 messages on list view
 				if ( ( function_exists( 'tribe_is_event' ) && function_exists( 'is_events_archive' ) ) && tribe_is_event() || is_events_archive() ) {
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'events' );
+				}
 				// Default case
-				} else { 
+				else {
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( '404' );
 				}
+			}
 			// bbPress
-			} elseif ( class_exists( 'bbPress' ) ) {
+			elseif ( class_exists( 'bbPress' ) ) {
 			 	// Search Page
 			 	if ( bbp_is_search() ) {
 			 		$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'bbpress_search' );
+				}
 			 	// User page
-			 	} elseif ( bbp_is_single_user() ) {
+			 	elseif ( bbp_is_single_user() ) {
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'bbpress_user' );
 				}
 			}
@@ -309,19 +336,23 @@ class Fusion_Breadcrumbs {
 		}
 
 		// Get the post terms
-		if ( $this->post->post_type == 'post' ) {
+		if ( 'post' == $this->post->post_type ) {
 			$taxonomy = 'category';
+		}
 		// ThemeFusion Portfolio
-		} elseif ( $this->post->post_type == 'avada_portfolio' ) {
+		elseif ( 'avada_portfolio' == $this->post->post_type ) {
 			$taxonomy = 'portfolio_category';
+		}
 		// Woocommerce
-		} elseif ( $this->post->post_type == 'product' && class_exists( 'WooCommerce' ) && is_woocommerce() ) {
+		elseif ( 'product' == $this->post->post_type && class_exists( 'WooCommerce' ) && is_woocommerce() ) {
 			$taxonomy = 'product_cat';
+		}
 		// The Events Calendar
-		} elseif ( $this->post->post_type == 'tribe_events' ) {
+		elseif ( 'tribe_events' == $this->post->post_type ) {
 			$taxonomy = 'tribe_events_cat';
+		}
 		// For other post types don't return a terms tree to reduce possible errors
-		} else {
+		else {
 			return $terms_markup;
 		}
 
@@ -344,13 +375,13 @@ class Fusion_Breadcrumbs {
 		}
 
 		// If only one term is left, we have a single term tree
-		if ( count( $terms_by_id ) == 1 ) {
+		if ( 1 == count( $terms_by_id ) ) {
 			unset( $terms );
 			$terms[0] = array_shift( $terms_by_id );
 		}
 
 		// The post is only in one term
-		if ( count( $terms ) == 1 ) {
+		if ( 1 == count( $terms ) ) {
 
 			$term_parent = $terms[0]->parent;
 
@@ -369,14 +400,16 @@ class Fusion_Breadcrumbs {
 					// Add it to the term breadcrumb markup string
 					$terms_markup .= $this->get_single_breadcrumb_markup( $term_object->name, get_term_link( $term_object ) );
 				}
+			}
 			// We have a single term, so put it out
-			} else {
+			else {
 				$terms_markup = $this->get_single_breadcrumb_markup( $terms[0]->name, get_term_link( $terms[0] ) );
 			}
+		}
 		// The post has multiple terms
-		} else {
+		else {
 			// The lexicographically smallest term will be part of the breadcrump rich snippet path
-			$terms_markup = $this->get_single_breadcrumb_markup( $terms[0]->name, get_term_link( $terms[0] ), FALSE );
+			$terms_markup = $this->get_single_breadcrumb_markup( $terms[0]->name, get_term_link( $terms[0] ), false );
 			// Drop the first index
 			array_shift( $terms );
 
@@ -387,9 +420,9 @@ class Fusion_Breadcrumbs {
 
 				// For the last index also add the separator
 				if ( ++$i == $max_index ) {
-					$terms_markup .= ', ' . $this->get_single_breadcrumb_markup( $term->name, get_term_link( $term ), TRUE, FALSE );
+					$terms_markup .= ', ' . $this->get_single_breadcrumb_markup( $term->name, get_term_link( $term ), true, false );
 				} else {
-					$terms_markup .= ', ' . $this->get_single_breadcrumb_markup( $term->name, get_term_link( $term ), FALSE, FALSE );
+					$terms_markup .= ', ' . $this->get_single_breadcrumb_markup( $term->name, get_term_link( $term ), false, false );
 				}
 			}
 		}
@@ -428,7 +461,7 @@ class Fusion_Breadcrumbs {
 		$terms_markup = '';
 
 		// Make sure we have hierarchical taxonomy and parents
-		if ( $term->parent != 0 && is_taxonomy_hierarchical( $term->taxonomy ) ) {
+		if ( 0 != $term->parent && is_taxonomy_hierarchical( $term->taxonomy ) ) {
 			$term_ancestors = get_ancestors( $term->term_id, $term->taxonomy );
 			$term_ancestors = array_reverse( $term_ancestors );
 			// Loop through ancestors to get the full tree
@@ -446,7 +479,7 @@ class Fusion_Breadcrumbs {
 	 *
 	 * @return string The HTML markup of the post type archive
 	 */
-	private function get_post_type_archive( $linked = TRUE ) {
+	private function get_post_type_archive( $linked = true ) {
 		global $wp_query;
 
 		$link = $archive_title = '';
@@ -458,7 +491,7 @@ class Fusion_Breadcrumbs {
 		if ( is_object( $post_type_object ) ) {
 
 			// Woocommerce: archive name should be same as shop page name
-			if ( $post_type == 'product' && $woocommerce_shop_page = $this->get_woocommerce_shop_page( $linked ) ) {
+			if ( 'product' == $post_type && $woocommerce_shop_page = $this->get_woocommerce_shop_page( $linked ) ) {
 				return $woocommerce_shop_page;
 			}
 
@@ -472,16 +505,16 @@ class Fusion_Breadcrumbs {
 				return $this->get_single_breadcrumb_markup( $archive_title, $link );
 			}
 
+			// Use its name as fallback
+			$archive_title = $post_type_object->name;
 			// Default case
 			// Check if the post type has a non empty label
 			if ( isset( $post_type_object->label ) && '' !== $post_type_object->label ) {
 				$archive_title = $post_type_object->label;
+			}
 			// Alternatively check for a non empty menu name
-		} elseif ( isset( $post_type_object->labels->menu_name ) && '' !== $post_type_object->labels->menu_name ) {
+			elseif ( isset( $post_type_object->labels->menu_name ) && '' !== $post_type_object->labels->menu_name ) {
 				$archive_title = $post_type_object->labels->menu_name;
-			// Use its name as fallback
-			} else {
-				$archive_title = $post_type_object->name;
 			}
 		}
 
@@ -498,7 +531,7 @@ class Fusion_Breadcrumbs {
 	 *
 	 * @return string The HTML markup of the woocommerce shop page
 	 */
-	private function get_woocommerce_shop_page( $linked = TRUE ) {
+	private function get_woocommerce_shop_page( $linked = true ) {
 		global $wp_query;
 
 		$post_type        = 'product';
@@ -508,7 +541,7 @@ class Fusion_Breadcrumbs {
 		// Make sure we are on a woocommerce page
 		if ( is_object( $post_type_object ) && class_exists( 'WooCommerce' ) && ( is_woocommerce() || is_cart() || is_checkout() || is_account_page() ) ) {
 			// Get shop page id and then its name
-			$shop_page_id = wc_get_page_id( 'shop' );
+			// $shop_page_id = wc_get_page_id( 'shop' );
 			$shop_page_name = wc_get_page_id( 'shop' ) ? get_the_title( wc_get_page_id( 'shop' ) ) : '';
 
 			// Use the archive name if no shop page was set.
@@ -540,14 +573,14 @@ class Fusion_Breadcrumbs {
 
 	/**
 	 * Adds the markup of the breadcrumb leaf
-	 * @param  string	$object_id	ID of the current query object
+	 * @param  string	$object_type	ID of the current query object
 	 *
-	 * @return string 				The HTML markup of the breadcrumb leaf
+	 * @return string 				    The HTML markup of the breadcrumb leaf
 	 */
 	private function get_breadcrumb_leaf_markup( $object_type = '' ) {
 		global $wp_query, $wp_locale;
 
-		switch( $object_type ) {
+		switch ( $object_type ) {
 			case 'term':
 				$term  = $wp_query->get_queried_object();
 				$title = $term->name;
@@ -566,13 +599,13 @@ class Fusion_Breadcrumbs {
 				$title = $user->display_name;
 				break;
 			case 'search':
-				$title = sprintf( '%s %s', $this->search_prefix, esc_html( get_search_query() ) );
+				$title = $this->search_prefix . ' ' . esc_html( get_search_query() );
 				break;
 			case '404':
 				$title = $this->error_prefix;
 				break;
 			case 'bbpress_search':
-				$title = sprintf( '%s %s', $this->search_prefix, urldecode( esc_html( get_query_var( 'bbp_search' ) ) ) );
+				$title = $this->search_prefix . ' ' . urldecode( esc_html( get_query_var( 'bbp_search' ) ) );
 				break;
 			case 'bbpress_user':
 				$current_user_id = bbp_get_user_id( 0, true, false );
@@ -582,7 +615,7 @@ class Fusion_Breadcrumbs {
 			case 'events':
 				$title = tribe_get_events_title();
 				break;
-			default:		
+			default:
 				$title = get_the_title( $this->post->ID );
 				break;
 		}
@@ -599,13 +632,13 @@ class Fusion_Breadcrumbs {
 	 *
 	 * @return string 				The HTML markup of a single breadcrumb
 	 */
-	private function get_single_breadcrumb_markup( $title, $link = '', $separator = TRUE, $microdata = TRUE ) {
+	private function get_single_breadcrumb_markup( $title, $link = '', $separator = true, $microdata = true ) {
 
 		// Init vars
 		$microdata_itemscope = $microdata_url = $microdata_title = $separator_markup = '';
 
 		// Setup the elements attributes for breadcrumb microdata rich snippets
-		if ( $microdata && ! $this->options['disable_date_rich_snippet_pages'] ) {
+		if ( $microdata && $this->options['disable_date_rich_snippet_pages'] ) {
 			$microdata_itemscope = 'itemscope itemtype="http://data-vocabulary.org/Breadcrumb"';
 			$microdata_url       = 'itemprop="url"';
 			$microdata_title     = 'itemprop="title"';

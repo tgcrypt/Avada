@@ -48,7 +48,7 @@ class Avada_Layout {
 				'sidebar_2' => Avada()->settings->get( 'blog_archive_sidebar_2' ),
 				'position'  => Avada()->settings->get( 'blog_sidebar_position' ),
 			);
-		} elseif ( function_exists( 'is_bbpress' ) && is_bbpress() ) {
+		} elseif ( is_bbpress() ) {
 			$sidebars = array(
 				'global'    => Avada()->settings->get( 'bbpress_global_sidebar' ),
 				'sidebar_1' => Avada()->settings->get( 'ppbress_sidebar' ),
@@ -64,7 +64,7 @@ class Avada_Layout {
 					'position'  => Avada()->settings->get( 'bbpress_sidebar_position' ),
 				);
 			}
-		} elseif ( function_exists( 'is_buddypress' ) && is_buddypress() ) {
+		} elseif ( is_buddypress() ) {
 			$sidebars = array(
 				'global'    => Avada()->settings->get( 'bbpress_global_sidebar' ),
 				'sidebar_1' => Avada()->settings->get( 'ppbress_sidebar' ),
@@ -78,7 +78,7 @@ class Avada_Layout {
 				'sidebar_2' => Avada()->settings->get( 'woo_sidebar_2' ),
 				'position'  => Avada()->settings->get( 'woo_sidebar_position' ),
 			);
-		} elseif ( class_exists( 'WooCommerce' ) && ( is_product_category() || is_product_tag() || is_tax( 'product_brand' )  ) ) {
+		} elseif ( class_exists( 'WooCommerce' ) && ( is_product_category() || is_product_tag() || is_tax( 'product_brand' ) || is_tax( 'images_collections' ) ) ) {
 			$sidebars = array(
 				'global'    => '1',
 				'sidebar_1' => Avada()->settings->get( 'woocommerce_archive_sidebar' ),
@@ -116,7 +116,7 @@ class Avada_Layout {
 				);
 			}
 
-			if( is_singular( 'tribe_organizer' ) || is_singular( 'tribe_venue' ) ) {
+			if ( is_singular( 'tribe_organizer' ) || is_singular( 'tribe_venue' ) ) {
 				$sidebars['global'] = 1;
 			}
 		} elseif ( is_archive() ) {
@@ -151,7 +151,7 @@ class Avada_Layout {
 			);
 		}
 
-		if ( class_exists( 'Tribe__Events__Main' ) && is_events_archive() ) {
+		if ( is_events_archive() ) {
 			$sidebars = array(
 				'global'    => '1',
 				'sidebar_1' => Avada()->settings->get( 'ec_sidebar' ),
@@ -184,11 +184,11 @@ class Avada_Layout {
 		$sidebar_position_post_option = strtolower( get_post_meta( Avada::c_pageID(), 'pyre_sidebar_position', true ) );
 		$sidebar_position_metadata    = metadata_exists( 'post', Avada::c_pageID(), 'pyre_sidebar_position' );
 
-		if ( is_array( $sidebar_1 ) && $sidebar_1[0] === '0' ) {
+		if ( is_array( $sidebar_1 ) && '0' === $sidebar_1[0] ) {
 			$sidebar_1 = array( 'Blog Sidebar' );
 		}
 
-		if ( is_array( $sidebar_2 ) && $sidebar_2[0] === '0' ) {
+		if ( is_array( $sidebar_2 ) && '0' === $sidebar_2[0] ) {
 			$sidebar_2 = array( 'Blog Sidebar' );
 		}
 
@@ -221,15 +221,13 @@ class Avada_Layout {
 			$sidebar_2 = $sidebar_1_placeholder;
 		}
 
-		$return = array(
-			'position'	=> $sidebar_position
-		);
+		$return = array( 'position' => $sidebar_position );
 
 		if ( $sidebar_1 ) {
-		 	$return['sidebar_1'] = $sidebar_1[0];
+			$return['sidebar_1'] = $sidebar_1[0];
 		}
 
-		if( $sidebar_2 ) {
+		if ( $sidebar_2 ) {
 			$return['sidebar_2'] = $sidebar_2[0];
 		}
 
@@ -246,8 +244,8 @@ class Avada_Layout {
 	public function layout_structure_styling( $sidebars ) {
 
 		// Add sidebar class
-        add_filter( 'fusion_sidebar_1_class', array( $this, 'sidebar_class' ) );
-        add_filter( 'fusion_sidebar_2_class', array( $this, 'sidebar_class' ) );
+		add_filter( 'fusion_sidebar_1_class', array( $this, 'sidebar_class' ) );
+		add_filter( 'fusion_sidebar_2_class', array( $this, 'sidebar_class' ) );
 
 		// Check for sidebar location and apply styling to the content or sidebar div
 		if ( ! Avada()->template->has_sidebar() && ! ( is_page_template( 'side-navigation.php') || is_singular( 'tribe_events' ) ) ) {
@@ -267,13 +265,15 @@ class Avada_Layout {
 		}
 
 		// Page has a single sidebar
-		if ( Avada()->template->has_sidebar() && ! Avada()->template->double_sidebars() ) {
-		} elseif ( Avada()->template->double_sidebars() ) { // Page has double sidebars
+		// if ( Avada()->template->has_sidebar() && ! Avada()->template->double_sidebars() ) {}
+
+		// Page has double sidebars
+		if ( Avada()->template->double_sidebars() ) {
 			add_filter( 'fusion_content_style', array( $this, 'float_left_style' ) );
 			add_filter( 'fusion_sidebar_1_style', array( $this, 'float_left_style' ) );
 			add_filter( 'fusion_sidebar_2_style', array( $this, 'float_left_style' ) );
 
-			if( $sidebars['position'] == 'right' ) {
+			if ( 'right' == $sidebars['position'] ) {
 				add_filter( 'fusion_sidebar_2_class', array( $this, 'side_nav_right_class' ) );
 			}
 		}
@@ -382,129 +382,148 @@ class Avada_Layout {
 		return $styles;
 	}
 
-    /**
-     * Add sidebar class to the sidebars
-     *
-     * @return array
-     */
-    public function sidebar_class( $classes ) {
-        $classes[] = 'sidebar fusion-widget-area fusion-content-widget-area';
-        return $classes;
-    }
+	/**
+	 * Add sidebar class to the sidebars
+	 *
+	 * @return array
+	 */
+	public function sidebar_class( $classes ) {
+		$classes[] = 'sidebar fusion-widget-area fusion-content-widget-area';
+		return $classes;
+	}
 
-    /**
-     * Add side nav right class when sidebar position is right
-     *
-     * @return array
-     */
-    public function side_nav_right_class( $classes ) {
-    	if( is_page_template( 'side-navigation.php' ) ) {
-        	$classes[] = 'side-nav-right';
-    	}
-        return $classes;
-    }
-
-    /**
-     * Add side nav left class when sidebar position is left
-     *
-     * @return array
-     */
-    public function side_nav_left_class( $classes ) {
-    	if( is_page_template( 'side-navigation.php' ) ) {
-        	$classes[] = 'side-nav-left';
-    	}
-        return $classes;
-    }
-
-    // WIP GIT ITEM # #746
-    public function get_sidebars_width() {
-    	$sidebars = $this->get_sidebar_settings( $this->sidebar_options() );
-
- 		if ( false !== strpos( Avada()->settings->get( 'site_width' ), 'px' ) ) {
-			$margin      = '100px';
-			$half_margin = '50px';
-		} else {
-			$margin      = '6%';
-			$half_margin = '3%';
+	/**
+	 * Add side nav right class when sidebar position is right
+	 *
+	 * @return array
+	 */
+	public function side_nav_right_class( $classes ) {
+		if ( is_page_template( 'side-navigation.php' ) ) {
+			$classes[] = 'side-nav-right';
 		}
+		return $classes;
+	}
 
+	/**
+	 * Add side nav left class when sidebar position is left
+	 *
+	 * @return array
+	 */
+	public function side_nav_left_class( $classes ) {
+		if ( is_page_template( 'side-navigation.php' ) ) {
+			$classes[] = 'side-nav-left';
+		}
+		return $classes;
+	}
+
+	/**
+	 * Get column width of the current page
+	 *
+	 * @var     $column     integer (0=main, 1=sidebar1, 2-sidebar2)
+	 * @return  integer
+	 */
+	public function get_content_width( $column = 0 ) {
+		/**
+		 * The content width
+		 */
+		$options = get_option( Avada::get_option_name() );
+		$site_width = ( isset( $options['site_width'] ) ) ? $options['site_width'] : '1100px';
+		if ( intval( $site_width ) ) {
+			// Site width is using %
+			if ( false !== strpos( $site_width, '%' ) ) {
+				$site_width = Avada_Helper::percent_to_pixels( $site_width );
+			}
+			// Site width is using ems
+			elseif ( false !== strpos( $site_width, 'em' ) ) {
+				$site_width = Avada_Helper::ems_to_pixels( $site_width );
+			}
+		} else {
+			// fallback to 1100px
+			$site_width = 1100;
+		}
+		/**
+		 * Sidebars width
+		 */
+		$sidebar_1_width = 0;
+		$sidebar_2_width = 0;
 		if ( Avada()->template->has_sidebar() && ! Avada()->template->double_sidebars() ) {
-			if ( get_post_type() == 'tribe_events' ) {
-				$sidebar_width = Avada()->settings->get( 'ec_sidebar_width' );
-				if ( false !== strpos( $sidebar_width, 'px' ) && false !== strpos( $sidebar_width, '%' ) ) {
-					$sidebar_width = ( 100 > intval( $sidebar_width ) ) ? intval( $sidebar_width ) . '%' : intval( $sidebar_width ) . 'px';
-				}
+			if ( 'tribe_events' == get_post_type() ) {
+				$sidebar_1_width = Avada()->settings->get( 'ec_sidebar_width' );
 			} else {
-				$sidebar_width = Avada()->settings->get( 'sidebar_width' );
-				if ( false !== strpos( $sidebar_width, 'px' ) && false !== strpos( $sidebar_width, '%' ) ) {
-					$sidebar_width = ( 100 > intval( $sidebar_width ) ) ? intval( $sidebar_width ) . '%' : intval( $sidebar_width ) . 'px';
-				}
+				$sidebar_1_width = Avada()->settings->get( 'sidebar_width' );
 			}
 		} elseif ( Avada()->template->double_sidebars() ) {
-			if ( get_post_type() == 'tribe_events' ) {
-				$sidebar_2_1_width = Avada()->settings->get( 'ec_sidebar_2_1_width' );
-				if ( false !== strpos( $sidebar_2_1_width, 'px' ) && false !== strpos( $sidebar_2_1_width, '%' ) ) {
-					$sidebar_2_1_width = ( 100 > intval( $sidebar_2_1_width ) ) ? intval( $sidebar_2_1_width ) . '%' : intval( $sidebar_2_1_width ) . 'px';
-				}
-				$sidebar_2_2_width = Avada()->settings->get( 'ec_sidebar_2_2_width' );
-				if ( false !== strpos( $sidebar_2_2_width, 'px' ) && false !== strpos( $sidebar_2_2_width, '%' ) ) {
-					$sidebar_2_2_width = ( 100 > intval( $sidebar_2_2_width ) ) ? intval( $sidebar_2_2_width ) . '%' : intval( $sidebar_2_2_width ) . 'px';
-				}
+			if ( 'tribe_events' == get_post_type() ) {
+				$sidebar_1_width = Avada()->settings->get( 'ec_sidebar_2_1_width' );
+				$sidebar_2_width = Avada()->settings->get( 'ec_sidebar_2_2_width' );
 			} else {
-				$sidebar_2_1_width = Avada()->settings->get( 'sidebar_2_1_width' );
-				if ( false !== strpos( $sidebar_2_1_width, 'px' ) && false !== strpos( $sidebar_2_1_width, '%' ) ) {
-					$sidebar_2_1_width = ( 100 > intval( $sidebar_2_1_width ) ) ? intval( $sidebar_2_1_width ) . '%' : intval( $sidebar_2_1_width ) . 'px';
-				}
-				$sidebar_2_2_width = Avada()->settings->get( 'sidebar_2_2_width' );
-				if ( false !== strpos( $sidebar_2_2_width, 'px' ) && false !== strpos( $sidebar_2_2_width, '%' ) ) {
-					$sidebar_2_2_width = ( 100 > intval( $sidebar_2_2_width ) ) ? intval( $sidebar_2_2_width ) . '%' : intval( $sidebar_2_2_width ) . 'px';
-				}
+				$sidebar_1_width = Avada()->settings->get( 'sidebar_2_1_width' );
+				$sidebar_2_width = Avada()->settings->get( 'sidebar_2_2_width' );
 			}
 		} elseif ( ! Avada()->template->has_sidebar() && ( is_page_template( 'side-navigation.php') || is_singular( 'tribe_events' ) ) ) {
-			if ( get_post_type() == 'tribe_events' ) {
-				$sidebar_width = Avada()->settings->get( 'ec_sidebar_width' );
-				if ( false !== strpos( $sidebar_width, 'px' ) && false !== strpos( $sidebar_width, '%' ) ) {
-					$sidebar_width = ( 100 > intval( $sidebar_width ) ) ? intval( $sidebar_width ) . '%' : intval( $sidebar_width ) . 'px';
-				}
+			if ( 'tribe_events' == get_post_type() ) {
+				$sidebar_1_width = Avada()->settings->get( 'ec_sidebar_width' );
 			} else {
-				$sidebar_width = Avada()->settings->get( 'sidebar_width' );
-				if ( false !== strpos( $sidebar_width, 'px' ) && false !== strpos( $sidebar_width, '%' ) ) {
-					$sidebar_width = ( 100 > intval( $sidebar_width ) ) ? intval( $sidebar_width ) . '%' : intval( $sidebar_width ) . 'px';
-				}
+				$sidebar_1_width = Avada()->settings->get( 'sidebar_width' );
 			}
 		}
 
-		if ( isset( $sidebar_width ) ) {
-		} elseif ( isset( $sidebar_2_1_width ) && isset( $sidebar_2_2_width ) ) {
+		if ( $sidebar_1_width ) {
+			if ( false !== strpos( $sidebar_1_width, '%' ) ) {
+				$sidebar_1_width = Avada_Helper::percent_to_pixels( $sidebar_1_width, $site_width );
+			} elseif ( false !== strpos( $sidebar_1_width, 'em' ) ) {
+				$sidebar_1_width = Avada_Helper::ems_to_pixels( $sidebar_1_width );
+			} else {
+				$sidebar_1_width = intval( $sidebar_1_width );
+			}
 		}
 
-    }
-
-    /**
-     * Get content width of the current page
-     *
-     * @return array
-     */
-    // WIP GIT ITEM # #746
-    public function get_content_width() {
-		$site_width = (int) Avada()->settings->get( 'site_width' );
-
-		// The site width WITH units appended
-		if ( false === strpos( Avada()->settings->get( 'site_width' ), '%' ) && false === strpos( Avada()->settings->get( 'site_width' ), 'px' ) ) {
-			$site_width_with_units = Avada_Sanitize::size( Avada()->settings->get( 'site_width' ) . 'px' );
-		} else {
-			$site_width_with_units = Avada_Sanitize::size( Avada()->settings->get( 'site_width' ) );
+		if ( $sidebar_2_width ) {
+			if ( false !== strpos( $sidebar_2_width, '%' ) ) {
+				$sidebar_2_width = Avada_Helper::percent_to_pixels( $sidebar_2_width, $site_width );
+			} elseif ( false !== strpos( $sidebar_1_width, 'em' ) ) {
+				$sidebar_2_width = Avada_Helper::ems_to_pixels( $sidebar_2_width );
+			} else {
+				$sidebar_2_width = intval( $sidebar_2_width );
+			}
 		}
-		// The site width as an integer value (WITHOUT units appended)
-		$site_width_without_units = (int) Avada_Sanitize::size( Avada()->settings->get( 'site_width' ) );
 
-		// Is the site width a percent value?
-		$site_width_percent = ( false !== strpos( Avada()->settings->get( 'site_width' ), '%' ) ) ? true : false;
+		$columns = 1;
+		if ( $site_width && $sidebar_1_width && $sidebar_2_width ) {
+			$columns = 3;
+		} elseif ( $site_width && $sidebar_1_width ) {
+			$columns = 2;
+		}
+		$gutter = ( 1 < $columns ) ? 80 : 0;
+		// $extra_gutter = ( $columns - 1 ) * $gutter;
+		$extra_gutter = $gutter;
 
-		$this->get_sidebars_width();
+		$sidebar_1_width = (int) $sidebar_1_width;
+		$sidebar_2_width = (int) $sidebar_2_width;
 
-		//return $content_width;
-    }
+		$content_width = $site_width - $sidebar_1_width - $sidebar_2_width - $extra_gutter;
+
+		return $content_width;
+	}
+
+	public function get_relative_width( $columns = 1, $gutter = 0 ) {
+		$columns = intval( $columns );
+		$gutter  = intval( $gutter );
+		// Get the total content width
+		$total_width = $this->get_content_width();
+		if ( 1 >= $columns ) {
+			return $total_width;
+		}
+		// Get the total size of our gutters
+		$total_gutter = ( $columns - 1 ) * $gutter;
+		// Get the useful width
+		$useful_width = $total_width - $total_gutter;
+		if ( 0 == intval( $useful_width ) ) {
+			return $total_width;
+		}
+		// return the width per column
+		return absint( $useful_width / $columns );
+	}
 
 }
 

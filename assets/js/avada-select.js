@@ -1,6 +1,6 @@
 jQuery(window).load(function() {
     // Avada dropdown styles
-    if ( !Boolean( Number( js_local_vars.avada_styles_dropdowns ) ) ) {
+    if ( Number( js_local_vars.avada_styles_dropdowns ) == 1 ) {
 
 		jQuery( '.woocommerce-billing-fields, .woocommerce-shipping-fields' ).addClass( 'avada-select' );
 

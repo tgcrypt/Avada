@@ -189,6 +189,7 @@ if ( typeof _fusionImageParallaxImages === 'undefined' ) {
 
                     $target.css( {
 						'width': '100%',
+						'top': '0',
 						'left': '0',
 						'right': '0',
 						'height': 'auto',

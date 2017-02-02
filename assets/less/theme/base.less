@@ -216,14 +216,10 @@ fieldset {
   }
 }
 
-#main h2 {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
-}
 h2 {
   color: #333;
   margin: 0 0 20px;
     &.entry-title {
-        font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
         margin-top: 0;
         margin-bottom: 28px;
     }
@@ -261,7 +257,7 @@ h2 {
 
   font-family: @icon-font;
   font-size: 14px;
-  
+
 }
 .more a.active {
   color: #a0ce4e;
@@ -269,7 +265,7 @@ h2 {
   &:after {
     position: absolute;
     top: 50%;
-    .transform( translateY(-50%) );    
+    .transform( translateY(-50%) );
     font-family: @icon-font;
     content: @right-arrow-small;
     color: #a0ce4e;
@@ -375,11 +371,12 @@ h2 {
   padding-right: 3px;
   padding-bottom: 3px;
 }
-.fusion-footer-widget-column .flexslider a {
+.fusion-footer-widget-column .flexslider a,
+.fusion-footer-widget-area ul.fusion-checklist li a,
+.fusion-footer-widget-area ul.fusion-carousel-holder li a {
   border: 0;
   padding: 0;
 }
-
 .fusion-footer-widget-area ul#recentcomments li.recentcomments:first-child {
   padding-top: 0px;
   background: none;
@@ -414,7 +411,6 @@ h2 {
   margin-bottom: 40px;
 }
 #main .post h2 {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   color: #333333;
   padding-bottom: 0;
 }
@@ -446,7 +442,7 @@ h2 {
     h4 {
       margin: 0;
       padding: 0;
-      font: 13px 'MuseoSlab500Regular', arial, helvetica, sans-serif;
+      font-size: 13px;
       margin-bottom: 18px;
       color: #333333;
     }
@@ -551,7 +547,7 @@ h2 {
         a {
           display: block;
           padding: 0;
-          line-height: 38px;
+          line-height: 38px !important;
           border-bottom: none;
           border-top: 3px solid transparent;
           -webkit-transition: all .2s;
@@ -585,7 +581,7 @@ h2 {
       li {
         a {
           border: 0;
-          font: 13px 'MuseoSlab500Regular', arial, helvetica, sans-serif;
+          font-size: 13px;
           text-indent: 0;
           background: #F1F2F2;
           color: #333333;
@@ -745,7 +741,7 @@ h2 {
 .fusion-body .fusion-footer-widget-area-center {
 	.jtwt .jtwt_tweet {
 		padding: 0;
-		
+
 		&:before {
 			position: relative;
 			margin: 0;
@@ -770,6 +766,8 @@ h2 {
 }
 .pagination.infinite-scroll {
   visibility: hidden;
+  margin: 0;
+  height: 0;
 }
 .pagination,
 .page-links,
@@ -853,7 +851,8 @@ h2 {
 }
 
 .share-box h4 {
-  font: 13px/20px 'MuseoSlab500Regular', arial, helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 20px;
 }
 .about-author {
   margin-top: 55px;
@@ -935,6 +934,11 @@ h2 {
 #comment-input input {
   width: 32.666666%;
 }
+
+.comment-form #comment-submit {
+	min-width: 0;
+}
+
 .comment-form input,
 .s {
   float: none;
@@ -1060,17 +1064,21 @@ table.ui-datepicker td a,
   position: absolute;
   top: 50%;
   .transform( translateY(-50%) );
-  right: auto;
+  right: -5px;
   font-family: @icon-font;
   content: @right-arrow-small;
   color: #333333;
   padding-left: 5px;
 }
+.single-navigation a[rel=next]:after {
+	right: auto;
+}
 .portfolio-full .flexslider {
   margin-bottom: 70px;
 }
 .project-content h3 {
-  font: 13px/17px 'MuseoSlab500Regular', arial, helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 17px;
   color: #333333;
   margin: 0;
   margin-bottom: 28px;
@@ -1099,7 +1107,6 @@ table.ui-datepicker td a,
   color: #a0ce4e;
 }
 .project-content .project-info h4 {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   color: #333333;
   margin: 0;
   float: left;
@@ -1169,7 +1176,8 @@ table.ui-datepicker td a,
   display: block;
   height: auto;
   font-weight: normal;
-  font: 14px/39px 'MuseoSlab500Regular', arial, helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 39px;
   color: #333333;
 }
 .side-nav li a {
@@ -1272,7 +1280,8 @@ h5.toggle {
   overflow: hidden;
   margin: 0;
   a {
-    font: 13px/20px 'MuseoSlab500Regular', arial, helvetica, sans-serif;
+    font-size: 13px;
+    line-height: 20px;
     cursor: pointer;
     color: #333333;
     border-bottom: 1px solid #e8e6e6;
@@ -1444,7 +1453,8 @@ h5.toggle.active + .toggle-content {
 }
 #main .reading-box h2 {
   margin: 0 0 7px;
-  font: 18px/20px 'MuseoSlab500Regular', arial, helvetica, sans-serif;
+  font-size: 18px;
+  line-height: 20px;
 }
 .continue {
   float: right;
@@ -1463,7 +1473,6 @@ body #wrapper .gomapMarker {
 }
 .fusion-post-content {
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
     color: #333333;
     font-weight: normal;
   }
@@ -1615,14 +1624,6 @@ body #wrapper .gomapMarker {
   padding: 0;
 }
 
-.fusion-content-widget-area .widget_nav_menu li a:before,
-.fusion-content-widget-area .widget_categories li a:before,
-.fusion-content-widget-area .widget_meta li a:before,
-.fusion-content-widget-area .widget .recentcomments:before,
-.fusion-content-widget-area .widget_recent_entries li a:before,
-.fusion-content-widget-area .widget_archive li a:before,
-.fusion-content-widget-area .widget_pages li a:before,
-.fusion-content-widget-area .widget_links li a:before,
 .woocommerce-tabs .tabs a:hover .arrow:after,
 .woocommerce-tabs .tabs li.active a .arrow:after,
 .widget_layered_nav li a:before,
@@ -1633,46 +1634,64 @@ body #wrapper .gomapMarker {
   content: @right-arrow-small;
   margin-left: -12px;
 }
-.fusion-content-widget-area .widget_nav_menu li,
-.fusion-content-widget-area .widget_categories li,
-.fusion-content-widget-area .widget_product_categories li,
-.fusion-content-widget-area .widget_meta li,
-.fusion-content-widget-area .widget .recentcomments,
-.fusion-content-widget-area .widget_recent_entries li,
-.fusion-content-widget-area .widget_archive li,
-.fusion-content-widget-area .widget_pages li,
-.fusion-content-widget-area .widget_links li,
-.fusion-content-widget-area .widget_layered_nav li,
-.fusion-content-widget-area .widget_product_categories li
-{
-  display: block;
-  padding: 10px 10px 10px 12px;
-  border-bottom: 1px solid #e7e6e6;
-  color: #333;
+
+.fusion-widget-area {
+	.widget_nav_menu li a:before,
+	.widget_categories li a:before,
+	.widget_meta li a:before,
+	.widget .recentcomments:before,
+	.widget_recent_entries li a:before,
+	.widget_archive li a:before,
+	.widget_pages li a:before,
+	.widget_links li a:before {
+	  position: absolute;
+	  font-size: 14px;
+	  font-family: @icon-font;
+	  content: @right-arrow-small;
+	  margin-left: -12px;
+	}
+
+	.widget_nav_menu li,
+	.widget_categories li,
+	.widget_product_categories li,
+	.widget_meta li,
+	.widget .recentcomments,
+	.widget_recent_entries li,
+	.widget_archive li,
+	.widget_pages li,
+	.widget_links li,
+	.widget_layered_nav li,
+	.widget_product_categories li {
+	  display: block;
+	  padding: 10px 10px 10px 12px;
+	  border-bottom: 1px solid #e7e6e6;
+	  color: #333;
+	}
+
+	.widget_categories li {
+	  position: relative;
+	}
 }
-.fusion-content-widget-area .widget_categories li {
-  position: relative;
-}
-.fusion-content-widget-area .widget_categories li span {
+.fusion-widget-area .widget_categories li span {
   position: absolute;
 }
-.fusion-content-widget-area .widget_categories .children {
+.fusion-widget-area .widget_categories .children {
   margin-left: 5px;
 }
-.fusion-content-widget-area .widget_categories li .children li:last-child,
-.fusion-content-widget-area .widget_product_categories li .children li:last-child {
+.fusion-widget-area .widget_categories li .children li:last-child,
+.fusion-widget-area .widget_product_categories li .children li:last-child {
   padding-bottom: 0;
   border-bottom: none;
 }
 .shortcode-tabs .tab_content ul.arrow {
   float: none;
 }
-.fusion-content-widget-area ul.arrow {
+.fusion-widget-area ul.arrow {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-.fusion-content-widget-area ul.arrow li:before {
+.fusion-widget-area ul.arrow li:before {
   display: inline-block;
   background-repeat: no-repeat;
   background-position: center center;
@@ -1687,17 +1706,17 @@ body #wrapper .gomapMarker {
   margin-right: 10px;
   margin-left: 0px;
 }
-.fusion-content-widget-area ul.arrow li {
+.fusion-widget-area ul.arrow li {
   line-height: 18px;
   margin: 0;
   padding: 0;
   margin-bottom: 15px;
   padding-left: 0px;
 }
-.fusion-content-widget-area .sub-menu,
-.fusion-content-widget-area .children,
-.fusion-footer-widget-area .sub-menu,
-.fusion-footer-widget-area .children,
+.fusion-widget-area .sub-menu,
+.fusion-widget-area .children,
+.fusion-widget-area .sub-menu,
+.fusion-widget-area .children,
 #slidingbar-area .sub-menu,
 #slidingbar-area .children {
   margin-left: 15px;
@@ -1710,15 +1729,15 @@ body #wrapper .gomapMarker {
   padding: 0;
   border-bottom: 0;
 }
-.fusion-footer-widget-area .widget_categories li:first-child a,
-#slidingbar-area .widget_categories li:first-child a {
-  padding-top: 0;
-}
-.fusion-footer-widget-area .widget_categories li a,
-#slidingbar-area .widget_categories li a {
-  border-bottom: 1px solid #282a2b;
-  padding: 12px 0px;
-  display: block;
+.fusion-footer-widget-area,
+#slidingbar-area {
+	.widget {
+		> ul > li {
+			&:first-child {
+				padding-top: 0px;
+			}
+		}
+	}
 }
 .fusion-footer-widget-area .widget_categories .children,
 #slidingbar-area .widget_categories .children {
@@ -2071,9 +2090,9 @@ body .portfolio-grid {
 }
 /* Avada 3.0 Images */
 .error-message {
-  margin-top: 65px;
   color: #F0F0F0;
   font-size: 170px;
+  line-height: 1;
   font-weight: bold;
 }
 /* WP 3.6 media player responsive */
@@ -2289,6 +2308,19 @@ body .fusion-content-widget-area .button {
 #sliders-container .rev_slider_wrapper { -webkit-transform: translateZ(0); }
 .fusion-animated { position: relative; z-index: 2000; }
 
+.fusion-social-links-header .fusion-social-networks.boxed-icons a,
+.fusion-social-links-footer .fusion-social-networks.boxed-icons a {
+  &.fusion-social-network-icon.fusion-custom.fusion-icon-custom {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    img {
+      position: relative;
+    }
+  }
+}
 
 
 /* Classes needed by Theme Check */

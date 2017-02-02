@@ -22,7 +22,7 @@ $has_venue_address = ( ! empty( $venue_details['address'] ) ) ? ' location' : ''
 $organizer = tribe_get_organizer();
 ?>
 
-<div class="<?php if( has_post_thumbnail() ): echo 'fusion-tribe-has-featured-image'; else: echo 'fusion-tribe-no-featured-image'; endif; ?>">
+<div class="<?php if ( has_post_thumbnail() ): echo 'fusion-tribe-has-featured-image'; else: echo 'fusion-tribe-no-featured-image'; endif; ?>">
 	<!-- Event Cost -->
 	<?php if ( tribe_get_cost() ) : ?>
 		<div class="tribe-events-event-cost">
@@ -47,7 +47,7 @@ $organizer = tribe_get_organizer();
 
 			<!-- Event Image -->
 			<a href="<?php the_permalink(); ?>">
-				<?php if(  Avada()->settings->get( 'ec_bg_list_view' ) == 'cover' ): ?>
+				<?php if (  Avada()->settings->get( 'ec_bg_list_view' ) == 'cover' ): ?>
 				<span class="tribe-events-event-image" style="background-image: url('<?php echo $url; ?>'); -webkit-background-size: <?php echo Avada()->settings->get( 'ec_bg_list_view' ); ?>; background-size: <?php echo Avada()->settings->get( 'ec_bg_list_view' ); ?>; background-position: center center;"></span>
 				<span class="fusion-tribe-events-event-image-responsive"><?php the_post_thumbnail(); ?></span>
 				<?php else: ?>

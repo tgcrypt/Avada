@@ -12,6 +12,7 @@
 /* Flexbox */
 .fusion-alert,
 .tribe-events-notices {
+  clear: both;
   position: relative;
   padding: 25px;
   border-radius: 0;
@@ -3108,6 +3109,7 @@ button.fusion-button.button-3d:active {
   display: inline-block;
   z-index: 1;
   position: relative;
+  vertical-align: middle;
   max-width: 100%;
 }
 .fusion-imageframe.element-bottomshadow:before,
@@ -3239,7 +3241,7 @@ button.fusion-button.button-3d:active {
   text-align: center;
 }
 .fusion-image-carousel-fixed .fusion-carousel .fusion-image-wrapper {
-  display: inline;
+  display: inline-block;
   vertical-align: middle;
 }
 .fusion-image-carousel-fixed .fusion-carousel .fusion-image-wrapper a {
@@ -3379,9 +3381,6 @@ button.fusion-button.button-3d:active {
 .fusion-modal .modal-header {
   min-height: 54px;
 }
-.fusion-modal .modal-title {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
-}
 .fusion-modal .close {
   font-size: 30px;
   margin-top: -5px;
@@ -3420,7 +3419,6 @@ button.fusion-button.button-3d:active {
 }
 .fusion-person .person-desc .person-author .person-author-wrapper {
   min-width: 50%;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
 }
 .fusion-person .person-desc .person-author .fusion-social-networks {
   max-width: 50%;
@@ -3475,6 +3473,7 @@ button.fusion-button.button-3d:active {
 }
 .popover {
   padding: 0;
+  z-index: 99999;
 }
 .fusion-pricing-table {
   margin: 0 0 20px 0;
@@ -3689,6 +3688,35 @@ button.fusion-button.button-3d:active {
 .fusion-progressbar {
   position: relative;
   margin-bottom: 10px;
+}
+.fusion-progressbar .progress-title {
+  margin: 0;
+  height: auto;
+  width: auto;
+  font-size: 13px;
+  font-weight: normal;
+}
+.fusion-progressbar-text-on-bar .progress-title {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  -webkit-transform: translate(0, -50%);
+  transform: translate(0, -50%);
+  clip: auto;
+  color: #fff;
+}
+.fusion-progressbar-text-above-bar .progress-title {
+  display: inline-block;
+  margin-bottom: 5px;
+  color: #000;
+}
+.fusion-progressbar-text-below-bar .progress-title {
+  display: inline-block;
+  margin-top: 5px;
+  color: #000;
+}
+.fusion-progressbar-bar {
+  margin: 0;
   height: 37px;
   width: 100%;
   background-color: #E6E7E8;
@@ -3697,22 +3725,9 @@ button.fusion-button.button-3d:active {
   background-clip: padding-box;
   box-shadow: none;
 }
-.fusion-progressbar .progress {
+.fusion-progressbar-bar .progress {
   background-color: #A0CE4E;
   box-shadow: none;
-}
-.fusion-progressbar .progress-title {
-  left: 15px;
-  top: 50%;
-  -webkit-transform: translate(0, -50%);
-  transform: translate(0, -50%);
-  clip: auto;
-  margin: 0;
-  height: auto;
-  width: auto;
-  color: #FFFFFF;
-  font-size: 13px;
-  font-weight: normal;
 }
 .fusion-recent-posts {
   margin-bottom: 50px;
@@ -4016,7 +4031,6 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
   border-radius: 3px;
   /* Fix to make border-radius work for transparent colors */
   background-clip: padding-box;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   background-clip: inherit;
   border: 1px solid #46494a;
   color: #ffffff;
@@ -4088,7 +4102,7 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
   display: block;
   position: relative;
   margin: 0;
-  padding: 8px 0;
+  padding: 11px 0;
   outline: 0;
   line-height: normal;
   border: none;
@@ -4128,7 +4142,7 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
   border-top: none;
 }
 .fusion-tabs.nav-not-justified .nav-tabs .tab-link {
-  padding: 8px 15px;
+  padding: 11px 15px;
 }
 .fusion-tabs.clean .nav-tabs {
   background: none;
@@ -4138,7 +4152,7 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
   margin-bottom: 10px;
 }
 .fusion-tabs.clean .nav-tabs li .tab-link {
-  padding: 10px 15px;
+  padding: 14px 15px;
   border: 1px solid;
 }
 .fusion-tabs.clean .nav-tabs li .tab-link:hover,
@@ -4165,6 +4179,7 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
   }
   .fusion-tabs .nav-tabs {
     display: inline-block;
+    vertical-align: middle;
   }
   .fusion-tabs .nav-tabs.nav-justified > li {
     display: table-cell;
@@ -4177,7 +4192,7 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
     margin-right: 0;
   }
   .fusion-tabs.horizontal-tabs .nav-tabs {
-    margin: 0 0 -8px 0;
+    margin: 0 0 -1px 0;
   }
   .fusion-tabs.horizontal-tabs .nav {
     border-bottom: 1px solid #f1f2f2;
@@ -4201,14 +4216,11 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
   .fusion-tabs.nav-not-justified {
     border: none;
   }
-  .fusion-tabs.nav-not-justified .nav-tabs {
-    margin: 0 0 -1px 0;
-  }
   .fusion-tabs.nav-not-justified .nav-tabs li {
     display: inline-block;
   }
   .fusion-tabs.nav-not-justified.clean .nav-tabs li .tab-link {
-    padding: 10px 55px;
+    padding: 14px 55px;
   }
   .fusion-tabs.vertical-tabs {
     border: none;
@@ -4307,7 +4319,6 @@ table {
   border: 1px solid #dcdcdc;
   background: #f6f6f6;
   padding: 20px;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   text-align: left;
 }
 .table-1 tr:nth-child(even),
@@ -4321,7 +4332,6 @@ table {
 }
 .table-2 table thead {
   border: 1px solid #d3d3d3;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   text-align: left;
 }
 .table-2 table th {
@@ -4812,6 +4822,12 @@ table {
   border: none;
   line-height: normal;
 }
+.fusion-accordian .fusion-panel.fusion-toggle-no-divider {
+  border-bottom: none;
+}
+.fusion-accordian .fusion-panel.fusion-toggle-no-divider .panel-title a {
+  padding: 10px 0;
+}
 .fusion-single-accordian {
   margin-bottom: 0px;
 }
@@ -4869,6 +4885,42 @@ table {
   color: #fff !important;
 }
 .fusion-woo-slider .cart-loading .view-cart {
+  display: none;
+}
+/*
+* Clean Design
+*/
+.fusion-woo-product-design-clean .fusion-woo-slider .fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-product-buttons {
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+.fusion-woo-product-design-clean .fusion-woo-slider .fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-product-buttons a {
+  display: inline;
+  float: none;
+  padding: 0;
+  letter-spacing: 1px;
+}
+.fusion-woo-product-design-clean .fusion-woo-slider .fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-product-buttons a:hover {
+  opacity: 0.6;
+}
+.fusion-woo-product-design-clean .fusion-woo-slider .fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-product-buttons a:before,
+.fusion-woo-product-design-clean .fusion-woo-slider .fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-product-buttons a:after {
+  display: none;
+}
+.fusion-woo-product-design-clean .fusion-woo-slider .fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-product-buttons .wc-forward {
+  display: none;
+}
+.fusion-woo-product-design-clean .fusion-woo-slider .fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-product-buttons .fusion-rollover-linebreak {
+  display: inline-block;
+  margin: 0 10px;
+}
+.fusion-woo-product-design-clean .fusion-woo-slider .fusion-carousel-title-below-image .fusion-carousel-title {
+  text-align: center;
+}
+.fusion-woo-product-design-clean .fusion-woo-slider .fusion-carousel-title-below-image .fusion-carousel-meta {
+  text-align: center;
+}
+.fusion-woo-product-design-clean .fusion-woo-slider .fusion-carousel-title-on-rollover .fusion-rollover-linebreak {
   display: none;
 }
 .fusion-woo-product-slider {

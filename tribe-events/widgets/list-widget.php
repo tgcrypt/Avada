@@ -40,8 +40,8 @@ if ( $posts ) : ?>
 			<li class="tribe-events-list-widget-events <?php tribe_events_event_classes() ?>">
 
 				<?php
-				if( has_post_thumbnail() ) {
-					echo tribe_event_featured_image( get_the_ID(), 'tabs-img', false );
+				if ( has_post_thumbnail() ) {
+					echo tribe_event_featured_image( get_the_ID(), 'recent-works-thumbnail', false );
 				}
 				?>
 

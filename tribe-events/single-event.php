@@ -34,7 +34,7 @@ $event_id = get_the_ID();
 
 	<?php while ( have_posts() ) :  the_post(); ?>
 		<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-			<?php if( has_post_thumbnail() ): ?>
+			<?php if ( has_post_thumbnail() ): ?>
 				<div class="fusion-events-featured-image">
 					<div class="hover-type-<?php echo Avada()->settings->get( 'ec_hover_type' ); ?>">
 						<!-- Event featured image, but exclude link -->
@@ -60,7 +60,7 @@ $event_id = get_the_ID();
 
 		avada_render_social_sharing( 'events' );
 
-		if( class_exists( 'Tribe__Events__Pro__Main' ) && ! tribe_get_option( 'hideRelatedEvents', false ) ) {
+		if ( class_exists( 'Tribe__Events__Pro__Main' ) && ! tribe_get_option( 'hideRelatedEvents', false ) ) {
 			tribe_get_template_part( 'pro/related-events' );
 		}
 		?>

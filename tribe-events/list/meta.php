@@ -8,7 +8,7 @@ $has_venue_address = ( ! empty( $venue_details['address'] ) ) ? ' location' : ''
 <div class="tribe-events-event-meta vcard">
 	<div class="author <?php echo esc_attr( $has_venue_address ); ?>">
 
-		<?php if( ! has_post_thumbnail() ): ?>
+		<?php if ( ! has_post_thumbnail() ): ?>
 		<div class="fusion-tribe-events-headline">
 			<!-- Event Title -->
 			<?php do_action( 'tribe_events_before_the_event_title' ) ?>
@@ -29,7 +29,7 @@ $has_venue_address = ( ! empty( $venue_details['address'] ) ) ? ' location' : ''
 		<?php if ( $venue_details ) : ?>
 			<!-- Venue Display Info -->
 			<div class="tribe-events-venue-details">
-				<?php if( $venue_details['name'] ): ?>
+				<?php if ( $venue_details['name'] ): ?>
 					<?php echo $venue_details['name']; ?>
 				<?php endif; ?>
 

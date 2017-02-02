@@ -119,6 +119,12 @@
 	-o-transform: @transformation;
 	transform: @transformation;
 }
+.transform-origin( @origin ) {
+	  -webkit-transform-origin: @origin;
+	  -moz-transform-origin: @origin;
+	  -o-transform-origin: @origin;
+	  transform-origin: @origin;
+}
 
 .transition( @transition ) {
 	-webkit-transform: @transition;
@@ -157,4 +163,15 @@
 	-webkit-flex-grow: @grow;
 	-ms-flex-grow: @grow;
 	flex-grow: @grow;
+}
+
+.flex-order( @order ) {
+	-ms-flex-order: @order;
+	-webkit-order: @order;
+	order: @order;
+}
+
+.flex-direction( @direction ) {
+	-webkit-flex-direction: @direction;
+  	flex-direction: @direction;
 }

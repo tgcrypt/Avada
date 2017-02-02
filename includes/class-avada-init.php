@@ -10,6 +10,11 @@ class Avada_Init {
 		add_action( 'after_setup_theme', array( $this, 'register_nav_menus' ) );
 		add_action( 'after_setup_theme', array( $this, 'add_image_size' ) );
 
+		// Check done for buddypress activation, might be good for other plugins too
+		if ( empty( $_GET['plugin'] ) ) {
+			add_action( 'wp_loaded', array( $this, 'register_third_party_plugin_functions' ), 5 );
+		}
+
 		add_action( 'wp', array( $this, 'set_theme_version' ) );
 
 		add_action( 'widgets_init', array( $this, 'widget_init' ) );
@@ -29,7 +34,6 @@ class Avada_Init {
 		// Remove post_format from previwe link
 		add_filter( 'preview_post_link', array( $this, 'remove_post_format_from_link' ), 9999 );
 
-
 		// Add home url link for navigation menus
 		add_filter( 'wp_nav_menu_objects', array( $this, 'set_correct_class_for_menu_items' ) );
 
@@ -46,18 +50,18 @@ class Avada_Init {
 
 		// wp-content/theme/languages/Avada-en_US.mo
 		 if ( ! $loaded ) {
-		 	add_filter( 'theme_locale', array( $this, 'change_locale' ), 10, 2 );
-		 	$loaded = load_theme_textdomain( 'Avada', get_template_directory() . '/languages' );
+			add_filter( 'theme_locale', array( $this, 'change_locale' ), 10, 2 );
+			$loaded = load_theme_textdomain( 'Avada', get_template_directory() . '/languages' );
 
-		 	// wp-content/theme/languages/avada-en_US.mo
+			// wp-content/theme/languages/avada-en_US.mo
 			// wp-content/languages/themes/avada-en_US.mo
-		 	if ( ! $loaded ) {
-		 		remove_filter( 'theme_locale', array( $this, 'change_locale' ) );
-		 		add_filter( 'theme_locale', array( $this, 'change_locale_lowercase' ), 10, 2 );
-		 		$loaded = load_theme_textdomain( 'Avada', get_template_directory() . '/languages' );
+			if ( ! $loaded ) {
+				remove_filter( 'theme_locale', array( $this, 'change_locale' ) );
+				add_filter( 'theme_locale', array( $this, 'change_locale_lowercase' ), 10, 2 );
+				$loaded = load_theme_textdomain( 'Avada', get_template_directory() . '/languages' );
 
-		 		// wp-content/languages/Avada-en_US.mo
-		 		if ( ! $loaded ) {
+				// wp-content/languages/Avada-en_US.mo
+				if ( ! $loaded ) {
 					remove_filter( 'theme_locale', array( $this, 'change_locale_lowercase' ) );
 					add_filter( 'theme_locale', array( $this, 'change_locale' ), 10, 2 );
 					$loaded = load_theme_textdomain( 'Avada', dirname( dirname( get_template_directory() ) ) . '/languages' );
@@ -65,10 +69,10 @@ class Avada_Init {
 					// wp-content/languages/themes/avada/en_US.mo
 					if ( ! $loaded ) {
 						remove_filter( 'theme_locale', array( $this, 'change_locale' ) );
-						$loaded = load_theme_textdomain( 'Avada', dirname( dirname( get_template_directory() ) ) . '/languages/themes/avada' );
+						load_theme_textdomain( 'Avada', dirname( dirname( get_template_directory() ) ) . '/languages/themes/avada' );
 					}
-		 		}
-		 	}
+				}
+			}
 		}
 	}
 
@@ -85,7 +89,7 @@ class Avada_Init {
 	 */
 	public function set_builder_status() {
 
-		if ( ! Avada()->settings->get( 'disable_builder' ) ) {
+		if ( Avada()->settings->get( 'disable_builder' ) ) {
 			add_theme_support( 'fusion_builder' );
 		}
 
@@ -136,20 +140,71 @@ class Avada_Init {
 	 * Add image sizes
 	 */
 	public function add_image_size() {
-
 		add_image_size( 'blog-large', 669, 272, true );
 		add_image_size( 'blog-medium', 320, 202, true );
-		add_image_size( 'tabs-img', 52, 50, true );
-		add_image_size( 'related-img', 180, 138, true );
 		add_image_size( 'portfolio-full', 940, 400, true );
 		add_image_size( 'portfolio-one', 540, 272, true );
 		add_image_size( 'portfolio-two', 460, 295, true );
 		add_image_size( 'portfolio-three', 300, 214, true );
-		add_image_size( 'portfolio-four', 220, 161, true );
 		add_image_size( 'portfolio-five', 177, 142, true );
-		add_image_size( 'portfolio-six', 147, 118, true );
 		add_image_size( 'recent-posts', 700, 441, true );
 		add_image_size( 'recent-works-thumbnail', 66, 66, true );
+		// Image sizes used for grid layouts
+		add_image_size( '200', 200, '', false );
+		add_image_size( '400', 400, '', false );
+		add_image_size( '600', 600, '', false );
+		add_image_size( '800', 800, '', false );
+		add_image_size( '1200', 1200, '', false );
+	}
+
+	/**
+	 * Register default function when corresponding plugins are not activated
+	 *
+	 * @since 4.0 in init class
+	 *
+	 * @return void
+	 */
+	public function register_third_party_plugin_functions() {
+
+		// WooCommerce functions
+		if ( ! function_exists( 'is_woocommerce' ) ) {
+			function is_woocommerce() { return false; }
+		}
+
+		// bbPress functions
+		if ( ! function_exists( 'is_bbpress' ) ) {
+			function is_bbpress() { return false; }
+		}
+
+		if ( ! function_exists( 'bbp_is_forum_archive' ) ) {
+			function bbp_is_forum_archive() { return false; }
+		}
+
+		if ( ! function_exists( 'bbp_is_topic_archive' ) ) {
+			function bbp_is_topic_archive() { return false; }
+		}
+
+		if ( ! function_exists( 'bbp_is_user_home' ) ) {
+			function bbp_is_user_home() { return false; }
+		}
+
+		if ( ! function_exists( 'bbp_is_search' ) ) {
+			function bbp_is_search() { return false; }
+		}
+
+		// buddyPress functions
+		if ( ! function_exists( 'is_buddypress' ) ) {
+			function is_buddypress() { return false; }
+		}
+
+		// The Events Calendar functions
+		if ( ! function_exists( 'tribe_is_event' ) ) {
+			function tribe_is_event() { return false; }
+		}
+
+		if ( ! function_exists( 'is_events_archive' ) ) {
+			function is_events_archive() { return false; }
+		}
 	}
 
 	/**
@@ -182,7 +237,7 @@ class Avada_Init {
 		$version = get_bloginfo( 'version' );
 		$function_test = function_exists( 'add_term_meta' );
 
-		if( version_compare( $version, '4.4', '>=' ) && ! $function_test ) {
+		if ( version_compare( $version, '4.4', '>=' ) && ! $function_test ) {
 
 		}
 	}*/

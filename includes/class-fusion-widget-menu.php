@@ -55,6 +55,7 @@ class Fusion_Widget_Menu extends WP_Widget {
 			display: none;
 		}
 		#<?php echo $this->id; ?> ul li .fusion-widget-cart-number {
+			margin: 0 7px;
 			background-color: <?php echo Avada_Sanitize::color( $instance['menu_link_hover_color'] ); ?>;
 			color: <?php echo Avada_Sanitize::color( $instance['menu_link_color'] ); ?>;
 		}

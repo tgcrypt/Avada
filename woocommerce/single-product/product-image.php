@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $post, $woocommerce, $product;
 
-if( Avada()->settings->get( 'disable_woo_gallery' ) ) {
+if ( ! Avada()->settings->get( 'disable_woo_gallery' ) ) {
 	include WC()->plugin_path() . '/templates/single-product/product-image.php';
 	return;
 }

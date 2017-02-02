@@ -208,7 +208,7 @@
 	display: inline-block;
 	vertical-align: top;
 	list-style: none;
-	margin: 0 10px 10px 0;
+	margin: 0 6px 10px 0;
 	padding: 0;
 }
 
@@ -454,7 +454,6 @@
   font-size: 13px;
   margin-top: 0;
   margin-bottom: 5px;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   font-weight: normal;
 }
 .product .product-buttons {
@@ -518,6 +517,22 @@
   border-bottom: 1px solid #e7e6e6;
   padding-bottom: 20px;
   min-height: 50px;
+
+  .clearfix {
+  	.flex();
+  	.flex-wrap( nowrap );
+  	.flex-justify-content( space-between );
+  	.flex-align-items( center );
+
+  	.star-rating {
+  		.flex-order(2);
+  	}
+
+  	.price {
+  		.flex-order(0);
+  		margin-top: 0;
+  	}
+  }
 }
 
 .product-buttons {
@@ -716,8 +731,7 @@ form.cart {
 }
 .summary .cart .quantity {
   float: left;
-  margin-right: 10px;
-  margin-bottom: 5px;
+  margin: 5px 20px 5px 0;
 }
 .group_table {
   margin-bottom: 30px;
@@ -1080,7 +1094,6 @@ p.stars a.star-5:after {
   border-bottom: 1px solid;
   padding: 20px 0px;
   font-size: 14px;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   margin-bottom: 40px;
 }
 .woocommerce-success-message .button {
@@ -1113,12 +1126,22 @@ p.stars a.star-5:after {
 .single_variation_wrap {
   margin: 10px 0px;
 }
+.summary .cart,
+.single_variation_wrap .variations_button {
+	.flex();
+	.flex-align-items( center );
+	.flex-wrap( wrap );
+}
+.summary .variations_form.cart,
+.product-type-grouped .summary .cart {
+	display: block;
+}
 .single_variation_wrap .variations_button .quantity {
   float: left;
 }
 .single_variation_wrap .variations_button .button {
   float: left;
-  margin-left: 10px;
+  margin: 5px 0;
 }
 table.variations {
   width: 100%;
@@ -1443,7 +1466,6 @@ table.variations td {
 }
 .myaccount_user_container .username {
   padding-left: 25px;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   font-size: 18px;
   font-weight: normal;
 }
@@ -1690,7 +1712,6 @@ body:not(:-moz-handler-blocked) .avada-myaccount-data .addresses .title .edit {
 }
 .avada-order-details .shop_table.order_details tfoot tr:last-child .amount {
   font-size: 18px;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
 }
 .avada-customer-details .customer_details dt,
 .avada-customer-details .customer_details dd {
@@ -1739,7 +1760,6 @@ body:not(:-moz-handler-blocked) .avada-myaccount-data .addresses .title .edit {
   width: 220px;
 }
 .woocommerce-side-nav li a {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   display: block;
   height: 36px;
   line-height: 36px;
@@ -1812,7 +1832,6 @@ body:not(:-moz-handler-blocked) .avada-myaccount-data .addresses .title .edit {
 }
 .my_account_orders .order-number a {
   font-size: 18px;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
 }
 .my_account_orders .order-actions a {
   display: block;
@@ -1841,9 +1860,6 @@ body:not(:-moz-handler-blocked) .avada-myaccount-data .addresses .title .edit {
 .woocommerce address {
   font-style: normal;
   margin-bottom: 20px;
-}
-.woocommerce .address .edit {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
 }
 .woocommerce .address .edit:after {
   position: absolute;
@@ -1895,9 +1911,6 @@ body:not(:-moz-handler-blocked) .avada-myaccount-data .addresses .title .edit {
 .shop_table .product-name {
   width: 50%;
 }
-.shop_table .product-title a {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
-}
 .product-info {
   margin-left: 115px;
   margin-top: 20px;
@@ -1930,10 +1943,6 @@ body:not(:-moz-handler-blocked) .avada-myaccount-data .addresses .title .edit {
 }
 .shop_table .product-subtotal {
   text-align: center;
-}
-.shop_table .product-subtotal .amount {
-  font-size: 18px;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
 }
 .shop_table .product-remove {
   width: 5%;
@@ -2042,20 +2051,21 @@ body:not(:-moz-handler-blocked) .avada-myaccount-data .addresses .title .edit {
   height: 50px;
 }
 .order-total th,
-.order-total td {
+.order-total td,
+.woocommerce-cart .cart_totals .shop_table .order-total td {
   padding-top: 20px;
 }
 .checkout .order-total {
   border: none;
   height: auto;
 }
+
+
+.checkout .tax-rate th,
+.checkout .tax-rate td,
 .checkout .order-total th,
 .checkout .order-total td {
   padding-top: 0;
-}
-.cart_totals .order-total .amount {
-  font-size: 18px;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
 }
 .cart_totals table {
   width: 100%;
@@ -2295,8 +2305,9 @@ form.checkout .shop_table tbody .product-thumbnail {
   width: 100%;
 }
 .checkout .shop_table tfoot td {
-  width: 100%;
+  white-space: nowrap;
   text-align: right;
+  padding-top: 0;
   padding-bottom: 20px;
 }
 .checkout .shop_table tfoot tr:first-child th,
@@ -2304,7 +2315,6 @@ form.checkout .shop_table tbody .product-thumbnail {
   padding-top: 20px;
 }
 .checkout .shop_table tfoot .order-total .amount {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   font-size: 18px;
   font-weight: normal;
 }
@@ -2316,9 +2326,6 @@ form.checkout .shop_table tbody .product-thumbnail {
 }
 .checkout .payment_methods li {
   margin-bottom: 30px;
-}
-.checkout .payment_methods label {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
 }
 
 .about_paypal:after {
@@ -2370,7 +2377,6 @@ form.checkout .shop_table tbody .product-thumbnail {
   border-bottom: 0;
 }
 #final-order-details .mini-order-details th {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   padding-bottom: 10px;
   text-align: left;
 }
@@ -2379,7 +2385,6 @@ form.checkout .shop_table tbody .product-thumbnail {
   padding-bottom: 10px;
 }
 #final-order-details .mini-order-details tr:last-child .amount {
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   font-size: 18px;
   font-weight: normal;
 }
@@ -2575,14 +2580,14 @@ p.order-info mark {
 .fusion-grid-view {
 	position: relative;
     font-size: 22px;
-    
+
 	.fusion-icon-grid {
 		display: block;
 		margin-top: 50%;
 		position: absolute;
 		top: -11px;
 		width: 100%;
-	}    
+	}
 }
 .fusion-list-view {
     font-size: 14px;
@@ -2690,11 +2695,12 @@ p.order-info mark {
   border-radius: 100%;
   line-height: normal;
   text-align: center;
-  padding: 5px 9px;
+  padding: 2px 7px;
 }
 
 .woocommerce-variation {
-  .woocommerce-variation-price, .woocommerce-variation-avability {
+  .woocommerce-variation-price,
+  .woocommerce-variation-availability {
     display: none;
   }
 }
@@ -2715,6 +2721,13 @@ p.order-info mark {
       td {
         padding-top: 0;
       }
+
+		.shipping,
+		.tax-rate {
+			th, td {
+				padding-top: 20px;
+			}
+		}
     }
   }
 }
@@ -2728,4 +2741,165 @@ p.order-info mark {
       margin-top: 40px;
     }
   }
+}
+
+
+/*
+* Clean Design
+*/
+.fusion-woo-product-design-clean {
+	.products {
+		.product-details-container {
+			text-align: center;
+		}
+
+		.product-title {
+			font-style: italic;
+		}
+
+		.fusion-rollover {
+			.star-rating {
+				margin: 0 auto;
+			}
+			
+			.fusion-rollover-content {
+				.fusion-product-buttons {
+					a {
+						padding: 0;
+					}
+				}
+			}
+		}
+
+		.fusion-rollover-content {
+			.fusion-product-buttons {
+				a {
+					&:hover {
+						opacity: 0.6;
+					}
+				}
+				
+				.wc-forward {
+					display: none;
+				}
+			}
+
+			.fusion-rollover-linebreak {
+				margin: 0 10px;
+			}
+		}
+
+		.fusion-product-buttons {
+			margin-top: 10px;
+			text-transform: uppercase;
+
+			a {
+				display: inline;
+				float: none;
+				padding: 0;
+				letter-spacing: 1px;
+
+				&:before,
+				&:after {
+					display: none;
+				}
+			}
+		}
+
+		.product-details-container {
+			.clearfix {
+				display: block;
+			}
+		}
+
+		.product-list-view {
+			.product-details-container,
+			.product-excerpt-container {
+				text-align: left;
+			}
+
+			.onsale {
+				top: 70px;
+			}
+
+			.price {
+				font-style: normal;
+			}
+
+			.fusion-clean-product-image-wrapper {
+				display: inline-block;
+				float: left;
+				margin-right: 2%;
+				min-height: 100px;
+				width: 23%;
+				max-width: 23%;
+			}
+		}
+	}
+}
+
+.fusion-clean-product-image-wrapper {
+	position: relative;
+
+	.cart-loading {
+		position: relative;
+		top: 0;
+		bottom: auto;
+		right: auto;
+		left: 0;
+		margin: 0;
+		margin-bottom: 5px;
+		height: 100%;
+		width: 100%;
+		.border-radius(0);
+		font-size: 14px;
+		line-height: normal;
+		text-transform: uppercase;
+
+		&:hover {
+			opacity: 0.6;
+		}
+
+		#wrapper & {
+			background-color: transparent
+		}
+
+		i {
+			display: block;
+			font-size: 32px;
+			line-height: normal;
+		}
+
+		.view-cart {
+			display: none;
+		}
+
+	}
+
+	&.fusion-item-in-cart .cart-loading .view-cart {
+		display: block;
+	}
+}
+
+.fusion-item-in-cart .fusion-rollover-content .star-rating {
+	display: none;
+}
+
+/* Woocommerce Plugins
+================================================================================================= */
+
+// Product Add-Ons
+.summary .cart .product-addon,
+.summary .cart #product-addons-total {
+	margin: 0 20px 0 0;
+}
+
+.summary .cart .product-addon-totals {
+	dt {
+		width: auto;
+	}
+	dd {
+		margin: 0;
+		padding: 0 5px;
+	}
 }

@@ -63,7 +63,7 @@
 
 		.fusion-rollover-linebreak {
 			display: block;
-      margin-bottom: 8px;
+      		margin-bottom: 8px;
 		}
 	}
 
@@ -75,4 +75,59 @@
   .cart-loading .view-cart {
     display: none;
   }
+}
+
+/*
+* Clean Design
+*/
+.fusion-woo-product-design-clean {
+	.fusion-woo-slider {
+		.fusion-image-wrapper .fusion-rollover .fusion-rollover-content {
+			.fusion-product-buttons {
+				margin-top: 10px;
+				text-transform: uppercase;
+
+				a {
+					display: inline;
+					float: none;
+					padding: 0;
+					letter-spacing: 1px;
+
+					&:hover {
+						opacity: 0.6;
+					}
+
+					&:before,
+					&:after {
+						display: none;
+					}
+				}
+
+				.wc-forward {
+					display: none;
+				}
+
+				.fusion-rollover-linebreak {
+					display: inline-block;
+					margin: 0 10px;
+				}
+			}
+		}
+
+		.fusion-carousel-title-below-image {
+			.fusion-carousel-title {
+				text-align: center;
+			}
+
+			.fusion-carousel-meta {
+				text-align: center;
+			}
+		}
+
+		.fusion-carousel-title-on-rollover {
+			.fusion-rollover-linebreak {
+				display: none;
+			}
+		}
+	}	
 }

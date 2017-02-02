@@ -22,8 +22,8 @@ class Avada_GoogleMap {
 	 */
 	public static function set_shortcode_defaults( $defaults, $args ) {
 
-		if ( ! $args ) {
-			$$args = array();
+		if ( empty( $args ) || ! is_array( $args ) ) {
+			$args = array();
 		}
 
 		$args = shortcode_atts( $defaults, $args );
@@ -42,7 +42,7 @@ class Avada_GoogleMap {
 
 		if ( in_array( strtolower( $color ), array( 'black', 'navy', 'purple', 'maroon', 'indigo', 'darkslategray', 'darkslateblue', 'darkolivegreen', 'darkgreen', 'darkblue' ) ) ) {
 			$brightness_level = 0;
-		} elseif( 0 === strpos( $color, '#' ) ) {
+		} elseif ( 0 === strpos( $color, '#' ) ) {
 			$color = fusion_hex2rgb( $color );
 			$brightness_level = sqrt( pow( $color[0], 2) * 0.299 + pow( $color[1], 2) * 0.587 + pow( $color[2], 2) * 0.114 );
 		} else {
@@ -124,7 +124,7 @@ class Avada_GoogleMap {
 			$infobox_content_array = ( $infobox_content ) ? explode( '|', $infobox_content ) : '';
 			$icon_array            = ( $icon ) ? explode( '|', $icon ) : '';
 
-			if( $addresses ) {
+			if ( ! empty( $addresses ) ) {
 				self::$args['address'] = $addresses;
 			}
 

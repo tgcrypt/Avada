@@ -63,6 +63,11 @@ Table of Contents
 
 /* General Styles
 ================================================================================================= */
+iframe,
+.fusion-video iframe {
+	border: none;
+}
+
 .screen-reader-text {
   overflow: hidden;
     clip: rect(0px, 0px, 0px, 0px);
@@ -78,13 +83,6 @@ Table of Contents
 mark {
   background: none;
   color: inherit;
-}
-
-/* Headings */
-.post-content {
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
-  }
 }
 
 /* Breadcrumbs */
@@ -130,7 +128,7 @@ mark {
       border: none;
       border-radius: 0;
       color: #FFFFFF;
-      font-size: 14px;
+      font-size: 1em;
       height: 33px;
       line-height: 33px;
       margin: 0;
@@ -177,7 +175,7 @@ mark {
 
 /* Post Password Form */
 .post-password-form [type="password"] {
-  
+
 }
 
 .post-password-form input[type="password"] {
@@ -185,7 +183,7 @@ mark {
   padding: 8px 15px;
   border: 1px solid #d2d2d2;
   font-size: 13px;
-  color: #747474;  
+  color: #747474;
   .box-sizing(border-box);
 }
 
@@ -205,7 +203,6 @@ mark {
       transform: translateX(0%);
 
       -webkit-transform-style: preserve-3d;
-      -webkit-backface-visibility: hidden;
 
       .no-csstransforms & {
         display: block;
@@ -229,7 +226,7 @@ mark {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100.1%;
   height: 100.1%;
   line-height: normal;
   text-align: center;
@@ -254,7 +251,6 @@ mark {
   transition: all 0.3s ease-in-out;
 
   -webkit-transform-style: preserve-3d;
-  -webkit-backface-visibility: hidden;
 
   &:before {
     display: inline-block;
@@ -286,7 +282,7 @@ mark {
   .price {
     margin: 0;
     line-height: normal;
-    font: 13px 'MuseoSlab500Regular', arial, helvetica, sans-serif;
+    font-size: 13px;
     color: #333333;
   }
 
@@ -389,7 +385,7 @@ mark {
   &:before {
     position: absolute;
     left: 50%;
-    margin-left: -7.5px;
+	.transform(translateX(-50%));
     text-indent: 0;
     line-height: 36px;
     text-shadow: none;
@@ -538,6 +534,7 @@ mark {
 }
 
 /* Loading Spinner - FusionSlider */
+.fusion-body .wpcf7-form .fusion-slider-loading,
 .fusion-slider-loading {
   position: absolute;
   top: 50%;
@@ -568,7 +565,6 @@ mark {
     text-indent: 100000px;
     background: url( assets/images/ajax-loader.gif ) center center no-repeat;
   }
-
 }
 .fusion-slider-loading,
 .fusion-slider-loading:after {
@@ -576,6 +572,18 @@ mark {
   height: 6em;
   .border-radius(50%);
 }
+.fusion-body .wpcf7-form .fusion-slider-loading {
+	display: none;
+	position: static;
+	margin: 10px 0 0 0;
+	border-width: 0.35em;
+}
+.fusion-body .wpcf7-form .fusion-slider-loading,
+.fusion-body .wpcf7-form .fusion-slider-loading:after {
+	width: 3em;
+	height: 3em;
+}
+
 @-webkit-keyframes fusion-rotate {
   0% {
     -webkit-transform: rotate(0deg);
@@ -700,7 +708,7 @@ blockquote {
 }
 .ua-ie .select-arrow { display: none; }
 
-.submit, 
+.submit,
 #submit {
 	cursor: pointer;
 }
@@ -756,7 +764,6 @@ blockquote {
 
 .fusion-author-title {
   margin-top: 0;
-  font-family: 'MuseoSlab500Regular', arial, helvetica, sans-serif;
   color: #333333;
   font-weight: normal;
 }
