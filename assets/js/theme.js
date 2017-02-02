@@ -3948,6 +3948,10 @@ jQuery( window ).load( function() {
 
 					if ( Modernizr.mq( 'only screen and (max-width: ' + avadaVars.content_break_point + 'px)' ) ) {
 						jQuery( thisTFSlider ).find( '.fusion-button' ).each( function() {
+							if ( 'undefined' === typeof jQuery( this ).data( 'old' ) ) {
+								jQuery( this ).data( 'old', jQuery( this ).attr( 'class' ) );
+							}
+
 							jQuery( this ).removeClass( 'button-xlarge button-large button-medium' );
 							jQuery( this ).addClass( 'button-small' );
 						});

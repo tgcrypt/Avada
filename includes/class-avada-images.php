@@ -474,14 +474,14 @@ class Avada_Images {
 			return false;
 		}
 
-		$attachment_data['url'] = preg_replace( '/-\d+x\d+(?=\.(jpg|jpeg|png|gif)$)/i', '', $attachment_url );
+		$attachment_data['url'] = preg_replace( '/-\d+x\d+(?=\.(jpg|jpeg|png|gif|tiff|svg)$)/i', '', $attachment_url );
 		$attachment_data['id'] = self::get_attachment_id_from_url( $attachment_data['url'] );
 
 		if ( ! $attachment_data['id'] ) {
 			return false;
 		}
 
-		preg_match( '/\d+x\d+(?=\.(jpg|jpeg|png|gif)$)/i', $attachment_url, $matches );
+		preg_match( '/-\d+x\d+(?=\.(jpg|jpeg|png|gif|tiff|svg)$)/i', $attachment_url, $matches );
 		if ( count( $matches ) > 0 ) {
 			$dimensions = explode( 'x', $matches[0] );
 			$attachment_data['width'] = $dimensions[0];

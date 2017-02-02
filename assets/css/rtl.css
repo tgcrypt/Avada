@@ -71,6 +71,9 @@ Table of Contents
 .rtl .fusion-spacing-no {
   margin: 0;
 }
+.rtl .fusion-column {
+  float: right;
+}
 .rtl .fusion-title.fusion-sep-none .title-heading-left {
   text-align: right;
 }
