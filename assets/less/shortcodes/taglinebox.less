@@ -8,9 +8,12 @@
 		background-color: #F2EFEF;
 		border-left: 3px solid @primary-color;
 		   
-		&.reading-box-center,
+		&.reading-box-center {
+			text-align: center;
+		}
+		
 		&.reading-box-right {
-			text-align: left;
+			text-align: right;
 		}		
 		
 		h2 {
@@ -20,11 +23,12 @@
 		}
 	}
 	
-	.continue {
-		display: none;
+	.fusion-desktop-button {
+		display: block;
 	}
 	
 	.continue-center {
+		display: inline-block;
 		float: none;
 		margin: 15px auto 0 auto;
 	}
@@ -41,38 +45,17 @@
 		margin-bottom: 10px;
 	}
 
-	.mobile-button {
-		display: block;
+	.fusion-mobile-button {
+		display: none;
 		float: none;
 		margin: 20px 0 0;
-	}
-}
-
-@media (min-width: 800px) {
-
-	.fusion-reading-box-container {
-		.reading-box {
-			&.reading-box-center {
-				text-align: center;
-			}		
-
-			&.reading-box-right {
-				text-align: right;
-			}
-		}
-	
-		.continue {
-			display: block;
-		}
 		
-		.continue-center {
+		&.continue-center {
 			display: inline-block;
 		}
+	}	
 
-		.mobile-button {
-			display: none;
-		}
-	}
+
 }
 
 .element-bottomshadow-mixin( @argument ) {

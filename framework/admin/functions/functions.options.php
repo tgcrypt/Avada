@@ -6,7 +6,7 @@ if( ! function_exists( 'of_options_array') )
 {
 	function of_options_array()
 	{
-	  	global $smof_data;
+		global $smof_data;
 
 		// Avada edit
 		//Register sidebar options for blog/portfolio/woocommerce category/archive pages
@@ -853,31 +853,6 @@ if( ! function_exists( 'of_options_array') )
 			"id" => "heading_general",
 			"type" => "heading");
 
-		$of_options[] = array( "name" => __("Responsive Options", "Avada"),
-			"desc" => "",
-			"id" => "responsive",
-			"std" => "<h3 style='margin: 0;'>" . __("Responsive Options", "Avada") . "</h3>",
-			"icon" => true,
-			"type" => "info");
-
-		$of_options[] = array( "name" => __("Responsive Design", "Avada"),
-			"desc" => __("Check this box to use the responsive design features. If left unchecked then the fixed layout is used.", "Avada"),
-			"id" => "responsive",
-			"std" => 1,
-			"type" => "checkbox");
-
-		$of_options[] = array( "name" => __("Enable Zoom on mobile devices", "Avada"),
-			"desc" => __("Check this box to allow pinch to zoom on mobile devices. If left unchecked, pinch to zoom will be disabled.", "Avada"),
-			"id" => "mobile_zoom",
-			"std" => 1,
-			"type" => "checkbox");
-
-		$of_options[] = array( "name" => __("Use Fixed Layout for iPad Portrait (deprecated in upcoming 3.8.7)", "Avada"),
-			"desc" => __("Check this box to use the fixed layout for the iPad in portrait view. This option will be moved to an external plugin in 3.8.7", "Avada"),
-			"id" => "ipad_potrait",
-			"std" => 0,
-			"type" => "checkbox");
-
 		$of_options[] = array( "name" => __("Code", "Avada"),
 			"desc" => "",
 			"id" => "code",
@@ -886,22 +861,84 @@ if( ! function_exists( 'of_options_array') )
 			"type" => "info");
 
 		$of_options[] = array( "name" => __("Tracking Code", "Avada"),
-			"desc" => __("Paste your Google Analytics (or other) tracking code here. This will be added into the header template of your theme. Please place code inside script tags.", "Avada"),
+			"desc" => __("Paste your Google Analytics (or other) tracking code here. This will be added into the header template of your theme. Please place code inside &lt;script&gt; tags.", "Avada"),
 			"id" => "google_analytics",
 			"std" => "",
 			"type" => "textarea");
 
 		$of_options[] = array( "name" => __("Space before &lt;/head&gt;", "Avada"),
-			"desc" => __("Add code before the &lt;/head&gt; tag.", "Avada"),
+			"desc" => __("Add code before the &lt;/head&gt; tag. Only accepts javascript code wrapped with &lt;script&gt; tags and HTML markup that is valid inside the &lt;head&gt; tag. ", "Avada"),
 			"id" => "space_head",
 			"std" => "",
 			"type" => "textarea");
 
 		$of_options[] = array( "name" => __("Space before &lt;/body&gt;", "Avada"),
-			"desc" => __("Add code before the &lt;/body&gt; tag.", "Avada"),
+			"desc" => __("Add code before the &lt;/body&gt; tag. Only accepts javascript code, wrapped with &lt;script&gt; tags and valid HTML markup.", "Avada"),
 			"id" => "space_body",
 			"std" => "",
 			"type" => "textarea");
+
+		$of_options[] = array( "name" => __("Responsive", "Avada"),
+			"id" => "heading_responsive",
+			"type" => "heading");
+
+		$of_options[] = array( "name" => __("Responsive Design", "Avada"),
+			"desc" => __("Enable to use the responsive design features. If disabled then the fixed layout is used.", "Avada"),
+			"id" => "responsive",
+			"std" => 1,
+			"on" 		=> "Enable",
+			"off" 		=> "Disable",
+			"type" 		=> "switch"
+		);
+
+		$of_options[] = array( "name" => __("Header Responsive Breakpoint", "Avada"),
+			"desc" => __("Controls when the desktop header changes to the mobile header. In pixels, ex: 800px.", "Avada"),
+			"id" => "side_header_break_point",
+			"std" => "800px",
+			"type" => "text");
+
+		$of_options[] = array( "name" => __("Site Content Responsive Breakpoint", "Avada"),
+			"desc" => __("Controls when the site content area changes to the mobile layout. This includes all content on the page except for the header area and blog/portfolio grid sections. If you are using a side header, the breakpoint value you enter will automatically include the side header width.  In pixels, ex: 800px.", "Avada"),
+			"id" => "content_break_point",
+			"std" => "800px",
+			"type" => "text");
+
+
+		$of_options[] = array( "name" => __("Grid Responsive Breakpoint", "Avada"),
+			"desc" => __("Controls when blog/portfolio grid layouts start to break into smaller amounts of columns. Further breakpoints are auto calculated. In pixels, ex: 1000px.", "Avada"),
+			"id" => "grid_main_break_point",
+			"std" => "1099px",
+			"type" => "text");
+
+		$of_options[] = array( 	"name" 		=> __("Responsive Heading Typography", "Avada"),
+			"desc" 		=> __("Check this box if you want site headings to change font size responsively.", "Avada"),
+			"id" 		=> "typography_responsive",
+			"std" 		=> 0,
+			"on" 		=> "Enable",
+			"off" 		=> "Disable",
+			"type" 		=> "switch"
+		);
+
+		$of_options[] = array( "name" => __("Responsive Typography Sensitivity", "Avada"),
+			"desc" => __("Values below 1 decrease resizing, values above 1 increase sizing. ex: .6", "Avada"),
+			"id" => "typography_sensitivity",
+			"std" => "0.6",
+			"type" => "text");
+
+		$of_options[] = array( "name" => __("Mininum Font Size Factor", "Avada"),
+			"desc" => __("Minimum font factor is used to determine minimum distance between headings and body type by a multiplying value. ex: 1.5", "Avada"),
+			"id" => "typography_factor",
+			"std" => "1.5",
+			"type" => "text");
+
+		$of_options[] = array( "name" => __("Enable Zoom on mobile devices", "Avada"),
+			"desc" => __("Enable to allow pinch to zoom on mobile devices.", "Avada"),
+			"id" => "mobile_zoom",
+			"std" => 1,
+			"on" 		=> "Enable",
+			"off" 		=> "Disable",
+			"type" 		=> "switch"
+		);
 
 		$of_options[] = array( "name" => __("Site Width", "Avada"),
 			"id" => "heading_site_width",
@@ -923,18 +960,11 @@ if( ! function_exists( 'of_options_array') )
 			"std" => "1100px",
 			"type" => "text");
 
-	   $of_options[] = array( "name" => __("Content + Sidebar Width", "Avada"),
+	   $of_options[] = array( "name" => __("Sidebar Width", "Avada"),
 			"desc" => "",
 			"id" => "content_sidebar_width",
-			"std" => "<h3 style='margin: 0;'>" . __("Content + Sidebar Width", "Avada") . "</h3><p>" . __("These settings are used on pages with 1 sidebar. Total values must add up to 100.", "Avada") . "</p>",
-			"position" => "start",
-			"type" => "accordion");
-
-		$of_options[] = array( "name" => __("Content Width", "Avada"),
-			"desc" => __("Controls the width of the content area. In px or %, ex: 100% or 1170px.", "Avada"),
-			"id" => "content_width",
-			"std" => "77%",
-			"type" => "text");
+			"std" => "<h3 style='margin: 0;'>" . __("Sidebar Width", "Avada") . "</h3><p>" . __("These settings are used on pages with 1 sidebar.", "Avada") . "</p>",
+			"type" => "info");
 
 		$of_options[] = array( "name" => __("Sidebar Width", "Avada"),
 			"desc" => __("Controls the width of the sidebar. In px or %, ex: 100% or 1170px.", "Avada"),
@@ -942,25 +972,11 @@ if( ! function_exists( 'of_options_array') )
 			"std" => "23%",
 			"type" => "text");
 
-	   $of_options[] = array( "name" => __("Content + Sidebar Width", "Avada"),
-			"desc" => "",
-			"id" => "content_sidebar_width",
-			"std" => "<h3 style='margin: 0;'>" . __("Content + Sidebar Width", "Avada") . "</h3><p>" . __("These settings are used on pages with 1 sidebar. Total values must add up to 100.", "Avada") . "</p>",
-			"position" => "end",
-			"type" => "accordion");
-
-	   $of_options[] = array( "name" => __("Content + Sidebar + Sidebar Width", "Avada"),
+	   $of_options[] = array( "name" => __("Sidebar + Sidebar Width", "Avada"),
 			"desc" => "",
 			"id" => "content_sidebar_sidebar_width",
-			"std" => "<h3 style='margin: 0;'>" . __("Content + Sidebar + Sidebar Width", "Avada") . "</h3><p>" . __("These settings are used on pages with 2 sidebars. Total values must add up to 100.", "Avada") . "</p>",
-			"position" => "start",
-			"type" => "accordion");
-
-	   $of_options[] = array( "name" => __("Content Width", "Avada"),
-			"desc" => __("Controls the width of the content area. In px or %, ex: 100% or 1170px.", "Avada"),
-			"id" => "content_width_2",
-			"std" => "58%",
-			"type" => "text");
+			"std" => "<h3 style='margin: 0;'>" . __("Sidebar + Sidebar Width", "Avada") . "</h3><p>" . __("These settings are used on pages with 2 sidebars.", "Avada") . "</p>",
+			"type" => "info");
 
 		$of_options[] = array( "name" => __("Sidebar 1 Width", "Avada"),
 			"desc" => __("Controls the width of the sidebar 1. In px or %, ex: 100% or 1170px.", "Avada"),
@@ -973,13 +989,6 @@ if( ! function_exists( 'of_options_array') )
 			"id" => "sidebar_2_2_width",
 			"std" => "21%",
 			"type" => "text");
-
-	   $of_options[] = array( "name" => __("Content + Sidebar + Sidebar Width", "Avada"),
-			"desc" => "",
-			"id" => "content_sidebar_sidebar_width",
-			"std" => "<h3 style='margin: 0;'>" . __("Content + Sidebar + Sidebar Width", "Avada") . "</h3><p>" . __("These settings are used on pages with 2 sidebars. Total values must add up to 100.", "Avada") . "</p>",
-			"position" => "end",
-			"type" => "accordion");
 
 		$of_options[] = array( "name" => __("Header", "Avada"),
 			"id" => "heading_header",
@@ -1017,12 +1026,6 @@ if( ! function_exists( 'of_options_array') )
 			"desc" => __("Controls width of the left or right side header. In pixels, ex: 170px.", "Avada"),
 			"id" => "side_header_width",
 			"std" => "280px",
-			"type" => "text");
-
-		$of_options[] = array( "name" => __("Side Header Responsive Breakpoint", "Avada"),
-			"desc" => __("Controls when the side header will change to mobile header. The recommended breakpoint is 800px + the side header width. In pixels, ex: 1080px.", "Avada"),
-			"id" => "side_header_break_point",
-			"std" => "1023px",
 			"type" => "text");
 
 		$of_options[] = array( "name" => __("Header Shadow", "Avada"),
@@ -1087,7 +1090,7 @@ if( ! function_exists( 'of_options_array') )
 			"desc" => __("Tagline will display as long as you have Tagline selected for the Header Content 3 option above.", "Avada"),
 			"id" => "header_tagline",
 			"std" => "Insert Tagline Here",
-			"type" => "text");
+			"type" => "textarea");
 
 		$of_options[] = array( "name" => __("Header Info", "Avada"),
 			"desc" => "",
@@ -1268,7 +1271,7 @@ if( ! function_exists( 'of_options_array') )
 			"desc" => __("Enable the sticky header to animate to a smaller height. This will shrink the sticky header height, logo and menu. Only applies to header v1 - v3.", "Avada"),
 			"id" => "header_sticky_shrinkage",
 			"std" => 1,
-			"type" => "checkbox");		
+			"type" => "checkbox");
 
 		$of_options[] = array( "name" => __("Headers 4-5 Sticky Header Display", "Avada"),
 			"desc" => __("Select if your sticky header shows the menu or menu + logo area.", "Avada"),
@@ -1516,10 +1519,10 @@ if( ! function_exists( 'of_options_array') )
 			"position" => "start",
 			"type" => "accordion");
 
-		$of_options[] = array( "name" => __("Side Header Menu Text Align", "Avada"),
-			"desc" => __("Controls the alignment of menu text on side header.", "Avada"),
+		$of_options[] = array( "name" => __("Menu Text Align", "Avada"),
+			"desc" => __("Controls the alignment of the text in the menu for top headers 4-5 and side headers", "Avada"),
 			"id" => "menu_text_align",
-			"std" => "left",
+			"std" => "center",
 			"options" => array('left' => 'Left', 'center' => 'Center', 'right' => 'Right'),
 			"type" => "select");
 
@@ -1544,7 +1547,7 @@ if( ! function_exists( 'of_options_array') )
 		$of_options[] = array( "name" => __("Main Menu Dropdown Width", "Avada"),
 			"desc" => __("In pixels, ex: 170px", "Avada"),
 			"id" => "dropdown_menu_width",
-			"std" => "170px",
+			"std" => "180px",
 			"type" => "text");
 
 		$of_options[] = array( "name" => __("Main Menu Dropdown Item Top/Bottom Padding", "Avada"),
@@ -1562,7 +1565,7 @@ if( ! function_exists( 'of_options_array') )
 		$of_options[] = array( "name" => __("Top Menu Dropdown Width", "Avada"),
 			"desc" => __("In pixels, ex: 100px", "Avada"),
 			"id" => "topmenu_dropwdown_width",
-			"std" => "100px",
+			"std" => "180px",
 			"type" => "text");
 
 		$of_options[] = array( "name" => __("Mega Menu Max-Width", "Avada"),
@@ -1865,17 +1868,17 @@ if( ! function_exists( 'of_options_array') )
 			"id" 		=> "footer_special_effects",
 			"std" 		=> "none",
 			"type" 		=> "radio",
-			"options" 	=> array("none" => __("None", "Avada" ), "footer_parallax_effect" => __("Footer Parallax Effect", "Avada" ), "footer_area_bg_parallax" => __("Parallax Background Image", "Avada" ), "footer_sticky" => __("Sticky Footer", "Avada" ), "footer_sticky_with_parallax_bg_image" => __("Sticky Footer and Parallax Background Image", "Avada" ) )
+			"options" 	=> array("none" => __( "None", "Avada" ), "footer_parallax_effect" => __( "Footer Parallax Effect", "Avada" ), "footer_area_bg_parallax" => __( "Parallax Background Image", "Avada" ), "footer_sticky" => __("Sticky Footer", "Avada" ), "footer_sticky_with_parallax_bg_image" => __("Sticky Footer and Parallax Background Image", "Avada" ) )
 		);
 
-		$of_options[] = array( "name" => __("Footer Parallax Effect Info", "Avada"),
+		$of_options[] = array( "name" => __( "Footer Parallax Effect Info", "Avada"),
 			"desc" => "",
 			"id" => "footer_parallax_effect_info",
 			"std" => __("This enables a fixed footer with parallax scrolling effect.", "Avada" ),
 			"icon" => true,
 			"type" => "info");
 
-		$of_options[] = array( "name" => __("Parallax Background Image Info", "Avada"),
+		$of_options[] = array( "name" => __( "Parallax Background Image Info", "Avada"),
 			"desc" => "",
 			"id" => "footer_area_bg_parallax_info",
 			"std" => __("This enables a parallax effect on the background image selected in 'Background Image For Footer Widget Area' field.", "Avada" ),
@@ -1885,7 +1888,7 @@ if( ! function_exists( 'of_options_array') )
 		$of_options[] = array( "name" => __("Sticky Footer Info", "Avada"),
 			"desc" => "",
 			"id" => "footer_sticky_info",
-			"std" => __("This enables a sticky footer. The entire footer area will always be 'below the fold'. IMPORTANT: 'Sticky Footer Height' field must be filled in.", "Avada" ),
+			"std" => __("This enables a sticky footer. The entire footer area will always be 'below the fold'. On very short pages, it makes sure that the footer sticks at the bottom, just above the fold.<br />IMPORTANT: 'Sticky Footer Height' field must be filled in.", "Avada" ),
 			"icon" => true,
 			"type" => "info");
 
@@ -1914,6 +1917,13 @@ if( ! function_exists( 'of_options_array') )
 			"id" => "footer_widgets",
 			"std" => 1,
 			"type" => "checkbox");
+
+		$of_options[] = array( "name" => __("Footer Widgets Center Content", "Avada"),
+			"desc" => __("Check the box to display the footer widget area contents centered.", "Avada"),
+			"id" => "footer_widgets_center_content",
+			"std" => 0,
+			"type" => "checkbox");
+
 
 		$of_options[] = array( "name" => __("Number of Footer Columns", "Avada"),
 			"desc" => __("Select the number of columns to display in the footer.", "Avada"),
@@ -1985,6 +1995,12 @@ if( ! function_exists( 'of_options_array') )
 			"desc" => __("Check the box to display the copyright bar.", "Avada"),
 			"id" => "footer_copyright",
 			"std" => 1,
+			"type" => "checkbox");
+
+		$of_options[] = array( "name" => __("Copyright Center Content", "Avada"),
+			"desc" => __("Check the box to display the copyright bar contents centered.", "Avada"),
+			"id" => "footer_copyright_center_content",
+			"std" => 0,
 			"type" => "checkbox");
 
 		$of_options[] = array( "name" => __("Copyright Text", "Avada"),
@@ -2116,7 +2132,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __('Pages', "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "pages",
 			"std" => "<h3 style='margin: 0;'>" . __("Pages", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "end",
@@ -2124,7 +2140,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("Portfolio Posts", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "portfolio",
 			"std" => "<h3 style='margin: 0;'>" . __("Portfolio Posts", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "start",
@@ -2164,7 +2180,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("Portfolio Posts", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "portfolio_posts",
 			"std" => "<h3 style='margin: 0;'>" . __("Portfolio Posts", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "end",
@@ -2172,7 +2188,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("Portfolio Archive/Category Pages", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "portfolio_archive",
 			"std" => "<h3 style='margin: 0;'>" . __("Portfolio Archive/Category Pages", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "start",
@@ -2196,7 +2212,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("Portfolio Archive/Category Pages", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "portfolio_archive",
 			"std" => "<h3 style='margin: 0;'>" . __("Portfolio Archive/Category Pages", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "end",
@@ -2204,7 +2220,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("Blog Posts", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "blog_posts",
 			"std" => "<h3 style='margin: 0;'>" . __("Blog Posts", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "start",
@@ -2244,7 +2260,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("Blog Posts", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "blog_posts",
 			"std" => "<h3 style='margin: 0;'>" . __("Blog Posts", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "end",
@@ -2252,7 +2268,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("Blog Archive/Category Pages", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "blog_archives",
 			"std" => "<h3 style='margin: 0;'>" . __("Blog Archive/Category Pages", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "start",
@@ -2276,7 +2292,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("Blog Archive/Category Pages", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "blog_archives",
 			"std" => "<h3 style='margin: 0;'>" . __("Blog Archive/Category Pages", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "end",
@@ -2284,7 +2300,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("Woocommerce Products", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "woo_products",
 			"std" => "<h3 style='margin: 0;'>" . __("Woocommerce Products", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "start",
@@ -2324,7 +2340,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("Woocommerce Products", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "woo_products",
 			"std" => "<h3 style='margin: 0;'>" . __("Woocommerce Products", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "end",
@@ -2332,7 +2348,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("WooCommerce Archive/Category Pages", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "woo_archives",
 			"std" => "<h3 style='margin: 0;'>" . __("WooCommerce Archive/Category Pages", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "start",
@@ -2356,56 +2372,8 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array( "name" => __("WooCommerce Archive/Category Pages", "Avada"),
 			"desc" => "",
-			"id" => "bbpress_only",
+			"id" => "woo_archives",
 			"std" => "<h3 style='margin: 0;'>" . __("WooCommerce Archive/Category Pages", "Avada") . "</h3>",
-			"icon" => true,
-			"position" => "end",
-			"type" => "accordion");
-
-		$of_options[] = array( "name" => __("BBPress/BuddyPress", "Avada"),
-			"desc" => "",
-			"id" => "bbpress_only",
-			"std" => "<h3 style='margin: 0;'>" . __("BBPress/BuddyPress", "Avada") . "</h3>",
-			"icon" => true,
-			"position" => "start",
-			"type" => "accordion");
-
-		$of_options[] = array( "name" => __("Activate Global Sidebar", "Avada"),
-			"desc" => __("Check the box if you want to use global sidebars on all forum pages. Forums index page, profile page and search page does not need this option checked to display the sidebars selected below.", "Avada"),
-			"id" => "bbpress_global_sidebar",
-			"std" => 0,
-			"type" => "checkbox");
-
-		$of_options[] = array( "name" => __("Global Sidebar 1", "Avada"),
-			"desc" => __("Select sidebar 1 that will display on forum and BuddyPress pages globally.", "Avada"),
-			"id" => "ppbress_sidebar",
-			"std" => "None",
-			"type" => "select",
-			"options" => $sidebar_options
-		);
-
-		$of_options[] = array( "name" => __("Global Sidebar 2", "Avada"),
-			"desc" => __("Select sidebar 2 that will display on forum and BuddyPress pages globally. Sidebar 2 can only be used if sidebar 1 is selected.", "Avada"),
-			"id" => "ppbress_sidebar_2",
-			"std" => "None",
-			"type" => "select",
-			"options" => $sidebar_options
-		);
-
-		$of_options[] = array( "name" => __("Global bbPress/BuddyPress Sidebar Position", "Avada"),
-			"desc" => __("Select the sidebar 1 position for bbPress/BuddyPress pages. If sidebar 2 is selected, it will display on the opposite side.", "Avada"),
-			"id" => "bbpress_sidebar_position",
-			"std" => "Right",
-			"type" => "select",
-			"options" => array(
-				'Right' => 'Right',
-				'Left' => 'Left',
-			));
-
-		$of_options[] = array( "name" => __("BBPress", "Avada"),
-			"desc" => "",
-			"id" => "bbpress_only",
-			"std" => "<h3 style='margin: 0;'>" . __("BBPress", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "end",
 			"type" => "accordion");
@@ -2693,24 +2661,6 @@ if( ! function_exists( 'of_options_array') )
 			"position" => "start",
 			"type" => "accordion");
 
-		$of_options[] = array( "name" => __("Responsive Type", "Avada"),
-			"desc" => __("Check this box if you want site headings to change font size responsively.", "Avada"),
-			"id" => "typography_responsive",
-			"std" => 0,
-			"type" => "checkbox");
-
-		$of_options[] = array( "name" => __("Responsive Typography Sensitivity", "Avada"),
-			"desc" => __("IMPORTANT: you must have \"Responsive Type\" option enabled in theme options > typography for this to work.  Values below 1 decrease resizing, values above 1 increase sizing. ex: .6", "Avada"),
-			"id" => "typography_sensitivity",
-			"std" => "0.6",
-			"type" => "text");
-
-		$of_options[] = array( "name" => __("Mininum Font Size Factor", "Avada"),
-			"desc" => __("Minimum font factor is used to determine minimum distance between headings and body type by a multiplying value. ex: 1.5", "Avada"),
-			"id" => "typography_factor",
-			"std" => "1.5",
-			"type" => "text");
-
 
 		$of_options[] = array( 	"name" => __("Body Font Size", "Avada"),
 						"desc" 		=> __("In pixels, default is 13", "Avada"),
@@ -2911,7 +2861,7 @@ if( ! function_exists( 'of_options_array') )
 				);
 
 		$of_options[] = array( "name" => __("Post Titles Extras Font Size", "Avada"),
-			"desc" => __("Controls Comment, Related Posts and Author Titles. H2 heading. In pixels, default is 18", "Avada"),
+			"desc" => __("Controls Comment, Related Posts and Author Titles. H3 heading. In pixels, default is 18", "Avada"),
 			"id" => "post_titles_extras_font_size",
 			"std" => "18",
 						"min" 		=> "1",
@@ -3466,6 +3416,12 @@ if( ! function_exists( 'of_options_array') )
 			"std" => "transparent",
 			"type" => "color");
 
+		$of_options[] = array( "name" => __("Sidebar Widget Title Background Color", "Avada"),
+			"desc" => __("Controls the background color of the sidebar widget title.", "Avada"),
+			"id" => "sidebar_widget_bg_color",
+			"std" => "transparent",
+			"type" => "color");
+
 		$of_options[] = array( "name" => __("Footer Background Color", "Avada"),
 			"desc" => __("Controls the background color of the footer.", "Avada"),
 			"id" => "footer_bg_color",
@@ -3614,18 +3570,6 @@ if( ! function_exists( 'of_options_array') )
 			"desc" => __("Controls the border color.", "Avada"),
 			"id" => "woo_dropdown_border_color",
 			"std" => "#dbdbdb",
-			"type" => "color");
-
-		$of_options[] = array( "name" => __("bbPress Forum Header Background Color", "Avada"),
-			"desc" => __("Controls the background color for forum header rows.", "Avada"),
-			"id" => "bbp_forum_header_bg",
-			"std" => "#ebeaea",
-			"type" => "color");
-
-		$of_options[] = array( "name" => __("bbPress Forum Border Color", "Avada"),
-			"desc" => __("Controls the border color for all forum surrounding borders.", "Avada"),
-			"id" => "bbp_forum_border_color",
-			"std" => "#ebeaea",
 			"type" => "color");
 
 	   $of_options[] = array( "name" => __("Element Colors", "Avada"),
@@ -3969,7 +3913,7 @@ if( ! function_exists( 'of_options_array') )
 			"type" => "color");
 
 		$of_options[] = array( "name" => __("Mobile Menu Hover Color", "Avada"),
-			"desc" => __("Controls the hover color of the mobile menu items.", "Avada"),
+			"desc" => __("Controls the background hover color of the mobile menu items.", "Avada"),
 			"id" => "mobile_menu_hover_color",
 			"std" => "#f6f6f6",
 			"type" => "color");
@@ -3983,7 +3927,7 @@ if( ! function_exists( 'of_options_array') )
 		$of_options[] = array( "name" => __("Mobile Menu Toggle Color", "Avada"),
 			"desc" => __("Controls the color of the mobile menu toggle icon", "Avada"),
 			"id" => "mobile_menu_toggle_color",
-			"std" => $smof_data['mobile_menu_border_color'],
+			"std" => ( isset( $smof_data['mobile_menu_border_color'] ) ) ? $smof_data['mobile_menu_border_color'] : "#dadada",
 			"type" => "color");
 
 
@@ -3997,6 +3941,18 @@ if( ! function_exists( 'of_options_array') )
 		$of_options[] = array( "name" => __("Shortcodes", "Avada"),
 			"id" => "heading_shortcode_styling",
 			"type" => "heading");
+
+		$of_options[] = array( "name" => __("Animation Offset", "Avada"),
+			"desc" => __("Choose when the animation should start.", "Avada"),
+			"id" => "animation_offset",
+			"std" => 'top-into-view',
+			"type" => "select",
+			"options" => array(
+					'top-into-view' 	=> 'Top of element hits bottom of viewport',
+					'top-mid-of-view' 	=> 'Top of element hits middle of viewport',
+					'bottom-in-view' 	=> 'Bottom of element enters viewport',
+					)
+			);
 
 	   $of_options[] = array( "name" => __("Blog Shortcode", "Avada"),
 			"desc" => "",
@@ -4031,6 +3987,13 @@ if( ! function_exists( 'of_options_array') )
 			"std" => "Large",
 			"type" => "select",
 			"options" => array('Small' => 'Small', 'Medium' => 'Medium', 'Large' => 'Large', 'XLarge' => 'XLarge'));
+
+		$of_options[] = array( "name" => __("Button Span", "Avada"),
+			"desc" => __("Choose to have the button span the full width of its container.", "Avada"),
+			"id" => "button_span",
+			"std" => "no",
+			"type" => "select",
+			"options" => array('yes' => 'Yes', 'no' => 'No'));
 
 		$of_options[] = array( "name" => __("Button Shape", "Avada"),
 			"desc" => __("Select the default shape for buttons.", "Avada"),
@@ -4257,8 +4220,13 @@ if( ! function_exists( 'of_options_array') )
 			"id" => "content_box_icon_hover_type",
 			"std" => "fade",
 			"type" => "select",
-			"options" => array('fade' => __('Fade', 'Avada'), 'slide' => __('Slide', 'Avada'), 'pulsate' => __('Pulsate', 'Avada')));
+			"options" => array('none' => __('None', 'Avada'), 'fade' => __('Fade', 'Avada'), 'slide' => __('Slide', 'Avada'), 'pulsate' => __('Pulsate', 'Avada')));
 
+		$of_options[] = array( "name" => __("Content Box Hover Animation Accent Color", "Avada"),
+			"desc" => __("Controls the accent color for the hover animation.", "Avada"),
+			"id" => "content_box_hover_animation_accent_color",
+			"std" => "",
+			"type" => "color");
 
 		$of_options[] = array( "name" => __("Content Box Link Type", "Avada"),
 			"desc" => __("Select the type of link that should show in the content box.", "Avada"),
@@ -4297,6 +4265,98 @@ if( ! function_exists( 'of_options_array') )
 			"desc" => "",
 			"id" => "cb_shortcode",
 			"std" => "<h3 style='margin: 0;'>" . __("Content Box Shortcode", "Avada") . "</h3>",
+			"position" => "end",
+			"type" => "accordion");
+
+		$of_options[] = array( "name" => __("Countdown Shortcode", "Avada"),
+			"desc" => "",
+			"id" => "countdown_shortcode",
+			"std" => "<h3 style='margin: 0;'>" . __("Countdown Shortcode", "Avada") . "</h3>",
+			"position" => "start",
+			"type" => "accordion");
+
+		$of_options[] = array( "name" => __("Countdown Timezone", "Avada"),
+			"desc" => __("Choose which timezone should be used for the countdown calculation.", "Avada"),
+			"id" => "countdown_timezone",
+			"std" => 'site_time',
+			"type" => "select",
+			"options" => array( 'site_time' => 'Site Timezone', 'user_time' => 'User Timezone' ));
+
+		$of_options[] = array( "name" => __("Countdown Show Weeks", "Avada"),
+			"desc" => __("Select 'yes' to show weeks for longer countdowns.", "Avada"),
+			"id" => "countdown_show_weeks",
+			"std" => 'no',
+			"type" => "select",
+			"options" => array( 'no' => 'No', 'yes' => 'Yes' ));
+
+		$of_options[] = array( "name" => __("Countdown Background Color", "Avada"),
+			"desc" => __("Choose a background color for the countdown wrapping box.", "Avada"),
+			"id" => "countdown_background_color",
+			"std" => "#a0ce4e",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Countdown Background Image", "Avada"),
+			"desc" => __("Select an image or insert an image url to use for the background of the countdown wrapping box.", "Avada"),
+			"id" => "countdown_background_image",
+			"std" => "",
+			"mod" => "",
+			"type" => "media");
+
+		$of_options[] = array( "name" => __("Countdown Background Repeat", "Avada"),
+			"desc" => __("Select how the background image repeats.", "Avada"),
+			"id" => "countdown_background_repeat",
+			"std" => "no-repeat",
+			"type" => "select",
+			"options" => array('repeat' => 'repeat', 'repeat-x' => 'repeat-x', 'repeat-y' => 'repeat-y', 'no-repeat' => 'no-repeat'));
+
+		$of_options[] = array( "name" => __("Countdown Background Position", "Avada"),
+			"desc" => __("Select the position from where background image starts.", "Avada"),
+			"id" => "countdown_background_position",
+			"std" => "center center",
+			"type" => "select",
+			"options" => $body_pos);
+
+		$of_options[] = array( "name" => __("Countdown Counter Box Color", "Avada"),
+			"desc" => __("Choose a background color for the counter boxes.", "Avada"),
+			"id" => "countdown_counter_box_color",
+			"std" => "#333333",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Countdown Counter Text Color", "Avada"),
+			"desc" => __("Choose a text color for the countdown timer.", "Avada"),
+			"id" => "countdown_counter_text_color",
+			"std" => "#ffffff",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Countdown Heading Text Color", "Avada"),
+			"desc" => __("Choose a heading text color for the countdown.", "Avada"),
+			"id" => "countdown_heading_text_color",
+			"std" => "#ffffff",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Countdown Subheading Text Color", "Avada"),
+			"desc" => __("Choose a subheading text color for the countdown.", "Avada"),
+			"id" => "countdown_subheading_text_color",
+			"std" => "#ffffff",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Countdown Link Text Color", "Avada"),
+			"desc" => __("Choose a text color for the countdown link.", "Avada"),
+			"id" => "countdown_link_text_color",
+			"std" => "#ffffff",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Countdown Link Target", "Avada"),
+			"desc" => __("_self = open in same window<br>_blank = open in new window.", "Avada"),
+			"id" => "countdown_link_target",
+			"std" => "_self",
+			"type" => "select",
+			"options" => array('_self' => '_self', '_blank' => '_blank'));
+
+		$of_options[] = array( "name" => __("Countdown Shortcode", "Avada"),
+			"desc" => "",
+			"id" => "countdown_shortcode",
+			"std" => "<h3 style='margin: 0;'>" . __("Countdown Shortcode", "Avada") . "</h3>",
 			"position" => "end",
 			"type" => "accordion");
 
@@ -4607,6 +4667,18 @@ if( ! function_exists( 'of_options_array') )
 			"position" => "start",
 			"type" => "accordion");
 
+		$of_options[] = array( "name" => __("Person Background Color", "Avada"),
+			"desc" => __("Controls the background color.", "Avada"),
+			"id" => "person_background_color",
+			"std" => "",
+			"type" => "color");
+
+			$of_options[] = array( "name" => __("Person Text Color", "Avada"),
+			"desc" => __("Controls the text color.", "Avada"),
+			"id" => "person_text_color",
+			"std" => "",
+			"type" => "color");
+
 		$of_options[] = array( "name" => __("Person Border Color", "Avada"),
 			"desc" => __("Controls the border color of the of the image.", "Avada"),
 			"id" => "person_border_color",
@@ -4628,8 +4700,22 @@ if( ! function_exists( 'of_options_array') )
 		$of_options[] = array( "name" => __("Person Style Color", "Avada"),
 			"desc" => __("For all style types except border. Controls the style color. ", "Avada"),
 			"id" => "person_style_color",
-			"std" => "#000000",
+			"std" => "",
 			"type" => "color");
+
+		$of_options[] = array( "name" => __("Person Content Alignment", "Avada"),
+			"desc" => __("Choose the alignment of content.", "Avada"),
+			"id" => "person_alignment",
+			"std" => "Left",
+			"type" => "select",
+			"options" => array( 'Left' => 'Left', 'Center' => 'Center', 'Right' => 'Right' ));
+
+		$of_options[] = array( "name" => __("Person Icons Position", "Avada"),
+			"desc" => __("Choose the social icon position.", "Avada"),
+			"id" => "person_icon_position",
+			"std" => 'Top',
+			"type" => "select",
+			"options" => array( 'Top' => 'Top', 'Bottom' => 'Bottom' ));
 
 		$of_options[] = array( "name" => __("Person Shortcode", "Avada"),
 			"desc" => "",
@@ -4906,7 +4992,7 @@ if( ! function_exists( 'of_options_array') )
 			"type" => "color");
 
 		$of_options[] = array( "name" => __("Social Links Icons Boxed Radius", "Avada"),
-			"desc" => __("Box radius for the social icons. In pixels, ex: 4px.", "Avada"),
+			"desc" => __('Box radius for the social icons. In px or %, ex: 5px or 10% or "round".', "Avada"),
 			"id" => "social_links_boxed_radius",
 			"std" => "4px",
 			"type" => "text");
@@ -5077,18 +5163,18 @@ if( ! function_exists( 'of_options_array') )
 			"id" => "title_border_color",
 			"std" => "#e0dede",
 			"type" => "color");
-			
+
 		$of_options[] = array( "name" => __("Title Top Margin", "Avada"),
 			"desc" => __("Spacing above the title. In px or em, e.g. 10px.", "Avada"),
 			"id" => "title_top_margin",
 			"std" => "",
 			"type" => "text");
-			
+
 		$of_options[] = array( "name" => __("Title Bottom Margin", "Avada"),
 			"desc" => __("Spacing below the title. In px or em, e.g. 10px.", "Avada"),
 			"id" => "title_bottom_margin",
 			"std" => "",
-			"type" => "text");				
+			"type" => "text");
 
 		$of_options[] = array( "name" => __("Title Shortcode", "Avada"),
 			"desc" => "",
@@ -5123,6 +5209,37 @@ if( ! function_exists( 'of_options_array') )
 			"position" => "end",
 			"type" => "accordion");
 
+	   $of_options[] = array( "name" => __("User Login Shortcodes", "Avada"),
+			"desc" => "",
+			"id" => "login_shortcode",
+			"std" => "<h3 style='margin: 0;'>" . __("User Login Shortcodes", "Avada") . "</h3>",
+			"position" => "start",
+			"type" => "accordion");
+
+		$of_options[] = array( "name" => __("User Login Text Align", "Avada"),
+			"desc" => __('Choose the alignment of all content parts. "Text Flow" follows the default text align of the site. "Center" will center all elements.', "Avada"),
+			"id" => "user_login_text_align",
+			"std" => "center",
+			"type" => "select",
+			"options" => array(
+				'textflow' => 'Text Flow',
+				'center' => 'Center',
+			));
+
+		$of_options[] = array( "name" => __("User Login Form Backgound Color", "Avada"),
+			"desc" => __("Choose a background color for the form wrapping box.", "Avada"),
+			"id" => "user_login_form_background_color",
+			"std" => "#f6f6f6",
+			"type" => "color");
+
+	   $of_options[] = array( "name" => __("User Login Shortcodes", "Avada"),
+			"desc" => "",
+			"id" => "login_shortcode",
+			"std" => "<h3 style='margin: 0;'>" . __("User Login Shortcodes", "Avada") . "</h3>",
+			"position" => "end",
+			"type" => "accordion");
+
+
 		$of_options[] = array( "name" => __("Blog", "Avada"),
 			"id" => "heading_blog",
 			"type" => "heading");
@@ -5135,13 +5252,13 @@ if( ! function_exists( 'of_options_array') )
 			"type" => "info");
 
 		$of_options[] = array( "name" => __("Blog Page Title", "Avada"),
-			"desc" => __("This text will display in the page title bar of the assigned blog page.", "Avada"),
+			"desc" => __("This text will display in the page title bar of the assigned blog page. Note: This option only works if your front page is set to display your latest post in reading settings.", "Avada"),
 			"id" => "blog_title",
 			"std" => "Blog",
 			"type" => "text");
 
 		$of_options[] = array( "name" => __("Blog Page Subtitle", "Avada"),
-			"desc" => __("This text will display as subheading in the page title bar of the assigned blog page.", "Avada"),
+			"desc" => __("This text will display as subheading in the page title bar of the assigned blog page. Note: This option only works if your front page is set to display your latest post in reading settings.", "Avada"),
 			"id" => "blog_subtitle",
 			"std" => "",
 			"type" => "text");
@@ -5259,6 +5376,12 @@ if( ! function_exists( 'of_options_array') )
 			"std" => "<h3 style='margin: 0;'>" . __("Blog Single Post Page Options", "Avada") . "</h3>",
 			"icon" => true,
 			"type" => "info");
+
+		$of_options[] = array( "name" => __("Use 100% Width Page", "Avada"),
+			"desc" => __("Choose to set posts to 100% browser width.", "Avada"),
+			"id" => "blog_width_100",
+			"std" => 0,
+			"type" => "checkbox");
 
 		$of_options[] = array( "name" => __("Featured Image / Video on Single Post Page", "Avada"),
 			"desc" => __("Check the box to display featured images and videos on single post pages.", "Avada"),
@@ -5491,7 +5614,7 @@ if( ! function_exists( 'of_options_array') )
 
 
 		$of_options[] = array( "name" => __("Use 100% Width Page", "Avada"),
-			"desc" => __("Choose to set this post to 100% browser width.", "Avada"),
+			"desc" => __("Choose to set posts to 100% browser width.", "Avada"),
 			"id" => "portfolio_width_100",
 			"std" => 0,
 			"type" => "checkbox");
@@ -5549,6 +5672,12 @@ if( ! function_exists( 'of_options_array') )
 			"std" => "<h3 style='margin: 0;'>" . __("Social Share Box Icon Options", "Avada") . "</h3>",
 			"icon" => true,
 			"type" => "info");
+
+		$of_options[] = array( "name" => __("Social Sharing Box Tagline", "Avada"),
+			"desc" => __("Insert a tagline for the social sharing boxes.", "Avada"),
+			"id" => "sharing_social_tagline",
+			"std" => "Share This Story, Choose Your Platform!",
+			"type" => "text");
 
 		$of_options[] = array( "name" => __("Social Share Box Background Color", "Avada"),
 			"desc" => __("Controls the background color of the social share box.", "Avada"),
@@ -5912,6 +6041,24 @@ if( ! function_exists( 'of_options_array') )
 			"std" => 0,
 			"type" => "checkbox");
 
+		$of_options[] = array( "name" => __("Navigation Box Width", "Avada"),
+			"desc" => __("Enter a pixel value for width, ex: 30px", "Avada"),
+			"id" => "slider_nav_box_width",
+			"std" => "30px",
+			"type" => "text");
+
+		$of_options[] = array( "name" => __("Navigation Box Height", "Avada"),
+		"desc" => __("Enter a pixel value for height, ex: 30px", "Avada"),
+		"id" => "slider_nav_box_height",
+		"std" => "30px",
+		"type" => "text");
+
+		$of_options[] = array( "name" => __("Navigation Arrow Size", "Avada"),
+		"desc" => __("Enter a pixel value for the arrow size, ex: 14px", "Avada"),
+		"id" => "slider_arrow_size",
+		"std" => "14px",
+		"type" => "text");
+
 		$of_options[] = array( "name" => __("Elastic Slider", "Avada"),
 			"id" => "heading_elastic_slider",
 			"type" => "heading");
@@ -6126,6 +6273,15 @@ if( ! function_exists( 'of_options_array') )
 			"id" => "email_address",
 			"std" => "",
 			"type" => "text");
+			
+		$of_options[] = array( "name" => __("Contact Form Commment Area Position", "Avada"),
+			"desc" => __("Set the position of the contact form comment area with respect to the other input fields.", "Avada"),
+			"id" => "contact_comment_position",
+			"std" => "below",
+			"type" => "select",
+			"options" => array('above' => 'Above', 'below' => 'Below'));			
+			
+			
 
 		$of_options[] = array( "name" => __("ReCaptcha", "Avada"),
 			"desc" => "",
@@ -6196,7 +6352,7 @@ if( ! function_exists( 'of_options_array') )
 			"type" => "text");
 
 		$of_options[] = array( "name" => __("Google Map Address", "Avada"),
-			"desc" => __("Single address ex: 775 New York Ave, Brooklyn, Kings, New York 11203. <br />For multiple markers, separate the addresses with the | symbol.<br /> ex: Address 1|Address 2|Address 3.<br />You can also use coordinates. ex: latlng=40.714224,-73.961452.", "Avada"),
+			"desc" => __("Add your address to the location you wish to show on the map. Single address ex: 775 New York Ave, Brooklyn, Kings, New York 11203. If the location is off, please try to use long/lat coordinates with latlng=. ex: latlng=12.381068,-1.492711.<br />For multiple addresses, separate addresses by using the | symbol. ex: Address 1|Address 2|Address 3.", "Avada"),
 			"id" => "gmap_address",
 			"std" => "775 New York Ave, Brooklyn, Kings, New York 11203",
 			"type" => "textarea");
@@ -6360,19 +6516,13 @@ if( ! function_exists( 'of_options_array') )
 			"id" => "search_featured_images",
 			"std" => 0,
 			"type" => "checkbox");
-			
+
 		$of_options[] = array( "name" => __("Search Field Position", "Avada"),
 			"desc" => __("Select the position of the search bar on the search results page.", "Avada"),
 			"id" => "search_new_search_position",
 			"std" => "top",
 			"type" => "select",
-			"options" => array('top' => 'Above Search Results', 'bottom' => 'Below Search Results', 'hidden' => 'Hide'));			
-
-		$of_options[] = array( "name" => __("Search Field Height", "Avada"),
-			"desc" => __("Controls the height of the search field widget and menu item. In pixels, ex: 33px.", "Avada"),
-			"id" => "search_form_height",
-			"std" => "33px",
-			"type" => "text");
+			"options" => array('top' => 'Above Search Results', 'bottom' => 'Below Search Results', 'hidden' => 'Hide'));
 
 // Theme Specific Options
 		$of_options[] = array( "name" => __("Extra", "Avada"),
@@ -6393,12 +6543,12 @@ if( ! function_exists( 'of_options_array') )
 			"options" => array('Hover' => 'Hover', 'Click' => 'Click'),
 			"type" => "select");
 
-        $of_options[] = array(
-            "name" => __("Image Placeholders", "Avada"),
-            "desc" => __("Check the box to enable the showing of posts without a featured image on portfolio archives and related posts/projects carousels.", "Avada"),
-            "id" => "featured_image_placeholder",
-            "std" => 1,
-            "type" => "checkbox");
+		$of_options[] = array(
+			"name" => __("Image Placeholders", "Avada"),
+			"desc" => __("Check the box to enable the showing of posts without a featured image on portfolio archives and related posts/projects carousels.", "Avada"),
+			"id" => "featured_image_placeholder",
+			"std" => 1,
+			"type" => "checkbox");
 
 		  $of_options[] = array( "name" => __("Basis for Excerpt Length", "Avada"),
 			"desc" => __("Choose if the excerpt length should be based on words or characters.", "Avada"),
@@ -6455,6 +6605,23 @@ if( ! function_exists( 'of_options_array') )
 			"id" => "social_icons_new",
 			"std" => 1,
 			"type" => "checkbox");
+
+		$of_options[] = array( "name" => __("Form Input and Select Height", "Avada"),
+			"desc" => __("This option controls the height of all search, form input and select fields. ex: 20px.", "Avada"),
+			"id" => "form_input_height",
+			"std" => "29px",
+			"type" => "text");
+
+		$of_options[] = array( "name" => __("WordPress jpeg Quality", "Avada"),
+			"desc" 		=> __("This option controls the quality of the generated image sizes for every uploaded image. Ranges between 0 and 100 percent. Higher values lead to better image qualities but also higher file sizes.<br />NOTE: After changing this value, please (install and) run", "Avada" ) . ' <a href="' . admin_url() . 'plugin-install.php?tab=plugin-information&amp;plugin=regenerate-thumbnails&amp;TB_iframe=true&amp;width=830&amp;height=472" class="thickbox" title="' . __( "Regenerate Thumbnails", "Avada" ) . '">' . __( "Regenerate Thumbnails", "Avada" ) .'</a>',
+			"id" 		=> "pw_jpeg_quality",
+			"std" 		=> "90",
+			"min" 		=> "1",
+			"step"		=> "1",
+			"max" 		=> "100",
+			"edit"		=> "yes",
+			"type" 		=> "sliderui"
+		);
 
 		$of_options[] = array( "name" => __( "Related Posts / Projects", "Avada" ),
 			"desc" => "",
@@ -6549,7 +6716,7 @@ if( ! function_exists( 'of_options_array') )
 			"desc" => __("Select from which direction the rollover should start.", "Avada"),
 			"id" => "image_rollover_direction",
 			"std" => 'left',
-			"options" => array('left' => 'Left', 'right' => 'Right', 'bottom' => 'Bottom', 'top' => 'Top', 'center_horiz' => 'Center Horizontal', 'center_vertical' => 'Center Vertical'),
+			"options" => array('fade' => 'Fade', 'left' => 'Left', 'right' => 'Right', 'bottom' => 'Bottom', 'top' => 'Top', 'center_horiz' => 'Center Horizontal', 'center_vertical' => 'Center Vertical'),
 			"type" => "select");
 
 		$of_options[] = array( "name" => __("Rollover Image Icon Font Size", "Avada"),
@@ -6588,6 +6755,25 @@ if( ! function_exists( 'of_options_array') )
 			"std" => 0,
 			"type" => "checkbox");
 
+		$of_options[] = array( "name" => __("Pagination Options", "Avada"),
+			"desc" => "",
+			"id" => "rollovers",
+			"std" => "<h3 style='margin: 0;'>" . __("Pagination Options", "Avada") . "</h3>",
+			"icon" => true,
+			"type" => "info");
+
+		$of_options[] = array( "name" => __("Pagination Box Padding", "Avada"),
+			"desc" => __("Controls the padding inside the box, ex: 10px or 10%.", "Avada"),
+			"id" => "pagination_box_padding",
+			"std" => "2px 6px",
+			"type" => "text");
+
+		$of_options[] = array( "name" => __("Pagination Text Display", "Avada"),
+			"desc" => __("Controls if \"Previous\" and \"Next\" text is displayed or not.", "Avada"),
+			"id" => "pagination_text_display",
+			"std" => 1,
+			"type" => "checkbox");
+
 		$of_options[] = array( "name" => __("Advanced", "Avada"),
 			"id" => "heading_advanced",
 			"type" => "heading");
@@ -6601,7 +6787,7 @@ if( ! function_exists( 'of_options_array') )
 
 		$of_options[] = array(
 			"name" => __("Disable Smooth Scrolling", "Avada"),
-			"desc" => __("Check to disable smooth scrolling.", "Avada"),
+			"desc" => __("Check to disable smooth scrolling. This will remove the dark scrollbar and revert to the default browser scrollbar style.", "Avada"),
 			"id" => "smooth_scrolling",
 			"std" => 1,
 			"type" => "checkbox");
@@ -6647,6 +6833,12 @@ if( ! function_exists( 'of_options_array') )
 			"desc" => __("Check the box to disable CSS animations on mobiles only.", "Avada"),
 			"id" => "disable_mobile_animate_css",
 			"std" => 1,
+			"type" => "checkbox");
+
+		$of_options[] = array( "name" => __("Disable CSS Image Hover Animations on Mobiles", "Avada"),
+			"desc" => __("Check the box to disable CSS image hover animations on mobiles.", "Avada"),
+			"id" => "disable_mobile_image_hovers",
+			"std" => 0,
 			"type" => "checkbox");
 
 		$of_options[] = array( "name" => __("Disable Youtube API Scripts", "Avada"),
@@ -6722,10 +6914,10 @@ if( ! function_exists( 'of_options_array') )
 			"type" => "checkbox");
 
 
-		$of_options[] = array( "name" => __("Compile Dynamic CSS to file", "Avada"),
+		$of_options[] = array( "name" => __("Dynamic CSS", "Avada"),
 			"desc" => "",
 			"id" => "dynamic_css_compiler_heading",
-			"std" => "<h3 style='margin: 0;'>Compile Dynamic CSS to file</h3>",
+			"std" => "<h3 style='margin: 0;'>Dynamic CSS</h3>",
 			"icon" => true,
 			"position" => "start",
 			"type" => "accordion");
@@ -6736,16 +6928,26 @@ if( ! function_exists( 'of_options_array') )
 			"std" => 0,
 			"type" => "checkbox");
 
+		$count_posts = wp_count_posts( 'post' );
+		$count_pages = wp_count_posts( 'page' );
+		$count_totals = ( intval( $count_posts->publish ) + intval( $count_pages->publish ) );
+
+		$of_options[] = array( "name" => __("Enable db-caching for dynamic CSS", "Avada"),
+			"desc" => __('Check the box to enable caching the dynamic CSS in your database.', "Avada"),
+			"id" => "dynamic_css_db_caching",
+			"std" => ( 200 < $count_totals ) ? 0 : 1,
+			"type" => "checkbox");
+
 		$of_options[] = array( "name" => __("Advanced: Cache Server IP", "Avada"),
 			"desc" => __("For unique cases where you are using cloudflare and a cache server e.g. Varnish. Please enter your cache server IP to clear the theme options dynamic CSS cache. Please consult with your server admin for help.", "Avada"),
 			"id" => "cache_server_ip",
 			"std" => "",
 			"type" => "text");
 
-		$of_options[] = array( "name" => __("Dynamic CSS Compiler", "Avada"),
+		$of_options[] = array( "name" => __("Dynamic CSS", "Avada"),
 			"desc" => "",
 			"id" => "dynamic_css_compiler_heading",
-			"std" => "<h3 style='margin: 0;'>" . __("Compile to file all the dynamic CSS generated by theme options.", "Avada") . "</h3>",
+			"std" => "<h3 style='margin: 0;'>" . __("Dynamic CSS.", "Avada") . "</h3>",
 			"icon" => true,
 			"position" => "end",
 			"type" => "accordion");
@@ -6753,6 +6955,17 @@ if( ! function_exists( 'of_options_array') )
 		$of_options[] = array( "name" => __("WooCommerce", "Avada"),
 			"id" => "heading_woocommerce",
 			"type" => "heading");
+
+		$of_options[] = array( "name" => __("WooCommerce Product Box Design", "Avada"),
+			"desc" => __("Select the design for the product boxes. This will automatically alter the grid element and grid box colors.", "Avada"),
+			"id" => "woocommerce_product_box_design",
+			"std" => "classic",
+			"type" => "select",
+			"options" => array(
+				"classic" => "Classic",
+				"clean" => "Clean"
+				)
+			);
 
 		$of_options[] = array( "name" => __("Woocommerce Number of Products per Page", "Avada"),
 			"desc" => __("Insert the number of products to display per page.", "Avada"),
@@ -6822,6 +7035,12 @@ if( ! function_exists( 'of_options_array') )
 			"std" => 0,
 			"type" => "checkbox");
 
+		$of_options[] = array( "name" => __("Disable Woocommerce Shop Page Crossfade Image Effect", "Avada"),
+			"desc" => __("Check the box to disable the product crossfade image effect on the shop page.", "Avada"),
+			"id" => "woocommerce_disable_crossfade_effect",
+			"std" => 0,
+			"type" => "checkbox");
+
 		$of_options[] = array( "name" => __("Use Woocommerce One Page Checkout", "Avada"),
 			"desc" => __("Check the box to use Avada's one page checkout template.", "Avada"),
 			"id" => "woocommerce_one_page_checkout",
@@ -6834,16 +7053,10 @@ if( ! function_exists( 'of_options_array') )
 			"std" => 1,
 			"type" => "checkbox");
 
-		$of_options[] = array( "name" => __("Show Woocommerce My Account Link in Secondary Menu", "Avada"),
-			"desc" => __("Check the box to show My Account link, uncheck to disable. Only works if a top menu is assigned in header content 1-2.  Not compatible with Ubermenu.", "Avada"),
-			"id" => "woocommerce_acc_link_top_nav",
-			"std" => 1,
-			"type" => "checkbox");
-
-		$of_options[] = array( "name" => __("Show Woocommerce Cart Icon in Secondary Menu", "Avada"),
-			"desc" => __("Check the box to show the Cart icon, uncheck to disable. Only works if a top menu is assigned in header content 1-2.  Not compatible with Ubermenu. ", "Avada"),
-			"id" => "woocommerce_cart_link_top_nav",
-			"std" => 1,
+		$of_options[] = array( "name" => __("WooCommerce Menu Cart Icon Counter", "Avada"),
+			"desc" => __("Choose to show or hide the cart counter circle.", "Avada"),
+			"id" => "woocommerce_cart_counter",
+			"std" => 0,
 			"type" => "checkbox");
 
 		$of_options[] = array( "name" => __("Show Woocommerce My Account Link in Main Menu", "Avada"),
@@ -6855,6 +7068,18 @@ if( ! function_exists( 'of_options_array') )
 		$of_options[] = array( "name" => __("Show Woocommerce Cart Icon in Main Menu", "Avada"),
 			"desc" => __("Check the box to show the Cart icon, uncheck to disable. Please note these will not show with Ubermenu.", "Avada"),
 			"id" => "woocommerce_cart_link_main_nav",
+			"std" => 1,
+			"type" => "checkbox");
+
+		$of_options[] = array( "name" => __("Show Woocommerce My Account Link in Secondary Menu", "Avada"),
+			"desc" => __("Check the box to show My Account link, uncheck to disable. Only works if a top menu is assigned in header content 1-2.  Not compatible with Ubermenu.", "Avada"),
+			"id" => "woocommerce_acc_link_top_nav",
+			"std" => 1,
+			"type" => "checkbox");
+
+		$of_options[] = array( "name" => __("Show Woocommerce Cart Icon in Secondary Menu", "Avada"),
+			"desc" => __("Check the box to show the Cart icon, uncheck to disable. Only works if a top menu is assigned in header content 1-2.  Not compatible with Ubermenu. ", "Avada"),
+			"id" => "woocommerce_cart_link_top_nav",
 			"std" => 1,
 			"type" => "checkbox");
 
@@ -6881,6 +7106,316 @@ if( ! function_exists( 'of_options_array') )
 			"id" => "woo_acc_msg_2",
 			"std" => "E-mail them at info@yourshop.com",
 			"type" => "textarea");
+
+		$of_options[] = array( "name" => __("bbPress", "Avada"),
+			"id" => "heading_bbpress",
+			"type" => "heading");
+
+		$of_options[] = array( "name" => __("bbPress Forum Header Background Color", "Avada"),
+			"desc" => __("Controls the background color for forum header rows.", "Avada"),
+			"id" => "bbp_forum_header_bg",
+			"std" => "#ebeaea",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("bbPress Forum Header Font Color", "Avada"),
+			"desc" => __("CControls the font color for the text in the forum header rows.", "Avada"),
+			"id" => "bbp_forum_header_font_color",
+			"std" => "#747474",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("bbPress Forum Border Color", "Avada"),
+			"desc" => __("Controls the border color for all forum surrounding borders.", "Avada"),
+			"id" => "bbp_forum_border_color",
+			"std" => "#ebeaea",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("BBPress/BuddyPress", "Avada"),
+			"desc" => "",
+			"id" => "bbpress_sidebars",
+			"std" => "<h3 style='margin: 0;'>" . __("BBPress/BuddyPress", "Avada") . "</h3>",
+			"icon" => true,
+			"position" => "start",
+			"type" => "accordion");
+
+		$of_options[] = array( "name" => __("Activate Global Sidebar", "Avada"),
+			"desc" => __("Check the box if you want to use global sidebars on all forum pages. Forums index page, profile page and search page does not need this option checked to display the sidebars selected below.", "Avada"),
+			"id" => "bbpress_global_sidebar",
+			"std" => 0,
+			"type" => "checkbox");
+
+		$of_options[] = array( "name" => __("Global Sidebar 1", "Avada"),
+			"desc" => __("Select sidebar 1 that will display on forum and BuddyPress pages globally.", "Avada"),
+			"id" => "ppbress_sidebar",
+			"std" => "None",
+			"type" => "select",
+			"options" => $sidebar_options
+		);
+
+		$of_options[] = array( "name" => __("Global Sidebar 2", "Avada"),
+			"desc" => __("Select sidebar 2 that will display on forum and BuddyPress pages globally. Sidebar 2 can only be used if sidebar 1 is selected.", "Avada"),
+			"id" => "ppbress_sidebar_2",
+			"std" => "None",
+			"type" => "select",
+			"options" => $sidebar_options
+		);
+
+		$of_options[] = array( "name" => __("Global bbPress/BuddyPress Sidebar Position", "Avada"),
+			"desc" => __("Select the sidebar 1 position for bbPress/BuddyPress pages. If sidebar 2 is selected, it will display on the opposite side.", "Avada"),
+			"id" => "bbpress_sidebar_position",
+			"std" => "Right",
+			"type" => "select",
+			"options" => array(
+				'Right' => 'Right',
+				'Left' => 'Left',
+			));
+
+		$of_options[] = array( "name" => __("BBPress", "Avada"),
+			"desc" => "",
+			"id" => "bbpress_sidebars",
+			"std" => "<h3 style='margin: 0;'>" . __("BBPress", "Avada") . "</h3>",
+			"icon" => true,
+			"position" => "end",
+			"type" => "accordion");
+
+
+		$of_options[] = array( "name" => __("Events Calendar", "Avada"),
+			"id" => "heading_ec",
+			"type" => "heading");
+
+		$of_options[] = array( "name" => __("Primary Color Overlay Text Color", "Avada"),
+			"desc" => __("Text color for when primary color is in the background.", "Avada"),
+			"id" => "primary_overlay_text_color",
+			"std" => "#ffffff",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Events Filter Bar Background Color", "Avada"),
+			"desc" => __("Controls the background color for the events calendar filter bar.", "Avada"),
+			"id" => "ec_bar_bg_color",
+			"std" => "#efeded",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Event Filter Bar Text Color", "Avada"),
+			"desc" => __("Controls the color of the event filter bar text.", "Avada"),
+			"id" => "ec_bar_text_color",
+			"std" => "#747474",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Monthly Calendar Heading Background Color", "Avada"),
+			"desc" => __("Controls the background color for the numbered heading.", "Avada"),
+			"id" => "ec_calendar_heading_bg_color",
+			"std" => "#b2b2b2",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Monthly Calendar Background Color", "Avada"),
+			"desc" => __("Controls the background color of each day in the calendar.", "Avada"),
+			"id" => "ec_calendar_bg_color",
+			"std" => "#b2b2b2",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Tooltip Background Color", "Avada"),
+			"desc" => __("Controls the background color for the event tooltip.", "Avada"),
+			"id" => "ec_tooltip_bg_color",
+			"std" => "#ffffff",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Tooltip Body Text Color", "Avada"),
+			"desc" => __("Controls the body text color of the tooltip.", "Avada"),
+			"id" => "ec_tooltip_body_color",
+			"std" => "#747474",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Border Color", "Avada"),
+			"desc" => __("Controls the various border color around events calendar.", "Avada"),
+			"id" => "ec_border_color",
+			"std" => "#e0dede",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Featured Image Hover Type", "Avada"),
+			"desc" => __("Choose the hover type for featured images.", "Avada"),
+			"id" => "ec_hover_type",
+			"std" => "none",
+			"type" => "select",
+			"options" => array( 'none' => 'none', 'zoomin' => 'Zoom In', 'zoomout' => 'Zoom Out', 'liftup' => 'Lift Up' ));
+
+		$of_options[] = array( "name" => __("Image Background Size For List View", "Avada"),
+			"desc" => __("Select if the event image displays auto or covered in the list view. All other areas show the image as auto.", "Avada"),
+			"id" => "ec_bg_list_view",
+			"std" => "cover",
+			"type" => "select",
+			"options" => array( 'cover' => 'cover', 'auto' => 'auto' ));
+
+	   $of_options[] = array( "name" => __("Single Event Detail Section", "Avada"),
+			"desc" => "",
+			"id" => "ec_single_event_detail_section_heading",
+			"std" => "<h3 style='margin: 0;'>" . __("Single Event Detail Section", "Avada") . "</h3>",
+			"position" => "start",
+			"type" => "accordion");
+
+		$of_options[] = array( "name" => __("Social Sharing Box", "Avada"),
+			"desc" => __("Check the box to display the social sharing box.", "Avada"),
+			"id" => "events_social_sharing_box",
+			"std" => 1,
+			"type" => "checkbox");
+
+		$of_options[] = array( "name" => __("Sidebar Background Color", "Avada"),
+			"desc" => __("Controls the background color of the sidebar.", "Avada"),
+			"id" => "ec_sidebar_bg_color",
+			"std" => "#f6f6f6",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Sidebar Padding", "Avada"),
+			"desc" => __("Enter a pixel or percentage based value, ex: 5px or 5%", "Avada"),
+			"id" => "ec_sidebar_padding",
+			"std" => "4%",
+			"type" => "text");
+
+		$of_options[] = array( "name" => __("Sidebar Widget Heading Font Size", "Avada"),
+			"desc" => __("In pixels, default is 13", "Avada"),
+			"id" => "ec_sidew_font_size",
+			"std" => "17",
+						"min" 		=> "1",
+						"step"		=> "1",
+						"max" 		=> "100",
+						"edit"		=> "yes",
+						"type" 		=> "sliderui"
+				);
+
+		$of_options[] = array( "name" => __("Sidebar Widget Title Background Color", "Avada"),
+			"desc" => __("Controls the background color of the sidebar widget title.", "Avada"),
+			"id" => "ec_sidebar_widget_bg_color",
+			"std" => "#aoce4e",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Sidebar Widget Headings Color", "Avada"),
+			"desc" => __("Controls the text color of the sidebar widget headings.", "Avada"),
+			"id" => "ec_sidebar_heading_color",
+			"std" => "#333333",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Sidebar Text Font Size", "Avada"),
+			"desc" => __("In pixels, default is 14", "Avada"),
+			"id" => "ec_text_font_size",
+			"std" => "14",
+						"min" 		=> "1",
+						"step"		=> "1",
+						"max" 		=> "100",
+						"edit"		=> "yes",
+						"type" 		=> "sliderui"
+				);
+
+		$of_options[] = array( "name" => __("Sidebar Text Color", "Avada"),
+			"desc" => __("Controls the text color of the sidebar.", "Avada"),
+			"id" => "ec_sidebar_text_color",
+			"std" => "#747474",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Sidebar Link Color", "Avada"),
+			"desc" => __("Controls the link color of the sidebar.", "Avada"),
+			"id" => "ec_sidebar_link_color",
+			"std" => "#333333",
+			"type" => "color");
+
+		$of_options[] = array( "name" => __("Sidebar Divider Color", "Avada"),
+			"desc" => __("Controls the divider color of the sidebar.", "Avada"),
+			"id" => "ec_sidebar_divider_color",
+			"std" => "#e8e8e8",
+			"type" => "color");
+	   $of_options[] = array( "name" => __("Single Event Detail Section", "Avada"),
+			"desc" => "",
+			"id" => "ec_single_event_detail_section_heading",
+			"std" => "<h3 style='margin: 0;'>" . __("Single Event Detail Section", "Avada") . "</h3>",
+			"position" => "end",
+			"type" => "accordion");
+
+	   $of_options[] = array( "name" => __("Events Content + Sidebar Width", "Avada"),
+			"desc" => "",
+			"id" => "ec_content_sidebar_width",
+			"std" => "<h3 style='margin: 0;'>" . __("Events Content + Sidebar Width", "Avada") . "</h3><p>" . __("These settings are used on pages with 1 sidebar. Total values must add up to 100.", "Avada") . "</p>",
+			"position" => "start",
+			"type" => "accordion");
+
+		$of_options[] = array( "name" => __("Sidebar Width", "Avada"),
+			"desc" => __("Controls the width of the sidebar. In px or %, ex: 100% or 1170px.", "Avada"),
+			"id" => "ec_sidebar_width",
+			"std" => "32%",
+			"type" => "text");
+
+	   $of_options[] = array( "name" => __("Events Content + Sidebar Width", "Avada"),
+			"desc" => "",
+			"id" => "ec_content_sidebar_width",
+			"std" => "<h3 style='margin: 0;'>" . __("Events Content + Sidebar Width", "Avada") . "</h3><p>" . __("These settings are used on pages with 1 sidebar. Total values must add up to 100.", "Avada") . "</p>",
+			"position" => "end",
+			"type" => "accordion");
+
+	   $of_options[] = array( "name" => __("Events Content + Sidebar + Sidebar Width", "Avada"),
+			"desc" => "",
+			"id" => "ec_content_sidebar_sidebar_width",
+			"std" => "<h3 style='margin: 0;'>" . __("Events Content + Sidebar + Sidebar Width", "Avada") . "</h3><p>" . __("These settings are used on pages with 2 sidebars. Total values must add up to 100.", "Avada") . "</p>",
+			"position" => "start",
+			"type" => "accordion");
+
+		$of_options[] = array( "name" => __("Sidebar 1 Width", "Avada"),
+			"desc" => __("Controls the width of the sidebar 1. In px or %, ex: 100% or 1170px.", "Avada"),
+			"id" => "ec_sidebar_2_1_width",
+			"std" => "21%",
+			"type" => "text");
+
+		$of_options[] = array( "name" => __("Sidebar 2 Width", "Avada"),
+			"desc" => __("Controls the width of the sidebar 2. In px or %, ex: 100% or 1170px.", "Avada"),
+			"id" => "ec_sidebar_2_2_width",
+			"std" => "21%",
+			"type" => "text");
+
+	   $of_options[] = array( "name" => __("Events Content + Sidebar + Sidebar Width", "Avada"),
+			"desc" => "",
+			"id" => "ec_content_sidebar_sidebar_width",
+			"std" => "<h3 style='margin: 0;'>" . __("Events Content + Sidebar + Sidebar Width", "Avada") . "</h3><p>" . __("These settings are used on pages with 2 sidebars. Total values must add up to 100.", "Avada") . "</p>",
+			"position" => "end",
+			"type" => "accordion");
+
+
+	   $of_options[] = array( "name" => __("Events Global Sidebar", "Avada"),
+			"desc" => "",
+			"id" => "ec_global_sidebar_heading",
+			"std" => "<h3 style='margin: 0;'>" . __("Events Global Sidebar", "Avada") . "</h3>",
+			"position" => "start",
+			"type" => "accordion");
+
+		$of_options[] = array( "name" => __("Activate Global Sidebar", "Avada"),
+			"desc" => __("Check the box if you want to use a global sidebar on all event pages. This option overrides the page options.", "Avada"),
+			"id" => "ec_global_sidebar",
+			"std" => 0,
+			"type" => "checkbox");
+
+		$of_options[] = array( "name" => __("Global Sidebar 1", "Avada"),
+			"desc" => __("Select sidebar 1 that will display on all event pages.", "Avada"),
+			"id" => "ec_sidebar",
+			"std" => "None",
+			"type" => "select",
+			"options" => $sidebar_options
+		);
+
+		$of_options[] = array( "name" => __("Global Sidebar 2", "Avada"),
+			"desc" => __("Select sidebar 2 that will display on all event pages. Sidebar 2 can only be used if sidebar 1 is selected", "Avada"),
+			"id" => "ec_sidebar_2",
+			"std" => "None",
+			"type" => "select",
+			"options" => $sidebar_options
+		);
+
+		$of_options[] = array( "name" => __("Global Sidebar Position", "Avada"),
+			"desc" => __("Select the sidebar 1 position for event pages. If sidebar 2 is selected, it will display on the opposite side.", "Avada"),
+			"id" => "ec_sidebar_pos",
+			"std" => "Right",
+			"options" => array('Right' => 'Right', 'Left' => 'Left'),
+			"type" => "select");
+
+	   $of_options[] = array( "name" => __("Events Global Sidebar", "Avada"),
+			"desc" => "",
+			"id" => "ec_global_sidebar_heading",
+			"std" => "<h3 style='margin: 0;'>" . __("Events Global Sidebar", "Avada") . "</h3>",
+			"position" => "end",
+			"type" => "accordion");
 
 		$of_options[] = array( "name" => __("Custom CSS", "Avada"),
 			"id" => "heading_custom_css",
@@ -6932,9 +7467,9 @@ if (!function_exists('of_options'))
 {
 	  function of_options()
 	  {
-	  	global $of_options;
+		global $of_options;
 
-	  	$of_options = of_options_array();
+		$of_options = of_options_array();
 		// End Avada Edit
 	  }//End function: of_options()
 }//End chack if function exists: of_options()

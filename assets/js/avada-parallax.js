@@ -182,8 +182,19 @@ if ( typeof _fusionImageParallaxImages === 'undefined' ) {
 				}
 */
 
+                var $target = this.settings.target.find( '.parallax-inner' );
+
                 // if it's a mobile device and not told to activate on mobile, stop.
                 if ( this.settings.mobiledevice && !this.settings.mobileenabled ) {
+
+                    $target.css( {
+						'width': '100%',
+						'left': '0',
+						'right': '0',
+						'height': 'auto',
+						'min-height': $target.parent().outerHeight() + 'px'
+					});
+
                     return;
                 }
 
@@ -191,9 +202,6 @@ if ( typeof _fusionImageParallaxImages === 'undefined' ) {
                 if ( !this.isInView() ) {
                     return;
                 }
-
-                // Continue moving the background
-                var $target = this.settings.target.find( '.parallax-inner' );
 
                 // Assert a minimum of 150 pixels of height globally. Prevents the illusion of parallaxes not rendering at all in empty fields.
                 $target.css(
@@ -441,9 +449,6 @@ if ( typeof _fusionImageParallaxImages === 'undefined' ) {
                     // Stretch the image to fit the entire window
                     var w = $target.width() + parseInt( $target.css( 'paddingRight' ) ) + parseInt( $target.css( 'paddingLeft' ) );
                     var h = $target.height() + 4 + parseInt( $target.css( 'paddingTop' ) ) + parseInt( $target.css( 'paddingBottom' ) );
-
-					console.log($target.height() + parseInt( $target.css( 'paddingTop' ) ) + parseInt( $target.css( 'paddingBottom' ) ) );
-                    console.log(Math.ceil( $target.height() ) + parseInt( $target.css( 'paddingTop' ) ) + parseInt( $target.css( 'paddingBottom' ) ) );
 
                     var origW = w;
                     w += 400 * Math.abs( parseFloat( this.settings.velocity ) );
@@ -745,7 +750,7 @@ jQuery( window ).load( function() {
 // @codekit-prepend "fusion-parallax.js"
 // @codekit-append "fusion-video-bg.js"
 
-jQuery(document).ready(function($) {
+jQuery( document ).ready( function( $ ) {
     "use strict";
 
     /*
@@ -757,8 +762,9 @@ jQuery(document).ready(function($) {
         return ( Modernizr.touch && jQuery(window).width() <= 1000 ) || // touch device estimate
             ( window.screen.width <= 1281 && window.devicePixelRatio > 1 ); // device size estimate
     }
+
     if ( _isMobile() ) {
-        $('.fusion-bg-parallax.video > div').remove();
+        $( '.fusion-bg-parallax.video > div' ).remove();
     }
 
     // Hide the placeholder

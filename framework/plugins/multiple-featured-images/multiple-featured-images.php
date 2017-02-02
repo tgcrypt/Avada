@@ -27,15 +27,16 @@ if( !class_exists( 'kdMultipleFeaturedImages' ) ) {
 
 	class kdMultipleFeaturedImages {
 
-		private $id				 = '';
-		private $post_type		  = '';
+		private $id				 	= '';
+		private $post_type		  	= '';
+		
 		private $labels			 = array();
 
-		private $metabox_id		 = '';
+		private $metabox_id		 	= '';
 
-		private $post_meta_key	  = '';
+		private $post_meta_key	  	= '';
 
-		private $nonce			  = '';
+		private $nonce			  	= '';
 
 		private $default_labels	 = array(
 			'name'	  => 'Featured Image 2',
@@ -87,7 +88,7 @@ if( !class_exists( 'kdMultipleFeaturedImages' ) ) {
 		 *
 		 * @return void
 		 */
-		public function kd_admin_init() {
+		public function kd_admin_init() {		
 			if( strstr($_SERVER['REQUEST_URI'], 'wp-admin/post-new.php') || strstr($_SERVER['REQUEST_URI'], 'wp-admin/post.php') || strstr($_SERVER['REQUEST_URI'], 'wp-admin/media-upload.php')) {
 				wp_enqueue_script(
 						'kd-multiple-featured-images',
@@ -102,7 +103,7 @@ if( !class_exists( 'kdMultipleFeaturedImages' ) ) {
 		 *
 		 * @return void
 		 */
-		public function kd_add_meta_box() {
+		public function kd_add_meta_box() {		
 			add_meta_box(
 					$this->metabox_id,
 					$this->labels['name'],
@@ -215,7 +216,7 @@ if( !class_exists( 'kdMultipleFeaturedImages' ) ) {
 			);
 
 			return $form_fields;
-		}
+		}	
 
 		/**
 		 * Ajax function: set and delete featured image
@@ -234,15 +235,13 @@ if( !class_exists( 'kdMultipleFeaturedImages' ) ) {
 
 			$thumb_id = intval( $_POST['thumbnail_id'] );
 
-			check_ajax_referer( $this->nonce.$post_ID );
-
 			if( $thumb_id == '-1' ) {
 				delete_post_meta( $post_ID, $this->post_meta_key );
 
 				die( $this->kd_meta_box_output( NULL ) );
 			}
 
-			if( $thumb_id && get_post( $thumb_id) ) {
+			if( $thumb_id && get_post( $thumb_id ) ) {
 				$thumb_html = wp_get_attachment_image( $thumb_id, 'thumbnail' );
 
 				if( !empty( $thumb_html ) ) {

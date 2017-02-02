@@ -794,8 +794,13 @@ class WP_Import extends WP_Importer {
 			$menu_id = is_array( $menu_id ) ? $menu_id['term_id'] : $menu_id;
 		}
 
-		foreach ( $item['postmeta'] as $meta )
-			$$meta['key'] = $meta['value'];
+		foreach ( $item['postmeta'] as $meta ) {
+			if ( version_compare( PHP_VERSION, '7.0.0' ) >= 0 ) {
+				${$meta['key']} = $meta['value'];
+			} else {
+				$$meta['key'] = $meta['value'];
+			}
+		}
 
 		if ( 'taxonomy' == $_menu_item_type && isset( $this->processed_terms[intval($_menu_item_object_id)] ) ) {
 			$_menu_item_object_id = $this->processed_terms[intval($_menu_item_object_id)];
@@ -836,6 +841,22 @@ class WP_Import extends WP_Importer {
 		);
 
 		$id = wp_update_nav_menu_item( $menu_id, 0, $args );
+
+		// ThemeFusion edit for Avada theme: make sure all custom menu fields are imported correctly
+		if ( ! $args['menu-item-parent-id'] ) {
+			$field_name_suffix = array( 'menu_style', 'megamenu_status', 'megamenu_width', 'megamenu_columns', 'megamenu_columnwidth', 'megamenu_icon', 'megamenu_thumbnail' );
+		} else {
+			$field_name_suffix = array( 'megamenu_title', 'megamenu_widgetarea', 'megamenu_columnwidth', 'megamenu_icon', 'megamenu_thumbnail' );
+		}
+
+		foreach ( $field_name_suffix as $suffix ) {
+			$key = '_menu_item_fusion_' . $suffix;
+			if ( isset( $$key ) ) {
+				update_post_meta( $id, '_menu_item_fusion_' . $suffix , $$key );
+			}
+		}
+		// end edit
+
 		if ( $id && ! is_wp_error( $id ) )
 			$this->processed_menu_items[intval($item['post_id'])] = (int) $id;
 	}
@@ -1106,7 +1127,7 @@ class WP_Import extends WP_Importer {
 	 * Added to http_request_timeout filter to force timeout at 60 seconds during import
 	 * @return int 60
 	 */
-	function bump_request_timeout() {
+	function bump_request_timeout( $val ) {
 		return 60;
 	}
 

@@ -13,6 +13,9 @@ module.exports = function(grunt) {
 			},
 		},
 		less: {
+			options : {
+				plugins : [ new (require('less-plugin-autoprefix'))({browsers : [ "last 2 versions" ]}) ]
+			},
 			development: {
 				files: {
 					'style.css': 'assets/less/style.less',
@@ -20,7 +23,8 @@ module.exports = function(grunt) {
 					'ilightbox.css': 'assets/less/plugins/iLightbox/iLightbox.less',
 					'animations.css': 'assets/less/theme/animations.less',
 					'assets/css/rtl.css': 'assets/less/theme/rtl.less',
-					'assets/css/woocommerce.css': 'assets/less/theme/woocommerce.less'
+					'assets/css/woocommerce.css': 'assets/less/theme/woocommerce.less',
+					'assets/css/bbpress.css': 'assets/less/theme/bbpress.less'
 				}
 			}
 		},
@@ -28,11 +32,10 @@ module.exports = function(grunt) {
 			options: {
 				separator: ';'
 			},
-			development: {
+			main: {
 				src: [
 					'assets/js/bootstrap.js',
 					'assets/js/cssua.js',
-					'assets/js/easyPieChart.js',
 					'assets/js/excanvas.js',
 					'assets/js/Froogaloop.js',
 					'assets/js/imagesLoaded.js',
@@ -41,8 +44,10 @@ module.exports = function(grunt) {
 					'assets/js/jquery.touchSwipe.js',
 					'assets/js/jquery.carouFredSel.js',
 					'assets/js/jquery.countTo.js',
+					'assets/js/jquery.countdown.js',
 					'assets/js/jquery.cycle.js',
 					'assets/js/jquery.easing.js',
+					'assets/js/jquery.easyPieChart.js',
 					'assets/js/jquery.elasticslider.js',
 					'assets/js/jquery.fitvids.js',
                     'assets/js/jquery.nicescroll.js',
@@ -59,21 +64,21 @@ module.exports = function(grunt) {
 					'assets/js/jquery.mousewheel.js',
 					'assets/js/ilightbox.js',
 					'assets/js/avada-lightbox.js',
-                    'assets/js/avada-select.js',
-                    'assets/js/avada-nicescroll.js',
-                    'assets/js/avada-bbpress.js',
-                    'assets/js/avada-woocommerce.js',
-                    'assets/js/avada-parallax.js',
-                    'assets/js/avada-video-bg.js',
-                    'assets/js/avada-header.js',
+					'assets/js/avada-select.js',
+					'assets/js/avada-nicescroll.js',
+					'assets/js/avada-bbpress.js',
+					'assets/js/avada-events.js',
+					'assets/js/avada-woocommerce.js',
+					'assets/js/avada-parallax.js',
+					'assets/js/avada-video-bg.js',
+					'assets/js/avada-header.js',
 					'assets/js/theme.js'
-
 				],
 				dest: 'assets/js/main.js'
 			}
 		},
 		uglify: {
-			development: {
+			main: {
 				options: {
 					mangle: true,
 					compress: {
@@ -123,6 +128,15 @@ module.exports = function(grunt) {
 					//ie7: true,
 				}
 			}
+		},
+		// Generate .pot translation file
+		makepot: {
+			target: {
+				options: {
+					type: 'wp-theme',
+					domainPath: 'languages'
+				}
+			}
 		}
 	});
 
@@ -132,9 +146,10 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-po2mo');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-wp-i18n');
 
 	grunt.registerTask('watchCSS', ['watch:css']);
-	grunt.registerTask('default', ['less:development', 'concat:development', 'uglify:development']);
+	grunt.registerTask('default', ['less:development', 'concat:main', 'uglify:main', 'makepot']);
 
 	grunt.registerTask('langUpdate', 'Update languages', function() {
 		shell.exec('tx pull -r avada.avadapo -a --minimum-perc=10');

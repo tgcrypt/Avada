@@ -3,55 +3,41 @@
 			<?php if($atts['layout'] != 'grid' && $atts['layout'] != 'timeline'): ?>
 			<style type="text/css">
 			<?php if(get_post_meta($post->ID, 'pyre_fimg_width', true) && get_post_meta($post->ID, 'pyre_fimg_width', true) != 'auto'): ?>
-			#post-<?php echo $post->ID; ?> .post-slideshow,
-			#post-<?php echo $post->ID; ?> .floated-post-slideshow
-			{max-width:<?php echo get_post_meta($post->ID, 'pyre_fimg_width', true); ?> !important;}
+			#post-<?php echo $post->ID; ?> .fusion-post-slideshow{
+				max-width:<?php echo get_post_meta($post->ID, 'pyre_fimg_width', true); ?> !important;
+			}
 			<?php endif; ?>
 
 			<?php if(get_post_meta($post->ID, 'pyre_fimg_height', true) && get_post_meta($post->ID, 'pyre_fimg_height', true) != 'auto'): ?>
-			#post-<?php echo $post->ID; ?> .post-slideshow,
-			#post-<?php echo $post->ID; ?> .floated-post-slideshow,
-			#post-<?php echo $post->ID; ?> .post-slideshow .image > img,
-			#post-<?php echo $post->ID; ?> .floated-post-slideshow .image > img,
-			#post-<?php echo $post->ID; ?> .post-slideshow .image > a > img,
-			#post-<?php echo $post->ID; ?> .floated-post-slideshow .image > a > img
-			{height:<?php echo get_post_meta($post->ID, 'pyre_fimg_height', true); ?> !important;}
+			#post-<?php echo $post->ID; ?> .fusion-post-slideshow,
+			#post-<?php echo $post->ID; ?> .fusion-post-slideshow .fusion-image-wrapper img{
+				max-height:<?php echo get_post_meta($post->ID, 'pyre_fimg_height', true); ?> !important;
+			}
 			<?php endif; ?>
 
 			<?php if(get_post_meta($post->ID, 'pyre_fimg_width', true) && get_post_meta($post->ID, 'pyre_fimg_width', true) == 'auto'): ?>
-			#post-<?php echo $post->ID; ?> .post-slideshow .image > img,
-			#post-<?php echo $post->ID; ?> .floated-post-slideshow .image > img,
-			#post-<?php echo $post->ID; ?> .post-slideshow .image > a > img,
-			#post-<?php echo $post->ID; ?> .floated-post-slideshow .image > a > img{
+			#post-<?php echo $post->ID; ?> .fusion-post-slideshow .fusion-image-wrapper img{
 				width:auto;
 			}
 			<?php endif; ?>
 
 			<?php if(get_post_meta($post->ID, 'pyre_fimg_height', true) && get_post_meta($post->ID, 'pyre_fimg_height', true) == 'auto'): ?>
-			#post-<?php echo $post->ID; ?> .post-slideshow .image > img,
-			#post-<?php echo $post->ID; ?> .floated-post-slideshow .image > img,
-			#post-<?php echo $post->ID; ?> .post-slideshow .image > a > img,
-			#post-<?php echo $post->ID; ?> .floated-post-slideshow .image > a > img{
+			#post-<?php echo $post->ID; ?> .fusion-post-slideshow .fusion-image-wrapper img{
 				height:auto;
 			}
 			<?php endif; ?>
 
 			<?php
-			if(
-				get_post_meta($post->ID, 'pyre_fimg_height', true) && get_post_meta($post->ID, 'pyre_fimg_width', true) &&
+			if( get_post_meta($post->ID, 'pyre_fimg_height', true) && get_post_meta($post->ID, 'pyre_fimg_width', true) &&
 				get_post_meta($post->ID, 'pyre_fimg_height', true) != 'auto' && get_post_meta($post->ID, 'pyre_fimg_width', true) != 'auto'
 			) { ?>
-			@media only screen and (max-width: 479px){
-				#post-<?php echo $post->ID; ?> .post-slideshow,
-				#post-<?php echo $post->ID; ?> .floated-post-slideshow,
-				#post-<?php echo $post->ID; ?> .post-slideshow .image > img,
-				#post-<?php echo $post->ID; ?> .floated-post-slideshow .image > img,
-				#post-<?php echo $post->ID; ?> .post-slideshow .image > a > img,
-				#post-<?php echo $post->ID; ?> .floated-post-slideshow .image > a > img{
-					width:auto !important;
-					height:auto !important;
+				@media only screen and (max-width: 479px){
+					#post-<?php echo $post->ID; ?> .fusion-post-slideshow,
+					#post-<?php echo $post->ID; ?> .fusion-post-slideshow .fusion-image-wrapper img{
+						width:auto !important;
+						height:auto !important;
+					}
 				}
-			}
 			<?php }
 			?>
 			</style>
@@ -62,8 +48,7 @@
 			?>
 
 			<?php
-			global $sidebar_exists;
-			if( ! $sidebar_exists || get_post_meta($post->ID, 'pyre_full_width', true) == 'yes' ) {
+			if( ! Avada()->template->has_sidebar() || get_post_meta($post->ID, 'pyre_full_width', true) == 'yes' ) {
 				$size = 'full';
 			} else {
 				$size = 'blog-large';

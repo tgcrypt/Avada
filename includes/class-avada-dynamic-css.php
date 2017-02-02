@@ -2,9 +2,15 @@
 
 class Avada_Dynamic_CSS {
 
+	public static $mode;
+
 	public function __construct() {
 
 		$this->add_options();
+		/**
+		 * Set mode
+		 */
+		add_action( 'wp', array( $this, 'set_mode' ) );
 
 		/**
 		 * When a post is saved, reset its caches to force-regenerate the CSS.
@@ -31,7 +37,7 @@ class Avada_Dynamic_CSS {
 	 *
 	 * @return  int the current page ID.
 	 */
-	public function page_id() {
+	public static function page_id() {
 
 		global $post;
 
@@ -75,7 +81,7 @@ class Avada_Dynamic_CSS {
 	 *
 	 * @return  string file/inline
 	 */
-	public function mode() {
+	public static function set_mode() {
 
 		/**
 		 * Check if we're using file mode or inline mode.
@@ -83,29 +89,33 @@ class Avada_Dynamic_CSS {
 		 */
 		$mode = ( Avada()->settings->get( 'dynamic_css_compiler' ) ) ? 'file' : 'inline';
 
+		//var_dump('first-mode:'.$mode);
+		//var_dump(self::needs_update());
 		/**
 		 * Additional checks for file mode.
 		 */
-		if ( 'file' == $mode && $this->needs_update() ) {
+		if ( 'file' == $mode && self::needs_update() ) {
 			/**
 			 * Only allow processing 1 file every 5 seconds.
 			 */
 			$current_time = (int) time();
 			$last_time    = (int) get_option( 'avada_dynamic_css_time' );
+			//var_dump('current-time:' . ( $current_time - $last_time ));
 			if ( 5 <= ( $current_time - $last_time ) ) {
+				//var_dump('inside the clt');
 				/**
 				 * If it's been more than 5 seconds since we last compiled a file
 				 * then attempt to write to the file.
 				 * If the file-write succeeds then set mode to 'file'.
 				 * If the file-write fails then set mode to 'inline'.
 				 */
-				$mode = ( $this->can_write() && $this->make_css() ) ? 'file' : 'inline';
+				$mode = ( self::can_write() && self::make_css() ) ? 'file' : 'inline';
 				/**
 				 * If the file exists then set mode to 'file'
 				 * If it does not exist then set mode to 'inline'.
 				 */
 				if ( 'file' == $mode ) {
-					$mode = ( file_exists( $this->file( 'path' ) ) ) ? 'file' : 'inline';
+					$mode = ( file_exists( self::file( 'path' ) ) ) ? 'file' : 'inline';
 				}
 			} else {
 				/**
@@ -116,7 +126,9 @@ class Avada_Dynamic_CSS {
 			}
 		}
 
-		return $mode;
+		//var_dump('second-mode:'.$mode);
+
+		self::$mode = $mode;
 
 	}
 
@@ -127,11 +139,11 @@ class Avada_Dynamic_CSS {
 	 */
 	public function enqueue_dynamic_css() {
 
-		if ( 'file' == $this->mode() ) {
+		if ( 'file' == self::$mode ) {
 			/**
 			 * Yay! we're using a file for our CSS, so enqueue it.
 			 */
-			wp_enqueue_style( 'avada-dynamic-css', $this->file( 'uri' ), array( 'avada-stylesheet' ) );
+			wp_enqueue_style( 'avada-dynamic-css', self::file( 'uri' ), array( 'avada-stylesheet' ) );
 		}
 
 		/**
@@ -146,7 +158,7 @@ class Avada_Dynamic_CSS {
 	 *
 	 * @return  bool 	true/false depending on whether the file is successfully created or not.
 	 */
-	public function make_css() {
+	public static function make_css() {
 
 		global $wp_filesystem;
 
@@ -179,7 +191,7 @@ class Avada_Dynamic_CSS {
 				 * The mapped domain of the site
 				 */
 				$mapped_domain   = domain_mapping_siteurl( false );
-				$mapped_domain   = str_replace( 'https://', '//', $domain_mapping );
+				$mapped_domain   = str_replace( 'https://', '//', $mapped_domain );
 				$mapped_domain   = str_replace( 'http://', '//', $mapped_domain );
 				/**
 				 * The original domain of the site
@@ -207,7 +219,7 @@ class Avada_Dynamic_CSS {
 		 * Since we've already checked if the file is writable in the can_write() method (called by the mode() method)
 		 * it's safe to continue without any additional checks as to the validity of the file.
 		 */
-		if ( ! $wp_filesystem->put_contents( $this->file( 'path' ), $content, FS_CHMOD_FILE ) ) {
+		if ( ! $wp_filesystem->put_contents( self::file( 'path' ), $content, FS_CHMOD_FILE ) ) {
 			/**
 			 * Writing to the file failed
 			 * return false
@@ -219,14 +231,14 @@ class Avada_Dynamic_CSS {
 			 * Update the opion in the db so that we know the css for this post has been successfully generated
 			 * and then return true.
 			 */
-			$page_id = ( $this->page_id() ) ? $this->page_id() : 'global';
+			$page_id = ( self::page_id() ) ? self::page_id() : 'global';
 			$option  = get_option( 'avada_dynamic_css_posts', array() );
 			$option[ $page_id ] = true;
 			update_option( 'avada_dynamic_css_posts', $option );
 			/**
 			 * Update the 'avada_dynamic_css_time' option.
 			 */
-			$this->update_saved_time();
+			self::update_saved_time();
 
 			/**
 			 * Success!
@@ -243,7 +255,7 @@ class Avada_Dynamic_CSS {
 	 *
 	 * @return bool
 	 */
-	public function can_write() {
+	public static function can_write() {
 
 		/**
 		 * Get the blog ID.
@@ -263,7 +275,7 @@ class Avada_Dynamic_CSS {
 		 * If this is a multisite installation, append the blogid to the filename
 		 */
 		$blog_id = ( is_multisite() && $blog_id > 1 ) ? '_blog-' . $blog_id : null;
-		$page_id = ( $this->page_id() ) ? $this->page_id() : 'global';
+		$page_id = ( self::page_id() ) ? self::page_id() : 'global';
 
 		$file_name   = '/avada' . $blog_id . '-' . $page_id . '.css';
 		$folder_path = $upload_dir['basedir'] . DIRECTORY_SEPARATOR . 'avada-styles';
@@ -341,7 +353,7 @@ class Avada_Dynamic_CSS {
 	 * @return 	string  path or url to the file depending on the $target var.
 	 *
 	 */
-	public function file( $target = 'path' ) {
+	public static function file( $target = 'path' ) {
 
 		/**
 		 * Get the blog ID
@@ -361,8 +373,9 @@ class Avada_Dynamic_CSS {
 		 * If this is a multisite installation, append the blogid to the filename
 		 */
 		$blog_id = ( is_multisite() && $blog_id > 1 ) ? '_blog-' . $blog_id : null;
-		$page_id = ( $this->page_id() ) ? $this->page_id() : 'global';
+		$page_id = ( self::page_id() ) ? self::page_id() : 'global';
 
+		//var_dump(self::page_id());
 		$file_name   = 'avada' . $blog_id . '-' . $page_id . '.css';
 		$folder_path = $upload_dir['basedir'] . DIRECTORY_SEPARATOR . 'avada-styles';
 		/**
@@ -477,7 +490,7 @@ class Avada_Dynamic_CSS {
 	 *
 	 * @return  bool
 	 */
-	public function needs_update() {
+	public static function needs_update() {
 
 		/**
 		 * Get the 'avada_dynamic_css_posts' option from the DB
@@ -486,12 +499,12 @@ class Avada_Dynamic_CSS {
 		/**
 		 * Get the current page ID
 		 */
-		$page_id = ( $this->page_id() ) ? $this->page_id() : 'global';
+		$page_id = ( self::page_id() ) ? self::page_id() : 'global';
 
 		/**
 		 * If the CSS file does not exist then we definitely need to regenerate the CSS.
 		 */
-		if ( ! file_exists( $this->file( 'path' ) ) ) {
+		if ( ! file_exists( self::file( 'path' ) ) ) {
 			return true;
 		}
 
@@ -501,7 +514,7 @@ class Avada_Dynamic_CSS {
 		 * This is primarily added here for development purposes.
 		 */
 		$dynamic_css_script = get_template_directory() . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'dynamic_css.php';
-		if ( filemtime( $dynamic_css_script ) > filemtime( $this->file( 'path' ) ) ) {
+		if ( filemtime( $dynamic_css_script ) > filemtime( self::file( 'path' ) ) ) {
 			return true;
 		}
 		/**
@@ -527,7 +540,7 @@ class Avada_Dynamic_CSS {
 	 *
 	 * @return  void
 	 */
-	public function update_saved_time() {
+	public static function update_saved_time() {
 		update_option( 'avada_dynamic_css_time', time() );
 	}
 
@@ -567,8 +580,8 @@ class Avada_Dynamic_CSS {
 		/**
 		 * Clear Varnish caches
 		 */
-		if ( 'file' == $this->mode() && Avada()->settings->get( 'cache_server_ip' ) ) {
-			$this->clear_varnish_cache( $this->file( 'url' ) );
+		if ( Avada()->settings->get( 'dynamic_css_compiler' ) && Avada()->settings->get( 'cache_server_ip' ) ) {
+			$this->clear_varnish_cache( self::file( 'url' ) );
 		}
 
 	}
@@ -634,7 +647,7 @@ class Avada_Dynamic_CSS {
 		 * This is here because we need it after all Avada CSS
 		 * and W3TC can combine it incorrectly
 		 */
-		if ( 'inline' == $this->mode() ) {
+		if ( 'inline' == self::$mode ) {
 			echo "<style id='avada-stylesheet-inline-css' type='text/css'>" . avada_dynamic_css_cached() . '</style>';
 		}
 

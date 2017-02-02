@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class sidebar_generator {
 
-	public function sidebar_generator(){
+	public function __construct(){
 
 		add_action('init',array('sidebar_generator','init'));
 		add_action('admin_menu',array('sidebar_generator','admin_menu'));
@@ -117,7 +117,7 @@ class sidebar_generator {
 				  	mysack.setVar( "sidebar_name", sidebar_name );
 				  	mysack.setVar( "row_number", num );
 				  	//mysack.encVar( "cookie", document.cookie, false );
-				  	mysack.onError = function() { alert('Ajax error. Cannot add sidebar' )};
+				  	mysack.onError = function() { alert('Ajax error. Cannot remove sidebar' )};
 				  	mysack.runAJAX();
 					//alert('hi!:::'+sidebar_name);
 					return true;
@@ -130,14 +130,14 @@ class sidebar_generator {
 		$sidebars = sidebar_generator::get_sidebars();
 		$name = str_replace(array("\n","\r","\t"),'',$_POST['sidebar_name']);
 
-		if(is_array($sidebars) && !empty($sidebars)){
+		if( is_array( $sidebars ) && ! empty( $sidebars ) ) {
 			$counter = count( $sidebars ) + 1;
 		} else {
-			$counter = 0;
+			$counter = 1;
 		}
 		$id = sidebar_generator::name_to_class($name);
 		if(isset($sidebars[$id])){
-			die("alert('Sidebar already exists, please use a different name.')");
+			die("alert('" . __( 'Widget Section already exists, please use a different name.', 'Avada' ) . "')");
 		}
 
 		$sidebars[$id] = $name;
@@ -173,7 +173,8 @@ class sidebar_generator {
 	  		removeLink.appendChild(linkText);
 	  		cellLeft.appendChild(removeLink);
 
-
+	  		var tbl = document.getElementById( 'no-widget-sections' );
+	  		tbl.remove();
 		";
 
 
@@ -182,7 +183,14 @@ class sidebar_generator {
 
 	public static function remove_sidebar(){
 		$sidebars = sidebar_generator::get_sidebars();
+		$sidebars = sidebar_generator::get_sidebars();
 		$name = str_replace(array("\n","\r","\t"),'',$_POST['sidebar_name']);
+
+		if( is_array( $sidebars ) && ! empty( $sidebars ) ) {
+			$counter = count( $sidebars );
+		}
+		$no_widget_text = __( 'No Widget Sections defined.', 'Avada' );
+
 		$id = sidebar_generator::name_to_class($name);
 		if(!isset($sidebars[$id])){
 			die("alert('Sidebar does not exist.')");
@@ -192,14 +200,23 @@ class sidebar_generator {
 		sidebar_generator::update_sidebars($sidebars);
 		$js = "
 			var tbl = document.getElementById('sbg_table');
-			tbl.deleteRow($row_number)
 
+			if ( $counter - 1  == '0' ) {
+				var last_row = tbl.rows.length;
+				var row = tbl.insertRow( last_row );
+				var cell = row.insertCell( 0 );
+				var text_node = document.createTextNode( '$no_widget_text' );
+				row.setAttribute( 'id', 'no-widget-sections' );
+				cell.appendChild( text_node );
+				cell.colSpan = 3;
+			}
+			tbl.deleteRow($row_number);
 		";
 		die($js);
 	}
 
 	public static function admin_menu(){
-		add_theme_page('Sidebars', 'Sidebars', 'manage_options', 'multiple_sidebars', array('sidebar_generator','admin_page'));
+		add_theme_page('Widget Sections', 'Widget Sections', 'manage_options', 'multiple_sidebars', array('sidebar_generator','admin_page'));
 
 }
 
@@ -207,7 +224,7 @@ class sidebar_generator {
 		?>
 		<script>
 			function remove_sidebar_link(name,num){
-				answer = confirm("Are you sure you want to remove " + name + "?\nThis will remove any widgets you have assigned to this sidebar.");
+				answer = confirm("<?php _e( 'Are you sure you want to remove', 'Avada' ); ?> " + name + "?\n<?php _e( 'This will remove any widgets you have assigned to this widget section.', 'Avada' ); ?>");
 				if(answer){
 					//alert('AJAX REMOVE');
 					remove_sidebar(name,num);
@@ -216,19 +233,23 @@ class sidebar_generator {
 				}
 			}
 			function add_sidebar_link(){
-				var sidebar_name = prompt("Sidebar Name:","");
+				var sidebar_name = prompt("<?php _e( 'Widget Section Name:', 'Avada' ); ?>","");
 				//alert(sidebar_name);
-				add_sidebar(sidebar_name);
+				if ( sidebar_name === null || sidebar_name == '' ) {
+					return;
+				}
+
+				add_sidebar( sidebar_name );
 			}
 		</script>
 		<div class="wrap">
-			<h2>Sidebars</h2>
+			<h2><?php _e( 'Widget Sections:', 'Avada' ); ?></h2>
 			<br />
 			<table class="widefat page" id="sbg_table" style="width:600px;">
 				<tr>
-					<th>Sidebar Name</th>
-					<th>CSS class</th>
-					<th>Remove</th>
+					<th><?php _e( 'Widget Section Name', 'Avada' ); ?></th>
+					<th><?php _e( 'CSS Class', 'Avada' ); ?></th>
+					<th><?php _e( 'Remove', 'Avada' ); ?></th>
 				</tr>
 				<?php
 				$sidebars = sidebar_generator::get_sidebars();
@@ -237,25 +258,25 @@ class sidebar_generator {
 					foreach($sidebars as $sidebar){
 						$alt = ($cnt%2 == 0 ? 'alternate' : '');
 				?>
-				<tr class="<?php echo $alt?>">
+				<tr class="<?php echo $alt; ?>">
 					<td><?php echo $sidebar; ?></td>
 					<td><?php echo sidebar_generator::name_to_class($sidebar); ?></td>
-					<td><a href="javascript:void(0);" onclick="return remove_sidebar_link('<?php echo $sidebar; ?>',<?php echo $cnt+1; ?>);" title="Remove this sidebar">remove</a></td>
+					<td><a href="javascript:void(0);" onclick="return remove_sidebar_link('<?php echo $sidebar; ?>',<?php echo $cnt+1; ?>);" title="<?php _e( 'Remove this Widget Section', 'Avada' ); ?>">remove</a></td>
 				</tr>
 				<?php
 						$cnt++;
 					}
 				}else{
 					?>
-					<tr>
-						<td colspan="3">No Sidebars defined</td>
+					<tr id="no-widget-sections">
+						<td colspan="3"><?php _e( 'No Widget Sections defined.', 'Avada' ); ?></td>
 					</tr>
 					<?php
 				}
 				?>
 			</table><br /><br />
 			<div class="add_sidebar">
-				<a href="javascript:void(0);" onclick="return add_sidebar_link()" title="Add a sidebar" class="button-primary">+ Add New Sidebar</a>
+				<a href="javascript:void(0);" onclick="return add_sidebar_link()" title="<?php _e( 'Add New Widget Section', 'Avada' ); ?>" class="button-primary"><?php _e( 'Add New Widget Section', 'Avada' ); ?></a>
 
 			</div>
 
@@ -324,7 +345,7 @@ class sidebar_generator {
 					//var_dump($wp_registered_sidebars);
 						for($i=0;$i<1;$i++){ ?>
 							<div class="fusion-shortcodes-arrow">&#xf107;</div>
-							<select name="sidebar_generator[<?php echo $i?>]" style="display: none;">
+							<select name="sidebar_generator[<?php echo $i; ?>]" style="display: none;">
 								<option value="0"<?php if($selected_sidebar[$i] == ''){ echo " selected";} ?>>WP Default Sidebar</option>
 							<?php
 							$sidebars = $wp_registered_sidebars;// sidebar_generator::get_sidebars();
@@ -347,7 +368,7 @@ class sidebar_generator {
 							}
 							?>
 							</select>
-							<select name="sidebar_generator_replacement[<?php echo $i?>]">
+							<select name="sidebar_generator_replacement[<?php echo $i; ?>]">
 								<option value="" <?php if($selected_sidebar_replacement[$i] == '' && $screen->post_type != 'post'){ echo " selected";} ?>>No Sidebar</option>
 							<?php
 
@@ -397,7 +418,7 @@ class sidebar_generator {
 					//var_dump($wp_registered_sidebars);
 						for($i=0;$i<1;$i++){ ?>
 							<div class="fusion-shortcodes-arrow">&#xf107;</div>
-							<select name="sidebar_2_generator[<?php echo $i?>]" style="display: none;">
+							<select name="sidebar_2_generator[<?php echo $i; ?>]" style="display: none;">
 								<option value="0"<?php if($selected_sidebar_2[$i] == ''){ echo " selected";} ?>>WP Default Sidebar</option>
 							<?php
 							$sidebars = $wp_registered_sidebars;// sidebar_generator::get_sidebars();
@@ -420,7 +441,7 @@ class sidebar_generator {
 							}
 							?>
 							</select>
-							<select name="sidebar_2_generator_replacement[<?php echo $i?>]">
+							<select name="sidebar_2_generator_replacement[<?php echo $i; ?>]">
 								<option value="" <?php if($selected_sidebar_replacement[$i] == ''){ echo " selected";} ?>>No Sidebar</option>
 							<?php
 

@@ -5,6 +5,20 @@
 .fusion-tabs {
 	margin-bottom: 50px;
 	
+	.nav {
+		display: none;
+	}
+
+	.fusion-mobile-tab-nav {
+		display: block;
+	}
+	
+	&.clean {
+		.tab-pane {
+			margin: 20px 0;
+		}
+	}
+	
 	.nav-tabs {
 		display: block;
 		list-style: none outside none;
@@ -141,7 +155,21 @@
 
 @media (min-width: 768px) {
 
-	.fusion-tabs {			
+	.fusion-tabs {
+		.nav {
+			display: block;
+		}
+	
+		.fusion-mobile-tab-nav {
+			display: none;
+		}
+		
+		&.clean {
+			.tab-pane {
+				margin: 0;
+			}
+		}
+	
 		.nav-tabs {
 			display: inline-block;
 		

@@ -40,6 +40,7 @@ body.admin-bar #wrapper #slidingbar-area {
 			position: absolute;
 			left: -17px;
 			top: -33px;
+			line-height: normal;
 			color: #fff;
 			text-shadow: none;
 		}
@@ -50,12 +51,14 @@ body.admin-bar #wrapper #slidingbar-area {
 	content: @slidingbar-minus;
 	-webkit-font-smoothing: antialiased;
 }
-.slidingbar-widget-col {
-	margin-bottom: 20px;
+.fusion-slidingbar-widget-column {
+	margin-bottom: 50px;
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
 }
-.slidingbar-widget-col:last-child {
-	margin-bottom: 0;
-}
+
 #slidingbar-area .logo {
 	float: none;
 	display: block;
@@ -100,7 +103,7 @@ body.admin-bar #wrapper #slidingbar-area {
 	background-image: none;
 	padding-top: 0px;
 }
-#slidingbar-area a {
+.slidingbar-area a {
 	color: #bfbfbf;
 }
 #slidingbar-area ul li a:hover {

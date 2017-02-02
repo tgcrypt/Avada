@@ -37,7 +37,7 @@ class PyreThemeFrameworkMetaboxes {
 
 		$post_types = get_post_types( array( 'public' => true ) );
 
-		$disallowed = array( 'page', 'post', 'attachment', 'avada_portfolio', 'themefusion_elastic', 'product', 'wpsc-product', 'slide' );
+		$disallowed = array( 'page', 'post', 'attachment', 'avada_portfolio', 'themefusion_elastic', 'product', 'wpsc-product', 'slide', 'tribe_events' );
 
 		foreach ( $post_types as $post_type ) {
 			if ( in_array( $post_type, $disallowed ) ) {
@@ -52,6 +52,7 @@ class PyreThemeFrameworkMetaboxes {
 		$this->add_meta_box( 'es_options', 'Elastic Slide Options', 'themefusion_elastic' );
 		$this->add_meta_box( 'woocommerce_options', 'Fusion Page Options', 'product' );
 		$this->add_meta_box( 'slide_options', 'Slide Options', 'slide' );
+		$this->add_meta_box( 'events_calendar_options', 'Events Calendar Options', 'tribe_events' );
 
 	}
 
@@ -95,6 +96,10 @@ class PyreThemeFrameworkMetaboxes {
 
 	public function slide_options() {
 		include 'options/options_slide.php';
+	}
+
+	public function events_calendar_options() {
+		$this->render_option_tabs( array( 'page', 'sliders', 'header', 'footer', 'sidebars', 'background', 'pagetitlebar' ) );
 	}
 
 	public function render_option_tabs( $requested_tabs, $post_type = 'default' ) {

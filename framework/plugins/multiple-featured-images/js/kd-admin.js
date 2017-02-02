@@ -1,3 +1,7 @@
+if ( typeof setPostThumbnailL10n != 'object' ) {
+	setPostThumbnailL10n = {"setThumbnail":"Use as featured image","saving":"Saving...","error":"Could not set that as the thumbnail image. Try a different attachment.","done":"Done"};
+}
+
 function kdMuFeaImgSetBoxContent( content, featuredImageID, post_type ) {
 	//jQuery( '.inside', '#kd_' + featuredImageID ).html( content );
 	jQuery( '#' + featuredImageID + '_' + post_type + ' .inside' ).html( content );
@@ -6,7 +10,7 @@ function kdMuFeaImgSetMetaValue( id, featuredImageID, post_type ) {
 	var field = jQuery('input[value=kd_' + featuredImageID + '_' + post_type + '_id]', '#list-table');
 	if ( field.size() > 0 ) {
 		jQuery('#meta\\[' + field.attr('id').match(/[0-9]+/) + '\\]\\[value\\]').text( id );
-	}	
+	}
 }
 
 function kdMuFeaImgRemove ( featuredImageID, post_type, nonce ) {
@@ -22,15 +26,20 @@ function kdMuFeaImgRemove ( featuredImageID, post_type, nonce ) {
 		}
 		else {
 			kdMuFeaImgSetBoxContent( str, featuredImageID, post_type );
-		}   
+		}
 	});
 }
 
 function kdMuFeaImgSet( id, featuredImageID, post_type, nonce ) {
 	var $link = jQuery( 'a#' + featuredImageID + '-featuredimage' );
-	
+
 	$link.text( setPostThumbnailL10n.saving );
-	
+
+	if( typeof post_id == 'undefined' ) {
+		post_id = jQuery('#post_ID').val();
+	}
+
+
 	jQuery.post( ajaxurl, {
 		action: 'set-MuFeaImg-' + featuredImageID + '-' + post_type,
 		post_id: post_id,
@@ -38,18 +47,18 @@ function kdMuFeaImgSet( id, featuredImageID, post_type, nonce ) {
 		_ajax_nonce: nonce,
 		cookie: encodeURIComponent(document.cookie)
 	}, function( str ) {
-		if( str == '0' ) {
+		if( str == '0' || str == '-1' ) {
 			alert( setPostThumbnailL10n.error );
 		}
 		else {
 			var win = window.dialogArguments || opener || parent || top;
-			
+
 			$link.show().text( setPostThumbnailL10n.done );
 
 			$link.fadeOut( 'slow', function() {
 				jQuery('tr.MuFeaImg-' + featuredImageID + '-' + post_type ).hide();
 			});
-			
+
 			win.kdMuFeaImgSetBoxContent( str, featuredImageID, post_type );
 			win.kdMuFeaImgSetMetaValue( id, featuredImageID, post_type );
 		}

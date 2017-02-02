@@ -148,7 +148,7 @@ class Fusion_Widget_Tabs extends WP_Widget {
 											<div class="post-holder">
 												<p><?php echo strip_tags( $comment->comment_author ); ?> <?php _e( 'says:', 'Avada' ); ?></p>
 												<div class="fusion-meta">
-													<a class="comment-text-side" href="<?php echo get_permalink( $comment->ID ); ?>#comment-<?php echo $comment->comment_ID; ?>" title="<?php printf( __( '%1$s on %2$s', 'Avada' ), strip_tags( $comment->comment_author ), $comment->post_title ); ?>"><?php printf( __( '%s...', 'Avada' ), fusion_string_limit_words( strip_tags( $comment->com_excerpt ), 12 ) ); ?></a>
+													<a class="comment-text-side" href="<?php echo get_permalink( $comment->ID ); ?>#comment-<?php echo $comment->comment_ID; ?>" title="<?php printf( __( '%1$s on %2$s', 'Avada' ), strip_tags( $comment->comment_author ), $comment->post_title ); ?>"><?php echo wp_trim_words( strip_tags( $comment->com_excerpt ), 12 ); ?></a>
 												</div>
 											</div>
 										</li>

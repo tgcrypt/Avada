@@ -131,7 +131,7 @@ class Options_Machine {
 				$output .= '<div id="section-'.$value['id'].'" class="'.$fold.'section section-'.$value['type'].' '. $class .'">'."\n";
 
 				//only show header if 'name' value exists
-				if($value['name']) $output .= '<h3 class="heading">'. $value['name'] .'</h3>'."\n";
+				if($value['name']) $output .= '<h4 class="heading">'. $value['name'] .'</h4>'."\n";
 
 				$output .= '<div class="option">'."\n" . '<div class="controls">'."\n";
 
@@ -889,8 +889,12 @@ class Options_Machine {
 		global $smof_data;
 
 		$uploader = '';
-		$upload = $smof_data[$id];
+		$upload = '';
 		$hide = '';
+
+		if ( is_array( $smof_data ) && array_key_exists( $id, $smof_data ) ) {
+			$upload = $smof_data[$id];
+		}
 
 		if ($mod == "min") {$hide ='hide';}
 
@@ -914,14 +918,17 @@ class Options_Machine {
 
 		$uploader .='</div>' . "\n";
 
-		//Preview
-		$uploader .= '<div class="screenshot">';
-		if(!empty($upload)){
-			$uploader .= '<a class="of-uploaded-image" href="'. $upload . '">';
-			$uploader .= '<img class="of-option-image" id="image_'.$id.'" src="'.$upload.'" alt="" />';
-			$uploader .= '</a>';
-			}
-		$uploader .= '</div>';
+		if( $id != 'custom_font_woff' && $id != 'custom_font_ttf'
+			&& $id != 'custom_font_svg' && $id != 'custom_font_eot' ) {
+			//Preview
+			$uploader .= '<div class="screenshot">';
+			if(!empty($upload)){
+				$uploader .= '<a class="of-uploaded-image" href="'. $upload . '">';
+				$uploader .= '<img class="of-option-image" id="image_'.$id.'" src="'.$upload.'" alt="" />';
+				$uploader .= '</a>';
+				}
+			$uploader .= '</div>';
+		}
 		$uploader .= '<div class="clear"></div>' . "\n";
 
 		return $uploader;

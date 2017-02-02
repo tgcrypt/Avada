@@ -7,7 +7,8 @@
  * @version     1.0
  */
 
-fusion_block_direct_access();
+// Do not allow directly accessing this file
+if ( ! defined( 'ABSPATH' ) ) exit( 'Direct script access denied.' );
 
 global $wp_query;
 
@@ -67,8 +68,8 @@ echo sprintf( '<div id="posts-container" class="%sfusion-blog-archive fusion-cle
 		if( $blog_layout == 'timeline' ) {
 			$post_timestamp = get_the_time( 'U' );
 			$post_month = date( 'n', $post_timestamp );
-			$post_year = get_the_date( 'o' );
-			$current_date = get_the_date( 'o-n' );
+			$post_year = get_the_date( 'Y' );
+			$current_date = get_the_date( 'Y-n' );
 
 			// Set the correct column class for every post
 			if( $post_count % 2 ) {
@@ -108,7 +109,7 @@ echo sprintf( '<div id="posts-container" class="%sfusion-blog-archive fusion-cle
 			}
 
 				// Get featured images for all but large-alternate layout
-				if ( Avada()->settings->get( 'featured_images' ) &&
+				if ( ( ( is_search() && ! Avada()->settings->get( 'search_featured_images' ) ) || ( ! is_search() && Avada()->settings->get( 'featured_images' ) ) ) &&
 					 $blog_layout == 'large-alternate'
 				) {
 					get_template_part( 'new-slideshow' );
@@ -132,7 +133,7 @@ echo sprintf( '<div id="posts-container" class="%sfusion-blog-archive fusion-cle
 				}
 
 				// Get featured images for all but large-alternate layout
-				if ( Avada()->settings->get( 'featured_images' ) &&
+				if ( ( ( is_search() && ! Avada()->settings->get( 'search_featured_images' ) ) || ( ! is_search() && Avada()->settings->get( 'featured_images' ) ) ) &&
 					 $blog_layout != 'large-alternate'
 				) {
 					get_template_part( 'new-slideshow' );
@@ -151,7 +152,7 @@ echo sprintf( '<div id="posts-container" class="%sfusion-blog-archive fusion-cle
 						echo '<div class="fusion-timeline-arrow"></div>';
 					}
 
-					echo '<div class="fusion-post-content">';
+					echo '<div class="fusion-post-content post-content">';
 
 						// Render the post title
 						echo avada_render_post_title( get_the_ID() );
@@ -235,7 +236,7 @@ echo sprintf( '<div id="posts-container" class="%sfusion-blog-archive fusion-cle
 											fusion_get_page_option( 'post_links_target', get_the_ID() ) == 'yes' ) {
 											$link_target = ' target="_blank"';
 										}
-										echo sprintf( '<a href="%s" class="fusion-read-more"%s>%s</a>', get_permalink(), $link_target, __( 'Read More', 'Avada' ) );
+										echo sprintf( '<a href="%s" class="fusion-read-more"%s>%s</a>', get_permalink(), $link_target, apply_filters( 'avada_read_more_name', __( 'Read More', 'Avada' ) ) );
 									}
 								echo '</div>';
 							}
@@ -269,7 +270,7 @@ echo '</div>'; // end posts-container
 
 // If infinite scroll with "load more" button is used
 if ( Avada()->settings->get( 'blog_pagination_type' ) == 'load_more_button' ) {
-	echo sprintf( '<div class="fusion-load-more-button fusion-clearfix">%s</div>', apply_filters( 'avada_load_more_pots_name', __( 'Load More Posts', 'Avada' ) ) );
+	echo sprintf( '<div class="fusion-load-more-button fusion-clearfix">%s</div>', apply_filters( 'avada_load_more_posts_name', __( 'Load More Posts', 'Avada' ) ) );
 }
 
 // Get the pagination

@@ -24,7 +24,7 @@ function avada_add_menu_button_fields( $item_id, $item, $depth, $args ) {
 	?>
 	<p class="description description-wide fusion-menu-style">
 		<label for="<?php echo $name . '-' . $item_id; ?>>">
-			<?php _e( 'Menu First Level Style' ); ?><br />
+			<?php _e( 'Menu First Level Style', 'Avada' ); ?><br />
 			<select id="<?php echo $name . '-' . $item_id; ?>" class="widefat edit-menu-item-target" name="<?php echo $name . '[' . $item_id . ']'; ?>">
 				<option value="" <?php selected( $item->fusion_menu_style,  '' ); ?>><?php _e('Default Style', 'Avada' ); ?></option>
 				<option value="fusion-button-small"	<?php selected( $item->fusion_menu_style,  'fusion-button-small' ); ?>	><?php _e('Button Small', 'Avada' ); ?></option>
@@ -355,7 +355,7 @@ if( ! class_exists( 'FusionCoreFrontendWalker' ) ) {
 			}
 			/* we are inside a mega menu */
 			if( $depth === 1 && $this->menu_megamenu_status == "enabled" ) {
-			
+
 				if( get_post_meta( $item->ID, '_menu_item_fusion_megamenu_columnwidth', true) ) {
 					$this->menu_megamenu_columnwidth = get_post_meta( $item->ID, '_menu_item_fusion_megamenu_columnwidth', true);
 				} else {
@@ -1046,7 +1046,7 @@ if( ! class_exists( 'FusionMegaMenu' ) ) {
 
 				$menu_item->fusion_megamenu_widgetarea = get_post_meta( $menu_item->ID, '_menu_item_fusion_megamenu_widgetarea', true );
 			}
-			
+
 			$menu_item->fusion_megamenu_columnwidth = get_post_meta( $menu_item->ID, '_menu_item_fusion_megamenu_columnwidth', true );
 
 			$menu_item->fusion_megamenu_icon = get_post_meta( $menu_item->ID, '_menu_item_fusion_megamenu_icon', true );

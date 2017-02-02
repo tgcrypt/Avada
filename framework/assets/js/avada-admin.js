@@ -10,7 +10,7 @@
  * browser tooltip. It is extremely lightweight and very smart in
  * that it detects the edges of the browser window and will make sure
  * the tooltip stays within the current window size. As a result the
- * tooltip will adjust itself to be displayed above, below, to the left 
+ * tooltip will adjust itself to be displayed above, below, to the left
  * or to the right depending on what is necessary to stay within the
  * browser window. It is completely customizable as well via CSS.
  *
@@ -23,7 +23,7 @@
 /*!
  * jquery.zeroclipboard
  * Bind to the `beforecopy`, `copy`, `aftercopy`, and `copy-error` events, custom DOM-like events for clipboard injection generated using jQuery's Special Events API and ZeroClipboard's Core module.
- * Copyright (c) 2014 
+ * Copyright (c) 2014
  * Licensed MIT
  * https://github.com/zeroclipboard/jquery.zeroclipboard
  * v0.2.0
@@ -79,7 +79,12 @@ jQuery(document).ready(function(){
 
 					var label       = jQuery( this ).find( 'td:eq(0)' ).data( 'export-label' ) || jQuery( this ).find( 'td:eq(0)' ).text();
 					var the_name    = jQuery.trim( label ).replace( /(<([^>]+)>)/ig, '' ); // Remove HTML
-					var the_value   = jQuery.trim( jQuery( this ).find( 'td:eq(2)' ).text() );
+					var the_value_element = jQuery( this ).find( 'td:eq(2)' );
+					if( jQuery( the_value_element ).find( 'img' ).length >= 1 ) {
+						var the_value = jQuery.trim( jQuery( the_value_element ).find( 'img' ).attr( 'alt' ) );
+					} else {
+						var the_value = jQuery.trim( jQuery( this ).find( 'td:eq(2)' ).text() );
+					}
 					var value_array = the_value.split( ', ' );
 
 					if ( value_array.length > 1 ) {
@@ -165,6 +170,16 @@ jQuery(document).ready(function(e) {
 			var confirm = window.confirm('WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA CLASSIC DEMO REQUIREMENTS:\n\n• Memory Limit of 256 MB and max execution time (php time limit) of 300 seconds.\n\n• Fusion Core, Revolution Slider and LayerSlider must be activated for sliders to import.\n\n• Woocommerce must be activated for shop data to import.');
 		} else if( selected_demo == 'cafe' ) {
 			var confirm = window.confirm('WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.');
+		} else if( selected_demo == 'church' ) {
+			var confirm = window.confirm('WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• The Events Calendar Plugin must be activated for all event data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.');
+		} else if( selected_demo == 'modern_shop' ) {
+			var confirm = window.confirm('WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• WooCommerce must be activated for all shop data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.');
+		}  else if( selected_demo == 'classic_shop' ) {
+			var confirm = window.confirm('WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core and Revolution Slider must be activated for sliders to import.\n\n• WooCommerce must be activated for all shop data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.');
+		} else if( selected_demo == 'landing_product' ) {
+			var confirm = window.confirm('WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core and Revolution Slider must be activated for sliders to import.\n\n• WooCommerce must be activated for all shop data to import.');
+		}  else if( selected_demo == 'forum' ) {
+			var confirm = window.confirm('WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• bbPress must be activated for all forum data to import.\n\n• Contact Form 7 plugin must be activated for the form to import.');
 		} else {
 			var confirm = window.confirm('WARNING:\n\nImporting demo content will give you sliders, pages, posts, theme options, widgets, sidebars and other settings. This will replicate the live demo. Clicking this option will replace your current theme options and widgets. It can also take a minute to complete.\n\n-----------------------------------------------\n\nAVADA ' + selected_demo.toUpperCase() + ' DEMO REQUIREMENTS:\n\n• Memory Limit of 128 MB and max execution time (php time limit) of 180 seconds.\n\n• Fusion Core must be activated for sliders to import.\n\n• Contact Form 7 plugin must be activated for the form to import.');
 		}

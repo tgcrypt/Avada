@@ -7,13 +7,18 @@
 @boxed-icon-bg: @icon-color;
 
 .fusion-social-networks {
+	overflow: hidden;
+
+	.fusion-social-networks-wrapper {
+		margin: 0 -10px;
+	}
+
 	.fusion-social-network-icon {
-		margin-left: 0;
-		margin-right: 20px;
-		margin-bottom: 10px;
+		display: inline-block;
+		margin: 0 10px 10px 10px;
 		font-size: 16px;
 		color: @icon-color;
-		display: inline-block;
+		
 
 		&:hover {
 			opacity: 0.8;
@@ -24,8 +29,12 @@
 	}
 	
 	&.boxed-icons {
+		.fusion-social-networks-wrapper {
+			margin: 0 -5px;
+		}	
+	
 		.fusion-social-network-icon {
-			margin-right: 10px;
+			margin: 0 5px 10px 5px;
 			padding: 8px;		
 			background-color: @boxed-icon-bg;
 			border: none;
@@ -34,19 +43,6 @@
 			.backgroundclip( inherit );
 			border: 1px solid @boxed-icon-bg;
 			color: @boxed-icon-color;
-		}
-	}
-}
-
-.fusion-secondary-header .fusion-alignright .fusion-social-links-header {
-	.fusion-social-network-icon {
-		margin-right: 0;
-		margin-left: 20px;
-	}
-	.boxed-icons {
-		.fusion-social-network-icon {
-			margin-right: 0;
-			margin-left: 10px;
 		}
 	}
 }
@@ -59,23 +55,27 @@
 	
 	.fusion-social-networks {
 		margin-top: 10px;	
+	}
+}
 
-		&.boxed-icons {
-			margin-top: 0;
-
-			.fusion-social-network-icon {
-				margin-right: 0;
-				margin-left: 10px;
-			}
+.widget {
+	.fusion-social-networks {
+		.fusion-social-networks-wrapper {
+			margin: 0 -5.5px;
+		}		
+	
+		.fusion-social-network-icon {
+			margin: 0 5.5px 14px 5.5px;
 		}
 		
-		.fusion-social-network-icon {
-			margin-right: 0;
-			margin-left: 20px;
-			
-			&:first-child {
-				margin-left: 0;
+		&.boxed-icons {
+			.fusion-social-networks-wrapper {
+				margin: 0 -3.5px;
+			}			
+		
+			.fusion-social-network-icon {
+				margin: 0 3.5px 10px 3.5px;		
 			}
-		}		
+		}
 	}
 }

@@ -6,12 +6,19 @@ Description
 
 Table of Contents
 ----------------------------------------------------------------------------------------------------
-	01 Events Espresso Styles
-	02 NextGEN
-	03 Lightbox Plus Colorbox
-	04 Polylang Styles
+	01 WordPress
+	02 Events Espresso Styles
+	03 NextGEN
+	43 Lightbox Plus Colorbox
+	05 Polylang Styles
+	06 Sermon Manager Styles
 ================================================================================================= */
 
+/* WordPress Styles
+================================================================================================= */
+.wp-audio-shortcode {
+	max-height: 150px;
+}
 
 /* Events Espresso Styles
 ================================================================================================= */
@@ -56,6 +63,26 @@ div#shDisplay {
 				vertical-align: middle;
 				padding: 0 2px;
 			}
+		}
+	}
+}
+
+/* Sermon Manager Styles
+================================================================================================= */
+#wpfc_sermon_sorting {
+	overflow: hidden;
+	margin: 0 -10px;
+
+	> span {
+		display: block;
+		float: left;
+		width: 25%;
+		padding: 0 10px;
+	}
+	
+	.avada-select-parent {
+		select {
+			width: 100%;
 		}
 	}
 }

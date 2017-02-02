@@ -7,8 +7,10 @@ class Avada_Head {
 		// add_action( 'wp_head', array( $this, 'the_meta' ) );
 		// add_action( 'wp_head', array( $this, 'insert_og_meta' ), 5 );
 		// add_filter( 'language_attributes', array( $this, 'add_opengraph_doctype' ) );
+		
+		add_filter( 'document_title_separator', array( $this, 'document_title_separator' ) );
 	}
-
+	
 	/**
 	 * Adding the Open Graph in the Language Attributes
 	 */
@@ -71,6 +73,12 @@ class Avada_Head {
 
 	}
 
+	/**
+	 * Set the document title separator
+	 */
+	public function document_title_separator() {
+		return '-';
+	}
 }
 
 // Omit closing PHP tag to avoid "Headers already sent" issues.

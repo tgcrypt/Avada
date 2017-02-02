@@ -95,9 +95,13 @@ function optionsframework_admin_init()
 	}
 
 	if ( ! array_key_exists( 'search_new_search_position', $smof_data ) ) {
-
 		$new_fields = true;
 		$smof_data['search_new_search_position'] = 'top';
+	}
+
+	if ( ! array_key_exists( 'button_span', $smof_data ) ) {
+		$new_fields = true;
+		$smof_data['button_span'] = 'no';
 	}
 
 	if( $new_fields == true ) {
@@ -115,7 +119,7 @@ function optionsframework_admin_init()
  */
 function optionsframework_add_admin() {
 
-	$of_page = add_theme_page( THEMENAME, 'Theme Options', 'edit_theme_options', 'optionsframework', 'optionsframework_options_page');
+	$of_page = add_theme_page( THEMENAME, __( 'Theme Options', 'Avada' ), 'edit_theme_options', 'optionsframework', 'optionsframework_options_page');
 
 	// Add framework functionaily to the head individually
 	add_action("admin_print_scripts-$of_page", 'of_load_only');
@@ -255,7 +259,7 @@ function of_ajax_callback()
 			of_save_options($upload_image);
 
 
-		 if(!empty($uploaded_file['error'])) { echo sprintf(__('Upload Error: %s', 'Avada'), __($uploaded_file['error'])); }
+		 if(!empty($uploaded_file['error'])) { echo sprintf(__('Upload Error: %s', 'Avada'), $uploaded_file['error']); }
 		 else { echo $uploaded_file['url']; } // Is the Response
 
 	}

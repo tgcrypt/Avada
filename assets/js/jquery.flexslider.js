@@ -465,7 +465,7 @@
 			  dx = null;
 			  offset = null;
 			}
-			
+
 			el.addEventListener('touchstart', onTouchStart, false);
 		}else{
 			function onMSPointerDown(e){
@@ -721,7 +721,7 @@
 			  slider.animating = false;
 			  slider.currentSlide = slider.animatingTo;
 			}
-			
+
 			// Unbind previous transitionEnd events and re-bind new transitionEnd event
 			slider.container.unbind("webkitTransitionEnd transitionend");
 			slider.container.bind("webkitTransitionEnd transitionend", function() {
@@ -949,13 +949,14 @@
 					   (slider.maxW < slider.w) ? (slider.w - (slideMargin * (maxItems - 1)))/maxItems :
 					   (slider.vars.itemWidth > slider.w) ? slider.w : slider.vars.itemWidth;
 
-		slider.visible = Math.floor(slider.w/(slider.itemW));
+		// ThemeFusion edit for Avada theme: added the item margin for correct calcs
+		slider.visible = Math.floor(slider.w/(slider.itemW + slideMargin));
 		slider.move = (slider.vars.move > 0 && slider.vars.move < slider.visible ) ? slider.vars.move : slider.visible;
 		slider.pagingCount = Math.ceil(((slider.count - slider.visible)/slider.move) + 1);
 		slider.last =  slider.pagingCount - 1;
 		slider.limit = (slider.pagingCount === 1) ? 0 :
 					   (slider.vars.itemWidth > slider.w) ? (slider.itemW * (slider.count - 1)) + (slideMargin * (slider.count - 1)) : ((slider.itemW + slideMargin) * slider.count) - slider.w - slideMargin;
-	  } else {
+	 } else {
 		slider.itemW = slider.w;
 		slider.pagingCount = slider.count;
 		slider.last = slider.count - 1;
@@ -1058,11 +1059,11 @@
 	  slider.slides.filter(classNamespace + 'active-slide').removeClass(slider.vars.namespace + 'active-slide'); // Remove slide active class
 	  slider.slides.unbind(slider.vars.eventNamespace); // Remove events on slides
 	  $(document).unbind(slider.vars.eventNamespace + "-" + slider.id); // Remove events from document for this instance only
-	  $(window).unbind(slider.vars.eventNamespace + "-" + slider.id); // Remove events from window for this instance only 
+	  $(window).unbind(slider.vars.eventNamespace + "-" + slider.id); // Remove events from window for this instance only
 	  slider.stop(); // Stop the interval
 	  slider.removeData('flexslider'); // Remove data
 	};
-	
+
 	//FlexSlider: Initialize
 	methods.init();
   };

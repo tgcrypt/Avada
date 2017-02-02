@@ -24,7 +24,7 @@
 			'youtube_id',
 			__( 'Youtube Video ID', 'Avada' ),
 			__( 'For example the Video ID for http://www.youtube.com/<strong>LOfeCR7KqUs</strong> is <strong>LOfeCR7KqUs</strong>', 'Avada' )
-		);
+		);	
 		$this->text(
 			'vimeo_id',
 			__( 'Vimeo Video ID', 'Avada' ),
@@ -50,6 +50,11 @@
 			__( 'Video Preview Image', 'Avada' ),
 			__( 'IMPORTANT: This field must be used for self hosted videos. Self hosted videos do not work correctly on mobile devices. The preview image will be seen in place of your video on older browsers or mobile devices.', 'Avada' )
 		);
+		$this->text(
+			'aspect_ratio',
+			__( 'Video Aspect Ratio', 'Avada' ),
+			__( 'The video will be resized to maintain this aspect ratio, this is to prevent the video from showing any black bars. Enter an aspect ratio here such as: "16:9", "4:3" or "16:10". The default is "16:9"', 'Avada' )
+		);			
 		$this->text(
 			'video_bg_color',
 			__( 'Video Color Overlay', 'Avada' ),
@@ -98,6 +103,23 @@
 		__( 'Heading Area', 'Avada' ),
 		__( 'Enter the heading for your slide. This field can take HTML markup and Fusion Shortcodes.', 'Avada' )
 	);
+	$this->select(
+		'heading_separator',
+		__( 'Heading Separator', 'Avada' ),
+		array(	'none'				=> __( 'None', 'Avada' ),
+				'single solid'		=> __( 'Single Solid', 'Avada' ),
+				'single dashed'		=> __( 'Single Dashed', 'Avada' ),
+				'single dotted'		=> __( 'Single Dotted', 'Avada' ),
+				'double solid'	 	=> __( 'Double Solid', 'Avada' ),
+				'double dashed'		=> __( 'Double Dashed', 'Avada' ),
+				'double dotted'		=> __( 'Double Dotted', 'Avada' ),
+				'underline solid'	=> __( 'Underline Solid', 'Avada' ),
+				'underline dashed'	=> __( 'Underline Dashed', 'Avada' ),
+				'underline dotted'	=> __( 'Underline Dotted', 'Avada' ),
+				
+		),
+		__( 'Choose the heading separator you want to use.', 'Avada' )
+	);	
 	$this->text(
 		'heading_font_size',
 		__( 'Heading Font Size', 'Avada' ),
@@ -124,6 +146,23 @@
 		__( 'Caption Area', 'Avada' ),
 		__( 'Enter the caption for your slide. This field can take HTML markup and Fusion Shortcodes.', 'Avada' )
 	);
+	$this->select(
+		'caption_separator',
+		__( 'Caption Separator', 'Avada' ),
+		array(	'none'				=> __( 'None', 'Avada' ),
+				'single solid'		=> __( 'Single Solid', 'Avada' ),
+				'single dashed'		=> __( 'Single Dashed', 'Avada' ),
+				'single dotted'		=> __( 'Single Dotted', 'Avada' ),
+				'double solid'	 	=> __( 'Double Solid', 'Avada' ),
+				'double dashed'		=> __( 'Double Dashed', 'Avada' ),
+				'double dotted'		=> __( 'Double Dotted', 'Avada' ),
+				'underline solid'	=> __( 'Underline Solid', 'Avada' ),
+				'underline dashed'	=> __( 'Underline Dashed', 'Avada' ),
+				'underline dotted'	=> __( 'Underline Dotted', 'Avada' ),
+				
+		),
+		__( 'Choose the caption separator you want to use.', 'Avada' )
+	);	
 	$this->text(
 		'caption_font_size',
 		__( 'Caption Font Size', 'Avada' ),

@@ -338,7 +338,7 @@ if ( ! post_password_required( $current_page_id ) ) {
 
 	// If infinite scroll with "load more" button is used
 	if ( Avada()->settings->get( 'grid_pagination_type' ) == 'load_more_button' ) {
-		echo sprintf( '<div class="fusion-load-more-button fusion-clearfix">%s</div>', apply_filters( 'avada_load_more_pots_name', __( 'Load More Posts', 'Avada' ) ) );
+		echo sprintf( '<div class="fusion-load-more-button fusion-clearfix">%s</div>', apply_filters( 'avada_load_more_posts_name', __( 'Load More Posts', 'Avada' ) ) );
 	}
 
 	// Render the pagination

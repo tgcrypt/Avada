@@ -4,7 +4,7 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 
 	function __construct() {
 
-		$widget_ops = array( 'classname' => 'social_links', 'description' => '' );
+		$widget_ops  = array( 'classname' => 'social_links', 'description' => '' );
 		$control_ops = array( 'id_base' => 'social_links-widget' );
 
 		parent::__construct( 'social_links-widget', 'Avada: Social Links', $widget_ops, $control_ops );
@@ -16,14 +16,8 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 		extract( $args );
 		$title     = apply_filters( 'widget_title', isset( $instance['title'] ) ? $instance['title'] : '' );
 		$add_class = '';
-
-		echo $before_widget;
-
-		if ( $title ) {
-			echo $before_title . $title . $after_title;
-		}
-
-		$style = '';
+		$style     = '';
+		$nofollow  = ( Avada()->settings->get( 'nofollow_social_links' ) ) ? ' rel="nofollow"' : '';
 
 		if ( ! isset( $instance['tooltip_pos'] ) || ! $instance['tooltip_pos'] ) {
 			$instance['tooltip_pos'] = Avada()->settings->get( 'social_links_tooltip_placement' );
@@ -42,28 +36,24 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 		}
 
 		if ( ! isset( $instance['boxed_icon_radius'] ) || ! $instance['boxed_icon_radius'] ) {
-			$instance['boxed_icon_radius'] = Avada()->settings->get( 'social_links_boxed_radius' );
+			$instance['boxed_icon_radius'] = intval( Avada()->settings->get( 'social_links_boxed_radius' ) ) . 'px';
 		}
 
 		if ( ! isset($instance['linktarget']) || empty($instance['linktarget'] ) ) {
 			$instance['linktarget'] = '_self';
 		}
 
-		$nofollow = ( Avada()->settings->get( 'nofollow_social_links' ) ) ? ' rel="nofollow"' : '';
-
 		if ( ! isset( $instance['tooltip_pos'] ) ) {
 			$instance['tooltip_pos'] = 'top';
 		}
 
 		if ( isset( $instance['boxed_icon'] )  && isset( $instance['boxed_icon_radius'] ) && 'Yes' == $instance['boxed_icon'] && ( $instance['boxed_icon_radius'] || '0' === $instance['boxed_icon_radius'] ) ) {
-			if ( 'round' == $instance['boxed_icon_radius'] ) {
-				$instance['boxed_icon_radius'] = '50%';
-			}
-			$style .= sprintf( 'border-radius:%s;', $instance['boxed_icon_radius'] );
+			$instance['boxed_icon_radius'] = ( 'round' == $instance['boxed_icon_radius'] ) ? '50%' : $instance['boxed_icon_radius'];
+			$style .= 'border-radius:' . $instance['boxed_icon_radius'] . ';';
 		}
 
 		if ( isset( $instance['boxed_icon'] )  && 'Yes' == $instance['boxed_icon'] && isset( $instance['boxed_icon_padding'] )  && isset( $instance['boxed_icon_padding'] ) ) {
-			$style .= sprintf( 'padding:%s;', $instance['boxed_icon_padding'] );
+			$style .= 'padding:' . $instance['boxed_icon_padding'] . ';';
 		}
 
 		if ( isset ( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] ) {
@@ -74,17 +64,17 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 			$instance['icons_font_size'] = '16px';
 		}
 
-		$style .= sprintf( 'font-size:%s;', $instance['icons_font_size'] );
+		$style .= 'font-size:' . $instance['icons_font_size'] . ';';
 
 		foreach ( $instance as $name => $value ) {
 			if ( false !== strpos( $name, '_link' ) ) {
-				$social_networks[$name] = str_replace( '_link', '', $name );
+				$social_networks[ $name ] = str_replace( '_link', '', $name );
 			}
 		}
 
 		if ( Avada()->settings->get( 'social_sorter' ) ) {
-			$order = Avada()->settings->get( 'social_sorter' );
-			$ordered_array = explode( ',', $order);
+			$order         = Avada()->settings->get( 'social_sorter' );
+			$ordered_array = explode( ',', $order );
 
 			if ( isset( $ordered_array ) && $ordered_array && is_array( $ordered_array ) ) {
 				$social_networks_old = $social_networks;
@@ -95,20 +85,15 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 					$field_order_number = str_replace( 'social_sorter_', '', $field_order );
 					$find_the_field     = Avada()->settings->get( 'social_sorter_' . $field_order_number );
 					$field_name         = str_replace( '_link', '', Avada()->settings->get( 'social_sorter_' . $field_order_number ) );
+					$field_name         = ( 'email' == $field_name ) ? 'mail' : $field_name;
+					$field_name         = ( 'facebook' == $field_name ) ? 'fb' : $field_name;
+					$field_name         = $field_name . '_link';
 
-					if ( 'email' == $field_name ) {
-						$field_name = 'mail';
-					} elseif ( 'facebook' == $field_name ) {
-						$field_name = 'fb';
-					}
-
-					$field_name = $field_name . '_link';
-
-					if ( ! isset( $social_networks_old[$field_name] ) ) {
+					if ( ! isset( $social_networks_old[ $field_name ] ) ) {
 						continue;
 					}
 
-					$social_networks[$field_name] = $social_networks_old[$field_name];
+					$social_networks[ $field_name ] = $social_networks_old[ $field_name ];
 
 				}
 
@@ -132,68 +117,63 @@ class Fusion_Widget_Social_Links extends WP_Widget {
 			$box_colors_max = count( $box_colors );
 		}
 		?>
+
+		<?php echo $before_widget; ?>
+		<?php if ( $title ) : ?>
+			<?php echo $before_title . $title . $after_title; ?>
+		<?php endif; ?>
+
 		<div class="fusion-social-networks<?php echo $add_class; ?>">
-			<?php
-			$icon_color_count = 0;
-			$box_color_count  = 0;
+			<div class="fusion-social-networks-wrapper">
+				<?php $icon_color_count = 0; ?>
+				<?php $box_color_count  = 0; ?>
 
-			foreach ( $social_networks as $name => $value ) :
+				<?php foreach ( $social_networks as $name => $value ) : ?>
 
-				if ( $instance[$name] ) :
-					if ( 'fb' == $value ) {
-						$value = 'facebook';
-					} elseif ( 'rss' == $value ) {
-						$value = 'feed';
-					} elseif ( 'google' == $value ) {
-						$value = 'googleplus';
-					}
+					<?php if ( $instance[ $name ] ) : ?>
 
-					$tooltip = $value;
+						<?php $value = ( 'fb' == $value ) ? 'facebook' : $value; ?>
+						<?php $value = ( 'rss' == $value ) ? 'feed' : $value; ?>
+						<?php $value = ( 'google' == $value ) ? 'googleplus' : $value; ?>
 
-					if ( 'googleplus' == $tooltip ) {
-						$tooltip = 'Google+';
-					}
+						<?php $tooltip = $value; ?>
+						<?php $tooltip = ( 'googleplus' == $tooltip ) ? 'Google+' : $tooltip; ?>
 
-					$icon_style = '';
-					$box_style  = '';
+						<?php $icon_style = ''; ?>
+						<?php $box_style  = ''; ?>
 
+						<?php if ( isset( $icon_colors[ $icon_color_count ] ) && $icon_colors[ $icon_color_count ] ) : ?>
+							<?php $icon_style = 'color:' . trim( $icon_colors[ $icon_color_count ] ) . ';'; ?>
+						<?php elseif ( isset( $icon_colors[ ( $icon_colors_max - 1 ) ] ) ) : ?>
+							<?php $icon_style = 'color:' . trim( $icon_colors[ ( $icon_colors_max - 1 ) ] ) . ';'; ?>
+						<?php endif; ?>
 
-					if ( isset( $icon_colors[ $icon_color_count ] ) && $icon_colors[ $icon_color_count ] ) {
-						$icon_style = sprintf( 'color:%s;', trim( $icon_colors[ $icon_color_count ] ) );
-					} else {
-						$icon_style = sprintf( 'color:%s;', trim( $icon_colors[ ( $icon_colors_max - 1 ) ] ) );
-					}
+						<?php if ( isset ( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] && isset( $box_colors[ $box_color_count ] ) && $box_colors[ $box_color_count ] ) : ?>
+							<?php $box_style = 'background-color:' . trim( $box_colors[ $box_color_count ] ) . ';border-color:' . trim( $box_colors[ $box_color_count ] ) . ';'; ?>
+						<?php elseif ( isset( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] && isset( $box_colors[ ( $box_colors_max - 1 ) ] ) && ( ! isset( $box_colors[ $box_color_count ] ) || ! $box_colors[ $box_color_count ] ) ) : ?>
+							<?php $box_style = 'background-color:' . trim( $box_colors[ ( $box_colors_max - 1 ) ] ) . ';border-color:' . trim( $box_colors[ ( $box_colors_max - 1 ) ] ) . ';'; ?>
+						<?php endif; ?>
 
-					if ( isset ( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] && isset( $box_colors[ $box_color_count ] ) && $box_colors[ $box_color_count ] ) {
-						$box_style = sprintf( 'background-color:%s;border-color:%s;', trim( $box_colors[ $box_color_count ] ), trim( $box_colors[ $box_color_count ] ) );
-					} elseif ( isset ( $instance['boxed_icon'] ) && 'Yes' == $instance['boxed_icon'] && ( ! isset( $box_colors[ $box_color_count ] ) || ! $box_colors[ $box_color_count ] ) ) {
-						$box_style = sprintf( 'background-color:%s;border-color:%s;', trim( $box_colors[ ( $box_colors_max - 1 ) ] ), trim( $box_colors[ ( $box_colors_max - 1 ) ] ) );
-					}
-					?>
+						<?php if ( 'none' != strtolower( $instance['tooltip_pos'] ) ) : ?>
+							<a class="fusion-social-network-icon fusion-tooltip fusion-<?php echo $value; ?> fusion-icon-<?php echo $value; ?>" href="<?php echo $instance[ $name ]; ?>" data-placement="<?php echo strtolower( $instance['tooltip_pos'] ); ?>" data-title="<?php echo ucwords( $tooltip ); ?>" data-toggle="tooltip" data-original-title="" title="<?php echo ucwords( $tooltip ); ?>" <?php echo $nofollow; ?> target="<?php echo $instance['linktarget']; ?>" style="<?php echo $style; ?><?php echo $icon_style; ?><?php echo $box_style; ?>"></a>
+						<?php else : ?>
+							<a class="fusion-social-network-icon fusion-tooltip fusion-<?php echo $value; ?> fusion-icon-<?php echo $value; ?>" href="<?php echo $instance[ $name ]; ?>" title="<?php echo ucwords( $tooltip ); ?>" <?php echo $nofollow; ?> target="<?php echo $instance['linktarget']; ?>" style="<?php echo $style; ?><?php echo $icon_style; ?><?php echo $box_style; ?>"></a>
+						<?php endif; ?>
 
-					<?php if ( 'none' != strtolower( $instance['tooltip_pos'] ) ) : ?>
-						<a class="fusion-social-network-icon fusion-tooltip fusion-<?php echo $value; ?> fusion-icon-<?php echo $value; ?>" href="<?php echo $instance[$name]; ?>" data-placement="<?php echo strtolower( $instance['tooltip_pos'] ); ?>" data-title="<?php echo ucwords( $tooltip ); ?>" data-toggle="tooltip" data-original-title="" title="<?php echo ucwords( $tooltip ); ?>" <?php echo $nofollow; ?> target="<?php echo $instance['linktarget']; ?>" style="<?php echo $style; ?><?php echo $icon_style; ?><?php echo $box_style; ?>"></a>
-					<?php else : ?>
-						<a class="fusion-social-network-icon fusion-tooltip fusion-<?php echo $value; ?> fusion-icon-<?php echo $value; ?>" href="<?php echo $instance[$name]; ?>" title="<?php echo ucwords( $tooltip ); ?>" <?php echo $nofollow; ?> target="<?php echo $instance['linktarget']; ?>" style="<?php echo $style; ?><?php echo $icon_style; ?><?php echo $box_style; ?>"></a>
-					<?php endif;
+						<?php $icon_color_count++; ?>
+						<?php $box_color_count++; ?>
 
-					$icon_color_count++;
-					$box_color_count++;
+					<?php endif; ?>
 
-				endif;
+				<?php endforeach; ?>
 
-			endforeach;
-			?>
-
-			<?php if ( isset( $instance['show_custom'] ) && 'Yes' == $instance['show_custom'] && Avada()->settings->get( 'custom_icon_name' ) && Avada()->settings->get( 'custom_icon_image' ) ) : ?>
-				<a class="fusion-social-network-icon fusion-tooltip" target="<?php echo $instance['linktarget']; ?>" href="<?php echo Avada()->settings->get( 'custom_icon_link' ); ?>"<?php echo $nofollow; ?> data-placement="<?php echo strtolower( $instance['tooltip_pos'] ); ?>" data-title="<?php echo Avada()->settings->get( 'custom_icon_name' ); ?>" data-toggle="tooltip" data-original-title="" title="" style="<?php echo $style; ?>"><img src="<?php echo Avada()->settings->get( 'custom_icon_image' ); ?>" alt="<?php echo Avada()->settings->get( 'custom_icon_name' ); ?>" /></a>
-			<?php endif; ?>
-
+				<?php if ( isset( $instance['show_custom'] ) && 'Yes' == $instance['show_custom'] && Avada()->settings->get( 'custom_icon_name' ) && Avada()->settings->get( 'custom_icon_image' ) ) : ?>
+					<a class="fusion-social-network-icon fusion-tooltip" target="<?php echo $instance['linktarget']; ?>" href="<?php echo Avada()->settings->get( 'custom_icon_link' ); ?>"<?php echo $nofollow; ?> data-placement="<?php echo strtolower( $instance['tooltip_pos'] ); ?>" data-title="<?php echo Avada()->settings->get( 'custom_icon_name' ); ?>" data-toggle="tooltip" data-original-title="" title="" style="<?php echo $style; ?>"><img src="<?php echo Avada()->settings->get( 'custom_icon_image' ); ?>" alt="<?php echo Avada()->settings->get( 'custom_icon_name' ); ?>" /></a>
+				<?php endif; ?>
+			</div>
 		</div>
 
-		<?php
-
-		echo $after_widget;
+		<?php echo $after_widget;
 
 	}
 

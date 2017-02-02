@@ -127,15 +127,15 @@ function of_save_options($data, $key = null) {
 	$data_from_db = $data;
 
 	if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-		if( defined('ICL_SITEPRESS_VERSION') ) {
-			global $sitepress;
-			$languages = icl_get_languages('skip_missing=1');
-		} elseif( function_exists( 'pll_languages_list' ) ) {
+		if( function_exists( 'pll_languages_list' ) ) {
 			$poly_languages = pll_languages_list();
 
 			foreach ( $poly_languages as $language ) {
 				$languages[] = array( 'language_code' => $language );
 			}
+		} elseif( defined('ICL_SITEPRESS_VERSION') ) {
+			global $sitepress;
+			$languages = icl_get_languages('skip_missing=1');
 		}
 
 		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {

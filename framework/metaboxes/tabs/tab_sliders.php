@@ -78,7 +78,9 @@ if ( function_exists( 'rev_slider_shortcode' ) ) {
 	$get_sliders = $wpdb->get_results( 'SELECT * FROM ' . $wpdb->prefix . 'revslider_sliders' );
 	if ( $get_sliders ) {
 		foreach ( $get_sliders as $slider ) {
-			$revsliders[$slider->alias] = $slider->title;
+			if( $slider->type != 'template' ) {
+				$revsliders[$slider->alias] = $slider->title;
+			}
 		}
 	}
 }

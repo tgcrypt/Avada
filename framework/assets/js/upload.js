@@ -10,19 +10,21 @@ jQuery(document).ready(function($){
 		});
 
 		window.avada_send_to_editor_backup = window.send_to_editor;
-		window.send_to_editor = function(html) {
-			if(window.avada_uploadfield) {
-				if($('img', html).length >= 1) {
-					var image_url = $('img', html).attr('src');
+		window.send_to_editor = function( $html ) {
+			if ( window.avada_uploadfield ) {
+				if ( $( $html ).is( 'img' ) ) {
+					var $image_url = $( $html ).attr( 'src' );
+				} else if ( $( 'img', $html ).length ) {
+					var $image_url = $( 'img', $html ).attr( 'src' );
 				} else {
-					var image_url = $($(html)[0]).attr('href');
+					var $image_url = $ ( $( $html )[0] ).attr( 'href' );
 				}
-				$(window.avada_uploadfield).val(image_url);
+				$( window.avada_uploadfield ).val( $image_url );
 				window.avada_uploadfield = '';
 
 				tb_remove();
 			} else {
-				window.avada_send_to_editor_backup(html);
+				window.avada_send_to_editor_backup( $html );
 			}
 		}
 	}

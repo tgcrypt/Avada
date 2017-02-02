@@ -29,7 +29,9 @@
 		supportTouch = !!('ontouchstart' in window) && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)),
 
 		// Events
-		clickEvent = supportTouch ? "itap.iLightBox" : "click.iLightBox",
+		// ThemeFusion edit for Avada theme: remove the .iLightBox namespace from click event to avoid different button errors
+		clickEvent = supportTouch ? "itap" : "click",
+		globalClickEvent = supportTouch ? "itap" : "click",
 		touchStartEvent = supportTouch ? "touchstart.iLightBox" : "mousedown.iLightBox",
 		touchStopEvent = supportTouch ? "touchend.iLightBox" : "mouseup.iLightBox",
 		touchMoveEvent = supportTouch ? "touchmove.iLightBox" : "mousemove.iLightBox",
@@ -1253,12 +1255,11 @@
 			}).on('mouseenter.iLightBox mouseleave.iLightBox', '.ilightbox-wrapper', function(e) {
 				if (e.type == 'mouseenter') { vars.lockWheel = true; }
 				else { vars.lockWheel = false; }
-			// ThemeFusion edit for Avada theme: added "click" to the event to make it always work
-			}).on(clickEvent, '.ilightbox-toolbar a.ilightbox-close, .ilightbox-toolbar a.ilightbox-fullscreen, .ilightbox-toolbar a.ilightbox-play, .ilightbox-toolbar a.ilightbox-pause', function() {
+			}).on(clickEvent, '.ilightbox-toolbar a.ilightbox-close, .ilightbox-toolbar a.ilightbox-fullscreen, .ilightbox-toolbar a.ilightbox-play, .ilightbox-toolbar a.ilightbox-pause', function(event) {
 				var t = $(this);
-
 				if (t.hasClass('ilightbox-fullscreen')) { iL.fullScreenAction(); }
 				else if (t.hasClass('ilightbox-play')) {
+
 					iL.resume();
 					t.addClass('ilightbox-pause').removeClass('ilightbox-play');
 				} else if (t.hasClass('ilightbox-pause')) {
@@ -1517,7 +1518,6 @@
 
 				if (side == "next") {
 					if (!iL.items[item]) { return false; }
-					console.log(vars);
 					var firstHolder = vars.nextPhoto,
 						secondHolder = vars.holder,
 						lastHolder = vars.prevPhoto,
@@ -2229,7 +2229,7 @@
 				testEl = document.createElement("video");
 
 			iL.plugins = {
-				flash: (parseInt(PluginDetect.getVersion("Shockwave")) >= 0 || parseInt(PluginDetect.getVersion("Flash")) >= 0) ? true : false,
+				flash: false, // fix for issue #1750 by Avada
 				quicktime: (parseInt(PluginDetect.getVersion("QuickTime")) >= 0) ? true : false,
 				html5H264: !!(testEl.canPlayType && testEl.canPlayType('video/mp4').replace(/no/, '')),
 				html5WebM: !!(testEl.canPlayType && testEl.canPlayType('video/webm').replace(/no/, '')),

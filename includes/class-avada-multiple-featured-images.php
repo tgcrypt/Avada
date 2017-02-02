@@ -3,11 +3,12 @@
 class Avada_Multiple_Featured_Images {
 
 	public function __construct() {
-		add_action( 'after_setup_theme', array( $this, 'generate' ) );
+		if( is_admin() ) {
+			add_action( 'after_setup_theme', array( $this, 'generate' ) );
+		}
 	}
 
 	public function generate() {
-
 		$post_types = array(
 			'post',
 			'page',

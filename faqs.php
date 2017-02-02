@@ -1,111 +1,9 @@
 <?php
 // Template Name: FAQs
-get_header();
+get_header(); ?>
 
-$content_css = 'width:100%';
-$sidebar_css = 'display:none';
-$content_class = '';
-$sidebar_exists = false;
-$sidebar_left = '';
-$double_sidebars = false;
-
-$sidebar_1 = get_post_meta( $post->ID, 'sbg_selected_sidebar_replacement', true );
-$sidebar_2 = get_post_meta( $post->ID, 'sbg_selected_sidebar_2_replacement', true );
-
-if( Avada()->settings->get( 'pages_global_sidebar' ) ) {
-	if( Avada()->settings->get( 'pages_sidebar' ) != 'None' ) {
-		$sidebar_1 = array( Avada()->settings->get( 'pages_sidebar' ) );
-	} else {
-		$sidebar_1 = '';
-	}
-
-	if( Avada()->settings->get( 'pages_sidebar_2' ) != 'None' ) {
-		$sidebar_2 = array( Avada()->settings->get( 'pages_sidebar_2' ) );
-	} else {
-		$sidebar_2 = '';
-	}
-}
-
-if( ( is_array( $sidebar_1 ) && ( $sidebar_1[0] || $sidebar_1[0] === '0' ) ) && ( is_array( $sidebar_2 ) && ( $sidebar_2[0] || $sidebar_2[0] === '0' ) ) ) {
-	$double_sidebars = true;
-}
-
-if( ( is_array( $sidebar_1 ) && ( $sidebar_1[0] || $sidebar_1[0] === '0' ) ) || ( is_array( $sidebar_2 ) && ( $sidebar_2[0] || $sidebar_2[0] === '0' ) ) ) {
-	$sidebar_exists = true;
-} else {
-	$sidebar_exists = false;
-}
-
-if( ! $sidebar_exists ) {
-	$content_css = 'width:100%';
-	$sidebar_css = 'display:none';
-	$sidebar_exists = false;
-} elseif(get_post_meta($post->ID, 'pyre_sidebar_position', true) == 'left') {
-	$content_css = 'float:right;';
-	$sidebar_css = 'float:left;';
-	$content_class = 'portfolio-one-sidebar';
-	$sidebar_exists = true;
-	$sidebar_left = 1;
-} elseif(get_post_meta($post->ID, 'pyre_sidebar_position', true) == 'right') {
-	$content_css = 'float:left;';
-	$sidebar_css = 'float:right;';
-	$content_class = 'portfolio-one-sidebar';
-	$sidebar_exists = true;
-} elseif(get_post_meta($post->ID, 'pyre_sidebar_position', true) == 'default'  || ! metadata_exists( 'post', $post->ID, 'pyre_sidebar_position' )) {
-	$content_class = 'portfolio-one-sidebar';
-	if(Avada()->settings->get( 'default_sidebar_pos' ) == 'Left') {
-		$content_css = 'float:right;';
-		$sidebar_css = 'float:left;';
-		$sidebar_exists = true;
-		$sidebar_left = 1;
-	} elseif(Avada()->settings->get( 'default_sidebar_pos' ) == 'Right') {
-		$content_css = 'float:left;';
-		$sidebar_css = 'float:right;';
-		$sidebar_exists = true;
-		$sidebar_left = 2;
-	}
-}
-
-if(get_post_meta($post->ID, 'pyre_sidebar_position', true) == 'right') {
-	$sidebar_left = 2;
-}
-
-if( Avada()->settings->get( 'pages_global_sidebar' ) ) {
-	if( Avada()->settings->get( 'pages_sidebar' ) != 'None' ) {
-		$sidebar_1 = Avada()->settings->get( 'pages_sidebar' );
-
-		if( Avada()->settings->get( 'default_sidebar_pos' ) == 'Right' ) {
-			$content_css = 'float:left;';
-			$sidebar_css = 'float:right;';
-			$sidebar_left = 2;
-		} else {
-			$content_css = 'float:right;';
-			$sidebar_css = 'float:left;';
-			$sidebar_left = 1;
-		}
-	}
-
-	if( Avada()->settings->get( 'pages_sidebar_2' ) != 'None' ) {
-		$sidebar_2 = Avada()->settings->get( 'pages_sidebar_2' );
-	}
-
-	if( Avada()->settings->get( 'pages_sidebar' ) != 'None' && Avada()->settings->get( 'pages_sidebar_2' ) != 'None' ) {
-		$double_sidebars = true;
-	}
-} else {
-	$sidebar_1 = '0';
-	$sidebar_2 = '0';
-}
-
-if($double_sidebars == true) {
-	$content_css = 'float:left;';
-	$sidebar_css = 'float:left;';
-	$sidebar_2_css = 'float:left;';
-} else {
-	$sidebar_left = 1;
-}
-
-echo sprintf( '<div id="content" class="fusion-faqs" style="%s">', $content_css );
+<div id="content" class="fusion-faqs" <?php Avada()->layout->add_style( 'content_style' ); ?>>
+<?php
 	// Get the content of the faq page itself
 	while ( have_posts() ): the_post();
 
@@ -164,11 +62,11 @@ echo sprintf( '<div id="content" class="fusion-faqs" style="%s">', $content_css 
 
 			echo '</ul>';
 		}
-
-		echo '<div class="fusion-faqs-wrapper">';
-			echo '<div class="accordian fusion-accordian">';
-				echo '<div class="panel-group" id="accordian-one">';
-
+		?>
+		<div class="fusion-faqs-wrapper">
+			<div class="accordian fusion-accordian">
+				<div class="panel-group" id="accordian-one">
+				<?php
 					$args = array(
 						'post_type' => 'avada_faq',
 						'posts_per_page' => -1
@@ -186,14 +84,22 @@ echo sprintf( '<div id="content" class="fusion-faqs" style="%s">', $content_css 
 								$post_classes .= urldecode( $post_term->slug ) . ' ';
 							}
 						}
+						?>
 
-						echo sprintf( '<div class="fusion-panel panel-default fusion-faq-post %s">', $post_classes );
-							// get the rich snippets for the post
-							echo avada_render_rich_snippets_for_pages();
-
-							echo '<div class="panel-heading">';
-								echo sprintf( '<h4 class="panel-title toggle"><a data-toggle="collapse" class="collapsed" data-parent="#accordian-one" data-target="#collapse-%s" href="#collapse-%s"><i class="fa-fusion-box"></i>%s</a></h4>', get_the_ID(), get_the_ID(), get_the_title() );
-							echo '</div>';
+						<div class="fusion-panel panel-default fusion-faq-post <?php echo $post_classes; ?>">
+							<?php // get the rich snippets for the post
+							echo avada_render_rich_snippets_for_pages(); ?>
+							<div class="panel-heading">
+								<h4 class="panel-title toggle">
+									<a data-toggle="collapse" class="collapsed" data-parent="#accordian-one" data-target="#collapse-<?php echo get_the_ID(); ?>" href="#collapse-<?php echo get_the_ID(); ?>">
+										<div class="fusion-toggle-icon-wrapper">
+											<i class="fa-fusion-box"></i>
+										</div>
+										<div class="fusion-toggle-heading"><?php echo get_the_title(); ?></div>
+									</a>
+								</h4>
+							</div>
+							<?php
 							echo sprintf( '<div id="collapse-%s" class="panel-collapse collapse">', get_the_ID() );
 								echo '<div class="panel-body toggle-content post-content">';
 									// Render the featured image of the post
@@ -216,41 +122,20 @@ echo sprintf( '<div id="content" class="fusion-faqs" style="%s">', $content_css 
 									}
 									// Render the post content
 									the_content();
-								echo '</div>';
-							echo '</div>';
-						echo '</div>';
-					endwhile; // loop through faq_items
-				echo '</div>';
-			echo '</div>';
-		echo '</div>';
+									?>
+								</div>
+							</div>
+						</div>
+					<?php endwhile; // loop through faq_items ?>
+				</div>
+			</div>
+		</div>
+	<?php
 	} // password check
 echo '</div>';
 wp_reset_query();
+do_action( 'fusion_after_content' );
 ?>
-<?php if( $sidebar_exists == true ): ?>
-<div id="sidebar" class="sidebar" style="<?php echo $sidebar_css; ?>">
-	<?php
-	if($sidebar_left == 1) {
-		generated_dynamic_sidebar($sidebar_1);
-	}
-	if($sidebar_left == 2) {
-		generated_dynamic_sidebar_2($sidebar_2);
-	}
-	?>
-</div>
-<?php if( $double_sidebars == true ): ?>
-<div id="sidebar-2" class="sidebar" style="<?php echo $sidebar_2_css; ?>">
-	<?php
-	if($sidebar_left == 1) {
-		generated_dynamic_sidebar_2($sidebar_2);
-	}
-	if($sidebar_left == 2) {
-		generated_dynamic_sidebar($sidebar_1);
-	}
-	?>
-</div>
-<?php endif; ?>
-<?php endif; ?>
 <?php get_footer();
 
 // Omit closing PHP tag to avoid "Headers already sent" issues.

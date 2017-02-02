@@ -145,3 +145,13 @@ body .post-content .products-slider li{width:auto !important;}
 .fusion-body.side-header #side-header.header-shadow:after { display: none }
 
 .fusion-progressbar .progress-title { top: 0; line-height: 37px; }
+
+.layout-boxed-mode .fusion-footer-parallax { left: auto; right: auto; }
+
+.woocommerce .checkout_coupon {
+  display: block !important;
+}
+
+.side-header-background {
+	display: none;
+}

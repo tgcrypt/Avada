@@ -139,7 +139,7 @@ if ( ! function_exists( 'avada_wooslider' ) ) {
 
 		if ( ! Avada()->settings->get( 'status_fusion_slider' ) ) {
 			$term_details = get_term_by( 'slug', $term, 'slide-page' );
-			
+
 			if ( is_object( $term_details ) ) {
 				$slider_settings = get_option( 'taxonomy_' . $term_details->term_id );
 			}
@@ -167,6 +167,22 @@ if ( ! function_exists( 'avada_wooslider' ) ) {
 
 			if ( ! isset( $slider_settings['animation'] ) ) {
 				$slider_settings['animation'] = true;
+			}
+
+			if ( ! isset( $slider_settings['nav_box_width'] ) ) {
+				$slider_settings['nav_box_width'] = '63px';
+			}
+
+			if ( ! isset( $slider_settings['nav_box_height'] ) ) {
+				$slider_settings['nav_box_height'] = '63px';
+			}
+
+			if ( ! isset( $slider_settings['nav_arrow_size'] ) ) {
+				$slider_settings['nav_arrow_size'] = '25px';
+			}
+
+			if( $slider_settings['nav_box_height'] ) {
+				$nav_box_height_half = intval( $slider_settings['nav_box_height'] ) / 2;
 			}
 
 			$slider_data = '';
@@ -209,14 +225,30 @@ if ( ! function_exists( 'avada_wooslider' ) ) {
 
 				<?php $max_width = ( 'fade' == $slider_settings['animation'] ) ? 'max-width:' . $slider_settings['slider_width'] : ''; ?>
 
-				<div class="fusion-slider-container <?php echo $slider_class; ?>-container" style="height:<?php echo $slider_settings['slider_height']; ?>;max-width:<?php echo $slider_settings['slider_width']; ?>;">
+				<div class="fusion-slider-container fusion-slider-<?php the_ID(); ?> <?php echo $slider_class; ?>-container" style="height:<?php echo $slider_settings['slider_height']; ?>;max-width:<?php echo $slider_settings['slider_width']; ?>;">
+					<style type="text/css" scoped="scoped">
+					.fusion-slider-<?php the_ID(); ?> .flex-direction-nav a {
+						<?php
+						if( $slider_settings['nav_box_width'] ) {
+							echo 'width:' . $slider_settings['nav_box_width'] . ';';
+						}
+						if( $slider_settings['nav_box_height'] ) {
+							echo 'height:' . $slider_settings['nav_box_height'] . ';';
+							echo 'line-height:' . $slider_settings['nav_box_height'] . ';';
+							echo 'margin-top:-' . $nav_box_height_half . 'px;';
+						}
+						if( $slider_settings['nav_arrow_size'] ) {
+							echo 'font-size:' . $slider_settings['nav_arrow_size'] . ';';
+						}
+						?>
+					}
+                    </style>
 					<div class="fusion-slider-loading"><?php _e( 'Loading...', 'Avada' ); ?></div>
 					<div class="tfs-slider flexslider main-flex<?php echo $slider_class; ?>" style="max-width:<?php echo $slider_settings['slider_width']; ?>;" <?php echo $slider_data; ?>>
 						<ul class="slides" style="<?php echo $max_width ?>;">
 							<?php while ( $query->have_posts() ) : $query->the_post(); ?>
 								<?php
 								$metadata = get_metadata( 'post', get_the_ID() );
-
 								$background_image = '';
 								$background_class = '';
 
@@ -229,8 +261,9 @@ if ( ! function_exists( 'avada_wooslider' ) ) {
 									$background_image = 'background-image: url(' . $image_url[0] . ');';
 									$background_class = 'background-image';
 									$img_width        = $image_url[1];
-								}
+								}							
 
+								$aspect_ratio 		= '16:9';
 								$video_attributes   = '';
 								$youtube_attributes = '';
 								$vimeo_attributes   = '';
@@ -238,15 +271,18 @@ if ( ! function_exists( 'avada_wooslider' ) ) {
 								$data_loop          = 'no';
 								$data_autoplay      = 'no';
 
+								if ( isset( $metadata['pyre_aspect_ratio'][0] ) && $metadata['pyre_aspect_ratio'][0] ) {
+									$aspect_ratio = $metadata['pyre_aspect_ratio'][0];
+								}
+
 								if ( isset( $metadata['pyre_mute_video'][0] ) && 'yes' == $metadata['pyre_mute_video'][0] ) {
 									$video_attributes = 'muted';
 									$data_mute        = 'yes';
 								}
 
+								// Do not set the &auoplay=1 attributes, as this is done in js to make sure the page is fully loaded before the video begins to play
 								if ( isset( $metadata['pyre_autoplay_video'][0] ) && 'yes' == $metadata['pyre_autoplay_video'][0] ) {
 									$video_attributes   .= ' autoplay';
-									$youtube_attributes .= '&amp;autoplay=0';
-									$vimeo_attributes   .= '&amp;autoplay=0';
 									$data_autoplay       = 'yes';
 								}
 
@@ -329,15 +365,51 @@ if ( ! function_exists( 'avada_wooslider' ) ) {
 									$line_height       = $metadata['pyre_caption_font_size'][0] * 1.2;
 									$caption_font_size = 'font-size:' . $metadata['pyre_caption_font_size'][0] . 'px;line-height:' . $line_height . 'px;';
 								}
+								
+								$heading_styles = $heading_color . $heading_font_size;
+								$caption_styles = $caption_color . $caption_font_size;
+								$heading_title_sc_wrapper_class = '';
+								$caption_title_sc_wrapper_class = '';
+								
+								if ( ! isset( $metadata['pyre_heading_separator'][0] ) ) {
+									$metadata['pyre_heading_separator'][0] = 'none';
+								}
+								
+								if ( ! isset( $metadata['pyre_caption_separator'][0] ) ) {
+									$metadata['pyre_caption_separator'][0] = 'none';
+								}									
+								
+								if ( $metadata['pyre_content_alignment'][0] != 'center' ) {
+									$metadata['pyre_heading_separator'][0] = 'none';
+									$metadata['pyre_caption_separator'][0] = 'none';								
+								}
+								
+								if ( $metadata['pyre_content_alignment'][0] == 'center' ) {
+									if ( $metadata['pyre_heading_separator'][0] != 'none' ) {
+										$heading_title_sc_wrapper_class = ' fusion-block-element';
+									}
+									
+									if ( $metadata['pyre_caption_separator'][0] != 'none' ) {
+										$caption_title_sc_wrapper_class = ' fusion-block-element';
+									}
+								}
 								?>
 								<li data-mute="<?php echo $data_mute; ?>" data-loop="<?php echo $data_loop; ?>" data-autoplay="<?php echo $data_autoplay; ?>">
 									<div class="slide-content-container slide-content-<?php if ( isset( $metadata['pyre_content_alignment'][0] ) && $metadata['pyre_content_alignment'][0] ) { echo $metadata['pyre_content_alignment'][0]; } ?>" style="display: none;">
 										<div class="slide-content" style="<?php echo $content_max_width; ?>">
 											<?php if ( isset( $metadata['pyre_heading'][0] ) && $metadata['pyre_heading'][0] ) : ?>
-												<div class="heading <?php echo ( $heading_bg ) ? 'with-bg' : ''; ?>"><h2 style="<?php echo $heading_bg; ?><?php echo $heading_color; ?><?php echo $heading_font_size; ?>"><?php echo do_shortcode( $metadata['pyre_heading'][0] ); ?></h2></div>
+												<div class="heading <?php echo ( $heading_bg ) ? 'with-bg' : ''; ?>">
+													<div class="fusion-title-sc-wrapper<?php echo $heading_title_sc_wrapper_class; ?>" style="<?php echo $heading_bg; ?>">
+														<?php echo do_shortcode( sprintf( '[title size="2" content_align="%s" sep_color="%s" margin_top="0px" margin_bottom="0px" style_type="%s" style_tag="%s"]%s[/title]',  $metadata['pyre_content_alignment'][0], $metadata['pyre_heading_color'][0], $metadata['pyre_heading_separator'][0], $heading_styles, do_shortcode( $metadata['pyre_heading'][0] ) ) ); ?>
+													</div>
+												</div>
 											<?php endif; ?>
 											<?php if ( isset( $metadata['pyre_caption'][0] ) && $metadata['pyre_caption'][0] ) : ?>
-												<div class="caption <?php echo ( $caption_bg ) ? 'with-bg' : ''; ?>"><h3 style="<?php echo $caption_bg; ?><?php echo $caption_color; ?><?php echo $caption_font_size; ?>"><?php echo do_shortcode( $metadata['pyre_caption'][0] ); ?></h3></div>
+												<div class="caption <?php echo ( $caption_bg ) ? 'with-bg' : ''; ?>">
+													<div class="fusion-title-sc-wrapper<?php echo $caption_title_sc_wrapper_class; ?>" style="<?php echo $caption_bg; ?>">
+														<?php echo do_shortcode( sprintf( '[title size="3" content_align="%s" sep_color="%s" margin_top="0px" margin_bottom="0px" style_type="%s" style_tag="%s"]%s[/title]',  $metadata['pyre_content_alignment'][0], $metadata['pyre_caption_color'][0], $metadata['pyre_caption_separator'][0], $caption_styles, do_shortcode( $metadata['pyre_caption'][0] ) ) ); ?>
+													</div>
+												</div>
 											<?php endif; ?>
 											<?php if ( isset( $metadata['pyre_link_type'][0] ) && 'button' == $metadata['pyre_link_type'][0] ) : ?>
 												<div class="buttons" >
@@ -379,12 +451,14 @@ if ( ! function_exists( 'avada_wooslider' ) ) {
 											<?php endif; ?>
 										<?php endif; ?>
 										<?php if ( isset( $metadata['pyre_type'][0] ) && isset( $metadata['pyre_youtube_id'][0] ) && 'youtube' == $metadata['pyre_type'][0] && $metadata['pyre_youtube_id'][0] ) : ?>
-											<div style="position: absolute; top: 0; left: 0; <?php echo $video_zindex; ?> width: 100%; height: 100%">
-												<iframe frameborder="0" height="100%" width="100%" src="http<?php echo ( is_ssl() ) ? 's' : ''; ?>://www.youtube.com/embed/<?php echo $metadata['pyre_youtube_id'][0]; ?>?wmode=transparent&amp;modestbranding=1&amp;showinfo=0&amp;autohide=1&amp;enablejsapi=1&amp;rel=0<?php echo $youtube_attributes; ?>"></iframe>
+											<div style="position: absolute; top: 0; left: 0; <?php echo $video_zindex; ?> width: 100%; height: 100%" data-youtube-video-id="<?php echo $metadata['pyre_youtube_id'][0]; ?>" data-video-aspect-ratio="<?php echo $aspect_ratio; ?>">
+												<div id="video-<?php echo $metadata['pyre_youtube_id'][0]; ?>-inner">
+													<iframe frameborder="0" height="100%" width="100%" src="https://www.youtube.com/embed/<?php echo $metadata['pyre_youtube_id'][0]; ?>?wmode=transparent&amp;modestbranding=1&amp;showinfo=0&amp;autohide=1&amp;enablejsapi=1&amp;rel=0&amp;vq=hd720&amp;<?php echo $youtube_attributes; ?>"></iframe>
+												</div>
 											</div>
 										<?php endif; ?>
 										<?php if ( isset( $metadata['pyre_type'][0] ) && isset( $metadata['pyre_vimeo_id'][0] ) &&  'vimeo' == $metadata['pyre_type'][0] && $metadata['pyre_vimeo_id'][0] ) : ?>
-											<div style="position: absolute; top: 0; left: 0; <?php echo $video_zindex; ?> width: 100%; height: 100%">
+											<div style="position: absolute; top: 0; left: 0; <?php echo $video_zindex; ?> width: 100%; height: 100%" data-mute="<?php echo $data_mute; ?>" data-vimeo-video-id="<?php echo $metadata['pyre_vimeo_id'][0]; ?>" data-video-aspect-ratio="<?php echo $aspect_ratio; ?>">
 												<iframe src="https://player.vimeo.com/video/<?php echo $metadata['pyre_vimeo_id'][0]; ?>?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff&amp;badge=0&amp;title=0<?php echo $vimeo_attributes; ?>" height="100%" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 											</div>
 										<?php endif; ?>
@@ -435,15 +509,17 @@ if( ! function_exists( 'avada_get_page_title_bar_contents' ) ) {
 			$page_title_text = get_post_meta( $post_id, 'pyre_page_title_text', true );
 		}
 
+		if ( is_search() ) {
+			$title = sprintf( __( 'Search results for: %s', 'Avada' ), get_search_query() );
+			$subtitle = '';
+		}
+
 		if ( ! $title ) {
-			$title = get_the_title();
+			$title = get_the_title( $post_id );
 
-			if ( is_home() ) {
+			// Only assing blog title theme option to default blog page and not posts page
+			if ( is_home() && get_option( 'show_on_front' ) != 'page' ) {
 				$title = Avada()->settings->get( 'blog_title' );
-			}
-
-			if ( is_search() ) {
-				$title = sprintf( __( 'Search results for: %s', 'Avada' ), get_search_query() );
 			}
 
 			if ( is_404() ) {
@@ -452,9 +528,7 @@ if( ! function_exists( 'avada_get_page_title_bar_contents' ) ) {
 
 			if ( class_exists( 'Tribe__Events__Main' ) && ( ( tribe_is_event() && ! is_single() && ! is_home() ) || is_events_archive() || ( is_events_archive() && is_404() ) ) ) {
 				$title = tribe_get_events_title();
-			}
-
-			if ( is_archive() && ! is_bbpress() && ! is_search() ) {
+			} elseif ( is_archive() && ! is_bbpress() && ! is_search() ) {
 				if ( is_day() ) {
 					$title = sprintf( __( 'Daily Archives: %s', 'Avada' ), '<span>' . get_the_date() . '</span>' );
 				} else if ( is_month() ) {
@@ -467,10 +541,11 @@ if( ! function_exists( 'avada_get_page_title_bar_contents' ) ) {
 				} elseif ( is_post_type_archive() ) {
 					$title = post_type_archive_title( '', false );
 
-					$sermon_settings = get_option('wpfc_options');
+					$sermon_settings = get_option( 'wpfc_options' );
 					if ( is_array( $sermon_settings ) ) {
 						$title = $sermon_settings['archive_title'];
 					}
+
 				} else {
 					$title = single_cat_title( '', false );
 				}
@@ -483,7 +558,8 @@ if( ! function_exists( 'avada_get_page_title_bar_contents' ) ) {
 			}
 		}
 
-		if ( ! $subtitle && is_home() ) {
+		// Only assing blog subtitle theme option to default blog page and not posts page
+		if ( ! $subtitle && is_home() && get_option( 'show_on_front' ) != 'page' ) {
 			$subtitle = Avada()->settings->get( 'blog_subtitle' );
 		}
 
@@ -508,18 +584,22 @@ if ( ! function_exists( 'avada_current_page_title_bar' ) ) {
 	function avada_current_page_title_bar( $post_id  ) {
 		$page_title_bar_contents = avada_get_page_title_bar_contents( $post_id );
 
-		if ( ! is_archive() && ! is_search() && ! ( is_home() && ! is_front_page() ) ) {
+		if ( ( ! is_archive() || class_exists( 'WooCommerce' ) && is_shop() ) && 
+			 ! is_search() 
+		) {
 			if ( 'yes' == get_post_meta( $post_id, 'pyre_page_title', true ) || 'yes_without_bar' == get_post_meta( $post_id, 'pyre_page_title', true ) || ( 'hide' != Avada()->settings->get( 'page_title_bar' ) && 'no' != get_post_meta( $post_id, 'pyre_page_title', true ) ) ) {
 				if ( is_home() && is_front_page() && ! Avada()->settings->get( 'blog_show_page_title_bar' ) ) {
 					// do nothing
 				} else {
+					if( is_home() && get_post_meta( $post_id, 'pyre_page_title', true ) == 'default' && ! Avada()->settings->get( 'blog_show_page_title_bar' ) ) {
+						return;
+					}
 					avada_page_title_bar( $page_title_bar_contents[0], $page_title_bar_contents[1], $page_title_bar_contents[2] );
 				}
 			}
 		} else {
-
-			if ( is_home() && ! Avada()->settings->get( 'blog_show_page_title_bar' ) ) {
-				// do nothing
+			if ( is_home() && Avada()->settings->get( 'blog_show_page_title_bar' ) ) {
+				avada_page_title_bar( $page_title_bar_contents[0], $page_title_bar_contents[1], $page_title_bar_contents[2] );
 			} else {
 				if( 'hide' != Avada()->settings->get( 'page_title_bar' ) ) {
 					avada_page_title_bar( $page_title_bar_contents[0], $page_title_bar_contents[1], $page_title_bar_contents[2] );
@@ -640,28 +720,30 @@ if ( ! function_exists( 'avada_featured_images_lightbox' ) ) {
 if( ! function_exists( 'avada_display_sidenav' ) ) {
 	function avada_display_sidenav( $post_id ) {
 
-		$html = '<ul class="side-nav">';
+		if( is_page_template( 'side-navigation.php' ) ) {
+			$html = '<ul class="side-nav">';
 
-		$post_ancestors = get_ancestors( $post_id, 'page' );
-		$post_parent    = end( $post_ancestors );
+			$post_ancestors = get_ancestors( $post_id, 'page' );
+			$post_parent    = end( $post_ancestors );
 
-		$html .= ( is_page( $post_parent ) ) ? '<li class="current_page_item">' : '<li>';
+			$html .= ( is_page( $post_parent ) ) ? '<li class="current_page_item">' : '<li>';
 
-		if ( $post_parent ) {
-			$html .= sprintf( '<a href="%s" title="%s">%s</a></li>', get_permalink( $post_parent ), __( 'Back to Parent Page', 'Avada' ), get_the_title( $post_parent ) );
-			$children = wp_list_pages( sprintf( 'title_li=&child_of=%s&echo=0', $post_parent ) );
-		} else {
-			$html .= sprintf( '<a href="%s" title="%s">%s</a></li>', get_permalink( $post_id ), __( 'Back to Parent Page', 'Avada' ), get_the_title( $post_id ) );
-			$children = wp_list_pages( sprintf( 'title_li=&child_of=%s&echo=0', $post_id ) );
+			if ( $post_parent ) {
+				$html .= sprintf( '<a href="%s" title="%s">%s</a></li>', get_permalink( $post_parent ), __( 'Back to Parent Page', 'Avada' ), get_the_title( $post_parent ) );
+				$children = wp_list_pages( sprintf( 'title_li=&child_of=%s&echo=0', $post_parent ) );
+			} else {
+				$html .= sprintf( '<a href="%s" title="%s">%s</a></li>', get_permalink( $post_id ), __( 'Back to Parent Page', 'Avada' ), get_the_title( $post_id ) );
+				$children = wp_list_pages( sprintf( 'title_li=&child_of=%s&echo=0', $post_id ) );
+			}
+
+			if ( $children ) {
+				$html .= $children;
+			}
+
+			$html .= '</ul>';
+
+			return $html;
 		}
-
-		if ( $children ) {
-			$html .= $children;
-		}		
-
-		$html .= '</ul>';
-
-		return $html;
 	}
 }
 

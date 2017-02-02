@@ -17,10 +17,6 @@
 
 		<?php bbp_reply_author_link( array( 'sep' => '', 'show_role' => true ) ); ?>
 
-		<div class="bbp-reply-post-date"><?php bbp_reply_post_date(); ?></div>
-
-		<div class="bbps-post-count"><?php sprintf( __( 'Post count: %s', 'Avada' ), bbp_get_user_reply_count_raw( bbp_get_reply_author_id() ) + bbp_get_user_topic_count_raw( bbp_get_reply_author_id() ) ); ?></div>
-
 		<?php if ( bbp_is_user_keymaster() ) : ?>
 
 			<?php do_action( 'bbp_theme_before_reply_author_admin_details' ); ?>
@@ -52,7 +48,6 @@
 
 			<?php do_action( 'bbp_theme_after_reply_content' ); ?>
 
-			<div class="bbp-arrow"></div>
 		</div>
 
 	</div><!-- .bbp-reply-content -->

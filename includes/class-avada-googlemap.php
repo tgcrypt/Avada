@@ -11,9 +11,7 @@ class Avada_GoogleMap {
 	 */
 	public function __construct() {
 
-		add_filter( 'fusion_attr_avada-google-map-shortcode', array( $this, 'attr' ) );
-		add_shortcode( 'avada_map', array( $this, 'render' ) );
-
+		add_filter( 'fusion_attr_avada-google-map', array( $this, 'attr' ) );
 	}
 
 	/**
@@ -86,7 +84,7 @@ class Avada_GoogleMap {
 	 * @param  string $content Content between shortcode
 	 * @return string		  HTML output
 	 */
-	function render( $args, $content = '' ) {
+	function render_map( $args, $content = '' ) {
 
 		$defaults = $this->set_shortcode_defaults(
 			array(
@@ -268,9 +266,9 @@ class Avada_GoogleMap {
 			</script>
 			<?php
 			if ( $defaults['id'] ) {
-				$html = ob_get_clean() . sprintf( '<div id="%s"><div %s></div></div>', $defaults['id'], $this->attributes( 'avada-google-map-shortcode' ) );
+				$html = ob_get_clean() . sprintf( '<div id="%s"><div %s></div></div>', $defaults['id'], $this->attributes( 'avada-google-map' ) );
 			} else {
-				$html = ob_get_clean() . sprintf( '<div %s></div>', $this->attributes( 'avada-google-map-shortcode' ) );
+				$html = ob_get_clean() . sprintf( '<div %s></div>', $this->attributes( 'avada-google-map' ) );
 			}
 
 		}

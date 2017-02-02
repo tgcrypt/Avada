@@ -76,5 +76,41 @@ if ( ! function_exists( 'avada_get_slider_type' ) ) {
 	}
 }
 
+/**
+ * Make sure that the wrongly spelled avada_load_more_pots_name filter can still be used
+ * Kept for backwards-compatibility
+ */
+add_filter( 'avada_load_more_posts_name', 'avada_handle_deprecated_load_more_posts_filter' );
+function avada_handle_deprecated_load_more_posts_filter( $text ) {
+	$load_more_posts_text = apply_filters( 'avada_load_more_pots_name', '' );
+	
+	if ( $load_more_posts_text ) {
+		return $load_more_posts_text;
+	} else {
+		return $text;
+	}
+}
+
+
+/**
+ * Make sure that the wrongly spelled avada_load_more_pots_name filter can still be used
+ * Kept for backwards-compatibility
+ */
+add_filter( 'avada_read_more_name', 'avada_handle_deprecated_blog_read_more_link_filter' );
+function avada_handle_deprecated_blog_read_more_link_filter( $text ) {
+	$read_more_text = apply_filters( 'avada_blog_read_more_link', '' );
+	
+	if ( $read_more_text ) {
+		return $read_more_text;
+	} else {
+		return $text;
+	}
+}
+
+add_action( 'avada_before_main_container', 'avada_handle_deprecated_before_main_action' );
+function avada_handle_deprecated_before_main_action() {
+	do_action( 'avada_before_main' );
+}
+
 
 // Omit closing PHP tag to avoid "Headers already sent" issues.

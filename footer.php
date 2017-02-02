@@ -1,7 +1,9 @@
+					<?php do_action( 'avada_after_main_content' ); ?>				
 				</div>  <!-- fusion-row -->
 			</div>  <!-- #main -->
-
 			<?php
+			do_action( 'avada_after_main_container' );
+			
 			global $social_icons;
 
 			if ( strpos( Avada()->settings->get( 'footer_special_effects' ), 'footer_sticky' ) !== FALSE ) {
@@ -19,14 +21,19 @@
 					$footer_parallax_class = ' fusion-footer-parallax';
 				}
 
-				echo sprintf( '<div class="fusion-footer%s">', $footer_parallax_class );
+				printf( '<div class="fusion-footer%s">', $footer_parallax_class );
 
 					// Check if the footer widget area should be displayed
 					if ( ( Avada()->settings->get( 'footer_widgets' ) && get_post_meta( $c_pageID, 'pyre_display_footer', true ) != 'no' ) ||
 						 ( ! Avada()->settings->get( 'footer_widgets' ) && get_post_meta( $c_pageID, 'pyre_display_footer', true ) == 'yes' )
 					) {
+						$footer_widget_area_center_class = '';
+						if ( Avada()->settings->get( 'footer_widgets_center_content' ) ) {
+							$footer_widget_area_center_class = ' fusion-footer-widget-area-center';
+						}
+
 					?>
-						<footer class="fusion-footer-widget-area">
+						<footer class="fusion-footer-widget-area fusion-widget-area<?php echo $footer_widget_area_center_class; ?>">
 							<div class="fusion-row">
 								<div class="fusion-columns fusion-columns-<?php echo Avada()->settings->get( 'footer_widgets_columns' ); ?> fusion-widget-area">
 
@@ -40,7 +47,11 @@
 									// Render as many widget columns as have been chosen in Theme Options
 									for ( $i = 1; $i < 7; $i++ ) {
 										if ( Avada()->settings->get( 'footer_widgets_columns' ) >= $i ) {
-											echo sprintf( '<div class="fusion-column col-lg-%s col-md-%s col-sm-%s">', $column_width, $column_width, $column_width );
+											if ( Avada()->settings->get( 'footer_widgets_columns' ) == $i ) {
+												echo sprintf( '<div class="fusion-column fusion-column-last col-lg-%s col-md-%s col-sm-%s">', $column_width, $column_width, $column_width );
+											} else {
+												echo sprintf( '<div class="fusion-column col-lg-%s col-md-%s col-sm-%s">', $column_width, $column_width, $column_width );
+											}
 
 												if ( function_exists( 'dynamic_sidebar' ) &&
 													 dynamic_sidebar( 'avada-footer-widget-' . $i )
@@ -49,13 +60,13 @@
 												}
 											echo '</div>';
 										}
-									}
+									}								
 									?>
 
 									<div class="fusion-clearfix"></div>
 								</div> <!-- fusion-columns -->
 							</div> <!-- fusion-row -->
-						</footer> <!-- fusion-footer-area -->
+						</footer> <!-- fusion-footer-widget-area -->
 					<?php
 					} // end footer wigets check
 
@@ -63,8 +74,13 @@
 					if ( ( Avada()->settings->get( 'footer_copyright' ) && get_post_meta( $c_pageID, 'pyre_display_copyright', true ) != 'no' ) ||
 						  ( ! Avada()->settings->get( 'footer_copyright' ) && get_post_meta( $c_pageID, 'pyre_display_copyright', true ) == 'yes' )
 					) {
+
+						$footer_copyright_center_class = '';
+						if ( Avada()->settings->get( 'footer_copyright_center_content' ) ) {
+							$footer_copyright_center_class = ' fusion-footer-copyright-center';
+						}
 					?>
-						<footer id="footer" class="fusion-footer-copyright-area">
+						<footer id="footer" class="fusion-footer-copyright-area<?php echo $footer_copyright_center_class; ?>">
 							<div class="fusion-row">
 								<div class="fusion-copyright-content">
 
@@ -78,12 +94,14 @@
 									do_action( 'avada_footer_copyright_content' );
 									?>
 
-								</div> <!-- fusion-fusion-copyright-area-content -->
+								</div> <!-- fusion-fusion-copyright-content -->
 							</div> <!-- fusion-row -->
 						</footer> <!-- #footer -->
-					</div> <!-- fusion-footer -->
 				<?php
 				} // end footer copyright area check
+				?>
+				</div> <!-- fusion-footer -->
+				<?php
 			} // end is not blank page check
 			?>
 		</div> <!-- wrapper -->
@@ -100,6 +118,8 @@
 		}
 
 		?>
+
+		<a class="fusion-one-page-text-link fusion-page-load-link"></a>
 
 		<!-- W3TC-include-js-head -->
 

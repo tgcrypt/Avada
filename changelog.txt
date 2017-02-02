@@ -1,4 +1,4 @@
-
+ 
 IMPORTANT:
 -----------------------------------------------------------------------------------------
 Please be sure to read the Important Update Notes before you update:
@@ -6,20 +6,439 @@ http://theme-fusion.com/avada-doc/install-update/important-update-information/
 
 
 -----------------------------------------------------------------------------------------
+Version 3.9.3 - January 27th, 2016
+-----------------------------------------------------------------------------------------
+
+
+- NEW: actions hooks after content container and before footer container
+- NEW: current and previous theme version now available on system status tab
+- added support for lightbox case insensitive file extension checking
+- refactored theme template files to free them from shortcode usage
+- changed FusionCore update nag styling to make is stick out more
+- fixed sliders howing on private or password protected pages also for users without access permissions
+- fixed compatibility issues with the new Polylang 1.8
+- fixed tagline element buttons appearing twiche on mobiles
+- fixed shortcodes not being correctlly stripped from excerpts when using <!--more--> tag
+- fixed missing add to cart icon on products archive when using WooCommerce 2.5
+- fixed blank page template not respecting page option background image setting
+- fixed double slashes in paths of admin screens assest urls
+- fixed search page results not respecting the hide/show featured images setting
+- fixed testimonial element RTL issue
+- fixed content box icon alignment RTL issue
+- fixed FusionBuilder save/cancel button alignment when the events calendar plugin is active
+- fixed price alignment issue in the WooCommerce cart widget
+- fixed issue with Fusion page options where background images could not be set if "Link URL" field is empty
+- fixed page title bar mobile height Fusion page option not working on side header layouts
+- fixed a few WooCommerce product rollover display issues
+- fixed content box shortcode button bar being wrongly aligned on some layouts
+
+
+-----------------------------------------------------------------------------------------
+Version 3.9.2 - January 14th, 2016
+-----------------------------------------------------------------------------------------
+
+
+- NEW: tab content on mobile now displays directly below the corresponding tab toggle
+- NEW: font awesome 4.5 icon set with 20 new icons
+- NEW: mobile menu collapses now, when an on page menu anchor was clicked
+- NEW: permalink settings for portfolio categories/skills/tags slugs
+- NEW: option to position the contact form comment area above or below the input fields
+- added support for woocommerce brands addon
+- added styles for password protection element for posts/pages for WP 4.4
+- updated German translation file
+- updated several theme and page option descriptions
+- updated various FusionBuilder element descriptions
+- updated Google+ social icon to new branding
+- updated Revolution Slider to 5.1.6
+- fixed comment form submit button issue, where the button was cut off on mobiles 
+- fixed issue of events shortcode breaking tabs shortcode
+- fixed side header background color transparency in combination witha bg image
+- fixed issue with unitless sidebar widths settings
+- fixed some styling issues with the Events Calendar Pro mini calendar widget
+- fixed issue with google fonts not being set in Theme Options
+- fixed an issue with content box shortcode title hover color not being correct
+- fixed select box arrows for forms inside of modal windows
+- fixed WooCommerce horizontal product tabs breaking on mobile
+- fixed styling issue for Avada style twitter widget inside centered footer widget column
+- fixed an issue where search page options were also applied to backend search
+- fixed issue where assigned blog page options were applied to blog archive pages
+- fixed breadcrumbs not being displayed on single events page
+- fixed issue of blank page template not being full width
+- fixed javascript error on WooCommerce button click
+- fixed WooCommerce shipping calculator being doubled on cart page
+- fixed WooCommerce clean product design useing deprecated WordPress permalink function
+- fixed RTL issue on WooCommerce my account page regarding addresses heading
+- fixed various RTL issues with menu items for headers v4/v5
+- fixed lightbox not working on blog archives using infinite scroll or load more button
+- fixed full width element not stretching full broswer width when using percentage value in "100% Width Left/Right Padding" option
+- fixed an issue with responsive images being rendered too small
+- fixed issue with post options width/height settings for featured images not being respected on blog archives
+- fixed missing alt tags for images in recent posts shortcode
+- fixed compatibility issue with WPTouch plugin
+- fixed demo menus not importing on servers using php7
+- fixed an issue with WP responsive images on blog archive pages
+- fixed an issue where FusionBuilder sub elements couldn't be removed when Yoast SEO plugin was active
+- fixed content boxes icon on side margin issue when the icon image is right aligned
+- fixed issue with Relevanssi plugin throwing fatal error on building index
+- removed deprecated Google Maps API setting to fix javascript console notice
+
+
+-----------------------------------------------------------------------------------------
+Version 3.9.1 - December 22nd, 2015
+-----------------------------------------------------------------------------------------
+
+
+- improved self hosted video backgrounds in IE + EDGE to ensure they are 100% width
+- fixed missing margin for custom template button in builder
+- added column background parameters to the short code generator
+- fixed counter circle resize issue
+- fixed the issue of p tags being removed in text block element, and similar issue with content boxes using line breaks
+- fixed the issue of the content box title color not working in short code
+- fixed the issue of WP comments form heading using double title
+- fixed two issues with the comment form on contact page (field resize and new WP 4.4 setup)
+- fixed issue of button gradient hover color not working from theme options
+- removed PHP notice in search.php
+- added a fallback for buttons when used with gravity forms to ensure theme option values are used
+- fixed rare issue of migration script leading to fatal error on child theme
+- ensured the update message for FC plugin is always visible, even if its been dismissed in previous update
+- made adjustments to ensure hover animation color is used on content box icons when icon circle is set to no
+- fixed Google Plus sharing issue with sharing box short code
+- adjustments for side Header z-index to ensure drop downs are above content
+- fixed main menu hover color in Firefox
+- fixed rare issue on events list page, where images with white space in file paths didn't show
+
+
+-----------------------------------------------------------------------------------------
+Version 3.9 - December 17th, 2015
+-----------------------------------------------------------------------------------------
+
+Five New Demos To Show The Power of Avada
+We’ve added 5 new demos that are built entirely from our included options. These demos are unique and creatively designed for the specific industries they represent. Best of all, you can import them directly from the WordPress admin and use for your site. They are Avada Gym, Avada Modern Shop, Avada Classic Shop, Avada Product Landing Page and Avada Forum  More coming soon!
+
+
+
+Full List of New Features
+- 5 new professionally designed demos
+- new "clean" design option for WooCommerce product boxes
+- new option to add a counter circle beside the woo cart icon in the menu
+- new builder "User Login" element to add login, registration, lost password within the content area
+- new options for the “User Login” element to control colors, styles, etc
+- new animation settings to choose when the animation should start
+- new horizontal menu widget with several style options, can be seen in the new modern shop demo
+- new widget 'Horizontal Menu' to add a horizontal menu, perfect for the footer
+- new hover effects for column background images
+- new ability to add a link over the entire column background image
+- added ability to show categories in blog grid layout
+- new option for center alignment in title short code
+- new options for social sharing icons on the events single post page
+- new options to control the navigation box size and arrow size for fusion sliders
+- new theme options to control the navigation box size and arrow size for site wide slideshows and carousels
+- new option for each fusion slide to have a single/double/dashed line on the caption or heading
+- new theme options to control the pagination design (padding and the "next/previous" text to show or hide)
+- separator shortcode now supports px and % units for margins
+- new short code option to set timezone for countdown element
+- WooCommerce single product image size in WooCommerce settings will now be followed on single post page
+- WooCommerce cart dropdown in the top and main menu now follows menu width theme option
+- updated Revolution Slider to 5.1.4
+- new avada_before_body_content action hook after <body> tag
+- added full compatibility for the filter bar add on for events calendar
+- added compatibility for WooCommerce 2.5 (Note: Woocommerce 2.5 is not released yet)
+- design cleanup for various bbPress areas and widgets
+- continued refactoring of the codebase for optimal performance and maintenance 
+- deprecated content-width options for layouts with sidebars, they are now auto-calculated using CSS calc() functions
+- new bbPress tab in theme options for better organization
+- new dashboard widget for ThemeFusion related news and updates in the WP admin area
+- new fade option for rollover effects via theme options
+- new option to set the WordPress jpeg quality
+
+
+General Fixes & Improvements
+- mute options for videos now works for full width element
+- tweaked strip HTML option for recent works
+- fixed transparent header width in boxed mode
+- video preview image will now show up for Youtube/Vimeo videos on mobile/iPad
+- minor changes for WooCommerce quick checkout plugin to work correctly
+- screen reader text is now properly hidden
+- fusion slider short code heading / caption background color now works
+- fixed compatibility issue with optimize press
+- fixed animation settings for content boxes when parent settings were selected in the shortcode
+- fixed content box heading color hover issue
+- mobile header background color now works when using a side header
+- fixed light box scroll/exit issue
+- fusion slider will now prioritize to show the entire content on mobile
+- fixed bbPress reply date issue
+- fixed side header scrolling issue on iPad
+- fixed blog timeline layout date issue where 2009/2010 posts were showing under the same heading
+- fixed youtube slider no preview image issue along with various other issues
+- mute video options now works correctly for Vimeo videos
+- corrected the name for 'avada_load_more_posts_name' filter
+- fixed woo carousel not saving more than 1 selected category
+- tweaked search results option for accuracy
+- excerpt length is now followed by RSS feeds
+- fixed minor popover styling issue
+- text and icon color in WooCommerce product rollover works correctly
+- fixed widget title design for WooCommerce default widgets
+- fixed button short code accent color for when icon is used within the button
+- sticky footer now works correctly
+- leave a comment button now spans correctly within the content area
+- fixed target in content boxes when selected in the child options
+- linkedIn sharing is now up-to-date
+- events Calendar view more link in list widget now works correctly
+- mobile menu navigation item arrow is fixed now
+- google social icon will now follow the correct target option
+- text domain for events calendar template mods is now up-to-date
+- widget will not be created when hitting the cancel button in the widget section area
+- removed ?login=failed form the URL when user is logged in successfully
+- fixed WooCommerce cart count for the menu cart area
+- fixed columns not stacking properly on iPad portrait mode
+- global 'open post links in new window' option works correctly for portfolio
+- events calendar featured image on day view will now work correctly on mobile
+- styling for WPML language switcher widget is now correct
+- fixed responsive styling for coupon code area for woo checkout
+- transparent header now works when responsive mode is off
+- WooCommerce Variable product description now works correctly
+- fixed twitter widget truncating tweets
+- facebook widget will no longer throw a JS error
+- disabling the search bar in Events Calendar will no longer break archive view
+- IE11 on windows 10 crashes are fixed
+- lightbox slideshow play button will now work correctly
+- various anchor scrolling improvements
+- counter circles now work correctly within tabs
+- sidebar now follows the breakpoints correctly
+- blog/portfolio breakpoints from 5 -> 4 -> 3 -> 2 -> 1 column will now work correctly
+- fusion events short code will work correctly in tabs now
+- XMLNS attribute removed for the SSL sites
+- fixed Full width container parallax image sizes on mobile
+- titles will no longer cut off in fusion slider on mobile
+- page title bar will pick up heading left/right padding option
+- social icon tooltip will no longer block social icons
+- several style adjustments to WooCommerce for optimum design
+- tested PHP7 for compatibility issues
+- tested WordPress 4.4 for compatibility issues
+- tested WPML 3.3 for compatibility issues
+- tested the new Events Calendar 4 update
+- fixed recent posts animation
+- added support for fullscreen mode for vimeo videos
+- added support for double quotes in tagline box title and description
+
+
+
+-----------------------------------------------------------------------------------------
+Version 3.8.8 - October 27th, 2015
+-----------------------------------------------------------------------------------------
+
+
+- NEW FEATURE: new responsive breakpoint settings for site content and portfolio/blog grid to combine with the header responsive breakpoint
+- new ‘Responsive’ theme options tab that holds general responsive options like break points, responsive design, responsive typography, and pinch to zoom.
+- fixed sanitation from breaking urls with ports (fixes unique case of logo missing)
+- added a clearfix for Woo related posts
+- fixed image carousel not vertically aligned in firefox
+- removed undefined errors
+- fixed issue with price for events being out of place
+- fixed the 404 issues on icons for old IE versions in light box
+- fixed issue of post images not showing in light box when selected
+- added Avada alert box styling for cf7 success message
+- improved event images to ensure hover effects work and link to single event page for all layouts
+- improved pagination of blog short code when used on designated home page from reading settings
+- fixed sidebar assignment for portfolio archives
+- ensured video previews work on portfolio archive pages
+- ensured values missing in theme option fields use default values
+- minor styling fix for toggle element
+- Multiple blog short codes on the same page now work with load more/infinite scroll
+- fixed issue of Sliding Bar Button color being overridden by Theme Options > Sliding Bar Link Color
+- improved light box so it can be closed even if you scroll down on page
+- fixed issue of content boxes breaking grid on iPad portrait
+- minor styling fix to ensure long urls need wrap in event sidebar
+- added placeholder for events tribe pro class call if pro version is not present
+- improved hover effects for content boxes
+- improved characters encoding in breadcrumbs for bbpress search
+- fixed footer closing div issue with copyright disabled
+- improved RTL menu styling for Header V5
+- fixed the flash detection notice in light box in firefox
+- fixed issue with woocommerce fields on my account page
+- improved meta data styling on single events page
+- fixed js error on empty image frame element
+- fixed issue with twitter style widget options not working in some cases
+- fixed issue of mobile menu spacing when using header 4 with a banner ad
+- improved anchor url on different pages to work more conssitently
+- fixed light box issue of portfolio featured image opening in new window
+- improved short codes content extraction with slider element
+- updated avada twitter widget transient
+- change instances of 'Sidebar' to 'Widget Section' that were missed in 387
+- fixed issue of breadcrumbs disappearing before mobile kicks in
+- updated wp_title deprecation for WP 4.4
+- fixed issue of Facebook icon broken in footer under iPad portrait view
+
+
+
+-----------------------------------------------------------------------------------------
+Version 3.8.7 - October 8th, 2015
+-----------------------------------------------------------------------------------------
+
+Complete Design Integration For The Events Calendar Plugin by Modern Tribe
+The Events Calendar plugin has been downloaded over a million times! It`s the `go to` plugin for managing events, and now Avada offers complete design integration for both the free and pro versions of the plugin. The list below details everything that has been added for this popular plugin.
+
+- beautiful design integration for The Events Calendar plugin that covers all pages, layouts, views and posts
+- integration for both the FREE and PRO versions of The Events Calendar
+- new events builder element that allows you to place event listings on any page
+- new theme option panel to hold all the customization options for The Events Calendar
+- new option for event text color for the primary color overlays
+- new events filter bar background color option
+- new events filter bar text color option
+- new monthly calendar heading background color option
+- new monthly calendar background color option
+- new tooltip background color option
+- new tooltip text color option
+- new border color option
+- new featured image hover type option for event images
+- new image background size option for list view layout
+- the single event post page has a full detailed sidebar section with several customization options
+- new event sidebar background color and padding options
+- new event sidebar heading font size and color options
+- new event sidebar title background color option
+- new event sidebar text font size and color options
+- new event sidebar link color option
+- new event sidebar divider color option
+- new event sidebar width options for dual and single sidebars
+- new events calendar global sidebar options that apply to every event page and post
+
+
+New Church Demo To Showcase The Events Calendar Plugin Design Integration!
+We`ve created a beautiful demo catered to Churches or Non-Profit organizations. This demo showcases the unique design integration Avada now includes for The Events Calendar plugin. Check it out here: http://theme-fusion.com/avada/church/
+
+
+Full List of New Features
+- new fusion builder countdown timer element
+- 10+ theme and element customization options for the new countdown timer element
+- new widget builder element, easily insert widgets on any page
+- new option to set a custom breakpoint for when the mobile menu appears
+- new twitter widget style and options, 3 styles to choose from along with new widget options
+- new option for widget titles to have a colored boxed background
+- new option for buttons to span full width of container
+- new options for the person element to align all content (left, center, right)
+- new option for person element to place social icons on top or bottom of the layout
+- new option for person element to have a background color
+- new footer content center option allows all footer content to be centered
+- new copyright content center option allows all copyright content to be centered
+- Fusion Slider can now take Youtube and Vimeo videos full screen without black bars
+- control the height of all form fields, dropdown select boxes and search field with the new Form Field Height option
+- new option to enable/disable the WooCommerce Product Image hover effect
+- content box hover effect color and "none" option
+- enhanced excerpts that extract all "content" from the shortcodes
+- menu centering option now works for headers 4-5
+- related posts / projects will now show video post previews
+- new option for disabling css hover animations on image frame element
+- new revolution slider plugin v5.0.9
+- new layer slider plugin v5.6.2
+- update FA to new version 
+- new option to disable dynamic CSS caching in database
+- new theme option to use 100% width on all blog single posts
+- fixed mode for iPad portrait has been removed from the theme and made into a plugin for those who still wish to use it
+
+
+General Fixes & Improvements
+- continued refactoring of the codebase for improvements
+- clean the bbPress code and reduce the usage of templates
+- Move sidebar code from page templates to classes 	
+- improved the one page anchor link setup for various cases
+- fixed the false URL report from Google Web Master caused by isIE()
+- upgraded TGM to the latest version
+- improved the System Status wp_remote_get and post change URL
+- deprecated the fusion_string_limit_words function
+- added additional checks for language file locations
+- fixed issue of Vimeo shortcode API not working in fusion builder	
+- improved variable product re-sizing when changing selections
+- improved sharing on twitter when using symbols
+- changed to flexbox method for various areas that were refactored for added flexibilty
+- improved the layout in IE 11 when using boxed mode + parallax footer
+- fixed issue of iLightbox not closing once you scroll on a page
+- improved sticky header by allowing it to match the normal menu height so menu items do not fall outside
+- improved testimonial layout for the comma if a name is not used
+- fixed issue of icon circle backgrounds displaying as squares in Safari
+- fixed issue of blog page using thumbnail size for first image in a slideshow
+- improved parallax footer setup when using google map + contact page
+- added top and bottom padding for footer area in tablet mode
+- fixed issue of page title bar contents being incorrect on search results page
+- fixed issue of excerpt link not linking when using read more tag
+- new Italian, Dutch and Persian translation files submitted by community members
+- fixed php notice on portfolio single posts template
+- fixed redundant string in theme options
+- improved the layout for WooCommerce checkout Paypal icon so it does not overlap others
+- improved the layout for using links in the header tagline field
+- fixed typos in System Status page errors
+- added support for translating ”Search results for:" and extra featured image fields
+- fixed issue of WooCommerce variable product description being doubled
+- improved bbPress integration, ensure the no "subscribe' link shows on bbPress forum pages
+- fixed minor empty space on right side of browser when using tablets
+- fixed the issue of captions not showing for the default WP gallery
+- improved recent works active filter initialization so it is encapsulated
+- fixed issue of Google+ Share in Microsoft Edge 
+- improved the layout for portfolio single post details section on tablets wen using a sidebar
+- fixed the issue of “auto” not working for featured image size
+- updated modern and classic mobile menus when displaying certain header content
+- improved video backgrounds in full width container for IE11
+- made adjustments to ensure Q2W3 plugin compatibility 		
+- various style adjustments for content box element
+- fixed issue of email icon not showing in social sharing of post 
+- ensure full screen Fusion Slider is full screen on mobile
+- improved sticky header setup when using header 5 and a large logo
+- improved image size setup for image carousel when using Firefox
+- fixed issue of recent works lightbox not loading with videos
+- fixed style issue of multiple instances of recent works shortcode on one page overlapping
+- improved scrolling on iPhone for modal forms
+- improved styles for toggle titles so they wrap correctly on mobile devices
+- improved lightbox integration when using a single image frame element
+- fixed style issues with transparent header on mobile
+- improved lightbox behavior when using blog element + infinite scroll
+- "Email sent successfully" message will only show if email address is entered in theme options
+- improved parallax footer setup / loading when on a page with a slider
+- fixed issue of side header logo overlapping in Firefox
+- improved iLightbox inline links
+- improved automated tab ID’s to reduce conflict
+- improved </textarea> usage with code block element
+- removed the use of glob() to include all files
+- added our custom alert message design for contact form 7 plugin
+- added 3rd party plugins to the “recommended” plugin list
+- improved the rendering of products inside of tabs element
+- fixed style issue of WooCommerce 'My Account' drop down being cut off when left aligned
+- improved overall sticky header + scrolling on shorter pages
+- minor changes to accommodate Member Mouse plugin compatibility
+- fixed issue of product search results excerpt not following theme option setting
+- updated alert messages when errors are reported in system status
+- improved thumbnail scrolling  for WooCommerce product slider on single product pages
+- various improvements for tabs + WooCommerce Products and flip boxes
+- fixed rare issue of logo duplication on mobile
+- Strip HTML now works for recent works
+- OG description, allow content within text block element
+- fixed audio shortcode conflict with animations in mobile bug
+- button shortcode border width now displays empty to pick up theme option value
+- enable compression for google map file
+- improvements to sharing text when a page is shared on Facebook
+- made adjustments for WP 4.3 admin bar and the mobile sticky header
+- checked compatibility for Sermon Manager plugin
+- fixed IE11 issue of having to click Update button twice.
+- changed `sidebars` to `widget sections` under appearance menu un admin for accuracy
+
+
+
+
+-----------------------------------------------------------------------------------------
 Version 3.8.6.1 - August 20th, 2015
 -----------------------------------------------------------------------------------------
+
 - fixed several minor issues to ensure the theme is compatible with WP 4.3
 - short code generator adjustments for WP 4.3
 - layerslider is updated to 5.5.1
 - added updated files for latest WooCommerce plugin to fix outdated notifications
 
-We have skipped Revslider v5 in this version. They have bugs in their latest version of
-the plugin which we have reported to their team but we need to release this version
-for full compatibility with WP 4.3.
+We have skipped Revolution Slider v5 in this version due to an issue we found with auto-responsive sliders used in column short codes.  We are working with ThemePunch to get it resolved asap.
+
+
 
 -----------------------------------------------------------------------------------------
 Version 3.8.6 - July 27th, 2015
 -----------------------------------------------------------------------------------------
+
 - new theme option for positioning the search form on the search results page
 - improved rollover effects when featured images are set to fixed, it now only covers the image width
 - new Macedonian language files for fusion core
@@ -49,6 +468,7 @@ Version 3.8.6 - July 27th, 2015
 - Portfolio page template as font page - pagination active selector is now working
 - nav\_menu\_link\_attributes now working in mega menu
 - updated WooCommerce strings
+
 
 
 -----------------------------------------------------------------------------------------

@@ -41,6 +41,8 @@ if ( Avada()->settings->get( 'portfolio_featured_image_size' ) == 'full' ||
 	$portfolio_image_size = sprintf( 'portfolio-%s', $portfolio_columns );
 }
 
+$post_featured_image_size_dimensions = avada_get_image_size_dimensions( $portfolio_image_size );
+
 // Get the column spacing
 $column_spacing_class = $column_spacing = '';
 if ( ! strpos( $portfolio_layout_setting, 'one' ) ) {
@@ -85,13 +87,21 @@ echo sprintf( '<div class="%s">', implode( ' ', $portfolio_classes ) );
 					}
 
 						// On one column layouts render the video set in page options if no featured image is present
-						if ( strpos( $portfolio_layout_setting, 'one' ) &&
-							 ! has_post_thumbnail() &&
+						if ( ! has_post_thumbnail() &&
 							 fusion_get_page_option( 'video', $post->ID )
 						) {
-							echo '<div class="fusion-image-wrapper fusion-video">';
+							// For the portfolio one column layout we need a fixed max-width
+							if ( $portfolio_layout == 'fusion-portfolio-one' && ! strpos( $portfolio_layout_setting, 'text' ) ) {
+								$video_max_width = '540px';
+							// For all other layouts get the calculated max-width from the image size
+							} else {
+								$video_max_width = $post_featured_image_size_dimensions['width'];
+							}
+
+							printf( '<div class="fusion-image-wrapper fusion-video" style="max-width:%s;">', $video_max_width );
 								echo fusion_get_page_option( 'video', $post->ID );
 							echo '</div>';
+							
 						// On every other other layout render the featured image
 						} else {
 							echo avada_render_first_featured_image_markup( $post->ID, $portfolio_image_size, get_permalink( $post->ID ), TRUE );
@@ -177,7 +187,7 @@ echo sprintf( '<div class="%s">', implode( ' ', $portfolio_classes ) );
 
 	// If infinite scroll with "load more" button is used
 	if ( Avada()->settings->get( 'grid_pagination_type' ) == 'load_more_button' ) {
-		echo sprintf( '<div class="fusion-load-more-button fusion-clearfix">%s</div>', __( 'Load More Posts', 'Avada' ) );
+		echo sprintf( '<div class="fusion-load-more-button fusion-clearfix">%s</div>', apply_filters( 'avada_load_more_posts_name', __( 'Load More Posts', 'Avada' ) ) );
 	}
 
 	wp_reset_query();

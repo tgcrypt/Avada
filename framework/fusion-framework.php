@@ -15,30 +15,10 @@
 
 define( 'FUSION_FRAMEWORK_VERSION', '1');
 
-if( ! function_exists( 'fusion_block_direct_access' ) ) {
-	/**
-	 * Blocks direct accessing of a core file
-	 * @param  none
-	 * @return void
-	 */
-	function fusion_block_direct_access() {
-		if( ! defined( 'ABSPATH' ) ) {
-			exit( 'Direct script access denied.' );
-		}
-	}
-}
-
 /**
  * Load all needed framework functions that don't belong to a separate class
  */
 require( 'fusion-functions.php' );
-
-/**
- * Avada Welcome Screen
- *
- * @since 3.8.0
- */
-require_once ( 'avada-admin/avada.php' );
 
 /**
  * Ajax Functions

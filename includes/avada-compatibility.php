@@ -3,7 +3,11 @@
 /**
  * Register default function when plugin not activated
  */
-add_action( 'send_headers', 'avada_plugins_loaded' );
+ 
+// Check done for buddypress activation, might be good for other plugins too
+if ( empty( $_GET['plugin'] ) ) { 
+	add_action( 'wp_loaded', 'avada_plugins_loaded' );
+}
 function avada_plugins_loaded() {
 
 	if ( ! function_exists( 'is_woocommerce' ) ) {

@@ -161,9 +161,8 @@ if( ! function_exists( 'fusion_pagination' ) ) {
 			} else {
 				echo "<div class='pagination clearfix'>";
 			}
-			 //if($paged > 2 && $paged > $range+1 && $showitems < $pages) echo "<a href='".get_pagenum_link(1)."'><span class='arrows'>&laquo;</span> First</a>";
 			 if ( $paged > 1 ) {
-			 	echo "<a class='pagination-prev' href='".get_pagenum_link($paged - 1)."'><span class='page-prev'></span>".__('Previous', 'Avada')."</a>";
+			 	echo "<a class='pagination-prev' href='".get_pagenum_link($paged - 1)."'><span class='page-prev'></span><span class='page-text'>".__('Previous', 'Avada')."</span></a>";
 			 }
 
 			 for ($i=1; $i <= $pages; $i++)
@@ -174,9 +173,13 @@ if( ! function_exists( 'fusion_pagination' ) ) {
 				 }
 			 }
 
-			 if ($paged < $pages) echo "<a class='pagination-next' href='".get_pagenum_link($paged + 1)."'>".__('Next', 'Avada')."<span class='page-next'></span></a>";
-			 //if ($paged < $pages-1 &&  $paged+$range-1 < $pages && $showitems < $pages) echo "<a href='".get_pagenum_link($pages)."'>Last <span class='arrows'>&raquo;</span></a>";
+			 if ($paged < $pages) echo "<a class='pagination-next' href='".get_pagenum_link($paged + 1)."'><span class='page-text'>".__('Next', 'Avada')."</span><span class='page-next'></span></a>";
 			 echo "</div>\n";
+			 
+			 // Needed for Theme check
+			 ob_start();
+			 posts_nav_link();
+			 ob_get_clean();
 		 }
 	}
 }
@@ -212,24 +215,6 @@ if( ! function_exists( 'fusion_strip_unit' ) ) {
 		} else {
 			return $value;
 		}
-	}
-}
-
-if( ! function_exists( 'fusion_string_limit_words' ) ) {
-	/**
-	 * Limit the content by number of words
-	 * @param  string  $string     Content to strip by number of words
-	 * @param  integer $word_limit Number of words
-	 * @return string              Content within the word limit
-	 */
-	function fusion_string_limit_words( $string, $word_limit ) {
-		$words = explode( ' ', $string, ( $word_limit + 1 ) );
-
-		if ( count( $words ) > $word_limit ) {
-			array_pop( $words );
-		}
-
-		return implode( ' ', $words );
 	}
 }
 
@@ -350,6 +335,34 @@ if( ! function_exists( 'fusion_build_url' ) ) {
 		}
 
 		return $new_hex;
+	}
+}
+
+/**
+ * Adjusts brightness of the $hex color.
+ *
+ * @var     string      The hex value of a color
+ * @var     int         a value between -255 (darken) and 255 (lighten)
+ * @return  string      returns hex color
+ */
+if( ! function_exists( 'fusion_adjust_brightness' ) ) {
+	function fusion_adjust_brightness( $hex, $steps ) {
+
+		$hex = str_replace( '#', '', $hex );
+
+		// Steps should be between -255 and 255. Negative = darker, positive = lighter
+		$steps = max( -255, min( 255, $steps ) );
+		// Adjust number of steps and keep it inside 0 to 255
+		$red   = max( 0, min( 255, hexdec( substr( $hex, 0, 2 ) ) + $steps ) );
+		$green = max( 0, min( 255, hexdec( substr( $hex, 2, 2 ) ) + $steps ) );
+		$blue  = max( 0, min( 255, hexdec( substr( $hex, 4, 2 ) ) + $steps ) );
+
+		$red_hex   = str_pad( dechex( $red ), 2, '0', STR_PAD_LEFT );
+		$green_hex = str_pad( dechex( $green ), 2, '0', STR_PAD_LEFT );
+		$blue_hex  = str_pad( dechex( $blue ), 2, '0', STR_PAD_LEFT );
+
+		return Avada_Sanitize::color( $red_hex . $green_hex . $blue_hex );
+
 	}
 }
 
@@ -626,8 +639,17 @@ if ( ! function_exists( 'fusion_get_post_content' ) ) {
 			$content_excerpted = TRUE;
 		}
 
+		// Sermon specific additional content
+		if ( 'wpfc_sermon' == get_post_type( get_the_ID() ) ) {
+			$sermon_content = '';
+			$sermon_content .= avada_get_sermon_content( true );
+
+			return $sermon_content;
+		}
+
 		// Return excerpted content
 		if ( $content_excerpted ) {
+
 			$stripped_content = fusion_get_post_content_excerpt( $excerpt_length, $strip_html );
 
 			return $stripped_content;
@@ -655,7 +677,7 @@ if ( ! function_exists( 'fusion_get_post_content_excerpt' ) ) {
 
 		$content = '';
 
-		$limit = (int) $limit;
+		$limit = intval( $limit );
 
 		// If excerpt length is set to 0, return empty
 		if ( $limit === 0 ) {
@@ -701,17 +723,19 @@ if ( ! function_exists( 'fusion_get_post_content_excerpt' ) ) {
 		// HTML tags should be stripped
 		if ( $strip_html ) {
 			$more = 0;
-			$raw_content = strip_tags( get_the_content( $read_more ), '<p>' );
+			$raw_content = wp_strip_all_tags( get_the_content( '{{read_more_placeholder}}' ), '<p>' );
 
 			// Strip out all attributes
 			$raw_content = preg_replace('/<(\w+)[^>]*>/', '<$1>', $raw_content);
+
+			$raw_content = str_replace( '{{read_more_placeholder}}', $read_more, $raw_content );
 
 			if ( $post->post_excerpt ||
 				$pos !== FALSE
 			) {
 				$more = 0;
 				if ( ! $pos ) {
-					$raw_content = strip_tags( rtrim( get_the_excerpt(), '[&hellip;]' ) . $read_more, '<p>' );
+					$raw_content = wp_strip_all_tags( rtrim( get_the_excerpt(), '[&hellip;]' ), '<p>' ) . $read_more;
 				}
 				$custom_excerpt = TRUE;
 			}
@@ -731,11 +755,11 @@ if ( ! function_exists( 'fusion_get_post_content_excerpt' ) ) {
 		}
 
 		// We have our raw post content and need to cut it down to the excerpt limit
-		if ( $raw_content &&
-			$custom_excerpt == FALSE
+		if ( ( $raw_content && $custom_excerpt == FALSE )
+			 || $post->post_type == 'product'
 		) {
 			$pattern = get_shortcode_regex();
-			$content = preg_replace_callback("/$pattern/s", 'avada_process_tag', $raw_content);
+			$content = preg_replace_callback( "/$pattern/s", 'avada_extract_shortcode_contents', $raw_content );
 
 			// Check if the excerpting should be char or word based
 			if ( Avada()->settings->get( 'excerpt_base' ) == 'Characters' ) {
@@ -767,10 +791,11 @@ if ( ! function_exists( 'fusion_get_post_content_excerpt' ) ) {
 				}
 			}
 
-			if ( $limit != 0 ) {
-				$content = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $content ); // strip shortcode and keep the content
+			if ( $limit != 0 && ! $strip_html ) {
 				$content = apply_filters( 'the_content', $content );
 				$content = str_replace( ']]>', ']]&gt;', $content );
+			} else {
+				$content = sprintf( '<p>%s</p>', $content );
 			}
 
 			$content = do_shortcode( $content );
@@ -781,7 +806,7 @@ if ( ! function_exists( 'fusion_get_post_content_excerpt' ) ) {
 		// If we have a custom excerpt, e.g. using the <!--more--> tag
 		if ( $custom_excerpt == TRUE ) {
 			$pattern = get_shortcode_regex();
-			$content = preg_replace_callback( '/$pattern/s', 'avada_process_tag', $raw_content );
+			$content = preg_replace_callback( "/$pattern/s", 'avada_extract_shortcode_contents', $raw_content );
 			if ( $strip_html == TRUE ) {
 				$content = apply_filters( 'the_content', $content );
 				$content = str_replace( ']]>', ']]&gt;', $content );
@@ -793,8 +818,8 @@ if ( ! function_exists( 'fusion_get_post_content_excerpt' ) ) {
 		}
 
 		// If the custom excerpt field is used, just use that contents
-		if ( has_excerpt() ) {
-			$content = do_shortcode( get_the_excerpt() );
+		if ( has_excerpt() && $post->post_type != 'product' ) {
+			$content = '<p>' . do_shortcode( get_the_excerpt() ) . '</p>';
 		}
 
 		return $content;

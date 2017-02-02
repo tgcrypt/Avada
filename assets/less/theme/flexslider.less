@@ -41,6 +41,7 @@
 	width: 100%;
 	max-width: 100%;
 	display: block;
+  user-select: none;
 }
 .flexslider .slides .video-shortcode {
 	margin-bottom: 0;
@@ -152,10 +153,12 @@ html[xmlns] .flexslider .slides {
 .flexslider:hover .flex-prev:hover {
 	opacity: 1;
 }
-.flex-direction-nav .flex-disabled {
+.flex-direction-nav .flex-disabled,
+.main-flex:hover .flex-direction-nav .flex-disabled {
 	opacity: 0;
 	cursor: default;
 	display: none;
+  visibility: hidden;
 }
 /* Control Nav */
 .flex-control-nav {

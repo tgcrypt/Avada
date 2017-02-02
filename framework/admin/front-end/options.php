@@ -9,16 +9,16 @@
 	</div>
 	
 	<div id="of-popup-fail" class="of-save-popup">
-		<div class="of-save-fail"><?php _e('Error!', 'Avada'); ?></div>
+		<div class="of-fail-wrapper">
+			<div class="of-save-fail"><?php _e('Error!', 'Avada'); ?></div><div class="of-fail-msg">Error Message</div>
+		</div>
 	</div>
-	
 	<span style="display: none;" id="hooks"><?php echo json_encode(of_get_header_classes_array()); ?></span>
 	<input type="hidden" id="reset" value="<?php if(isset($_REQUEST['reset'])) echo esc_attr( $_REQUEST['reset'] ); ?>" />
 	<input type="hidden" id="security" name="security" value="<?php echo wp_create_nonce('of_ajax_nonce'); ?>" />
-
+	
+	<h1 class="screen-reader-text"><?php _e( 'Theme Options', 'Avada' ); ?></h1>
 	<form id="of_form" method="post" action="<?php echo esc_attr( $_SERVER['REQUEST_URI'] ) ?>" enctype="multipart/form-data" >
-
-		<h2 style="display: none;"><?php _e('Theme Options', 'Avada'); ?></h2>
 		
 		<div class="updated error importer-notice importer-notice-1" style="display: none;"><p><strong><?php echo sprintf(__('Seems like an error has occured. Please double check the imported data. If incorrect, please use %s and try again', 'Avada'), '<a href="'.admin_url( 'plugin-install.php?tab=plugin-information&amp;plugin=wordpress-reset&amp;TB_iframe=true&amp;width=830&amp;height=472' ).'" class="thickbox" title="'.__('Reset WordPress plugin', 'Avada').'">'.__('Reset WordPress plugin', 'Avada').'</a>'); ?> </strong></p></div>
 

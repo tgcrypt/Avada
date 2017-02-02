@@ -69,9 +69,7 @@ switch( $template ) {
 	default :
 	?>
 		</div>
-		<div id="sidebar" style="<?php echo $sidebar_css; ?>">
-		<?php generated_dynamic_sidebar(); ?>
-		</div>
+		<?php do_action( 'fusion_after_content' ); ?>
 	</div>
 	<?php
 		break;

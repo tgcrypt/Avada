@@ -32,4 +32,17 @@ if ( 'page' == $screen->post_type ) {
 	);
 }
 
+if ( 'tribe_events' == $screen->post_type ) {
+	$this->select(
+		'share_box',
+		__( 'Show Social Share Box', 'Avada' ),
+		array(
+			'default' => __( 'Default', 'Avada' ),
+			'yes'     => __( 'Show', 'Avada' ),
+			'no'      => __( 'Hide', 'Avada' )
+		),
+		__( 'Choose to show or hide the social share box', 'Avada' )
+	);
+}
+
 // Omit closing PHP tag to avoid "Headers already sent" issues.

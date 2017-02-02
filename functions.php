@@ -96,18 +96,6 @@ get_template_part( 'framework/custom_functions' );
 require_once( 'includes/avada-functions.php' );
 
 /**
- * Instantiate googlemaps
- */
-new Avada_GoogleMap();
-
-/**
- * bbPress functions
- */
-if ( class_exists( 'bbPress' ) ) {
-	require_once get_template_directory() . '/includes/bbpress-functions.php';
-}
-
-/**
  * WPML Config
  */
 if ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
@@ -313,7 +301,7 @@ function avada_revslider_styles() {
 		$old_styles = array( '.avada_huge_white_text', '.avada_huge_black_text', '.avada_big_black_text', '.avada_big_white_text', '.avada_big_black_text_center', '.avada_med_green_text', '.avada_small_gray_text', '.avada_small_white_text', '.avada_block_black', '.avada_block_green', '.avada_block_white', '.avada_block_white_trans' );
 
 		foreach( $old_styles as $handle ) {
-			$wpdb->delete( $table_name, array( 'handle' => $handle ) );
+			$wpdb->delete( $table_name, array( 'handle' => '.tp-caption' . $handle ) );
 		}
 
 		$styles = array(
@@ -325,10 +313,10 @@ function avada_revslider_styles() {
 			'.tp-caption.avada_med_green_text'        => '{"position":"absolute","color":"#A0CE4E","font-size":"24px","line-height":"24px","font-family":"PTSansRegular, Arial, Helvetica, sans-serif"}',
 			'.tp-caption.avada_small_gray_text'       => '{"position":"absolute","color":"#747474","font-size":"13px","line-height":"20px","font-family":"PTSansRegular, Arial, Helvetica, sans-serif"}',
 			'.tp-caption.avada_small_white_text'      => '{"position":"absolute","color":"#fff","font-size":"13px","line-height":"20px","font-family":"PTSansRegular, Arial, Helvetica, sans-serif","text-shadow":"0px 2px 5px rgba(0, 0, 0, 0.5)","font-weight":"700"}',
-			'.tp-caption.avada_block_black'           => '{"position":"absolute","color":"#A0CE4E","text-shadow":"none","font-size":"22px","line-height":"34px","padding":"0px 10px","padding-top":"1px","margin":"0px","border-width":"0px","border-style":"none","background-color":"#000","font-family":"PTSansRegular, Arial, Helvetica, sans-serif"}',
-			'.tp-caption.avada_block_green'           => '{"position":"absolute","color":"#000","text-shadow":"none","font-size":"22px","line-height":"34px","padding":"0px 10px","padding-top":"1px","margin":"0px","border-width":"0px","border-style":"none","background-color":"#A0CE4E","font-family":"PTSansRegular, Arial, Helvetica, sans-serif"}',
-			'.tp-caption.avada_block_white'           => '{"position":"absolute","color":"#fff","text-shadow":"none","font-size":"22px","line-height":"34px","padding":"0px 10px","padding-top":"1px","margin":"0px","border-width":"0px","border-style":"none","background-color":"#000","font-family":"PTSansRegular, Arial, Helvetica, sans-serif"}',
-			'.tp-caption.avada_block_white_trans'     => '{"position":"absolute","color":"#fff","text-shadow":"none","font-size":"22px","line-height":"34px","padding":"0px 10px","padding-top":"1px","margin":"0px","border-width":"0px","border-style":"none","background-color":"rgba(0, 0, 0, 0.6)","font-family":"PTSansRegular, Arial, Helvetica, sans-serif"}',
+			'.tp-caption.avada_block_black'           => '{"position":"absolute","color":"#A0CE4E","text-shadow":"none","font-size":"22px","line-height":"34px","padding":["1px", "10px", "0px", "10px"],"margin":"0px","border-width":"0px","border-style":"none","background-color":"#000","font-family":"PTSansRegular, Arial, Helvetica, sans-serif"}',
+			'.tp-caption.avada_block_green'           => '{"position":"absolute","color":"#000","text-shadow":"none","font-size":"22px","line-height":"34px","padding":["1px", "10px", "0px", "10px"],"margin":"0px","border-width":"0px","border-style":"none","background-color":"#A0CE4E","font-family":"PTSansRegular, Arial, Helvetica, sans-serif"}',
+			'.tp-caption.avada_block_white'           => '{"position":"absolute","color":"#fff","text-shadow":"none","font-size":"22px","line-height":"34px","padding":["1px", "10px", "0px", "10px"],"margin":"0px","border-width":"0px","border-style":"none","background-color":"#000","font-family":"PTSansRegular, Arial, Helvetica, sans-serif"}',
+			'.tp-caption.avada_block_white_trans'     => '{"position":"absolute","color":"#fff","text-shadow":"none","font-size":"22px","line-height":"34px","padding":["1px", "10px", "0px", "10px"],"margin":"0px","border-width":"0px","border-style":"none","background-color":"rgba(0, 0, 0, 0.6)","font-family":"PTSansRegular, Arial, Helvetica, sans-serif"}',
 		);
 
 		foreach( $styles as $handle => $params ) {
@@ -340,8 +328,10 @@ function avada_revslider_styles() {
 					array(
 						'handle' => $handle,
 						'params' => $params,
+						'settings' => '{"hover":"false","type":"text","version":"custom","translated":"5"}',
 					),
 					array(
+						'%s',
 						'%s',
 						'%s',
 					)
@@ -451,6 +441,7 @@ function avada_email_login_auth( $user, $username, $password ) {
 if( isset( $_POST['fusion_woo_login_box'] ) && $_POST['fusion_woo_login_box'] == 'true' ) {
 	add_action( 'init', 'avada_load_login_redirect_support' );
 }
+
 function avada_load_login_redirect_support() {
 	if ( class_exists( 'WooCommerce' ) ) {
 
@@ -471,10 +462,14 @@ function avada_login_fail( $url = '', $raw_url = '', $user = '' ) {
 			$referer_array = parse_url( $_SERVER['HTTP_REFERER'] );
 			$referer = '//' . $referer_array['host'] . $referer_array['path'];
 
-			// if there's a valid referrer, and it's not the default log-in screen
+			// If there's a valid referrer, and it's not the default log-in screen
 			if ( ! empty( $referer ) && ! strstr( $referer, 'wp-login' ) && ! strstr( $referer, 'wp-admin' ) ) {
-				// let's append some information (login=failed) to the URL for the theme to use
-				wp_redirect( $referer . '?login=failed' );
+				if ( is_wp_error( $user ) ) {
+					// Let's append some information (login=failed) to the URL for the theme to use
+					wp_redirect( add_query_arg( array( 'login' => 'failed' ), $referer ) );
+				} else {
+					wp_redirect( $referer );
+				}
 				exit;
 			} else {
 				return $url;
@@ -482,9 +477,7 @@ function avada_login_fail( $url = '', $raw_url = '', $user = '' ) {
 		} else {
 			return $url;
 		}
-
 	}
-
 }
 
 /**
@@ -514,5 +507,73 @@ function avada_layerslider_ready() {
 	}
 }
 add_action( 'layerslider_ready', 'avada_layerslider_ready' );
+
+/**
+ * Custom Excerpt function for Sermon Manager
+ */
+function avada_get_sermon_content( $archive = false ) {
+	global $post;
+
+	$sermon_content = '';
+	ob_start();
+	?>
+
+	<p>
+		<?php
+			_e( 'Date: ', 'Avada' );
+			wpfc_sermon_date( get_option( 'date_format' ), '<span class="sermon_date">', '</span> ' ); echo the_terms( $post->ID, 'wpfc_service_type',  ' <span class="service_type">(', ' ', ')</span>');
+	?></p><p><?php
+			wpfc_sermon_meta( 'bible_passage', '<span class="bible_passage">' . __( 'Bible Text: ', 'Avada' ), '</span> | ' );
+			echo the_terms( $post->ID, 'wpfc_preacher',  '<span class="preacher_name">', ', ', '</span>');
+			echo the_terms( $post->ID, 'wpfc_sermon_series', '<p><span class="sermon_series">'  .__( 'Series: ', 'Aavada' ), ' ', '</span></p>' );
+		?>
+	</p>
+
+	<?php
+	if ( $archive ) {
+		$sermonoptions = get_option( 'wpfc_options' );
+		if ( isset( $sermonoptions['archive_player'] ) == '1' ) { ?>
+			<div class="wpfc_sermon cf">
+				<?php wpfc_sermon_files(); ?>
+			</div>
+		<?php }
+	} ?>
+
+	<?php if ( ! $archive ) { ?>
+
+	<?php wpfc_sermon_files(); ?>
+
+	<?php wpfc_sermon_description(); ?>
+
+	<?php wpfc_sermon_attachments(); ?>
+
+	<?php echo the_terms( $post->ID, 'wpfc_sermon_topics', '<p class="sermon_topics">'.__( 'Topics: ', 'sermon-manager'), ',', '', '</p>' ); ?>
+
+	<?php }
+	$sermon_content = ob_get_clean();
+
+	if ( $archive ) {
+		$description = '';
+		ob_start();
+		wpfc_sermon_description();
+		$description .= ob_get_clean();
+
+		$excerpt_length = fusion_get_theme_option( 'excerpt_length_blog' );
+
+		$sermon_content .= Avada()->blog->get_content_stripped_and_excerpted( $excerpt_length, $description );
+	}
+
+	return $sermon_content;
+}
+
+// WIP, please ignore below:
+
+add_theme_support( 'fusion-builder-demos' );
+
+if ( get_option( 'avada_imported_demo' ) == 'true' ) {
+	flush_rewrite_rules();
+
+	update_option( 'avada_imported_demo', 'false' );
+}
 
 // Omit closing PHP tag to avoid "Headers already sent" issues.

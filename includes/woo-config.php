@@ -40,13 +40,30 @@
 				/**
 				 * Products Loop
 				 */
-				remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+				remove_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10 );
+				remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5 );
+				remove_action( 'woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10 );
+				
+				add_action( 'woocommerce_shop_loop_item_title', array( $this, 'product_title' ), 10 );
+				add_action( 'avada_woocommerce_buttons_on_rollover',  array( $this, 'avada_woocommerce_template_loop_add_to_cart' ), 10 );
+				add_action( 'avada_woocommerce_buttons_on_rollover',  array( $this, 'avada_woocommerce_rollover_buttons_linebreak' ), 15 );
+				add_action( 'avada_woocommerce_buttons_on_rollover', array( $this, 'show_details_button' ), 20 );
 
-				add_action( 'woocommerce_before_shop_loop_item_title', array( $this, 'avada_show_product_loop_outofstock_flash' ), 10 );
+				if ( Avada()->settings->get( 'woocommerce_product_box_design' ) == 'clean' ) {
+					remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+					remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_rating', 5 );
 
-				add_action( 'woocommerce_after_shop_loop_item', array( $this, 'before_shop_item_buttons' ), 9 );
-				add_action( 'woocommerce_after_shop_loop_item',  array( $this, 'avada_woocommerce_template_loop_add_to_cart' ), 10 );
-				add_action( 'woocommerce_after_shop_loop_item', array( $this, 'after_shop_item_buttons' ), 11 );
+					add_action( 'woocommerce_after_shop_loop_item', array( $this, 'before_shop_item_buttons' ), 9 );
+					
+				} else {
+					remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+
+					add_action( 'woocommerce_before_shop_loop_item_title', array( $this, 'avada_show_product_loop_outofstock_flash' ), 10 );
+					add_action( 'woocommerce_after_shop_loop_item', array( $this, 'before_shop_item_buttons' ), 5 );
+					add_action( 'woocommerce_after_shop_loop_item', array( $this, 'avada_woocommerce_template_loop_add_to_cart' ), 10 );
+					add_action( 'woocommerce_after_shop_loop_item', array( $this, 'show_details_button' ), 15 );
+					add_action( 'woocommerce_after_shop_loop_item', array( $this, 'after_shop_item_buttons' ), 20 );
+				}
 
 				/**
 				 * Single Product Page
@@ -57,15 +74,22 @@
 				add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 );
 				add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 11 );
 
+				// Backwards compatibility to 2.4
+				add_filter( 'woocommerce_template_path', array( $this, 'backwards_compatibility' ) );
+
 				/**
 				 * WooCommerce 2.3 Remove extra checkout button
 				 */
 				remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout', 20 );
-				// Backwards compatability to 2.2
-				add_filter( 'woocommerce_template_path', array( $this, 'backwards_compatability' ) );
 
 				/* Remove extra cart totals from the hook 2.3.8 woo */
 				remove_action( 'woocommerce_cart_collaterals', 'woocommerce_cart_totals', 10 );
+
+				// Add welcome user bar to checkout page
+				add_action( 'woocommerce_before_checkout_form', 'avada_top_user_container', 1 );
+
+				// Filter the pagination
+				add_filter( 'woocommerce_pagination_args', array( $this, 'change_pagination' ) );
 
 			} // end __construct();
 
@@ -75,9 +99,11 @@
 			 * @since 3.7.2
 			 * @return relative path of WooCommerce template files within the theme
 			 */
-			function backwards_compatability( $path ) {
-				if ( ! self::is_wc_version_gte_2_3() ) {
-					$path = "woocommerce/compatability/2.2/";
+			function backwards_compatibility( $path ) {
+				if ( null !== self::get_wc_version() ) {
+					if ( ! version_compare( self::get_wc_version(), '2.5', '>=' ) ) {
+						$path = 'woocommerce/compatibility/2.4/';
+					}
 				}
 
 				return $path;
@@ -93,197 +119,16 @@
 				return defined( 'WC_VERSION' ) && WC_VERSION ? WC_VERSION : null;
 			}
 
-			/**
-			 * Returns true if the installed version of WooCommerce is 2.3 or greater
-			 *
-			 * @since 3.7.2
-			 * @return boolean true if the installed version of WooCommerce is 2.3 or greater
-			 */
-			public static function is_wc_version_gte_2_3() {
-				return self::get_wc_version() && version_compare( self::get_wc_version(), '2.3', '>=' );
-			}
-
 			function before_container() {
-				global $post;
+				ob_start();
+				Avada()->layout->add_class( 'content_class' );
+				$content_class = ob_get_clean();
 
-				if ( is_shop() ) {
-					$pageID = get_option( 'woocommerce_shop_page_id' );
-				} elseif ( is_product_category() || is_product_tag() ) {
-					$pageID = '';
-				} else {
-					$pageID = $post->ID;
-				}
+				ob_start();
+				Avada()->layout->add_style( 'content_style' );
+				$content_css = ob_get_clean();
 
-				$custom_fields = get_post_custom_values( '_wp_page_template', $pageID );
-				if ( is_array( $custom_fields ) && ! empty( $custom_fields ) ) {
-					$page_template = $custom_fields[0];
-				} else {
-					$page_template = '';
-				}
-
-				$content_css     = '';
-				$sidebar_css     = '';
-				$sidebar_exists  = true;
-				$sidebar_left    = '';
-				$double_sidebars = false;
-
-				$sidebar_1 = get_post_meta( $pageID, 'sbg_selected_sidebar_replacement', true );
-				$sidebar_2 = get_post_meta( $pageID, 'sbg_selected_sidebar_2_replacement', true );
-
-				if ( is_product() || is_shop() ) {
-					if ( Avada()->settings->get( 'woo_global_sidebar' ) ) {
-						if ( Avada()->settings->get( 'woo_sidebar' ) != 'None' ) {
-							$sidebar_1 = array( Avada()->settings->get( 'woo_sidebar' ) );
-						} else {
-							$sidebar_1 = '';
-						}
-
-						if ( Avada()->settings->get( 'woo_sidebar_2' ) != 'None' ) {
-							$sidebar_2 = array( Avada()->settings->get( 'woo_sidebar_2' ) );
-						} else {
-							$sidebar_2 = '';
-						}
-					}
-				}
-
-				if ( ( is_array( $sidebar_1 ) && $sidebar_1[0] ) && ( is_array( $sidebar_2 ) && $sidebar_2[0] ) ) {
-					$double_sidebars = true;
-				}
-
-				if ( is_array( $sidebar_1 ) &&
-				     ( $sidebar_1[0] || $sidebar_1[0] === '0' )
-				) {
-					$sidebar_exists = true;
-				} else {
-					$sidebar_exists = false;
-				}
-
-				if ( is_product_category() || is_product_tag() ) {
-					$sidebar_1 = Avada()->settings->get( 'woocommerce_archive_sidebar' );
-					$sidebar_2 = Avada()->settings->get( 'woocommerce_archive_sidebar_2' );
-					if ( $sidebar_1 != 'None' && $sidebar_2 != 'None' ) {
-						$double_sidebars = true;
-					}
-
-					if ( $sidebar_1 == 'None' ) {
-						$sidebar_exists = false;
-					} else {
-						$sidebar_exists = true;
-					}
-				}
-
-				if ( $page_template == '100-width.php' ) {
-					$content_css = 'width:100%';
-					$sidebar_css = 'display:none';
-				} elseif ( ! $sidebar_exists ) {
-					$content_css    = 'width:100%';
-					$sidebar_css    = 'display:none';
-					$sidebar_exists = false;
-				} elseif ( get_post_meta( $pageID, 'pyre_sidebar_position', true ) == 'left' ) {
-					$content_css  = 'float:right;';
-					$sidebar_css  = 'float:left;';
-					$sidebar_left = 1;
-				} elseif ( get_post_meta( $pageID, 'pyre_sidebar_position', true ) == 'right' ) {
-					$content_css = 'float:left;';
-					$sidebar_css = 'float:right;';
-				} elseif ( get_post_meta( $pageID, 'pyre_sidebar_position', true ) == 'default' || ! metadata_exists( 'post', $pageID, 'pyre_sidebar_position' ) ) {
-					if ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Left' ) {
-						$content_css    = 'float:right;';
-						$sidebar_css    = 'float:left;';
-						$sidebar_exists = true;
-						$sidebar_left   = 1;
-					} elseif ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Right' ) {
-						$content_css    = 'float:left;';
-						$sidebar_css    = 'float:right;';
-						$sidebar_exists = true;
-						$sidebar_left   = 2;
-					}
-				}
-
-				if ( get_post_meta( $pageID, 'pyre_sidebar_position', true ) == 'right' ) {
-					$sidebar_left = 2;
-				}
-
-				if ( Avada()->settings->get( 'woo_global_sidebar' ) ) {
-					if ( is_product() || is_shop() ) {
-						if ( Avada()->settings->get( 'woo_sidebar' ) != 'None' ) {
-							if ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Left' ) {
-								$content_css  = 'float:right;';
-								$sidebar_css  = 'float:left;';
-								$sidebar_left = 1;
-							} elseif ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Right' ) {
-								$content_css  = 'float:left;';
-								$sidebar_css  = 'float:right;';
-								$sidebar_left = 2;
-							}
-						}
-
-						if ( Avada()->settings->get( 'woo_sidebar' ) != 'None' && Avada()->settings->get( 'woo_sidebar_2' ) != 'None' ) {
-							$double_sidebars = true;
-						}
-					}
-
-					if ( is_product_category() || is_product_tag() ) {
-						if ( Avada()->settings->get( 'woocommerce_archive_sidebar' ) != 'None' ) {
-							if ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Left' ) {
-								$content_css  = 'float:right;';
-								$sidebar_css  = 'float:left;';
-								$sidebar_left = 1;
-							} elseif ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Right' ) {
-								$content_css  = 'float:left;';
-								$sidebar_css  = 'float:right;';
-								$sidebar_left = 2;
-							}
-						}
-
-						if ( Avada()->settings->get( 'woocommerce_archive_sidebar' ) != 'None' && Avada()->settings->get( 'woocommerce_archive_sidebar_2' ) != 'None' ) {
-							$double_sidebars = true;
-						}
-					}
-				}
-
-				if ( is_product_category() || is_product_tag() ) {
-					if ( Avada()->settings->get( 'woocommerce_archive_sidebar' ) != 'None' ) {
-						if ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Left' ) {
-							$content_css  = 'float:right;';
-							$sidebar_css  = 'float:left;';
-							$sidebar_left = 1;
-						} elseif ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Right' ) {
-							$content_css  = 'float:left;';
-							$sidebar_css  = 'float:right;';
-							$sidebar_left = 2;
-						}
-					}
-
-					if ( Avada()->settings->get( 'woocommerce_archive_sidebar' ) != 'None' && Avada()->settings->get( 'woocommerce_archive_sidebar_2' ) != 'None' ) {
-						$double_sidebars = true;
-					}
-				}
-
-				if ( $double_sidebars == true ) {
-					$content_css   = 'float:left;';
-					$sidebar_css   = 'float:left;';
-					$sidebar_2_css = 'float:left;';
-				} else {
-					$sidebar_left = 1;
-				}
-
-				if ( is_product() || is_shop() ) {
-					if ( Avada()->settings->get( 'woo_global_sidebar' ) ) {
-						if ( Avada()->settings->get( 'woo_sidebar' ) != 'None' ) {
-							$sidebar_1 = Avada()->settings->get( 'woo_sidebar' );
-						}
-
-						if ( Avada()->settings->get( 'woo_sidebar_2' ) != 'None' ) {
-							$sidebar_2 = Avada()->settings->get( 'woo_sidebar_2' );
-						}
-					} else {
-						$sidebar_1 = '0';
-						$sidebar_2 = '0';
-					}
-				}
-
-				echo '<div class="woocommerce-container"><div id="content" style="' . $content_css . '">';
+				echo '<div class="woocommerce-container"><div id="content" ' . $content_class . ' ' . $content_css . '>';
 			}
 
 			function shop_title() {
@@ -295,260 +140,7 @@
 			}
 
 			function add_sidebar() {
-				global $post;
-
-				if ( is_shop() ) {
-					$pageID = get_option( 'woocommerce_shop_page_id' );
-				} elseif ( is_product_category() || is_product_tag() ) {
-					$pageID = '';
-				} else {
-					$pageID = $post->ID;
-				}
-
-				$custom_fields = get_post_custom_values( '_wp_page_template', $pageID );
-				if ( is_array( $custom_fields ) && ! empty( $custom_fields ) ) {
-					$page_template = $custom_fields[0];
-				} else {
-					$page_template = '';
-				};
-
-				$content_css     = '';
-				$sidebar_css     = '';
-				$sidebar_2_css   = '';
-				$sidebar_exists  = true;
-				$sidebar_left    = '';
-				$double_sidebars = false;
-
-				$sidebar_1 = get_post_meta( $pageID, 'sbg_selected_sidebar_replacement', true );
-				$sidebar_2 = get_post_meta( $pageID, 'sbg_selected_sidebar_2_replacement', true );
-
-				if ( is_product() || is_shop() ) {
-					if ( Avada()->settings->get( 'woo_global_sidebar' ) ) {
-						if ( Avada()->settings->get( 'woo_sidebar' ) != 'None' ) {
-							$sidebar_1 = array( Avada()->settings->get( 'woo_sidebar' ) );
-						} else {
-							$sidebar_1 = '';
-						}
-
-						if ( Avada()->settings->get( 'woo_sidebar_2' ) != 'None' ) {
-							$sidebar_2 = array( Avada()->settings->get( 'woo_sidebar_2' ) );
-						} else {
-							$sidebar_2 = '';
-						}
-					}
-				}
-
-				if ( ( is_array( $sidebar_1 ) && $sidebar_1[0] ) && ( is_array( $sidebar_2 ) && $sidebar_2[0] ) ) {
-					$double_sidebars = true;
-				}
-
-				if ( is_array( $sidebar_1 ) &&
-				     ( $sidebar_1[0] || $sidebar_1[0] === '0' )
-				) {
-					$sidebar_exists = true;
-				} else {
-					$sidebar_exists = false;
-				}
-
-				if ( is_product_category() || is_product_tag() ) {
-					$sidebar_1 = Avada()->settings->get( 'woocommerce_archive_sidebar' );
-					$sidebar_2 = Avada()->settings->get( 'woocommerce_archive_sidebar_2' );
-					if ( $sidebar_1 != 'None' && $sidebar_2 != 'None' ) {
-						$double_sidebars = true;
-					}
-
-					if ( $sidebar_1 == 'None' ) {
-						$sidebar_exists = false;
-					} else {
-						$sidebar_exists = true;
-					}
-				}
-
-				if ( $page_template == '100-width.php' ) {
-					$content_css = 'width:100%';
-					$sidebar_css = 'display:none';
-				} elseif ( ! $sidebar_exists ) {
-					$content_css    = 'width:100%';
-					$sidebar_css    = 'display:none';
-					$sidebar_exists = false;
-				} elseif ( get_post_meta( $pageID, 'pyre_sidebar_position', true ) == 'left' ) {
-					$content_css  = 'float:right;';
-					$sidebar_css  = 'float:left;';
-					$sidebar_left = 1;
-				} elseif ( get_post_meta( $pageID, 'pyre_sidebar_position', true ) == 'right' ) {
-					$content_css = 'float:left;';
-					$sidebar_css = 'float:right;';
-				} elseif ( get_post_meta( $pageID, 'pyre_sidebar_position', true ) == 'default' || ! metadata_exists( 'post', $pageID, 'pyre_sidebar_position' ) ) {
-					if ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Left' ) {
-						$content_css    = 'float:right;';
-						$sidebar_css    = 'float:left;';
-						$sidebar_exists = true;
-						$sidebar_left   = 1;
-					} elseif ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Right' ) {
-						$content_css    = 'float:left;';
-						$sidebar_css    = 'float:right;';
-						$sidebar_exists = true;
-						$sidebar_left   = 2;
-					}
-				}
-
-				if ( get_post_meta( $pageID, 'pyre_sidebar_position', true ) == 'right' ) {
-					$sidebar_left = 2;
-				}
-
-				if ( Avada()->settings->get( 'woo_global_sidebar' ) ) {
-					if ( is_product() || is_shop() ) {
-						if ( Avada()->settings->get( 'woo_sidebar' ) != 'None' ) {
-							if ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Left' ) {
-								$content_css  = 'float:right;';
-								$sidebar_css  = 'float:left;';
-								$sidebar_left = 1;
-							} elseif ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Right' ) {
-								$content_css  = 'float:left;';
-								$sidebar_css  = 'float:right;';
-								$sidebar_left = 2;
-							}
-						}
-
-						if ( Avada()->settings->get( 'woo_sidebar' ) != 'None' && Avada()->settings->get( 'woo_sidebar_2' ) != 'None' ) {
-							$double_sidebars = true;
-						}
-					}
-
-					if ( is_product_category() || is_product_tag() ) {
-						if ( Avada()->settings->get( 'woocommerce_archive_sidebar' ) != 'None' ) {
-							if ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Left' ) {
-								$content_css  = 'float:right;';
-								$sidebar_css  = 'float:left;';
-								$sidebar_left = 1;
-							} elseif ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Right' ) {
-								$content_css  = 'float:left;';
-								$sidebar_css  = 'float:right;';
-								$sidebar_left = 2;
-							}
-						}
-
-						if ( Avada()->settings->get( 'woocommerce_archive_sidebar' ) != 'None' && Avada()->settings->get( 'woocommerce_archive_sidebar_2' ) != 'None' ) {
-							$double_sidebars = true;
-						}
-					}
-				}
-
-				if ( is_product_category() || is_product_tag() ) {
-					if ( Avada()->settings->get( 'woocommerce_archive_sidebar' ) != 'None' ) {
-						if ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Left' ) {
-							$content_css  = 'float:right;';
-							$sidebar_css  = 'float:left;';
-							$sidebar_left = 1;
-						} elseif ( Avada()->settings->get( 'woo_sidebar_position' ) == 'Right' ) {
-							$content_css  = 'float:left;';
-							$sidebar_css  = 'float:right;';
-							$sidebar_left = 2;
-						}
-					}
-
-					if ( Avada()->settings->get( 'woocommerce_archive_sidebar' ) != 'None' && Avada()->settings->get( 'woocommerce_archive_sidebar_2' ) != 'None' ) {
-						$double_sidebars = true;
-					}
-				}
-
-				if ( $double_sidebars == true ) {
-					$content_css   = 'float:left;';
-					$sidebar_css   = 'float:left;';
-					$sidebar_2_css = 'float:left;';
-				} else {
-					$sidebar_left = 1;
-				}
-
-				if ( is_product() || is_shop() ) {
-					if ( Avada()->settings->get( 'woo_global_sidebar' ) ) {
-						if ( Avada()->settings->get( 'woo_sidebar' ) != 'None' ) {
-							$sidebar_1 = Avada()->settings->get( 'woo_sidebar' );
-						}
-
-						if ( Avada()->settings->get( 'woo_sidebar_2' ) != 'None' ) {
-							$sidebar_2 = Avada()->settings->get( 'woo_sidebar_2' );
-						}
-					} else {
-						if ( ( is_array( $sidebar_1 ) && $sidebar_1[0] != '' ) ) {
-							$sidebar_1 = $sidebar_1[0];
-						}
-						if ( ( is_array( $sidebar_2 ) && $sidebar_2[0] != '' ) ) {
-							$sidebar_2 = $sidebar_2[0];
-						}
-					}
-				}
-
-				if ( $sidebar_exists == true ) {
-					echo '<div id="sidebar" class="sidebar" style="' . $sidebar_css . '">';
-
-					wp_reset_query();
-
-					if ( $sidebar_left == 1 ) {
-						if ( is_product() || is_shop() ) {
-							generated_dynamic_sidebar( $sidebar_1 );
-						} elseif ( is_product_category() || is_product_tag() ) {
-							generated_dynamic_sidebar( Avada()->settings->get( 'woocommerce_archive_sidebar' ) );
-						} else {
-							$shop_page_id = get_option( 'woocommerce_shop_page_id' );
-							$name         = get_post_meta( $shop_page_id, 'sbg_selected_sidebar_replacement', true );
-							if ( $name ) {
-								generated_dynamic_sidebar( $name[0] );
-							}
-						}
-					}
-					if ( $sidebar_left == 2 ) {
-						wp_reset_query();
-						if ( is_product() || is_shop() ) {
-							generated_dynamic_sidebar_2( $sidebar_2 );
-						} elseif ( is_product_category() || is_product_tag() ) {
-							generated_dynamic_sidebar( Avada()->settings->get( 'woocommerce_archive_sidebar_2' ) );
-						} else {
-							$shop_page_id = get_option( 'woocommerce_shop_page_id' );
-							$name         = get_post_meta( $shop_page_id, 'sbg_selected_sidebar_2_replacement', true );
-							if ( $name ) {
-								generated_dynamic_sidebar( $name[0] );
-							}
-						}
-					}
-
-					echo '</div>';
-
-					if ( $double_sidebars == true ) {
-
-						echo '<div id="sidebar-2" class="sidebar" style="' . $sidebar_2_css . '">';
-
-						if ( $sidebar_left == 1 ) {
-							wp_reset_query();
-							if ( is_product() || is_shop() ) {
-								generated_dynamic_sidebar_2( $sidebar_2 );
-							} elseif ( is_product_category() || is_product_tag() ) {
-								generated_dynamic_sidebar( Avada()->settings->get( 'woocommerce_archive_sidebar_2' ) );
-							} else {
-								$shop_page_id = get_option( 'woocommerce_shop_page_id' );
-								$name         = get_post_meta( $shop_page_id, 'sbg_selected_sidebar_2_replacement', true );
-								if ( $name ) {
-									generated_dynamic_sidebar( $name[0] );
-								}
-							}
-						}
-						if ( $sidebar_left == 2 ) {
-							if ( is_product() || is_shop() ) {
-								generated_dynamic_sidebar( $sidebar_1 );
-							} elseif ( is_product_category() || is_product_tag() ) {
-								generated_dynamic_sidebar( Avada()->settings->get( 'woocommerce_archive_sidebar' ) );
-							} else {
-								$shop_page_id = get_option( 'woocommerce_shop_page_id' );
-								$name         = get_post_meta( $shop_page_id, 'sbg_selected_sidebar_replacement', true );
-								if ( $name ) {
-									generated_dynamic_sidebar( $name[0] );
-								}
-							}
-						}
-
-						echo '</div>';
-					}
-				}
+				do_action( 'fusion_after_content' );
 			}
 
 			function avada_show_product_loop_outofstock_flash() {
@@ -592,14 +184,44 @@
 			function avada_woocommerce_template_loop_add_to_cart( $args = array() ) {
 				global $product;
 
-				if ( ( $product->is_purchasable() && $product->is_in_stock() ) ||
-					 $product->is_type( 'external' )
+				if ( $product &&
+					 ( ( $product->is_purchasable() && $product->is_in_stock() ) || $product->is_type( 'external' ) )
 				) {
+				
+					if ( version_compare( self::get_wc_version(), '2.5', '>=' ) ) {
+
+						$defaults = array(
+							'quantity' => 1,
+							'class'    => implode( ' ', array_filter( array(
+									'button',
+									'product_type_' . $product->product_type,
+									$product->is_purchasable() && $product->is_in_stock() ? 'add_to_cart_button' : '',
+									$product->supports( 'ajax_add_to_cart' ) ? 'ajax_add_to_cart' : ''
+							) ) )
+						);		
+
+						$args = apply_filters( 'woocommerce_loop_add_to_cart_args', wp_parse_args( $args, $defaults ), $product );
+					}
+					
 					wc_get_template( 'loop/add-to-cart.php' , $args );
+				}				
+			}
+			
+			function avada_woocommerce_rollover_buttons_linebreak() {
+				global $product;
+			
+				if ( $product &&
+					 ( ( $product->is_purchasable() && $product->is_in_stock() ) || $product->is_type( 'external' ) )
+				) {
+				?>
+					<span class="fusion-rollover-linebreak">
+						<?php if ( Avada()->settings->get( 'woocommerce_product_box_design' ) == 'clean' ): ?>/<?php endif; ?>
+					</span>			
+				<?php
 				}
 			}
-
-			function after_shop_item_buttons() {
+			
+			function show_details_button() {
 				global $product;
 
 				$styles = '';
@@ -608,11 +230,27 @@
 				) {
 					$styles = ' style="float:none;max-width:none;text-align:center;"';
 				}
-				echo sprintf( '<a href="%s" class="show_details_button"%s>%s</a></div></div>', get_permalink(), $styles, __( 'Details', 'Avada' ) );
+				echo sprintf( '<a href="%s" class="show_details_button"%s>%s</a>', get_permalink(), $styles, __( 'Details', 'Avada' ) );
+			}			
+
+			function after_shop_item_buttons() {
+				?></div></div><?php
 			}
 
 			function add_product_border() {
 				echo '<div class="product-border"></div>';
+			}
+
+			function change_pagination( $options ) {
+				$options['prev_text'] 	= '<span class="page-prev"></span><span class="page-text">' . __('Previous', 'Avada') . '</span>';
+				$options['next_text'] 	= '<span class="page-text">' . __('Next', 'Avada') . '</span><span class="page-next"></span>';
+				$options['type']		= 'plain';
+
+				return $options;
+			}
+
+			function product_title() {
+				echo '<h3 class="product-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
 			}
 
 		} // end FusionTemplateWoo() class
@@ -910,47 +548,103 @@
 		return $pc;
 	}
 
-	add_action( 'woocommerce_before_shop_loop_item_title', 'avada_woocommerce_thumbnail', 10 );
-	remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10 );
-	function avada_woocommerce_thumbnail() {
-		global $product, $woocommerce;
+	if ( Avada()->settings->get( 'woocommerce_product_box_design' ) != 'clean' ) {
+		add_action( 'woocommerce_before_shop_loop_item_title', 'avada_woocommerce_thumbnail', 10 );
+		remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10 );
+		function avada_woocommerce_thumbnail() {
+			global $product, $woocommerce;
 
-		$items_in_cart = array();
+			$items_in_cart = array();
 
-		if ( $woocommerce->cart->get_cart() && is_array( $woocommerce->cart->get_cart() ) ) {
-			foreach ( $woocommerce->cart->get_cart() as $cart ) {
-				$items_in_cart[] = $cart['product_id'];
+			if ( $woocommerce->cart && $woocommerce->cart->get_cart() && is_array( $woocommerce->cart->get_cart() ) ) {
+				foreach ( $woocommerce->cart->get_cart() as $cart ) {
+					$items_in_cart[] = $cart['product_id'];
+				}
+			}
+
+			$id      = get_the_ID();
+			$in_cart = in_array( $id, $items_in_cart );
+			$size    = 'shop_catalog';
+
+
+			$attachment_image = '';
+			if ( ! Avada()->settings->get( 'woocommerce_disable_crossfade_effect' ) ) {
+				$gallery = get_post_meta( $id, '_product_image_gallery', true );
+
+				if ( ! empty( $gallery ) ) {
+					$gallery          = explode( ',', $gallery );
+					$first_image_id   = $gallery[0];
+					$attachment_image = wp_get_attachment_image( $first_image_id, $size, false, array( 'class' => 'hover-image' ) );
+				}
+			}
+			$thumb_image = get_the_post_thumbnail( $id, $size );
+
+			if ( $attachment_image ) {
+				$classes = 'crossfade-images';
+			} else {
+				$classes = 'featured-image';
+			}
+
+			echo '<span class="' . $classes . '">';
+			echo $attachment_image;
+			echo $thumb_image;
+			if ( $in_cart ) {
+				echo '<span class="cart-loading"><i class="fusion-icon-check-square-o"></i></span>';
+			} else {
+				echo '<span class="cart-loading"><i class="fusion-icon-spinner"></i></span>';
+			}
+			echo '</span>';
+		}
+	}
+
+
+	if ( Avada()->settings->get( 'woocommerce_product_box_design' ) == 'clean' ) {
+		add_action( 'woocommerce_before_shop_loop_item_title', 'avada_woocommerce_thumbnail', 10 );
+		remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10 );
+		function avada_woocommerce_thumbnail() {
+			global $product, $woocommerce;
+
+			$items_in_cart = array();
+
+			if ( $woocommerce->cart && $woocommerce->cart->get_cart() && is_array( $woocommerce->cart->get_cart() ) ) {
+				foreach ( $woocommerce->cart->get_cart() as $cart ) {
+					$items_in_cart[] = $cart['product_id'];
+				}
+			}
+
+			$id      = get_the_ID();
+			$in_cart = in_array( $id, $items_in_cart );
+			$size    = 'shop_catalog';
+			$post_permalink = get_permalink();
+			$classes = '';
+
+			if ( $in_cart ) {
+				$classes = 'fusion-item-in-cart';
+			}
+
+			$featured_image_markup = avada_render_first_featured_image_markup( $id, $size, $post_permalink, TRUE, FALSE, TRUE, 'disable', 'disable', '', '', 'yes', TRUE );
+			echo '<div class="fusion-clean-product-image-wrapper ' . $classes . '">';
+				echo $featured_image_markup;
+			echo '</div>';
+		}
+	}
+
+	add_filter( 'wp_nav_menu_items', 'fusion_add_woo_cart_to_widget', 20, 4 );
+	function fusion_add_woo_cart_to_widget( $items, $args ) {
+		if( class_exists( 'WooCommerce') ) {
+			$ubermenu = false;
+
+			if( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ubermenu_get_menu_instance_by_theme_location( $args->theme_location ) ) {
+				// disable woo cart on ubermenu navigations
+				$ubermenu = true;
+			}
+
+			if( $ubermenu == false && $args->container_class == 'fusion-widget-menu' ) {
+				$items .= fusion_add_woo_cart_to_widget_html();
 			}
 		}
 
-		$id      = get_the_ID();
-		$in_cart = in_array( $id, $items_in_cart );
-		$size    = 'shop_catalog';
-
-		$gallery          = get_post_meta( $id, '_product_image_gallery', true );
-		$attachment_image = '';
-		if ( ! empty( $gallery ) ) {
-			$gallery          = explode( ',', $gallery );
-			$first_image_id   = $gallery[0];
-			$attachment_image = wp_get_attachment_image( $first_image_id, $size, false, array( 'class' => 'hover-image' ) );
-		}
-		$thumb_image = get_the_post_thumbnail( $id, $size );
-
-		if ( $attachment_image ) {
-			$classes = 'crossfade-images';
-		} else {
-			$classes = '';
-		}
-
-		echo '<span class="' . $classes . '">';
-		echo $attachment_image;
-		echo $thumb_image;
-		if ( $in_cart ) {
-			echo '<span class="cart-loading"><i class="fusion-icon-check-square-o"></i></span>';
-		} else {
-			echo '<span class="cart-loading"><i class="fusion-icon-spinner"></i></span>';
-		}
-		echo '</span>';
+		return $items;
 	}
 
 	add_filter( 'woocommerce_add_to_cart_fragments', 'avada_woocommerce_header_add_to_cart_fragment' );
@@ -962,6 +656,9 @@
 
 		$header_cart = avada_nav_woo_cart( 'main' );
 		$fragments['.fusion-main-menu-cart'] = $header_cart;
+
+		$widget_cart = fusion_add_woo_cart_to_widget_html();
+		$fragments['.fusion-widget-cart'] = $widget_cart;
 
 		return $fragments;
 	}
@@ -983,32 +680,32 @@
 		if ( Avada()->settings->get( 'nofollow_social_links' ) ) {
 			$nofollow = ' rel="nofollow"';
 		}
-		$social = '<div style="clear:both;"></div>';
+		$social = '<div class="fusion-clearfix"></div>';
 		if ( Avada()->settings->get( 'woocommerce_social_links' ) ) {
 			$social .= '<ul class="social-share clearfix">
 			<li class="facebook">
 				<a href="http://www.facebook.com/sharer.php?m2w&s=100&p&#91;url&#93;=' . get_permalink() . '&p&#91;title&#93;=' . wp_strip_all_tags( get_the_title(), true ) . '" target="_blank"' . $nofollow . '>
 					<i class="fontawesome-icon medium circle-yes fusion-icon-facebook"></i>
-					<div class="fusion-woo-social-share-text"><span>' . __( 'Share On', 'Avada' ) . '</span>Facebook</div>
+					<div class="fusion-woo-social-share-text"><span>' . __( 'Share On Facebook', 'Avada' ) . '</span></div>
 				</a>
 			</li>
 			<li class="twitter">
 				<a href="https://twitter.com/share?text=' . wp_strip_all_tags( get_the_title(), true ) . ' ' . get_permalink() . '" target="_blank"' . $nofollow . '>
 					<i class="fontawesome-icon medium circle-yes fusion-icon-twitter"></i>
-					<div class="fusion-woo-social-share-text"><span>' . __( 'Tweet This', 'Avada' ) . '</span>' . __( 'Product', 'Avada' ) . '</div>
+					<div class="fusion-woo-social-share-text"><span>' . __( 'Tweet This Product', 'Avada' ) . '</span></div>
 				</a>
 			</li>
 			<li class="pinterest">';
 			$full_image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );
 			$social .= '<a href="http://pinterest.com/pin/create/button/?url=' . urlencode( get_permalink() ) . '&amp;description=' . urlencode( wp_strip_all_tags( get_the_title(), true ) ) . '&amp;media=' . urlencode( $full_image[0] ) . '" target="_blank"' . $nofollow . '>
 					<i class="fontawesome-icon medium circle-yes fusion-icon-pinterest"></i>
-					<div class="fusion-woo-social-share-text"><span>' . __( 'Pin This', 'Avada' ) . '</span>' . __( 'Product', 'Avada' ) . '</div>
+					<div class="fusion-woo-social-share-text"><span>' . __( 'Pin This Product', 'Avada' ) . '</span></div>
 				</a>
 			</li>
 			<li class="email">
-				<a href="mailto:?subject=' . wp_strip_all_tags( get_the_title(), true ) . '&amp;body=' . get_permalink() . '" target="_blank"' . $nofollow . '>
+				<a href="mailto:?subject=' .rawurlencode( html_entity_decode( wp_strip_all_tags( get_the_title(), true ), ENT_COMPAT, 'UTF-8' ) ) . '&amp;body=' . get_permalink() . '" target="_blank"' . $nofollow . '>
 					<i class="fontawesome-icon medium circle-yes fusion-icon-mail"></i>
-					<div class="fusion-woo-social-share-text"><span>' . __( 'Mail This', 'Avada' ) . '</span>' . __( 'Product', 'Avada' ) . '</div>
+					<div class="fusion-woo-social-share-text"><span>' . __( 'Mail This Product', 'Avada' ) . '</span></div>
 				</a>
 			</li>
 		</ul>';
@@ -1037,6 +734,7 @@
 			'orderby'        => 'rand'
 		);
 
+		echo '<div class="fusion-clearfix"></div>';
 		woocommerce_related_products( apply_filters( 'woocommerce_output_related_products_args', $args ) );
 	}
 
@@ -1051,6 +749,10 @@
 		if ( sizeof( $upsells ) == 0 ) {
 			return;
 		}
+
+		?>
+		<div class="fusion-clearfix"></div>
+		<?php
 
 		if ( get_post_meta( $post->ID, 'pyre_number_of_related_products', true ) == 'default' ||
 		     get_post_meta( $post->ID, 'pyre_number_of_related_products', true ) == '' ||
@@ -1076,10 +778,10 @@
 
 		$html = '<div class="woocommerce-content-box full-width clearfix">';
 
-		if ( $woocommerce->cart->cart_contents_count == 1 ) {
-			$html .= '<h2>' . sprintf( __( 'You Have %d Item In Your Cart', 'Avada' ), $woocommerce->cart->cart_contents_count ) . '</h2>';
+		if ( $woocommerce->cart->get_cart_contents_count() == 1 ) {
+			$html .= '<h2>' . sprintf( __( 'You Have %d Item In Your Cart', 'Avada' ), $woocommerce->cart->get_cart_contents_count() ) . '</h2>';
 		} else {
-			$html .= '<h2>' . sprintf( __( 'You Have %d Items In Your Cart', 'Avada' ), $woocommerce->cart->cart_contents_count ) . '</h2>';
+			$html .= '<h2>' . sprintf( __( 'You Have %d Items In Your Cart', 'Avada' ), $woocommerce->cart->get_cart_contents_count() ) . '</h2>';
 		}
 
 		echo $html;
@@ -1112,7 +814,7 @@
 
 		<?php do_action( 'woocommerce_before_shipping_calculator' ); ?>
 
-		<div class="shipping_calculator" action="<?php echo esc_url( WC()->cart->get_cart_url() ); ?>" method="post">
+		<div class="woocommerce-shipping-calculator" action="<?php echo esc_url( WC()->cart->get_cart_url() ); ?>" method="post">
 
 			<h2><a href="#" class="shipping-calculator-button"><?php _e( 'Calculate Shipping', 'woocommerce' ); ?></a>
 			</h2>
@@ -1120,13 +822,11 @@
 			<div class="avada-shipping-calculator-form">
 
 				<p class="form-row form-row-wide">
-					<select name="calc_shipping_country" id="calc_shipping_country" class="country_to_state"
-					        rel="calc_shipping_state">
+					<select name="calc_shipping_country" id="calc_shipping_country" class="country_to_state" rel="calc_shipping_state">
 						<option value=""><?php _e( 'Select a country&hellip;', 'woocommerce' ); ?></option>
 						<?php
-							foreach ( WC()->countries->get_shipping_countries() as $key => $value ) {
+							foreach( WC()->countries->get_shipping_countries() as $key => $value )
 								echo '<option value="' . esc_attr( $key ) . '"' . selected( WC()->customer->get_shipping_country(), esc_attr( $key ), false ) . '>' . esc_html( $value ) . '</option>';
-							}
 						?>
 					</select>
 				</p>
@@ -1140,30 +840,25 @@
 						// Hidden Input
 						if ( is_array( $states ) && empty( $states ) ) {
 
-							?><input type="hidden" name="calc_shipping_state" id="calc_shipping_state"
-							         placeholder="<?php _e( 'State / county', 'woocommerce' ); ?>" /><?php
+							?><input type="hidden" name="calc_shipping_state" id="calc_shipping_state" placeholder="<?php esc_attr_e( 'State / county', 'woocommerce' ); ?>" /><?php
 
 							// Dropdown Input
 						} elseif ( is_array( $states ) ) {
 
 							?><span>
-							<select name="calc_shipping_state" id="calc_shipping_state"
-							        placeholder="<?php _e( 'State / county', 'woocommerce' ); ?>">
-								<option value=""><?php _e( 'Select a state&hellip;', 'woocommerce' ); ?></option>
-								<?php
-									foreach ( $states as $ckey => $cvalue ) {
-										echo '<option value="' . esc_attr( $ckey ) . '" ' . selected( $current_r, $ckey, false ) . '>' . __( esc_html( $cvalue ), 'woocommerce' ) . '</option>';
-									}
-								?>
-							</select>
+								<select name="calc_shipping_state" id="calc_shipping_state" placeholder="<?php esc_attr_e( 'State / county', 'woocommerce' ); ?>">
+									<option value=""><?php _e( 'Select a state&hellip;', 'woocommerce' ); ?></option>
+									<?php
+										foreach ( $states as $ckey => $cvalue )
+											echo '<option value="' . esc_attr( $ckey ) . '" ' . selected( $current_r, $ckey, false ) . '>' . __( esc_html( $cvalue ), 'woocommerce' ) .'</option>';
+									?>
+								</select>
 							</span><?php
 
 							// Standard Input
 						} else {
 
-							?><input type="text" class="input-text" value="<?php echo esc_attr( $current_r ); ?>"
-							         placeholder="<?php _e( 'State / county', 'woocommerce' ); ?>"
-							         name="calc_shipping_state" id="calc_shipping_state" /><?php
+							?><input type="text" class="input-text" value="<?php echo esc_attr( $current_r ); ?>" placeholder="<?php esc_attr_e( 'State / county', 'woocommerce' ); ?>" name="calc_shipping_state" id="calc_shipping_state" /><?php
 
 						}
 					?>
@@ -1172,10 +867,7 @@
 				<?php if ( apply_filters( 'woocommerce_shipping_calculator_enable_city', false ) ) : ?>
 
 					<p class="form-row form-row-wide">
-						<input type="text" class="input-text"
-						       value="<?php echo esc_attr( WC()->customer->get_shipping_city() ); ?>"
-						       placeholder="<?php _e( 'City', 'woocommerce' ); ?>" name="calc_shipping_city"
-						       id="calc_shipping_city"/>
+						<input type="text" class="input-text" value="<?php echo esc_attr( WC()->customer->get_shipping_city() ); ?>" placeholder="<?php esc_attr_e( 'City', 'woocommerce' ); ?>" name="calc_shipping_city" id="calc_shipping_city" />
 					</p>
 
 				<?php endif; ?>
@@ -1183,17 +875,13 @@
 				<?php if ( apply_filters( 'woocommerce_shipping_calculator_enable_postcode', true ) ) : ?>
 
 					<div class="form-row form-row-wide fusion-layout-column fusion-one-half fusion-spacing-yes fusion-column-last">
-						<input type="text" class="input-text"
-						       value="<?php echo esc_attr( WC()->customer->get_shipping_postcode() ); ?>"
-						       placeholder="<?php _e( 'Postcode / Zip', 'woocommerce' ); ?>"
-						       name="calc_shipping_postcode" id="calc_shipping_postcode"/>
+						<input type="text" class="input-text" value="<?php echo esc_attr( WC()->customer->get_shipping_postcode() ); ?>" placeholder="<?php esc_attr_e( 'Postcode / Zip', 'woocommerce' ); ?>" name="calc_shipping_postcode" id="calc_shipping_postcode" />
 					</div>
 
 				<?php endif; ?>
 
 				<p>
-					<button type="submit" name="calc_shipping" value="1"
-					        class="fusion-button button-default button-small button default small"><?php _e( 'Update Totals', 'woocommerce' ); ?></button>
+					<button type="submit" name="calc_shipping" value="1" class="fusion-button button-default button-small button small default"><?php _e( 'Update Totals', 'woocommerce' ); ?></button>
 				</p>
 
 				<?php wp_nonce_field( 'woocommerce-cart' ); ?>
@@ -1204,6 +892,12 @@
 
 	<?php
 	}
+	
+	function woocommerce_shipping_calculator() {
+		if ( ! is_cart() ) {
+			wc_get_template( 'cart/shipping-calculator.php' );
+		}
+	}	
 
 	add_action( 'woocommerce_cart_collaterals', 'avada_woocommerce_cart_collaterals' );
 	function avada_woocommerce_cart_collaterals( $args ) {
@@ -1284,15 +978,15 @@
 
 		<form class="woocommerce-content-box full-width checkout_coupon" method="post">
 
-			<h2 class="promo-code-heading alignleft"><?php _e( 'Have A Promotional Code?', 'Avada' ); ?></h2>
+			<h2 class="promo-code-heading fusion-alignleft"><?php _e( 'Have A Promotional Code?', 'Avada' ); ?></h2>
 
-			<div class="coupon-contents alignright">
-				<div class="form-row form-row-first alignleft coupon-input">
+			<div class="coupon-contents fusion-alignright">
+				<div class="form-row form-row-first fusion-alignleft coupon-input">
 					<input type="text" name="coupon_code" class="input-text"
 					       placeholder="<?php _e( 'Coupon code', 'woocommerce' ); ?>" id="coupon_code" value=""/>
 				</div>
 
-				<div class="form-row form-row-last alignleft coupon-button">
+				<div class="form-row form-row-last fusion-alignleft coupon-button">
 					<input type="submit" class="fusion-button button-default button-small button default small"
 					       name="apply_coupon" value="<?php _e( 'Apply Coupon', 'woocommerce' ); ?>"/>
 				</div>
@@ -1445,7 +1139,6 @@
 
 	}
 
-
 	add_filter( 'woocommerce_enable_order_notes_field', 'avada_enable_order_notes_field' );
 	function avada_enable_order_notes_field() {
 
@@ -1457,41 +1150,46 @@
 
 	}
 
-//function under myaccount hooks
+	if ( Avada()->settings->get( 'woocommerce_one_page_checkout' ) ) {
+		add_action( 'woocommerce_checkout_after_order_review', 'avada_woocommerce_checkout_after_order_review', 20 );
+	}
+	function avada_woocommerce_checkout_after_order_review() {
+		?></div><?php
+	}
+
+	//function under myaccount hooks
 	remove_action( 'woocommerce_thankyou', 'woocommerce_order_details_table', 10 );
 	add_action( 'woocommerce_thankyou', 'avada_woocommerce_view_order', 10 );
 	/* end checkout hooks */
 
 	/* begin my-account hooks */
 	add_action( 'woocommerce_before_customer_login_form', 'avada_woocommerce_before_customer_login_form' );
-function avada_woocommerce_before_customer_login_form()
-{
+	function avada_woocommerce_before_customer_login_form() {
 
-	global $woocommerce;
+		global $woocommerce;
 
-if ( get_option( 'woocommerce_enable_myaccount_registration' ) !== 'yes' ) :
-	?>
+		if ( get_option( 'woocommerce_enable_myaccount_registration' ) !== 'yes' ) :
+		?>
 
-<div id="customer_login" class="woocommerce-content-box full-width">
+			<div id="customer_login" class="woocommerce-content-box full-width">
 
-<?php
-endif;
-}
+		<?php
+		endif;
+	}
 
 	add_action( 'woocommerce_after_customer_login_form', 'avada_woocommerce_after_customer_login_form' );
-function avada_woocommerce_after_customer_login_form()
-{
+	function avada_woocommerce_after_customer_login_form() {
 
-	global $woocommerce;
+		global $woocommerce;
 
-if ( get_option( 'woocommerce_enable_myaccount_registration' ) !== 'yes' ) :
-	?>
+		if ( get_option( 'woocommerce_enable_myaccount_registration' ) !== 'yes' ) :
+		?>
 
-</div>
+			</div>
 
-<?php
-endif;
-}
+		<?php
+		endif;
+	}
 
 function avada_top_user_container() {
 	global $woocommerce, $current_user;
@@ -1592,7 +1290,7 @@ function avada_woocommerce_before_my_account( $order_count, $edit_address = fals
 <?php
 }
 
-	add_action( 'woocommerce_after_my_account', 'avada_woocommerce_after_my_account' );
+add_action( 'woocommerce_after_my_account', 'avada_woocommerce_after_my_account' );
 function avada_woocommerce_after_my_account( $args )
 {
 	global $woocommerce, $wp;
@@ -1606,39 +1304,32 @@ function avada_woocommerce_after_my_account( $args )
 	<form class="edit-account-form" action="" method="post">
 		<p class="form-row form-row-first">
 			<label for="account_first_name"><?php _e( 'First name', 'woocommerce' ); ?> <span class="required">*</span></label>
-			<input type="text" class="input-text" name="account_first_name" id="account_first_name"
-			       value="<?php esc_attr_e( $user->first_name ); ?>"/>
+			<input type="text" class="input-text" name="account_first_name" id="account_first_name" value="<?php echo esc_attr( $user->first_name ); ?>" />
 		</p>
 
 		<p class="form-row form-row-last">
-			<label for="account_last_name"><?php _e( 'Last name', 'woocommerce' ); ?> <span
-					class="required">*</span></label>
-			<input type="text" class="input-text" name="account_last_name" id="account_last_name"
-			       value="<?php esc_attr_e( $user->last_name ); ?>"/>
+			<label for="account_last_name"><?php _e( 'Last name', 'woocommerce' ); ?> <span class="required">*</span></label>
+			<input type="text" class="input-text" name="account_last_name" id="account_last_name" value="<?php echo esc_attr( $user->last_name ); ?>" />
 		</p>
 
 		<p class="form-row form-row-wide">
-			<label for="account_email"><?php _e( 'Email address', 'woocommerce' ); ?> <span
-					class="required">*</span></label>
-			<input type="email" class="input-text" name="account_email" id="account_email"
-			       value="<?php esc_attr_e( $user->user_email ); ?>"/>
+			<label for="account_email"><?php _e( 'Email address', 'woocommerce' ); ?> <span class="required">*</span></label>
+			<input type="email" class="input-text" name="account_email" id="account_email" value="<?php echo esc_attr( $user->user_email ); ?>" />
 		</p>
 
-		<p class="form-row form-row-thirds">
-			<label
-				for="password_current"><?php _e( 'Current Password (leave blank to leave unchanged)', 'woocommerce' ); ?></label>
-			<input type="password" class="input-text" name="password_current" id="password_current"/>
+		<p class="form-row form-row-wide">
+			<label for="password_current"><?php _e( 'Current Password (leave blank to leave unchanged)', 'woocommerce' ); ?></label>
+			<input type="password" class="input-text" name="password_current" id="password_current" />
 		</p>
 
-		<p class="form-row form-row-thirds">
-			<label
-				for="password_1"><?php _e( 'New Password (leave blank to leave unchanged)', 'woocommerce' ); ?></label>
-			<input type="password" class="input-text" name="password_1" id="password_1"/>
+		<p class="form-row form-row-wide">
+			<label for="password_1"><?php _e( 'New Password (leave blank to leave unchanged)', 'woocommerce' ); ?></label>
+			<input type="password" class="input-text" name="password_1" id="password_1" />
 		</p>
 
-		<p class="form-row form-row-thirds">
+		<p class="form-row form-row-wide">
 			<label for="password_2"><?php _e( 'Confirm New Password', 'woocommerce' ); ?></label>
-			<input type="password" class="input-text" name="password_2" id="password_2"/>
+			<input type="password" class="input-text" name="password_2" id="password_2" />
 		</p>
 
 		<div class="clear"></div>
@@ -1724,20 +1415,11 @@ function avada_woocommerce_after_my_account( $args )
 												echo apply_filters( 'woocommerce_order_item_name', sprintf( '<a href="%s">%s</a>', get_permalink( $item['product_id'] ), $item['name'] ), $item );
 											}
 
-											if ( $_product && $_product->exists() && $_product->is_downloadable() && $order->is_download_permitted() ) {
-
-												$download_files = $order->get_item_downloads( $item );
-												$i              = 0;
-												$links          = array();
-
-												foreach ( $download_files as $download_id => $file ) {
-													$i ++;
-
-													$links[] = '<small><a href="' . esc_url( $file['download_url'] ) . '">' . sprintf( __( 'Download file%s', 'woocommerce' ), ( count( $download_files ) > 1 ? ' ' . $i . ': ' : ': ' ) ) . esc_html( $file['name'] ) . '</a></small>';
-												}
-
-												echo '<br/>' . implode( '<br/>', $links );
-											}
+											// Meta data
+											do_action( 'woocommerce_order_item_meta_start', $item['product_id'], $item, $order );
+											$order->display_item_meta( $item );
+											$order->display_item_downloads( $item );
+											do_action( 'woocommerce_order_item_meta_end', $item['product_id'], $item, $order );
 										?>
 									</div>
 								</td>

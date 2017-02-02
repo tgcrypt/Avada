@@ -2,10 +2,10 @@
 
 class Avada_Blog {
 
-    public function construct() {
+    public function __construct() {
 
         add_filter( 'excerpt_length', array( $this, 'excerpt_length' ), 999 );
-        add_action( 'pre_get_posts', array( $this, 'alert_search_loop' ) );
+        add_action( 'pre_get_posts', array( $this, 'alter_search_loop' ), 1 );
 
         if ( ! is_admin() ) {
             add_filter( 'pre_get_posts', array( $this, 'search_filter' ) );
@@ -36,12 +36,10 @@ class Avada_Blog {
     /**
      * Apply post per page on search pages
      */
-    public function alert_search_loop( $query ) {
-
-        if ( $query->is_main_query() && $query->is_search() && Avada()->settings->get( 'search_results_per_page' ) ) {
+    public function alter_search_loop( $query ) {
+        if ( ! is_admin() && $query->is_main_query() && $query->is_search() && Avada()->settings->get( 'search_results_per_page' ) ) {
             $query->set( 'posts_per_page', Avada()->settings->get( 'search_results_per_page' ) );
         }
-
     }
 
     /**
@@ -87,7 +85,7 @@ class Avada_Blog {
      */
     public function get_content_stripped_and_excerpted( $excerpt_length, $content ) {
         $pattern = get_shortcode_regex();
-    	$content = preg_replace_callback( "/$pattern/s", 'avada_process_tag', $content );
+    	$content = preg_replace_callback( "/$pattern/s", 'avada_extract_shortcode_contents', $content );
     	$content = explode( ' ', $content, $excerpt_length + 1 );
 
     	if ( $excerpt_length < count( $content ) ) {
@@ -133,10 +131,15 @@ class Avada_Blog {
         if ( $test_strip_html ) {
 
             $more = 0;
-            $raw_content = strip_tags( get_the_content( $readmore ) );
+			$raw_content = wp_strip_all_tags( get_the_content( '{{read_more_placeholder}}' ), '<p>' );
+
+			// Strip out all attributes
+			$raw_content = preg_replace('/<(\w+)[^>]*>/', '<$1>', $raw_content);
+
+			$raw_content = str_replace( '{{read_more_placeholder}}', $read_more, $raw_content );
 
             if ( $post->post_excerpt || false !== $pos ) {
-                $raw_content    = ( ! $pos ) ? strip_tags( rtrim( get_the_excerpt(), '[&hellip;]' ) . $readmore ) : $raw_content;
+                $raw_content    = ( ! $pos ) ? wp_strip_all_tags( rtrim( get_the_excerpt(), '[&hellip;]' ), '<p>' ) . $read_more : $raw_content;
                 $custom_excerpt = true;
             }
 
@@ -154,7 +157,7 @@ class Avada_Blog {
         if ( $raw_content && ! $custom_excerpt ) {
 
             $pattern = get_shortcode_regex();
-            $content = preg_replace_callback( "/$pattern/s", 'avada_process_tag', $raw_content );
+            $content = preg_replace_callback( "/$pattern/s", 'avada_extract_shortcode_contents', $raw_content );
 
             if ( 'Characters' == Avada()->settings->get( 'excerpt_base' ) ) {
 
@@ -181,13 +184,14 @@ class Avada_Blog {
 
             }
 
-            if ( $limit != 0 ) {
+            if ( $limit != 0 && ! $test_strip_html ) {
 
-                $content = preg_replace( "~(?:\[/?)[^/\]]+/?\]~s", '', $content ); // strip shortcode and keep the content
                 $content = apply_filters( 'the_content', $content );
                 $content = str_replace( ']]>', ']]&gt;', $content );
 
-            }
+            } else {
+				$content = sprintf( '<p>%s</p>', $content );
+			}
 
             $strip_html_class = ( $test_strip_html ) ? 'strip-html' : '';
             $content = sprintf( '<div class="excerpt-container %s">%s</div>', $strip_html_class, do_shortcode( $content ) );
@@ -199,7 +203,7 @@ class Avada_Blog {
         if ( true == $custom_excerpt ) {
 
             $pattern = get_shortcode_regex();
-            $content = preg_replace_callback( "/$pattern/s", 'avada_process_tag', $raw_content );
+            $content = preg_replace_callback( "/$pattern/s", 'avada_extract_shortcode_contents', $raw_content );
 
             if ( true == $test_strip_html ) {
 

@@ -124,7 +124,7 @@ jQuery(window).load(function() {
 		wrap_gravity_selects();
 
         // wrap woo and bbpress select and add arrow
-        jQuery( '#bbp_stick_topic_select, #bbp_topic_status_select, #bbp_forum_id, #bbp_destination_topic' ).wrap( '<div class="avada-select-parent"></div>' ).after( '<div class="select-arrow">&#xe61f;</div>' );
+        jQuery( '#bbp_stick_topic_select, #bbp_topic_status_select, #bbp_forum_id, #bbp_destination_topic, #wpfc_sermon_sorting select' ).wrap( '<div class="avada-select-parent"></div>' ).after( '<div class="select-arrow">&#xe61f;</div>' );
 
         jQuery( '.variations_form select' ).change(
             function() {
@@ -141,6 +141,10 @@ jQuery(window).load(function() {
 
     // set heights of select arrows correctly
    	calc_select_arrow_dimensions();
+
+   	setTimeout( function() {
+		calc_select_arrow_dimensions();
+	}, 100 );
 });
 
 function wrap_gravity_selects() {
@@ -167,7 +171,7 @@ function wrap_gravity_selects() {
 
 // Wrap gravity forms select and add arrow
 function calc_select_arrow_dimensions() {
-	jQuery( '.avada-select-parent .select-arrow, .gravity-select-parent .select-arrow, .wpcf7-select-parent .select-arrow' ).each( function() {
+	jQuery( '.avada-select-parent .select-arrow, .gravity-select-parent .select-arrow, .wpcf7-select-parent .select-arrow' ).filter( ':visible' ).each( function() {
 		if( jQuery( this ).prev().innerHeight() > 0 ) {
 			jQuery( this ).css( {
 				height: jQuery( this ).prev().innerHeight(),

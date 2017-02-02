@@ -44,12 +44,17 @@ function avada_dynamic_css_array() {
 
 	$css['global']['.' . $theme_info->get( 'Name' ) . "_" . str_replace( '.', '', $theme_info->get( 'Version' ) )]['color'] = 'green';
 
-	if ( ( $isiPad && Avada()->settings->get( 'ipad_potrait' ) ) || ! Avada()->settings->get( 'responsive' ) ) {
+	if ( ! Avada()->settings->get( 'responsive' ) ) {
 		$css['global']['.ua-mobile #wrapper']['width']    = '100% !important';
 		$css['global']['.ua-mobile #wrapper']['overflow'] = 'hidden !important';
 	}
 
 	$side_header_width = ( 'Top' == Avada()->settings->get( 'header_position' ) ) ? 0 : intval( Avada()->settings->get( 'side_header_width' ) );
+
+	if ( version_compare( $wp_version, '4.3.1', '<=' ) ) {
+		// tweak the comment-form CSS for WordPress versions < 4.4
+		$css['global']['#comment-input']['margin-bottom'] = '13px';
+	}
 
 	if ( class_exists( 'WooCommerce' ) ) {
 
@@ -74,45 +79,110 @@ function avada_dynamic_css_array() {
 			$css['global']['.woocommerce-tabs .entry-content']['width']      = '100%';
 			$css['global']['.woocommerce-tabs .entry-content']['border-top'] = 'none';
 
-			if ( Avada()->settings->get( 'responsive' ) ) {
-				$css['@media all and (max-width: 965px)']['.tabs']['margin-bottom'] = '0px !important';
-				$elements = array(
-					'#wrapper .woocommerce-tabs .tabs',
-					'#wrapper .woocommerce-tabs .panel'
-				);
-				$css['@media all and (max-width: 965px)'][avada_implode( $elements )]['float'] = 'left !important';
-
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs > .tabs li']['float']         = 'left';
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs > .tabs li']['width']         = '100%';
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs > .tabs li']['margin-bottom'] = '2px';
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs > .tabs li']['border-bottom'] = '1px solid #dddddd';
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs > .tabs li']['border-left']   = 'none !important';
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs > .tabs li']['border-right']  = 'none !important';
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs > .tabs li']['border-top']    = 'none !important';
-
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs > .tabs .active']['height'] = 'auto';
-
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs .entry-content']['float']      = 'left';
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs .entry-content']['width']      = '100%';
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs .entry-content']['margin-top'] = '20px !important';
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs .entry-content']['border-top'] = '1px solid #dddddd';
-
-				$css['@media all and (max-width: 470px)']['.woocommerce-tabs > .tabs']['border-bottom'] = 'none';
-			}
 		}
 
 		if ( '' != Avada()->settings->get( 'timeline_bg_color' ) && 'transparent' != Avada()->settings->get( 'timeline_bg_color' ) ) {
 			$css['global']['.products .product-list-view']['padding-left']  = '20px';
 			$css['global']['.products .product-list-view']['padding-right'] = '20px';
 		}
+		
+		$elements = array(
+			'.fusion-item-in-cart .fusion-rollover-content .fusion-rollover-title',
+			'.fusion-item-in-cart .fusion-rollover-content .fusion-rollover-categories',
+			'.fusion-item-in-cart .fusion-rollover-content .price',
+			'.fusion-carousel-title-below-image .fusion-item-in-cart .fusion-rollover-content .fusion-product-buttons',
+			'.products .product .fusion-item-in-cart .fusion-rollover-content .fusion-product-buttons'
+		);			
+		$css['global'][avada_implode( $elements )]['display'] = 'none';		
 
-	}
+		if ( Avada()->settings->get( 'woocommerce_product_box_design' ) == 'clean' ) {
+			$css['global']['.fusion-woo-product-design-clean .products .product-details-container']['text-align'] = 'center';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover .star-rating']['margin'] = '0 auto';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover .star-rating span:before, .fusion-woo-product-design-clean .products .fusion-rollover .star-rating:before']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'image_rollover_icon_color' ), Avada()->settings->get_default( 'image_rollover_icon_color' ) );
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-product-buttons a, .fusion-woo-slider .fusion-product-buttons a']['padding'] = '0';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-product-buttons a:before, .fusion-woo-product-design-clean .products .fusion-product-buttons a:after, .fusion-woo-slider .fusion-product-buttons a:before, .fusion-woo-slider .fusion-product-buttons a:after']['display'] = 'none';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-product-buttons a, .fusion-woo-slider .fusion-product-buttons a']['display'] = 'inline';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-product-buttons a, .fusion-woo-slider .fusion-product-buttons a']['letter-spacing'] = '1px';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-product-buttons a, .fusion-woo-slider .fusion-product-buttons a']['float'] = 'none';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-product-buttons, .fusion-woo-slider .fusion-product-buttons']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'image_rollover_text_color' ), Avada()->settings->get_default( 'image_rollover_text_color' ) );
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-product-buttons, .fusion-woo-slider .fusion-product-buttons']['text-transform'] = 'uppercase';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-product-buttons,.fusion-woo-slider .fusion-product-buttons']['margin-top'] = '10px';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-product-buttons a, .fusion-woo-slider .fusion-product-buttons a']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'image_rollover_text_color' ), Avada()->settings->get_default( 'image_rollover_text_color' ) );
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-product-buttons .wc-forward, .fusion-woo-slider .fusion-product-buttons .wc-forward']['display'] = 'none';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-product-buttons a:hover, .fusion-woo-slider .fusion-product-buttons a:hover']['opacity'] = '0.6';
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-rollover-linebreak, .fusion-woo-slider .fusion-product-buttons .fusion-rollover-linebreak']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'image_rollover_text_color' ), Avada()->settings->get_default( 'image_rollover_text_color' ) );
+			$css['global']['.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-rollover-linebreak, .fusion-woo-slider .fusion-product-buttons .fusion-rollover-linebreak']['margin'] = '0 10px';
+			$css['global']['.fusion-woo-slider .fusion-product-buttons .fusion-rollover-linebreak']['display'] = 'inline-block';
 
-	if ( ! Avada()->settings->get( 'smooth_scrolling' ) ) {
-		if ( Avada()->settings->get( 'responsive' ) ) {
-			$css['@media only screen and (min-width: 800px)']['.no-overflow-y body']['padding-right'] = '9px';
-			$css['@media only screen and (min-width: 800px)']['.no-overflow-y #slidingbar-area']['right'] = '9px';
+			$css['global']['.fusion-clean-product-image-wrapper']['position'] = 'relative';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['position'] = 'relative';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['text-transform'] = 'uppercase';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['width'] = '100%';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['margin'] = '0';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['height'] = '100%';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['line-height'] = 'normal';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading i']['margin-bottom'] = '5px';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading i']['display'] = 'block';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading i']['font-size'] = '32px';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading i']['line-height'] = 'normal';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['font-size'] = '14px';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['top'] = '0';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['bottom'] = 'auto';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['right'] = 'auto';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['left'] = '0';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading']['border-radius'] = '0';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading .view-cart']['display'] = 'none';
+			$css['global']['.fusion-clean-product-image-wrapper.fusion-item-in-cart .cart-loading .view-cart']['display'] = 'block';
+			$css['global']['#wrapper .fusion-clean-product-image-wrapper .cart-loading']['background-color'] = 'transparent';
+			$css['global']['.fusion-clean-product-image-wrapper .cart-loading:hover *']['opacity'] = '0.6';
+			
+			
+			$elements = array(
+				'.fusion-item-in-cart .fusion-rollover-content .star-rating', 
+			);			
+			$css['global'][avada_implode( $elements )]['display'] = 'none';
+
+
+			$css['global']['.fusion-woo-product-design-clean .products .price']['font-style'] = 'italic';
+			if( isset( $_SERVER['QUERY_STRING'] ) ) {
+				parse_str( $_SERVER['QUERY_STRING'], $params );
+				if( isset ( $params['product_view'] ) ){
+					$product_view = $params['product_view'];
+					if( $product_view == 'list' ){
+						$css['global']['.fusion-woo-product-design-clean .products .product-list-view .product-details-container']['text-align'] = 'left';
+						$css['global']['.fusion-woo-product-design-clean .products .product-list-view .product-excerpt-container']['text-align'] = 'left';
+						$css['global']['.fusion-woo-product-design-clean .products .product-list-view .onsale']['top'] = '70px';
+						$css['global']['.fusion-clean-product-image-wrapper']['display'] = 'inline-block';
+						$css['global']['.fusion-clean-product-image-wrapper']['width'] = '23%';
+						$css['global']['.fusion-clean-product-image-wrapper']['max-width'] = '23%';
+						$css['global']['.fusion-clean-product-image-wrapper']['float'] = 'left';
+						$css['global']['.fusion-clean-product-image-wrapper']['margin-right'] = '2%';
+						$css['global']['.fusion-woo-product-design-clean .products .price']['font-style'] = 'normal';
+					}
+				}
+			}
+			$css['global']['.fusion-woo-slider .fusion-carousel-title-below-image .fusion-carousel-title']['text-align'] = 'center';
+			$css['global']['.fusion-woo-slider .fusion-carousel-title-below-image .fusion-carousel-meta']['text-align'] = 'center';
+			$css['global']['.fusion-woo-slider .fusion-carousel-title-on-rollover .fusion-rollover-linebreak']['display'] = 'none';
 		}
+
+		// Make the single product page layout reflect the single image size in Woo settings
+		if ( is_product() ) {
+			$post_image = get_the_post_thumbnail( get_the_ID(), apply_filters( 'single_product_large_thumbnail_size', 'shop_single' ) );
+
+			if ( $post_image ) {
+				preg_match( '@width="([^"]+)"@' , $post_image, $match );
+
+				if ( $match[1] != '500' ) {
+
+					$shop_single_image_size = wc_get_image_size( 'shop_single' );
+
+					$css['global']['.product .images']['width'] = $shop_single_image_size['width'] . 'px';
+					$css['global']['.product .summary.entry-summary']['margin-left'] = $shop_single_image_size['width'] + 30 . 'px';
+				}
+			}
+		}
+
 	}
 
 	$elements = array(
@@ -175,51 +245,6 @@ function avada_dynamic_css_array() {
 			$css['global'][avada_implode( $elements )]['margin-right'] = '-' . Avada_Sanitize::size( Avada()->settings->get( 'hundredp_padding' ) ) . '!important';
 		}
 
-		if ( Avada()->settings->get( 'responsive' ) ) {
-
-			$media_query = '@media only screen and (max-width: 800px)';
-			$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-header']['padding-left'] = '0 !important';
-			$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-header']['padding-right'] = '0 !important';
-			$css[$media_query]['#side-header']['width'] = 'auto';
-
-			$media_query = '@media only screen and (max-width: ' . $site_width_with_units . ')';
-			$css[$media_query]['.width-100#main']['padding-left']  = '30px !important';
-			$css[$media_query]['.width-100#main']['padding-right'] = '30px !important';
-
-			$elements = array(
-				'.width-100 .nonhundred-percent-fullwidth',
-				'.width-100 .fusion-section-separator'
-			);
-            $css[$media_query][avada_implode( $elements )]['padding-left']  = '30px !important';
-            $css[$media_query][avada_implode( $elements )]['padding-right'] = '30px !important';
-
-			$elements = array(
-				'.width-100 .fullwidth-box',
-				'.width-100 .fusion-section-separator'
-			);
-            $css[$media_query][avada_implode( $elements )]['margin-left']   = '-30px !important';
-            $css[$media_query][avada_implode( $elements )]['margin-right']  = '-30px !important';
-
-
-            // For header left and right, we need to apply padding at:
-            // Site width + side header width + 30px * 2 ( 30 extra for it not to jump so harshly )
-            if( Avada()->settings->get( 'header_position' ) == 'Left' || Avada()->settings->get( 'header_position' ) == 'Right' ) {
-            	$side_header_width_without_units = Avada_Sanitize::size( Avada()->settings->get( 'side_header_width' ) );
-            	$side_header_fwc_breakpoint = $site_width_without_units + $side_header_width_without_units + 60;
-
-            	$media_query = '@media only screen and (max-width: ' . $side_header_fwc_breakpoint . 'px)';
-
-				$elements = array(
-					'.width-100 .nonhundred-percent-fullwidth',
-					'.width-100 .fusion-section-separator'
-				);
-	            $css[$media_query][avada_implode( $elements )]['padding-left']  = '30px !important';
-	            $css[$media_query][avada_implode( $elements )]['padding-right'] = '30px !important';
-	            //$css[$media_query][avada_implode( $elements )]['margin-left']   = '-30px !important';
-	            //$css[$media_query][avada_implode( $elements )]['margin-right']  = '-30px !important';
-            }
-		}
-
 	}
 
 	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder li a']['padding-left']  = '30px';
@@ -229,138 +254,22 @@ function avada_dynamic_css_array() {
 
 	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item a']['padding-left']  = '30px';
 	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item a']['padding-right'] = '30px';
-	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li a']['padding-left'] = '42px';
-	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li a']['padding-left'] = '55px';
-	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li a']['padding-left'] = '68px';
-	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li li a']['padding-left'] = '81px';
-
-	if ( is_rtl() ) {
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item .fusion-open-submenu']['padding-left']  = '30px';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item .fusion-open-submenu']['padding-right'] = '15px';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item a']['padding-left']  = '30px';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item a']['padding-right'] = '30px';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li a']['padding-left']  = '0';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li a']['padding-right'] = '42px';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li a']['padding-left']  = '0';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li a']['padding-right'] = '55px';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li a']['padding-left']  = '0';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li a']['padding-right'] = '68px';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li li a']['padding-left']  = '0';
-		$css['global']['.rtl .fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li li a']['padding-right'] = '81px';
-	}
-
-	if ( Avada()->settings->get( 'responsive' ) ) {
-
-		$media_query = '@media only screen and (min-width: ' . ( 850 + (int) Avada()->settings->get( 'side_header_width' ) ) . 'px) and (max-width: ' . ( 930 + (int) Avada()->settings->get( 'side_header_width' ) ) . 'px)';
-
-		$elements = array(
-			'.grid-layout-6 .fusion-post-grid',
-			'.fusion-portfolio-six .fusion-portfolio-post'
-		);
-		$css[$media_query][avada_implode( $elements )]['width']  = '20% !important';
-
-		$elements = array(
-			'.grid-layout-5 .fusion-post-grid',
-			'.fusion-portfolio-five .fusion-portfolio-post'
-		);
-		$css[$media_query][]['width'] = '25% !important';
-
-		$media_query = '@media only screen and (min-width: 800px) and (max-width: ' . ( 850 + (int) Avada()->settings->get( 'side_header_width' ) ) . 'px)';
-		$elements = array(
-			'.grid-layout-6 .fusion-post-grid',
-			'.fusion-portfolio-six .fusion-portfolio-post'
-		);
-		$css[$media_query][avada_implode( $elements )]['width']  = '25% !important';
-
-		$elements = array(
-			'.grid-layout-5 .fusion-post-grid',
-			'.fusion-portfolio-five .fusion-portfolio-post'
-		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '33.3333333333% !important';
-
-		$elements = array(
-			'.grid-layout-4 .fusion-post-grid',
-			'.fusion-portfolio-four .fusion-portfolio-post'
-		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '33.3333333333% !important';
-
-		$media_query = '@media only screen and (min-width: 700px ) and (max-width: 800px)';
-
-		$elements = array(
-			'.fusion-blog-layout-grid-6 .fusion-post-grid',
-			'.fusion-portfolio-six .fusion-portfolio-post'
-		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '33.3333333333% !important';
-
-		$elements = array(
-			'.fusion-blog-layout-grid-5 .fusion-post-grid',
-			'.fusion-blog-layout-grid-4 .fusion-post-grid',
-			'.fusion-blog-layout-grid-3 .fusion-post-grid',
-			'.fusion-portfolio-five .fusion-portfolio-post',
-			'.fusion-portfolio-four .fusion-portfolio-post',
-			'.fusion-portfolio-three .fusion-portfolio-post',
-			'.fusion-portfolio-masonry .fusion-portfolio-post'
-		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '50% !important';
-
-		$media_query = '@media only screen and (min-width: 640px) and (max-width: 700px)';
-		$elements = array(
-			'.fusion-blog-layout-grid-6 .fusion-post-grid',
-			'.fusion-blog-layout-grid-5 .fusion-post-grid',
-			'.fusion-blog-layout-grid-4 .fusion-post-grid',
-			'.fusion-blog-layout-grid-3 .fusion-post-grid',
-			'.fusion-portfolio-six .fusion-portfolio-post',
-			'.fusion-portfolio-five .fusion-portfolio-post',
-			'.fusion-portfolio-four .fusion-portfolio-post',
-			'.fusion-portfolio-three .fusion-portfolio-post',
-			'.fusion-portfolio-masonry .fusion-portfolio-post'
-		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '50% !important';
-
-		$media_query = '@media only screen and (max-width: 640px)';
-		$elements = array(
-			'.fusion-blog-layout-grid .fusion-post-grid',
-			'.fusion-portfolio-post'
-		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '100% !important';
-
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
-		$elements = array(
-			'.fusion-blog-layout-grid-6 .fusion-post-grid',
-			'.fusion-portfolio-six .fusion-portfolio-post'
-		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '33.3333333333% !important';
-
-		$elements = array(
-			'.fusion-blog-layout-grid-5 .fusion-post-grid',
-			'.fusion-blog-layout-grid-4 .fusion-post-grid',
-			'.fusion-blog-layout-grid-3 .fusion-post-grid',
-			'.fusion-portfolio-five .fusion-portfolio-post',
-			'.fusion-portfolio-four .fusion-portfolio-post',
-			'.fusion-portfolio-three .fusion-portfolio-post',
-			'.fusion-portfolio-masonry .fusion-portfolio-post'
-		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '50% !important';
-
-		if ( Avada()->settings->get( 'footerw_bg_image' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_parallax_effect', 'footer_area_bg_parallax', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
-			$css[$media_query]['.fusion-body #wrapper']['background-color'] = 'transparent';
-		}
-
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape)';
-		if ( Avada()->settings->get( 'footerw_bg_image' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_parallax_effect', 'footer_area_bg_parallax', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
-			$css[$media_query]['.fusion-body #wrapper']['background-color'] = 'transparent';
-		}
-
-	}
+	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li a']['padding-left'] = '39px';
+	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li a']['padding-left'] = '48px';
+	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li a']['padding-left'] = '57px';
+	$css['global']['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li li a']['padding-left'] = '66px';
 
 	$elements = array(
 		'a:hover',
-		'.tooltip-shortcode'
+		'.tooltip-shortcode',
+		'.event-is-recurring:hover'
 	);
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) );
 
 	$elements = array(
+		'.fusion-login-box a:hover',
 		'.fusion-footer-widget-area ul li a:hover',
+		'.fusion-footer-widget-area .widget li a:hover:before',
 		'.fusion-footer-widget-area .fusion-tabs-widget .tab-holder .news-list li .post-holder a:hover',
 		'.fusion-footer-widget-area .fusion-accordian .panel-title a:hover',
 		'#slidingbar-area ul li a:hover',
@@ -371,10 +280,11 @@ function avada_dynamic_css_array() {
 		'#main .about-author .title a:hover',
 		'span.dropcap',
 		'.fusion-footer-widget-area a:hover',
-		'#slidingbar-area a:hover',
+		'.slidingbar-area a:hover',
+		'.slidingbar-area .widget li a:hover:before',
 		'.fusion-copyright-notice a:hover',
-		'.sidebar .widget_categories li a:hover',
-		'.sidebar .widget li a:hover',
+		'.fusion-content-widget-area .widget_categories li a:hover',
+		'.fusion-content-widget-area .widget li a:hover',
 		'.fusion-date-and-formats .fusion-format-box i',
 		'h5.toggle:hover a',
 		'.tooltip-shortcode',
@@ -386,29 +296,22 @@ function avada_dynamic_css_array() {
 		'.pagination-next:hover:after',
 		'.single-navigation a[rel=prev]:hover:before',
 		'.single-navigation a[rel=next]:hover:after',
-		'.sidebar .widget_nav_menu li a:hover:before',
-		'.sidebar .widget_categories li a:hover:before',
-		'.sidebar .widget .recentcomments:hover:before',
-		'.sidebar .widget_recent_entries li a:hover:before',
-		'.sidebar .widget_archive li a:hover:before',
-		'.sidebar .widget_pages li a:hover:before',
-		'.sidebar .widget_links li a:hover:before',
+		'.fusion-content-widget-area .widget li a:hover:before',
+		'.fusion-content-widget-area .widget_nav_menu li a:hover:before',
+		'.fusion-content-widget-area .widget_categories li a:hover:before',
+		'.fusion-content-widget-area .widget .recentcomments:hover:before',
+		'.fusion-content-widget-area .widget_recent_entries li a:hover:before',
+		'.fusion-content-widget-area .widget_archive li a:hover:before',
+		'.fusion-content-widget-area .widget_pages li a:hover:before',
+		'.fusion-content-widget-area .widget_links li a:hover:before',
 		'.side-nav .arrow:hover:after',
 		'#wrapper .jtwt .jtwt_tweet a:hover',
 		'.star-rating:before',
 		'.star-rating span:before',
-		'#wrapper .sidebar .current_page_item > a',
-		'#wrapper .sidebar .current-menu-item > a',
-		'#wrapper .sidebar .current_page_item > a:before',
-		'#wrapper .sidebar .current-menu-item > a:before',
-		'#wrapper .fusion-footer-widget-area .current_page_item > a',
-		'#wrapper .fusion-footer-widget-area .current-menu-item > a',
-		'#wrapper .fusion-footer-widget-area .current_page_item > a:before',
-		'#wrapper .fusion-footer-widget-area .current-menu-item > a:before',
-		'#wrapper #slidingbar-area .current_page_item > a',
-		'#wrapper #slidingbar-area .current-menu-item > a',
-		'#wrapper #slidingbar-area .current_page_item > a:before',
-		'#wrapper #slidingbar-area .current-menu-item > a:before',
+		'#wrapper .fusion-widget-area .current_page_item > a',
+		'#wrapper .fusion-widget-area .current-menu-item > a',
+		'#wrapper .fusion-widget-area .current_page_item > a:before',
+		'#wrapper .fusion-widget-area .current-menu-item > a:before',
 		'.side-nav ul > li.current_page_item > a',
 		'.side-nav li.current_page_ancestor > a',
 		'.fusion-accordian .panel-title a:hover',
@@ -425,8 +328,8 @@ function avada_dynamic_css_array() {
 		$elements[] = '.ginput_shipping_price';
 	}
 	if ( class_exists( 'bbPress' ) ) {
-		$elements[] = '.bbp-topic-pagination .prev:hover:before';
-		$elements[] = '.bbp-topic-pagination .next:hover:after';
+		$elements[] = '.bbp-pagination .bbp-pagination-links .pagination-prev:hover:before';
+		$elements[] = '.bbp-pagination .bbp-pagination-links .pagination-next:hover:after';
 		$elements[] = '.bbp-topics-front ul.super-sticky a:hover';
 		$elements[] = '.bbp-topics ul.super-sticky a:hover';
 		$elements[] = '.bbp-topics ul.sticky a:hover';
@@ -456,31 +359,28 @@ function avada_dynamic_css_array() {
 		$elements[] = '.cart_totals .order-total .amount';
 		$elements[] = '.checkout .shop_table tfoot .order-total .amount';
 		$elements[] = '#final-order-details .mini-order-details tr:last-child .amount';
+		$elements[] = '.fusion-carousel-title-below-image .fusion-carousel-meta .price .amount';
+		//$elements[] = '.fusion-woo-product-design-clean .products .fusion-rollover-content .fusion-product-buttons a:hover';
+		//$elements[] = '.fusion-woo-product-design-clean .products .fusion-rollover-content .cart-loading a:hover';
+	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '.tribe-events-gmap:hover:before';
+		$elements[] = '.tribe-events-gmap:hover:after';
+		$elements[] = '.tribe-events-nav-previous a:hover:before, .tribe-events-nav-previous a:hover:after';
+		$elements[] = '.tribe-events-nav-next a:hover:before, .tribe-events-nav-next a:hover:after';
+		$elements[] = '#tribe-events-content .tribe-events-sub-nav li a:hover';
+		$elements[] = '.tribe-mini-calendar-event .list-date .list-dayname';
+		$elements[] = '#tribe_events_filters_wrapper .tribe_events_slider_val';
 	}
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) );
 
 	$elements = array(
-		'.link-area-link-icon-hover .heading h2',
-		'.link-area-box-hover .heading h2',
-		'.link-area-link-icon-hover.link-area-box .fusion-read-more',
-		'.link-area-link-icon-hover.link-area-box .fusion-read-more::after',
-		'.link-area-link-icon-hover.link-area-box .fusion-read-more::before',
-		'.link-area-link-icon-hover .icon .circle-no',
-		'.link-area-box-hover .icon .circle-no'
-	);
-	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) ) . ' !important';
-
-	$elements = array(
-		'.fusion-content-boxes .heading-link:hover .icon i.circle-yes',
-		'.fusion-content-boxes .link-area-box:hover .heading-link .icon i.circle-yes',
-		'.fusion-accordian .panel-title a:hover .fa-fusion-box',
-		'.link-area-link-icon-hover .heading .icon i.circle-yes',
-		'.link-area-box-hover .heading .icon i.circle-yes',
+		'.fusion-accordian .panel-title a:hover .fa-fusion-box'
 	);
 	$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) ) . ' !important';
 	$css['global'][avada_implode( $elements )]['border-color']     = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) ) . ' !important';
 
-	$css['global']['.sidebar .fusion-image-wrapper .fusion-rollover .fusion-rollover-content a:hover']['color'] = '#333333';
+	$css['global']['.fusion-content-widget-area .fusion-image-wrapper .fusion-rollover .fusion-rollover-content a:hover']['color'] = '#333333';
 
 	$elements = array( '.star-rating:before', '.star-rating span:before' );
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) );
@@ -497,6 +397,8 @@ function avada_dynamic_css_array() {
 		'.progress-bar-content',
 		'.pagination .current',
 		'.pagination a.inactive:hover',
+		'.fusion-hide-pagination-text .pagination-prev:hover',
+		'.fusion-hide-pagination-text .pagination-next:hover',
 		'#nav ul li > a:hover',
 		'#sticky-nav ul li > a:hover',
 		'.tagcloud a:hover',
@@ -506,8 +408,11 @@ function avada_dynamic_css_array() {
 		'#wrapper .fusion-tabs.vertical-tabs.classic .nav-tabs > li.active .tab-link'
 	);
 	if ( class_exists( 'bbPress' ) ) {
-		$elements[] = '.bbp-topic-pagination .current';
+		$elements[] = '.bbp-pagination .bbp-pagination-links .current';
+		$elements[] = '.bbp-topic-pagination .page-numbers:hover';
 		$elements[] = '#bbpress-forums div.bbp-topic-tags a:hover';
+		$elements[] = '.fusion-hide-pagination-text .bbp-pagination .bbp-pagination-links .pagination-prev:hover';
+		$elements[] = '.fusion-hide-pagination-text .bbp-pagination .bbp-pagination-links .pagination-next:hover';
 	}
 	if ( class_exists( 'WooCommerce' ) ) {
 		$elements[] = '.woocommerce-pagination .page-numbers.current';
@@ -533,8 +438,8 @@ function avada_dynamic_css_array() {
 		'ul.arrow li:before',
 	);
 	if ( class_exists( 'bbPress' ) ) {
-		$elements[] = '.bbp-topic-pagination .current';
-		$elements[] = '#bbpress-forums div.bbp-topic-tags a:hover';
+		$elements[] = '.bbp-pagination .bbp-pagination-links .current';
+		//$elements[] = '#bbpress-forums div.bbp-topic-tags a:hover';
 	}
 	if ( class_exists( 'WooCommerce' ) ) {
 		$elements[] = '.onsale';
@@ -545,8 +450,16 @@ function avada_dynamic_css_array() {
 		$elements[] = 'p.demo_store';
 		$elements[] = '.avada-myaccount-data .digital-downloads li:before';
 		$elements[] = '.avada-thank-you .order_details li:before';
-		$elements[] = '.sidebar .widget_layered_nav li.chosen';
-		$elements[] = '.sidebar .widget_layered_nav_filters li.chosen';
+		$elements[] = '.fusion-content-widget-area .widget_layered_nav li.chosen';
+		$elements[] = '.fusion-content-widget-area .widget_layered_nav_filters li.chosen';
+	}
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '.tribe-events-calendar thead th';
+		$elements[] = '.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]';
+		$elements[] = '.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]>a';
+		$elements[] = '#tribe-events-content .tribe-events-tooltip h4';
+		$elements[] = '.tribe-events-list-separator-month';
+		$elements[] = '.tribe-mini-calendar-event .list-date';
 	}
 	$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) );
 
@@ -613,6 +526,8 @@ function avada_dynamic_css_array() {
 		'.fusion-separator .icon-wrapper',
 		'html',
 		'body',
+		'#sliders-container',
+		'#fusion-gmap-container'
 	);
 	if ( class_exists( 'bbPress' ) ) {
 		$elements[] = '.bbp-arrow';
@@ -684,6 +599,7 @@ function avada_dynamic_css_array() {
 		'.button-default',
 		'.fusion-button-default',
 		'.button.default',
+		'.post-password-form input[type="submit"]',
 		'.ticket-selector-submit-btn[type=submit]'
 	);
 	if ( class_exists( 'GFForms' ) ) {
@@ -712,6 +628,12 @@ function avada_dynamic_css_array() {
 		$elements[] = '.woocommerce .avada-order-details .order-again .button';
 		$elements[] = '.woocommerce .lost_reset_password input[type="submit"]';
 	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form .tribe-bar-submit input[type=submit]';
+		$elements[] = '#tribe-events .tribe-events-button';
+		$elements[] = '#tribe_events_filter_control #tribe_events_filters_toggle';
+		$elements[] = '#tribe_events_filter_control #tribe_events_filters_reset';
+	}
 	$css['global'][avada_implode( $elements )]['background']         = $button_gradient_top_color;
 	$css['global'][avada_implode( $elements )]['color']              = $button_accent_color;
 	if ( $button_gradient_top_color != $button_gradient_bottom_color ) {
@@ -731,6 +653,7 @@ function avada_dynamic_css_array() {
 		'.no-cssgradients .button-default',
 		'.no-cssgradients .fusion-button-default',
 		'.no-cssgradients .button.default',
+		'.no-cssgradients .post-password-form input[type="submit"]',
 		'.no-cssgradients .ticket-selector-submit-btn[type="submit"]',
 		'.link-type-button-bar .fusion-read-more'
 	);
@@ -759,6 +682,12 @@ function avada_dynamic_css_array() {
 		$elements[] = '.no-cssgradients .woocommerce .avada-order-details .order-again .button';
 		$elements[] = '.no-cssgradients .woocommerce .lost_reset_password input[type="submit"]';
 	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '.no-cssgradients #tribe-bar-form .tribe-bar-submit input[type=submit]';
+		$elements[] = '.no-cssgradients #tribe-events .tribe-events-button';
+		$elements[] = '.no-cssgradients #tribe_events_filter_control #tribe_events_filters_toggle';
+		$elements[] = '.no-cssgradients #tribe_events_filter_control #tribe_events_filters_reset';
+	}
 	$css['global'][avada_implode( $elements )]['background'] = $button_gradient_top_color;
 
 	$elements = array(
@@ -769,6 +698,7 @@ function avada_dynamic_css_array() {
 		'.button-default:hover',
 		'.fusion-button-default:hover',
 		'.button.default:hover',
+		'.post-password-form input[type="submit"]:hover',
 		'.ticket-selector-submit-btn[type="submit"]:hover',
 	);
 	if ( class_exists( 'GFForms' ) ) {
@@ -795,6 +725,12 @@ function avada_dynamic_css_array() {
 		$elements[] = '.woocommerce .avada-order-details .order-again .button:hover';
 		$elements[] = '.woocommerce .lost_reset_password input[type="submit"]:hover';
 	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form .tribe-bar-submit input[type=submit]:hover';
+		$elements[] = '#tribe-events .tribe-events-button:hover';
+		$elements[] = '#tribe_events_filter_control #tribe_events_filters_toggle:hover';
+		$elements[] = '#tribe_events_filter_control #tribe_events_filters_reset:hover';
+	}
 	$css['global'][avada_implode( $elements )]['background'] = $button_gradient_top_hover_color;
 	$css['global'][avada_implode( $elements )]['color'] = $button_accent_hover_color;
 	if ( $button_gradient_top_hover_color != $button_gradient_bottom_hover_color ) {
@@ -812,6 +748,7 @@ function avada_dynamic_css_array() {
 		'.no-cssgradients .button-default:hover',
 		'.no-cssgradients .fusion-button-default:hover',
 		'.no-cssgradinets .button.default:hover',
+		'.no-cssgradinets .post-password-form input[type="submit"]:hover',
 		'.no-cssgradients .ticket-selector-submit-btn[type="submit"]:hover',
 	);
 	if ( class_exists( 'GFForms' ) ) {
@@ -837,6 +774,12 @@ function avada_dynamic_css_array() {
 		$elements[] = '.no-cssgradients .woocommerce .register .button:hover';
 		$elements[] = '.no-cssgradients .woocommerce .avada-order-details .order-again .button:hover';
 		$elements[] = '.no-cssgradients .woocommerce .lost_reset_password input[type="submit"]:hover';
+	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '.no-cssgradients #tribe-bar-form .tribe-bar-submit input[type=submit]:hover';
+		$elements[] = '.no-cssgradients #tribe-events .tribe-events-button:hover';
+		$elements[] = '.no-cssgradients #tribe_events_filter_control #tribe_events_filters_toggle:hover';
+		$elements[] = '.no-cssgradients #tribe_events_filter_control #tribe_events_filters_reset:hover';
 	}
 	$css['global'][avada_implode( $elements )]['background'] = $button_gradient_top_hover_color . ' !important';
 
@@ -871,6 +814,8 @@ function avada_dynamic_css_array() {
 		'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-rollover-categories',
 		'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-rollover-categories a',
 		'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content a',
+		'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .price *',
+		'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-product-buttons a:before',
 	);
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'image_rollover_text_color' ), Avada()->settings->get_default( 'image_rollover_text_color' ) );
 
@@ -878,40 +823,6 @@ function avada_dynamic_css_array() {
 
 	if ( 'transparent' == Avada()->settings->get( 'page_title_border_color' ) ) {
 		$css['global']['.fusion-page-title-bar']['border'] = 'none';
-	}
-
-	if ( Avada()->settings->get( 'footer_sticky_height' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_sticky', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
-
-		if ( Avada()->settings->get( 'responsive' ) ) {
-			$media_query = '@media only screen and (min-width: 640px)';
-
-			$elements = array( 'html', 'body', '#boxed-wrapper', '#wrapper' );
-			$css[$media_query][avada_implode( $elements )]['height']     = '100%';
-			$css[$media_query]['.above-footer-wrapper']['min-height']    = '100%';
-			$css[$media_query]['.above-footer-wrapper']['margin-bottom'] = (int) Avada()->settings->get( 'footer_sticky_height' ) * ( -1 ) . 'px';
-			$css[$media_query]['.above-footer-wrapper:after']['content'] = '""';
-			$css[$media_query]['.above-footer-wrapper:after']['display'] = 'block';
-			$css[$media_query]['.above-footer-wrapper:after']['height']  = Avada_Sanitize::size( Avada()->settings->get( 'footer_sticky_height' ) );
-			$css[$media_query]['.fusion-footer']['height']               = Avada_Sanitize::size( Avada()->settings->get( 'footer_sticky_height' ) );
-
-			$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape)';
-
-			$elements = array( 'html', 'body', '#boxed-wrapper', '#wrapper' );
-			$css[$media_query][avada_implode( $elements )]['height']     = 'auto';
-			$css[$media_query]['.above-footer-wrapper']['min-height']    = 'none';
-			$css[$media_query]['.above-footer-wrapper']['margin-bottom'] = '0';
-			$css[$media_query]['.above-footer-wrapper:after']['height']  = 'auto';
-			$css[$media_query]['.fusion-footer']['height']               = 'auto';
-
-			$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
-			$elements = array( 'html', 'body', '#boxed-wrapper', '#wrapper' );
-			$css[$media_query][avada_implode( $elements )]['height']     = 'auto';
-			$css[$media_query]['.above-footer-wrapper']['min-height']    = 'none';
-			$css[$media_query]['.above-footer-wrapper']['margin-bottom'] = '0';
-			$css[$media_query]['.above-footer-wrapper:after']['height']  = 'auto';
-			$css[$media_query]['.fusion-footer']['height']               = 'auto';
-		}
-
 	}
 
 	if ( Avada()->settings->get( 'footerw_bg_image' ) ) {
@@ -938,6 +849,7 @@ function avada_dynamic_css_array() {
 	if ( Avada()->settings->get( 'footer_special_effects' ) == 'footer_parallax_effect' ) {
 		$elements = array(
 			'#sliders-container',
+			'#fusion-gmap-container',
 			'.fusion-page-title-bar',
 			'#main'
 		);
@@ -946,23 +858,18 @@ function avada_dynamic_css_array() {
 		$css['global'][avada_implode( $elements )]['z-index']   = '1';
 	}
 
-	if ( Avada()->settings->get( 'footer_special_effects' ) == 'footer_area_bg_parallax' ) {
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
+	if ( Avada()->settings->get( 'footer_sticky_height' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_sticky', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
+		$elements = array( 'html', 'body', '#boxed-wrapper', '#wrapper' );
+		$css['global'][avada_implode( $elements )]['height']     = '100%';
+		$css['global']['.above-footer-wrapper']['min-height']    = '100%';
+		$css['global']['.above-footer-wrapper']['margin-bottom'] = (int) Avada()->settings->get( 'footer_sticky_height' ) * ( -1 ) . 'px';
+		$css['global']['.above-footer-wrapper:after']['content'] = '""';
+		$css['global']['.above-footer-wrapper:after']['display'] = 'block';
+		$css['global']['.above-footer-wrapper:after']['height']  = Avada_Sanitize::size( Avada()->settings->get( 'footer_sticky_height' ) );
+		$css['global']['.fusion-footer']['height']               = Avada_Sanitize::size( Avada()->settings->get( 'footer_sticky_height' ) );
 
-		$css[$media_query]['.fusion-footer-widget-area']['background-attachment'] = 'static';
-		$css[$media_query]['.fusion-footer-widget-area']['margin']   = '0';
-		$css[$media_query]['.fusion-footer-widget-area']['padding']   = '0';
-
-		$css[$media_query]['#main']['margin-bottom']   = '0';
-
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape)';
-
-		$css[$media_query]['.fusion-footer-widget-area']['background-attachment'] = 'static';
-		$css[$media_query]['.fusion-footer-widget-area']['margin']   = '0';
-		$css[$media_query]['.fusion-footer-widget-area']['padding']   = '0';
-
-		$css[$media_query]['#main']['margin-bottom']   = '0';
 	}
+
 
 	$css['global']['.fusion-footer-widget-area']['padding-top']    = Avada_Sanitize::size( Avada()->settings->get( 'footer_area_top_padding' ) );
 	$css['global']['.fusion-footer-widget-area']['padding-bottom'] = Avada_Sanitize::size( Avada()->settings->get( 'footer_area_bottom_padding' ) );
@@ -1006,8 +913,17 @@ function avada_dynamic_css_array() {
 	}
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'icon_color' ), Avada()->settings->get_default( 'icon_color' ) );
 
-	$elements = array( '.fusion-title .title-sep', '.product .product-border' );
+	$elements = array(
+		'.fusion-title .title-sep',
+		'.fusion-title.sep-underline',
+		'.product .product-border'
+	);
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'title_border_color' ), Avada()->settings->get_default( 'title_border_color' ) );
+
+	if ( class_exists( 'Tribe__Events__Main') ) {
+		$css['global']['.tribe-events-single .related-posts .fusion-title .title-sep']['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_border_color' ), Avada()->settings->get_default( 'ec_border_color' ) );
+	}
+	
 
 	$elements = array( '.review blockquote q', '.post-content blockquote', '.checkout .payment_methods .payment_box' );
 	$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'testimonial_bg_color' ), Avada()->settings->get_default( 'testimonial_bg_color' ) );
@@ -1029,6 +945,11 @@ function avada_dynamic_css_array() {
 		$css['global']['@font-face']['font-weight'] = '400';
 		$css['global']['@font-face']['font-style']  = 'normal';
 	}
+
+	$font = '';
+	$nav_font = '';
+	$footer_headings_font = '';
+	$button_font = '';
 
 	if ( 'None' != Avada()->settings->get( 'google_body' ) ) {
 		$font = "'" . Avada()->settings->get( 'google_body' ) . "', Arial, Helvetica, sans-serif";
@@ -1052,7 +973,6 @@ function avada_dynamic_css_array() {
 		'.comment-form input[type="submit"]',
 		'.fusion-page-title-bar h3',
 		'.fusion-blog-shortcode .fusion-timeline-date',
-		'#reviews #comments > h2',
 		'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-rollover-title',
 		'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-rollover-categories',
 		'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content a',
@@ -1071,6 +991,8 @@ function avada_dynamic_css_array() {
 	}
 	if ( class_exists( 'bbPress' ) ) {
 		$elements[] = '#bbp_user_edit_submit';
+		$elements[] = '.bbp-search-results .bbp-forum-title h3';
+		$elements[] = '.bbp-search-results .bbp-topic-title h3';
 	}
 	if ( class_exists( 'WooCommerce' ) ) {
 		$elements[] = '.woocommerce-success-message .button';
@@ -1081,6 +1003,17 @@ function avada_dynamic_css_array() {
 		$elements[] = '.woocommerce .checkout_coupon .button';
 		$elements[] = '.woocommerce .login .button';
 		$elements[] = '.woocommerce .register .button';
+		$elements[] = '.widget.woocommerce .product-title';
+	}
+	if( class_exists( 'Tribe__Events__Main') ) {
+		$elements[] = '#tribe-bar-form label';
+		$elements[] = '.tribe-bar-disabled #tribe-bar-form label';
+		$elements[] = '.tribe-events-tooltip p.entry-summary';
+		$elements[] = '.tribe-events-tooltip .tribe-events-event-body';
+		$elements[] = '#tribe_events_filter_control a';
+		$elements[] = '#tribe_events_filters_wrapper .tribe-events-filters-label';
+		$elements[] = '#tribe_events_filters_wrapper .tribe-events-filters-group-heading';
+		$elements[] = '#tribe_events_filters_wrapper .tribe-events-filters-content > label';
 	}
 	$css['global'][avada_implode( $elements )]['font-family'] = $font;
 	$css['global'][avada_implode( $elements )]['font-weight'] = esc_attr( Avada()->settings->get( 'font_weight_body' ) );
@@ -1100,7 +1033,7 @@ function avada_dynamic_css_array() {
 		'.review blockquote div strong',
 		'.fusion-footer-widget-area h3',
 		'.fusion-footer-widget-area .widget-title',
-		'#slidingbar-area  h3',
+		'#slidingbar-area h3',
 		'.project-content .project-info h4',
 		'.fusion-load-more-button',
 		'.comment-form input[type="submit"]',
@@ -1127,12 +1060,18 @@ function avada_dynamic_css_array() {
 		$elements[] = '.woocommerce .register .button';
 		$elements[] = '.woocommerce .avada-order-details .order-again .button';
 	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form .tribe-bar-submit input[type=submit]';
+		$elements[] = '#tribe-events .tribe-events-button';
+		$elements[] = '#tribe_events_filter_control #tribe_events_filters_toggle';
+		$elements[] = '#tribe_events_filter_control #tribe_events_filters_reset';
+	}
 	$css['global'][avada_implode( $elements )]['font-weight'] = 'bold';
 
 	$elements = array(
 		'.meta .fusion-date',
 		'.review blockquote q',
-		'.post-content blockquote'
+		'.post-content blockquote',
 	);
 	$css['global'][avada_implode( $elements )]['font-style'] = 'italic';
 
@@ -1152,11 +1091,12 @@ function avada_dynamic_css_array() {
 		$elements = array(
 			'#main .reading-box h2',
 			'#main h2',
+			'.fusion-header-tagline',
 			'.fusion-page-title-bar h1',
 			'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-rollover-title',
 			'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-rollover-title a',
 			'#main .post h2',
-			'.sidebar .widget h4',
+			'.fusion-content-widget-area .widget h4',
 			'#wrapper .fusion-tabs-widget .tab-holder .tabs li a',
 			'.share-box h4',
 			'.project-content h3',
@@ -1183,11 +1123,18 @@ function avada_dynamic_css_array() {
 			'.fusion-flip-box .flip-box-heading-back',
 			'.fusion-header-tagline',
 			'.fusion-title h3',
+			'.fusion-countdown-heading',
+			'.fusion-countdown-subheading',
 		);
 		if ( class_exists( 'WooCommerce' ) ) {
 			$elements[] = '.woocommerce-success-message .msg';
 			$elements[] = '.product-title';
 			$elements[] = '.cart-empty';
+			$elements[] = '.woocommerce-tabs h2';
+			$elements[] = '.single-product .woocommerce-tabs h3';
+		}
+		if( class_exists( 'Tribe__Events__Main' ) ) {
+			$elements[] = '.sidebar .tribe-events-single-section-title';
 		}
 		$css['global'][avada_implode( $elements )]['font-family'] = $headings_font;
 
@@ -1198,11 +1145,12 @@ function avada_dynamic_css_array() {
 	$elements = array(
 		'#main .reading-box h2',
 		'#main h2',
+		'.fusion-header-tagline',
 		'.fusion-page-title-bar h1',
 		'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-rollover-title',
 		'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-rollover-title a',
 		'#main .post h2',
-		'.sidebar .widget h4',
+		'.fusion-content-widget-area .widget h4',
 		'#wrapper .fusion-tabs-widget .tab-holder .tabs li a',
 		'.share-box h4',
 		'.project-content h3',
@@ -1234,6 +1182,11 @@ function avada_dynamic_css_array() {
 		$elements[] = '.woocommerce-success-message .msg';
 		$elements[] = '.product-title';
 		$elements[] = '.cart-empty';
+		$elements[] = '.single-product .woocommerce-tabs h3';
+	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '.sidebar .tribe-events-single-section-title';
+		$elements[] = '#tribe_events_filters_wrapper .tribe-events-filters-label';
 	}
 	$css['global'][avada_implode( $elements )]['font-weight'] = esc_attr( Avada()->settings->get( 'font_weight_headings' ) );
 
@@ -1251,12 +1204,21 @@ function avada_dynamic_css_array() {
 
 		$elements = array(
 			'body',
-			'.sidebar .slide-excerpt h2',
-			'.fusion-footer-widget-area .slide-excerpt h2',
-			'#slidingbar-area .slide-excerpt h2',
+			'.fusion-widget-area .slide-excerpt h2',
 			'.jtwt .jtwt_tweet',
-			'.sidebar .jtwt .jtwt_tweet'
+			'.fusion-content-widget-area .jtwt .jtwt_tweet'
 		);
+
+		if ( class_exists( 'bbPress' ) ) {
+			$elements[] = '#bbpress-forums li.bbp-body ul.forum';
+			$elements[] = '#bbpress-forums li.bbp-body ul.topic';
+			$elements[] = '#bbpress-forums div.bbp-topic-author';
+			$elements[] = '#bbpress-forums div.bbp-reply-author';
+			$elements[] = '#bbpress-forums div.bbp-author-role';
+			$elements[] = '#bbpress-forums div.bbp-reply-entry';
+			$elements[] = '#bbpress-forums .bbp-user-section';
+		}
+
 		$css['global'][avada_implode( $elements )]['font-size']   = intval( Avada()->settings->get( 'body_font_size' ) ) . 'px';
 		$css['global'][avada_implode( $elements )]['line-height'] = round( Avada()->settings->get( 'body_font_size' ) * 1.5 ) . 'px';
 
@@ -1271,18 +1233,36 @@ function avada_dynamic_css_array() {
 			$elements[] = '.gform_wrapper label';
 			$elements[] = '.gform_wrapper .gfield_description';
 		}
+		if( class_exists( 'Tribe__Events__Main') ) {
+			$elements[] = '#tribe-bar-form label';
+			$elements[] = '.tribe-bar-disabled #tribe-bar-form label';
+			$elements[] = '.tribe-events-tooltip .duration';
+			$elements[] = '.tribe-events-tooltip p.entry-summary';
+			$elements[] = '.tribe-events-tooltip .tribe-event-duration';
+			$elements[] = '.tribe-events-tooltip .tribe-events-event-body';
+			$elements[] = '#tribe_events_filters_wrapper .tribe-events-filters-label';
+		}
 		$css['global'][avada_implode( $elements )]['font-size']   = intval( Avada()->settings->get( 'body_font_size' ) ) . 'px';
 		$css['global'][avada_implode( $elements )]['line-height'] = round( Avada()->settings->get( 'body_font_size' ) * 1.5 ) . 'px';
-
-		$css['global']['.fusion-blog-layout-timeline .fusion-timeline-date']['font-size'] = Avada_Sanitize::size( Avada()->settings->get( 'body_font_size' ) );
 
 		$elements = array(
 			'.counter-box-content',
 			'.fusion-alert',
 			'.fusion-progressbar .sr-only',
 			'.post-content blockquote',
-			'.review blockquote q'
+			'.review blockquote q',
+			'.fusion-blog-layout-timeline .fusion-timeline-date',
 		);
+
+		if ( class_exists( 'WooCommerce' ) ) {
+			$elements[] = '.widget.woocommerce .product-title';
+		}
+
+		if( class_exists( 'Tribe__Events__Main') ) {
+			$elements[] = '#tribe_events_filter_control a';
+			$elements[] = '#tribe_events_filters_wrapper .tribe-events-filters-group-heading';
+			$elements[] = '#tribe_events_filters_wrapper .tribe-events-filters-content > label';
+		}
 		$css['global'][avada_implode( $elements )]['font-size'] = intval( Avada()->settings->get( 'body_font_size' ) ) . 'px';
 
 	}
@@ -1290,9 +1270,7 @@ function avada_dynamic_css_array() {
 	if ( Avada()->settings->get( 'body_font_lh' ) ) {
 		$elements = array(
 			'body',
-			'.sidebar .slide-excerpt h2',
-			'.fusion-footer-widget-area .slide-excerpt h2',
-			'#slidingbar-area .slide-excerpt h2',
+			'.fusion-widget-area .slide-excerpt h2',
 			'.post-content blockquote',
 			'.review blockquote q',
 			'.project-content .project-info h4',
@@ -1300,6 +1278,19 @@ function avada_dynamic_css_array() {
 			'#side-header .fusion-contact-info',
 			'#side-header .header-social .top-menu'
 		);
+
+		if ( class_exists( 'WooCommerce' ) ) {
+			$elements[] = '.widget.woocommerce .product-title';
+		}
+
+		if( class_exists( 'Tribe__Events__Main') ) {
+			$elements[] = '#tribe-bar-form label';
+			$elements[] = '.tribe-bar-disabled #tribe-bar-form label';
+			$elements[] = '.tribe-events-tooltip .duration';
+			$elements[] = '.tribe-events-tooltip p.entry-summary';
+			$elements[] = '.tribe-events-tooltip .tribe-event-duration';
+			$elements[] = '.tribe-events-tooltip .tribe-events-event-body';
+		}
 		$css['global'][avada_implode( $elements )]['line-height'] = intval( Avada()->settings->get( 'body_font_lh' ) ) . 'px';
 	}
 
@@ -1317,9 +1308,29 @@ function avada_dynamic_css_array() {
 	}
 
 	if ( Avada()->settings->get( 'sidew_font_size' ) ) {
-		$css['global']['.sidebar .widget h4']['font-size'] = intval( Avada()->settings->get( 'sidew_font_size' ) ) . 'px';
+		$elements = array(
+			'.sidebar .widget h4'
+		);
+		$css['global'][avada_implode( $elements )]['font-size'] = intval( Avada()->settings->get( 'sidew_font_size' ) ) . 'px';
 	}
 
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		if ( Avada()->settings->get( 'ec_sidew_font_size' ) ) {
+			$elements = array(
+				'.single-tribe_events .sidebar .widget h4'
+			);
+			$elements[] = '.single-tribe_events .sidebar .tribe-events-single-section-title';
+			$css['global'][avada_implode( $elements )]['font-size'] = intval( Avada()->settings->get( 'ec_sidew_font_size' ) ) . 'px';
+		}
+
+		if ( Avada()->settings->get( 'ec_text_font_size' ) ) {
+			$elements = array(
+				'.single-tribe_events .sidebar',
+				'.single-tribe_events .tribe-events-event-meta'
+			);
+			$css['global'][avada_implode( $elements )]['font-size'] = intval( Avada()->settings->get( 'ec_text_font_size' ) ) . 'px';
+		}
+	}
 	if ( Avada()->settings->get( 'slidingbar_font_size' ) ) {
 		$elements = array(
 			'#slidingbar-area h3',
@@ -1361,29 +1372,17 @@ function avada_dynamic_css_array() {
 			$css['global']['.ua-mobile #wrapper']['width'] = 'auto !important';
 		}
 
-		$media_query = '@media screen and (max-width: 800px)';
+		$media_query = '@media screen and (max-width: ' . intval( Avada()->settings->get( 'side_header_break_point' ) ) . 'px)';
 		$css[$media_query]['.fullwidth-box']['background-attachment'] = 'scroll !important';
 		$css[$media_query]['.no-mobile-totop .to-top-container']['display'] = 'none';
 		$css[$media_query]['.no-mobile-slidingbar #slidingbar-area']['display'] = 'none';
 
-		$media_query = '@media screen and (max-width: 782px)';
+		$media_query = '@media screen and (max-width: ' . intval( Avada()->settings->get( 'side_header_break_point' ) - 18 ) . 'px)';
 		$elements = array( 'body.admin-bar #wrapper #slidingbar-area', '.admin-bar p.demo_store' );
 		$css[$media_query][avada_implode( $elements )]['top'] = '46px';
 		$css[$media_query]['body.body_blank.admin-bar']['top'] = '45px';
 		$css[$media_query]['html #wpadminbar']['z-index']  = '99999 !important';
 		$css[$media_query]['html #wpadminbar']['position'] = 'fixed !important';
-
-		$media_query = '@media only screen and (min-device-width: 320px) and (max-device-width: 640px)';
-		$css[$media_query]['.fullwidth-box']['background-attachment'] = 'scroll !important';
-		$css[$media_query]['.no-mobile-totop .to-top-container']['display'] = 'none';
-		$css[$media_query]['.no-mobile-slidingbar #slidingbar-area']['display'] = 'none';
-
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
-		$css[$media_query]['.fullwidth-box']['background-attachment'] = 'scroll !important';
-
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape)';
-		$css[$media_query]['.fullwidth-box']['background-attachment'] = 'scroll !important';
-
 	}
 
 	if ( Avada()->settings->get( 'h1_font_size' ) ) {
@@ -1406,7 +1405,13 @@ function avada_dynamic_css_array() {
 	);
 	if ( class_exists( 'WooCommerce' ) ) {
 		$elements[] = '#wrapper .woocommerce .checkout h3';
+		$elements[] = '.woocommerce-tabs h2';
 	}
+
+	if ( class_exists( 'bbPress' ) ) {
+		$elements[] = '#bbpress-forums #bbp-user-wrapper h2.entry-title';
+	}
+
 	if ( Avada()->settings->get( 'h2_font_size' ) ) {
 		$css['global'][avada_implode( $elements )]['font-size']   = intval( Avada()->settings->get( 'h2_font_size' ) ) . 'px';
 	}
@@ -1426,14 +1431,20 @@ function avada_dynamic_css_array() {
 		if ( class_exists( 'WooCommerce' ) ) {
 			$elements[] = '#wrapper  .woocommerce .checkout h3';
 			$elements[] = '.cart-empty';
+			$elements[] = '.woocommerce-tabs h2';
 		}
 		$css['global'][avada_implode( $elements )]['line-height'] = intval( Avada()->settings->get( 'h2_font_lh' ) ) . 'px';
 	}
 	$elements = array(
 		'#wrapper #main .post > h2.entry-title',
+		'#wrapper #main .fusion-post-content > .blog-shortcode-post-title',
 		'#wrapper #main .fusion-post-content > h2.entry-title',
-		'#wrapper #main .fusion-portfolio-content > h2.entry-title'
+		'#wrapper #main .fusion-portfolio-content > h2.entry-title',
+		'#wrapper .fusion-events-shortcode .fusion-events-meta h2'
 	);
+	if ( class_exists( 'WooCommerce' ) ) {
+		$elements[] = '.single-product .product .product_title';
+	}
 	if ( Avada()->settings->get( 'post_titles_font_size' ) ) {
 		$css['global'][avada_implode( $elements )]['font-size']   = intval( Avada()->settings->get( 'post_titles_font_size' ) ) . 'px';
 	}
@@ -1443,20 +1454,31 @@ function avada_dynamic_css_array() {
 
 	if ( Avada()->settings->get( 'post_titles_extras_font_size' ) ) {
 		$elements = array(
-			'#wrapper #main .about-author h3',
-			'#wrapper #main #comments h3',
-			'#wrapper #main #respond h3',
-			'#wrapper #main .related-posts h3'
+			'#wrapper #main .about-author .fusion-title h3',
+			'#wrapper #main #comments .fusion-title h3',
+			'#wrapper #main #respond .fusion-title h3',
+			'#wrapper #main .related-posts .fusion-title h3',
+			'#wrapper #main .related.products .fusion-title h3'
 		);
+		if ( class_exists( 'WooCommerce' ) ) {
+			$elements[] = '.single-product .woocommerce-tabs h3';
+		}
 		$css['global'][avada_implode( $elements )]['font-size'] = intval( Avada()->settings->get( 'post_titles_extras_font_size' ) ) . 'px';
 		$css['global'][avada_implode( $elements )]['line-height'] = round( intval( Avada()->settings->get( 'post_titles_extras_font_size' ) ) * 1.5 ) . 'px';
 	}
 
 	if ( Avada()->settings->get( 'h3_font_size' ) ) {
 
-		$elements = array( '.post-content h3', '.project-content h3' );
+		$elements = array(
+			'.post-content h3',
+			'.project-content h3',
+			'.fusion-person .person-author-wrapper .person-name',
+		);
 		if ( class_exists( 'WooCommerce' ) ) {
 			$elements[] = '.product-title';
+		}
+		if( class_exists( 'Tribe__Events__Main' ) ) {
+			$elements[] = '.single-tribe_events .fusion-events-featured-image .recurringinfo .tribe-events-divider, .single-tribe_events .fusion-events-featured-image .recurringinfo .tribe-events-cost';
 		}
 		$css['global'][avada_implode( $elements )]['font-size'] = intval( Avada()->settings->get( 'h3_font_size' ) ) . 'px';
 
@@ -1472,7 +1494,11 @@ function avada_dynamic_css_array() {
 
 		$css['global'][avada_implode( $elements )]['line-height'] = round( intval( Avada()->settings->get( 'h3_font_lh' ) ) * 1.5 ) . 'px';
 
-		$elements = array( '.post-content h3', '.project-content h3' );
+		$elements = array(
+			'.post-content h3',
+			'.project-content h3',
+			'.fusion-person .person-author-wrapper .person-name',
+		);
 		if ( class_exists( 'WooCommerce' ) ) {
 			$elements[] = '.product-title';
 		}
@@ -1486,7 +1512,6 @@ function avada_dynamic_css_array() {
 			'.post-content h4',
 			'.fusion-portfolio-post .fusion-portfolio-content h4',
 			'.fusion-rollover .fusion-rollover-content .fusion-rollover-title',
-			'.fusion-person .person-author-wrapper .person-name',
 			'.fusion-person .person-author-wrapper .person-title',
 			'.fusion-carousel-title'
 		);
@@ -1495,13 +1520,13 @@ function avada_dynamic_css_array() {
 		$elements = array(
 			'#wrapper .fusion-tabs-widget .tab-holder .tabs li a',
 			'.person-author-wrapper',
-			'#reviews #comments > h2',
 			'.popover .popover-title',
 			'.fusion-flip-box .flip-box-heading-back'
 		);
 		$css['global'][avada_implode( $elements )]['font-size'] = intval( Avada()->settings->get( 'h4_font_size' ) ) . 'px';
 
 		$elements = array(
+			'.fusion-widget-area .fusion-accordian .panel-title',
 			'.fusion-accordian .panel-title',
 			'.fusion-sharing-box h4',
 			'.fusion-tabs .nav-tabs > li .fusion-tab-heading',
@@ -1517,7 +1542,6 @@ function avada_dynamic_css_array() {
 			'.post-content h4',
 			'.fusion-portfolio-post .fusion-portfolio-content h4',
 			'.fusion-rollover .fusion-rollover-content .fusion-rollover-title',
-			'.fusion-person .person-author-wrapper .person-name',
 			'.fusion-person .person-author-wrapper .person-title',
 			'.fusion-carousel-title'
 		);
@@ -1558,8 +1582,26 @@ function avada_dynamic_css_array() {
 			'.fusion-image-wrapper .fusion-rollover .fusion-rollover-content .fusion-rollover-categories a',
 			'.fusion-recent-posts .columns .column .meta',
 			'.fusion-carousel-meta',
-			'.fusion-single-line-meta'
+			'.fusion-single-line-meta',
+			'#wrapper .fusion-events-shortcode .fusion-events-meta h4'
 		);
+
+		if ( class_exists( 'bbPress' ) ) {
+			$elements[] = '#bbpress-forums li.bbp-body ul.forum .bbp-forum-freshness';
+			$elements[] = '#bbpress-forums li.bbp-body ul.topic .bbp-topic-freshness';
+			$elements[] = '#bbpress-forums .bbp-forum-info .bbp-forum-content';
+			$elements[] = '#bbpress-forums p.bbp-topic-meta';
+			$elements[] = '.bbp-pagination-count';
+			$elements[] = '#bbpress-forums div.bbp-topic-author .fusion-reply-id';
+			$elements[] = '#bbpress-forums div.bbp-reply-author .fusion-reply-id';
+			$elements[] = '#bbpress-forums .bbp-reply-header .bbp-meta';
+			$elements[] = '#bbpress-forums span.bbp-admin-links a';
+			$elements[] = '#bbpress-forums span.bbp-admin-links';
+			$elements[] = '#bbpress-forums .bbp-topic-content ul.bbp-topic-revision-log';
+			$elements[] = '#bbpress-forums .bbp-reply-content ul.bbp-topic-revision-log';
+			$elements[] = '#bbpress-forums .bbp-reply-content ul.bbp-reply-revision-log';
+		}
+
 		$css['global'][avada_implode( $elements )]['font-size']   = intval( Avada()->settings->get( 'meta_font_size' ) ) . 'px';
 		$css['global'][avada_implode( $elements )]['line-height'] = round( intval( Avada()->settings->get( 'meta_font_size' ) ) * 1.5 ) . 'px';
 
@@ -1598,8 +1640,14 @@ function avada_dynamic_css_array() {
 			$elements[] = '.woocommerce-pagination .next';
 			$elements[] = '.woocommerce-pagination .prev';
 		}
-		$css['global'][avada_implode( $elements )]['font-size'] = intval( Avada()->settings->get( 'pagination_font_size' ) ) . 'px';
 
+		if ( class_exists( 'bbPress' ) ) {
+			$elements[] = '.bbp-pagination .bbp-pagination-links';
+			$elements[] = '.bbp-pagination .bbp-pagination-links .pagination-prev';
+			$elements[] = '.bbp-pagination .bbp-pagination-links .pagination-next';
+		}
+
+		$css['global'][avada_implode( $elements )]['font-size'] = intval( Avada()->settings->get( 'pagination_font_size' ) ) . 'px';
 	}
 
 	$elements = array(
@@ -1607,7 +1655,7 @@ function avada_dynamic_css_array() {
 		'.post .post-content',
 		'.post-content blockquote',
 		'#wrapper .fusion-tabs-widget .tab-holder .news-list li .post-holder .meta',
-		'.sidebar .jtwt',
+		'.fusion-content-widget-area .jtwt',
 		'#wrapper .meta',
 		'.review blockquote div',
 		'.search input',
@@ -1618,19 +1666,27 @@ function avada_dynamic_css_array() {
 		'.quantity .minus',
 		'.quantity .plus',
 		'.fusion-blog-timeline-layout .fusion-timeline-date',
-		'#reviews #comments > h2',
-		'.sidebar .widget_nav_menu li',
-		'.sidebar .widget_categories li',
-		'.sidebar .widget_meta li',
-		'.sidebar .widget .recentcomments',
-		'.sidebar .widget_recent_entries li',
-		'.sidebar .widget_archive li',
-		'.sidebar .widget_pages li',
-		'.sidebar .widget_links li',
+		'.fusion-content-widget-area .widget_nav_menu li',
+		'.fusion-content-widget-area .widget_categories li',
+		'.fusion-content-widget-area .widget_meta li',
+		'.fusion-content-widget-area .widget .recentcomments',
+		'.fusion-content-widget-area .widget_recent_entries li',
+		'.fusion-content-widget-area .widget_archive li',
+		'.fusion-content-widget-area .widget_pages li',
+		'.fusion-content-widget-area .widget_links li',
 	);
+
+	if ( class_exists( 'bbPress' ) ) {
+		$elements[] = '.bbp-search-results .bbp-forum-title h3';
+		$elements[] = '.bbp-search-results .bbp-topic-title h3';
+	}
+
 	if ( class_exists( 'WooCommerce' ) ) {
-		$elements[] = '.sidebar .widget_product_categories li';
-		$elements[] = '.sidebar .widget_layered_nav li';
+		$elements[] = '.fusion-content-widget-area .widget_product_categories li';
+		$elements[] = '.fusion-content-widget-area .widget_layered_nav li';
+	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '.tribe-mini-calendar th';
 	}
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'body_text_color' ), Avada()->settings->get_default( 'body_text_color' ) );
 
@@ -1658,6 +1714,7 @@ function avada_dynamic_css_array() {
 		$elements[] = '.woocommerce-tabs h2';
 		$elements[] = '.woocommerce h2';
 		$elements[] = '.woocommerce .checkout h3';
+		$elements[] = '.woocommerce-tabs h2';
 	}
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'h2_color' ), Avada()->settings->get_default( 'h2_color' ) );
 
@@ -1668,8 +1725,11 @@ function avada_dynamic_css_array() {
 		'.title h3',
 		'.person-author-wrapper span',
 		'.product-title',
-		'.fusion-post-content h3'
+		'.fusion-post-content h3',
 	);
+	if ( class_exists( 'WooCommerce' ) ) {
+		$elements[] = '.single-product .woocommerce-tabs h3';
+	}
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'h3_color' ), Avada()->settings->get_default( 'h3_color' ) );
 
 	$elements = array(
@@ -1678,7 +1738,7 @@ function avada_dynamic_css_array() {
 		'.share-box h4',
 		'.fusion-title h4',
 		'.title h4',
-		'.sidebar .widget h4',
+		'.fusion-content-widget-area .widget h4',
 		'#wrapper .fusion-tabs-widget .tab-holder .tabs li a',
 		'.fusion-accordian .panel-title a',
 		'.fusion-carousel-title',
@@ -1717,15 +1777,24 @@ function avada_dynamic_css_array() {
 		'.single-navigation a[rel="prev"]:before',
 		'.single-navigation a[rel="next"]:after',
 		'.project-content .project-info .project-info-box a',
-		'.sidebar .widget li a',
-		'.sidebar .widget .recentcomments',
-		'.sidebar .widget_categories li',
+		'.fusion-content-widget-area .widget li a',
+		'.fusion-content-widget-area .widget li a:before',
+		'.fusion-content-widget-area .widget .recentcomments',
+		'.fusion-content-widget-area .widget_categories li',
 		'#main .post h2 a',
 		'.about-author .title a',
 		'.shop_attributes tr th',
 		'.fusion-rollover a',
-		'.fusion-load-more-button'
+		'.fusion-load-more-button',
+
 	);
+
+	if ( class_exists( 'bbPress' ) ) {
+		$elements[] = '.bbp-forum-header a.bbp-forum-permalink';
+		$elements[] = '.bbp-topic-header a.bbp-topic-permalink';
+		$elements[] = '.bbp-reply-header a.bbp-reply-permalink';
+	}
+
 	if ( class_exists( 'WooCommerce' ) ) {
 		$elements[] = '.fusion-woo-featured-products-slider .price .amount';
 		$elements[] = 'z.my_account_orders thead tr th';
@@ -1741,9 +1810,40 @@ function avada_dynamic_css_array() {
 		$elements[] = '.widget_layered_nav_filters li.chosen a';
 		$elements[] = '.widget_layered_nav_filters li.chosen a:before';
 	}
+
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-events-content .tribe-events-sub-nav li a';
+		$elements[] = '.event-is-recurring';
+	}
+
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'link_color' ), Avada()->settings->get_default( 'link_color' ) );
 
+	if ( class_exists( 'bbPress' ) ) {
+		$link_color_rgb = fusion_hex2rgb( Avada_Sanitize::color( Avada()->settings->get( 'link_color' ), Avada()->settings->get_default( 'link_color' ) ) );
+		$link_color_hover = 'rgba(' . $link_color_rgb[0] . ',' . $link_color_rgb[1] . ',' . $link_color_rgb[2] . ',0.8)';
+
+		$css['global']['#bbpress-forums #bbp-single-user-details #bbp-user-navigation li.current a:hover']['color'] = $link_color_hover;
+	}
+
 	$css['global']['body #toTop:before']['color'] = '#fff';
+
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements = array(
+			'.single-tribe_events .sidebar a',
+			'.single-tribe_events .fusion-content-widget-area .widget li a',
+			'.single-tribe_events .fusion-content-widget-area .widget li a:before',
+			'.single-tribe_events .fusion-content-widget-area .widget li a:after'
+		);
+		$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_sidebar_link_color' ), Avada()->settings->get_default( 'ec_sidebar_link_color' ) );
+
+		$elements = array(
+			'.single-tribe_events .sidebar a:hover',
+			'.single-tribe_events .fusion-content-widget-area .widget li a:hover',
+			'.single-tribe_events .fusion-content-widget-area .widget li a:hover:before',
+			'.single-tribe_events .fusion-content-widget-area .widget li a:hover:after'
+		);
+		$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) );
+	}
 
 	$elements = array(
 		'.fusion-page-title-bar .fusion-breadcrumbs',
@@ -1753,6 +1853,7 @@ function avada_dynamic_css_array() {
 
 	$elements = array(
 		'#slidingbar-area h3',
+		'#slidingbar-area .fusion-title > *',
 		'#slidingbar-area .widget-title'
 	);
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'slidingbar_headings_color' ), Avada()->settings->get_default( 'slidingbar_headings_color' ) );
@@ -1766,7 +1867,8 @@ function avada_dynamic_css_array() {
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'slidingbar_text_color' ), Avada()->settings->get_default( 'slidingbar_text_color' ) );
 
 	$elements = array(
-		'#slidingbar-area a',
+		'.slidingbar-area a',
+		'.slidingbar-area .widget li a:before',
 		' #slidingbar-area .jtwt .jtwt_tweet a',
 		'#wrapper #slidingbar-area .fusion-tabs-widget .tab-holder .tabs li a',
 		'#slidingbar-area .fusion-accordian .panel-title a'
@@ -1778,6 +1880,62 @@ function avada_dynamic_css_array() {
 		'.sidebar .widget .heading h4'
 	);
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'sidebar_heading_color' ), Avada()->settings->get_default( 'sidebar_heading_color' ) );
+
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements = array(
+			'.single-tribe_events .sidebar .widget h4',
+			'.single-tribe_events .sidebar .widget .heading h4',
+			'.single-tribe_events .sidebar .tribe-events-single-section-title'
+		);
+		$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_sidebar_heading_color' ), Avada()->settings->get_default( 'ec_sidebar_heading_color' ) );
+
+		$elements = array(
+			'.single-tribe_events .sidebar'
+		);
+		$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_sidebar_text_color' ), Avada()->settings->get_default( 'ec_sidebar_text_color' ) );
+
+		$elements = array(
+			'.single-tribe_events .fusion-content-widget-area .widget_nav_menu li',
+			'.single-tribe_events .fusion-content-widget-area .widget_meta li',
+			'.single-tribe_events .fusion-content-widget-area .widget_recent_entries li',
+			'.single-tribe_events .fusion-content-widget-area .widget_archive li',
+			'.single-tribe_events .fusion-content-widget-area .widget_pages li',
+			'.single-tribe_events .fusion-content-widget-area .widget_links li',
+			'.single-tribe_events .fusion-content-widget-area .widget li a',
+			'.single-tribe_events .fusion-content-widget-area .widget .recentcomments',
+			'.single-tribe_events .fusion-content-widget-area .widget_categories li',
+			'.single-tribe_events #wrapper .fusion-tabs-widget .tab-holder',
+			'.single-tribe_events .sidebar .tagcloud a',
+			'.single-tribe_events .sidebar .tribe-events-meta-group dd',
+			'.single-tribe_events .sidebar .tribe-mini-calendar-event',
+			'.single-tribe_events .sidebar .tribe-events-list-widget ol li',
+			'.single-tribe_events .sidebar .tribe-events-venue-widget li'
+		);
+		$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_sidebar_divider_color' ), Avada()->settings->get_default( 'ec_sidebar_divider_color' ) );
+	}
+
+	$elements = array(
+		'.sidebar .widget .widget-title',
+		'.sidebar .widget .heading .widget-title'
+	);
+	$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'sidebar_widget_bg_color' ), Avada()->settings->get_default( 'sidebar_widget_bg_color' ) );
+
+	if( Avada()->settings->get( 'sidebar_widget_bg_color' ) != 'transparent' && Avada()->settings->get( 'sidebar_widget_bg_color' ) ) {
+		$css['global'][avada_implode( $elements )]['padding'] = '9px 15px';
+	}
+
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements = array(
+			'.single-tribe_events .sidebar .widget .widget-title',
+			'.single-tribe_events .sidebar .widget .heading .widget-title',
+			'.single-tribe_events .sidebar .tribe-events-single-section-title'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_sidebar_widget_bg_color' ), Avada()->settings->get_default( 'ec_sidebar_widget_bg_color' ) );
+
+		if( Avada()->settings->get( 'ec_sidebar_widget_bg_color' ) != 'transparent' && Avada()->settings->get( 'ec_sidebar_widget_bg_color' ) ) {
+			$css['global'][avada_implode( $elements )]['padding'] = '9px 15px';
+		}
+	}
 
 	$elements = array(
 		'.fusion-footer-widget-area h3',
@@ -1797,6 +1955,7 @@ function avada_dynamic_css_array() {
 
 	$elements = array(
 		'.fusion-footer-widget-area a',
+		'.fusion-footer-widget-area .widget li a:before',
 		'.fusion-footer-widget-area .jtwt .jtwt_tweet a',
 		'#wrapper .fusion-footer-widget-area .fusion-tabs-widget .tab-holder .tabs li a',
 		'.fusion-footer-widget-area .fusion-tabs-widget .tab-holder .news-list li .post-holder a',
@@ -1851,9 +2010,9 @@ function avada_dynamic_css_array() {
 		'.tkt-slctr-tbl-wrap-dv tr td',
 		'.table-2 table thead',
 		'.table-2 tr td',
-		'.sidebar .widget li a',
-		'.sidebar .widget .recentcomments',
-		'.sidebar .widget_categories li',
+		'.fusion-content-widget-area .widget li a',
+		'.fusion-content-widget-area .widget .recentcomments',
+		'.fusion-content-widget-area .widget_categories li',
 		'#wrapper .fusion-tabs-widget .tab-holder',
 		'.commentlist .the-comment',
 		'.side-nav',
@@ -1864,17 +2023,19 @@ function avada_dynamic_css_array() {
 		'.tabs-vertical .tabs-container .tab_content',
 		'.fusion-tabs.vertical-tabs.clean .nav-tabs li .tab-link',
 		'.pagination a.inactive',
+		'.fusion-hide-pagination-text .pagination-prev',
+		'.fusion-hide-pagination-text .pagination-next',
 		'.page-links a',
 		'.fusion-author .fusion-author-social',
 		'.side-nav li a',
 		'.price_slider_wrapper',
 		'.tagcloud a',
-		'.sidebar .widget_nav_menu li',
-		'.sidebar .widget_meta li',
-		'.sidebar .widget_recent_entries li',
-		'.sidebar .widget_archive li',
-		'.sidebar .widget_pages li',
-		'.sidebar .widget_links li',
+		'.fusion-content-widget-area .widget_nav_menu li',
+		'.fusion-content-widget-area .widget_meta li',
+		'.fusion-content-widget-area .widget_recent_entries li',
+		'.fusion-content-widget-area .widget_archive li',
+		'.fusion-content-widget-area .widget_pages li',
+		'.fusion-content-widget-area .widget_links li',
 		'#customer_login_box',
 		'.chzn-container-single .chzn-single',
 		'.chzn-container-single .chzn-single div',
@@ -1893,14 +2054,24 @@ function avada_dynamic_css_array() {
 		$elements[] = '.rtl .side-nav';
 	}
 	if ( class_exists( 'bbPress' ) ) {
+		$elements[] = '.bbp-pagination .bbp-pagination-links a.inactive';
 		$elements[] = '.bbp-topic-pagination .page-numbers';
+		$elements[] = '.widget.widget.widget_display_replies ul li';
+		$elements[] = '.widget.widget_display_topics ul li';
+		$elements[] = '.widget.widget_display_views ul li';
+		$elements[] = '.widget.widget_display_stats dt';
+		$elements[] = '.widget.widget_display_stats dd';
+		$elements[] = '.bbp-pagination-links span.dots';
+		$elements[] = '.fusion-hide-pagination-text .bbp-pagination .bbp-pagination-links .pagination-prev';
+		$elements[] = '.fusion-hide-pagination-text .bbp-pagination .bbp-pagination-links .pagination-next';
 	}
 	if ( class_exists( 'WooCommerce' ) ) {
 		$elements[] = '.fusion-body .avada_myaccount_user';
 		$elements[] = '.fusion-body .myaccount_user_container span';
 		$elements[] = '.woocommerce-pagination .page-numbers';
-		$elements[] = '.woo-tabs-horizontal .woocommerce-tabs > .tabs .active';
+		$elements[] = '.woo-tabs-horizontal .woocommerce-tabs > .tabs li';
 		$elements[] = '.woo-tabs-horizontal .woocommerce-tabs > .tabs';
+		$elements[] = '.woo-tabs-horizontal .woocommerce-tabs > .wc-tab';
 		$elements[] = '.fusion-body .woocommerce-side-nav li a';
 		$elements[] = '.fusion-body .woocommerce-content-box';
 		$elements[] = '.fusion-body .woocommerce-content-box h2';
@@ -1916,11 +2087,11 @@ function avada_dynamic_css_array() {
 		$elements[] = '.fusion-body .woocommerce .checkout h3';
 		$elements[] = '.fusion-body .woocommerce .cross-sells h2';
 		$elements[] = '.fusion-body .woocommerce .addresses .title';
-		$elements[] = '.sidebar .widget_product_categories li';
+		$elements[] = '.fusion-content-widget-area .widget_product_categories li';
 		$elements[] = '.widget_product_categories li';
 		$elements[] = '.widget_layered_nav li';
-		$elements[] = '.sidebar .product_list_widget li';
-		$elements[] = '.sidebar .widget_layered_nav li';
+		$elements[] = '.fusion-content-widget-area .product_list_widget li';
+		$elements[] = '.fusion-content-widget-area .widget_layered_nav li';
 		$elements[] = '.fusion-body .my_account_orders tr';
 		$elements[] = '.side-nav-left .side-nav';
 		$elements[] = '.fusion-body .shop_table tr';
@@ -1929,10 +2100,10 @@ function avada_dynamic_css_array() {
 		$elements[] = '.fusion-body .shop_attributes tr';
 		$elements[] = '.fusion-body .cart-totals-buttons';
 		$elements[] = '.fusion-body .cart_totals';
-		$elements[] = '.fusion-body .shipping_calculator';
+		$elements[] = '.fusion-body .woocommerce-shipping-calculator';
 		$elements[] = '.fusion-body .coupon';
 		$elements[] = '.fusion-body .cart_totals h2';
-		$elements[] = '.fusion-body .shipping_calculator h2';
+		$elements[] = '.fusion-body .woocommerce-shipping-calculator h2';
 		$elements[] = '.fusion-body .coupon h2';
 		$elements[] = '.fusion-body .order-total';
 		$elements[] = '.fusion-body .woocommerce .cart-empty';
@@ -1943,6 +2114,14 @@ function avada_dynamic_css_array() {
 		if ( is_rtl() ) {
 			$elements[] = '.rtl .woocommerce .social-share li';
 		}
+	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '.sidebar .tribe-mini-calendar-event';
+		$elements[] = '.sidebar .tribe-events-list-widget ol li';
+		$elements[] = '.sidebar .tribe-events-venue-widget li';
+		$elements[] = '.fusion-content-widget-area .tribe-mini-calendar-event';
+		$elements[] = '.fusion-content-widget-area .tribe-events-list-widget ol li';
+		$elements[] = '.fusion-content-widget-area .tribe-events-venue-widget li';
 	}
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'sep_color' ), Avada()->settings->get_default( 'sep_color' ) );
 
@@ -1972,7 +2151,7 @@ function avada_dynamic_css_array() {
 		'#slidingbar-area .product_list_widget li',
 		'#slidingbar-area .widget_recent_entries ul li'
 	);
-	$css['global'][avada_implode( $elements )]['border-bottom-color'] = Avada_Sanitize::color( Avada()->settings->get( 'slidingbar_toggle_icon_color' ), Avada()->settings->get_default( 'slidingbar_toggle_icon_color' ) );
+	$css['global'][avada_implode( $elements )]['border-bottom-color'] = Avada_Sanitize::color( Avada()->settings->get( 'slidingbar_divider_color' ), Avada()->settings->get_default( 'slidingbar_divider_color' ) );
 
 	$elements = array(
 		'#slidingbar-area .tagcloud a',
@@ -1980,6 +2159,22 @@ function avada_dynamic_css_array() {
 		'#wrapper #slidingbar-area .fusion-tabs-widget .tab-holder .news-list li',
 		'#slidingbar-area .fusion-accordian .fusion-panel'
 	);
+
+	if ( class_exists( 'bbPress' ) ) {
+		$elements[] = '#slidingbar-area .bbp-pagination .bbp-pagination-links a.inactive';
+		$elements[] = '#slidingbar-area .bbp-topic-pagination .page-numbers';
+		$elements[] = '#slidingbar-area .widget.widget.widget_display_replies ul li';
+		$elements[] = '#slidingbar-area .widget.widget_display_topics ul li';
+		$elements[] = '#slidingbar-area .widget.widget_display_views ul li';
+		$elements[] = '#slidingbar-area .widget.widget_display_stats dt';
+		$elements[] = '#slidingbar-area .widget.widget_display_stats dd';
+	}
+
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#slidingbar-area .tribe-mini-calendar-event';
+		$elements[] = '#slidingbar-area .tribe-events-list-widget ol li';
+		$elements[] = '#slidingbar-area .tribe-events-venue-widget li';
+	}
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'slidingbar_divider_color' ), Avada()->settings->get_default( 'slidingbar_divider_color' ) );
 
 	$elements = array(
@@ -1993,6 +2188,22 @@ function avada_dynamic_css_array() {
 		'.fusion-footer-widget-area .widget_recent_entries li',
 		'.fusion-footer-widget-area .fusion-accordian .fusion-panel',
 	);
+
+	if ( class_exists( 'bbPress' ) ) {
+		$elements[] = '.fusion-footer-widget-area .bbp-pagination .bbp-pagination-links a.inactive';
+		$elements[] = '.fusion-footer-widget-area .bbp-topic-pagination .page-numbers';
+		$elements[] = '.fusion-footer-widget-area .widget.widget.widget_display_replies ul li';
+		$elements[] = '.fusion-footer-widget-area .widget.widget_display_topics ul li';
+		$elements[] = '.fusion-footer-widget-area .widget.widget_display_views ul li';
+		$elements[] = '.fusion-footer-widget-area .widget.widget_display_stats dt';
+		$elements[] = '.fusion-footer-widget-area .widget.widget_display_stats dd';
+	}
+
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '.fusion-footer-widget-area .tribe-mini-calendar-event';
+		$elements[] = '.fusion-footer-widget-area .tribe-events-list-widget ol li';
+		$elements[] = '.fusion-footer-widget-area .tribe-events-venue-widget li';
+	}
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'footer_divider_color' ), Avada()->settings->get_default( 'footer_divider_color' ) );
 
 	$elements = array(
@@ -2003,14 +2214,12 @@ function avada_dynamic_css_array() {
 		'#comment-input input',
 		'#comment-textarea textarea',
 		'.comment-form-comment textarea',
-		'.post-password-form .password',
+		'.post-password-form label input[type="password"]',
 		'.main-nav-search-form input',
 		'.search-page-search-form input',
 		'.chzn-container-single .chzn-single',
 		'.chzn-container .chzn-drop',
 		'.avada-select-parent select',
-		'.avada-select-parent .select-arrow',
-		'#wrapper .select-arrow',
 		'.avada-select .select2-container .select2-choice',
 		'.avada-select .select2-container .select2-choice2',
 		'select',
@@ -2026,8 +2235,14 @@ function avada_dynamic_css_array() {
 	if ( class_exists( 'GFForms' ) ) {
 		$elements[] = '.gform_wrapper .gfield input[type="text"]';
 		$elements[] = '.gform_wrapper .gfield input[type="email"]';
-		$elements[] = '.gform_wrapper .gfield textarea';
+		$elements[] = '.gform_wrapper .gfield input[type="tel"]';
+		$elements[] = '.gform_wrapper .gfield input[type="url"]';
+		$elements[] = '.gform_wrapper .gfield input[type="number"]';
+		$elements[] = '.gform_wrapper .gfield input[type="password"] input[type="number"]';
+		$elements[] = '.gform_wrapper .gfield input[type="password"]';
+		$elements[] = '.gform_wrapper .gfield_select[multiple=multiple]';
 		$elements[] = '.gform_wrapper .gfield select';
+		$elements[] = '.gform_wrapper .gfield textarea';
 	}
 	if ( defined( 'WPCF7_PLUGIN' ) ) {
 		$elements[] = '.wpcf7-form .wpcf7-text';
@@ -2048,7 +2263,24 @@ function avada_dynamic_css_array() {
 		$elements[] = '#bbpress-forums div.bbp-the-content-wrapper textarea.bbp-the-content';
 		$elements[] = '.bbp-login-form input';
 	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form input[type=text]';
+		$elements[] = '.tribe-bar-disabled #tribe-bar-form .tribe-bar-filters input[type=text]';
+	}
 	$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'form_bg_color' ), Avada()->settings->get_default( 'form_bg_color' ) );
+
+	$elements = array(
+		'.avada-select-parent .select-arrow',
+		'#wrapper .select-arrow',
+	);
+	if ( false !== strpos( Avada()->settings->get( 'form_bg_color' ), 'rgba' ) ) {
+		$select_arrow_bg = Avada_Sanitize::rgba_to_rgb( Avada()->settings->get( 'form_bg_color' ) );
+	} else {
+		$select_arrow_bg = Avada_Sanitize::color( Avada()->settings->get( 'form_bg_color' ), Avada()->settings->get_default( 'form_bg_color' ) );
+
+	}
+	$css['global'][avada_implode( $elements )]['background-color'] = $select_arrow_bg;
+
 
 	$elements = array(
 		'.input-text',
@@ -2061,7 +2293,7 @@ function avada_dynamic_css_array() {
 		'#comment-input .placeholder',
 		'#comment-textarea .placeholder',
 		'.comment-form-comment textarea',
-		'.post-password-form .password',
+		'.post-password-form label input[type="password"]',
 		'.avada-select .select2-container .select2-choice',
 		'.avada-select .select2-container .select2-choice2',
 		'select',
@@ -2075,8 +2307,14 @@ function avada_dynamic_css_array() {
 	if ( class_exists( 'GFForms' ) ) {
 		$elements[] = '.gform_wrapper .gfield input[type="text"]';
 		$elements[] = '.gform_wrapper .gfield input[type="email"]';
-		$elements[] = '.gform_wrapper .gfield textarea';
+		$elements[] = '.gform_wrapper .gfield input[type="tel"]';
+		$elements[] = '.gform_wrapper .gfield input[type="url"]';
+		$elements[] = '.gform_wrapper .gfield input[type="number"]';
+		$elements[] = '.gform_wrapper .gfield input[type="password"] input[type="number"]';
+		$elements[] = '.gform_wrapper .gfield input[type="password"]';
+		$elements[] = '.gform_wrapper .gfield_select[multiple=multiple]';
 		$elements[] = '.gform_wrapper .gfield select';
+		$elements[] = '.gform_wrapper .gfield textarea';
 	}
 	if ( defined( 'WPCF7_PLUGIN' ) ) {
 		$elements[] = '.wpcf7-form .wpcf7-text';
@@ -2098,30 +2336,76 @@ function avada_dynamic_css_array() {
 		$elements[] = '#bbpress-forums div.bbp-the-content-wrapper textarea.bbp-the-content';
 		$elements[] = '.bbp-login-form input';
 	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form input[type=text]';
+		$elements[] = '.tribe-bar-disabled #tribe-bar-form .tribe-bar-filters input[type=text]';
+	}
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'form_text_color' ), Avada()->settings->get_default( 'form_text_color' ) );
 
 	$elements = array(
 		'input#s::-webkit-input-placeholder',
 		'#comment-input input::-webkit-input-placeholder',
-		'.post-password-form .password::-webkit-input-placeholder',
+		'.post-password-form label input[type="password"]::-webkit-input-placeholder',
 		'#comment-textarea textarea::-webkit-input-placeholder',
 		'.comment-form-comment textarea::-webkit-input-placeholder',
 		'.input-text::-webkit-input-placeholder',
+		'.searchform .s::-webkit-input-placeholder',
+	);
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form input[type=text]::-webkit-input-placeholder';
+		$elements[] = '.tribe-bar-disabled #tribe-bar-form .tribe-bar-filters input[type=text]::-webkit-input-placeholder';
+	}
 
+	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'form_text_color' ), Avada()->settings->get_default( 'form_text_color' ) );
+
+	$elements = array(
 		'input#s:-moz-placeholder',
 		'#comment-input input:-moz-placeholder',
-		'.post-password-form .password::-moz-input-placeholder',
+		'.post-password-form label input[type="password"]:-moz-placeholder',
 		'#comment-textarea textarea:-moz-placeholder',
 		'.comment-form-comment textarea:-moz-placeholder',
 		'.input-text:-moz-placeholder',
+		'.searchform .s:-moz-placeholder',
+	);
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form input[type=text]:-moz-placeholder';
+		$elements[] = '.tribe-bar-disabled #tribe-bar-form .tribe-bar-filters input[type=text]:-moz-placeholder';
+	}
 
+	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'form_text_color' ), Avada()->settings->get_default( 'form_text_color' ) );
+
+
+	$elements = array(
+		'input#s::-moz-placeholder',
+		'#comment-input input::-moz-placeholder',
+		'.post-password-form label input[type="password"]::-moz-placeholder',
+		'#comment-textarea textarea::-moz-placeholder',
+		'.comment-form-comment textarea::-moz-placeholder',
+		'.input-text::-moz-placeholder',
+		'.searchform .s::-moz-placeholder',
+	);
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form input[type=text]::-moz-placeholder';
+		$elements[] = '.tribe-bar-disabled #tribe-bar-form .tribe-bar-filters input[type=text]::-moz-placeholder';
+	}
+
+	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'form_text_color' ), Avada()->settings->get_default( 'form_text_color' ) );
+
+
+	$elements = array(
 		'input#s:-ms-input-placeholder',
 		'#comment-input input:-ms-input-placeholder',
-		'.post-password-form .password::-ms-input-placeholder',
-		'#comment-textarea textarea:-moz-placeholder',
+		'.post-password-form label input[type="password"]::-ms-input-placeholder',
+		'#comment-textarea textarea:-ms-input-placeholder',
 		'.comment-form-comment textarea:-ms-input-placeholder',
 		'.input-text:-ms-input-placeholder',
+		'.searchform .s:-ms-input-placeholder',
 	);
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form input[type=text]::-ms-input-placeholder';
+		$elements[] = '.tribe-bar-disabled #tribe-bar-form .tribe-bar-filters input[type=text]::-ms-input-placeholder';
+	}
+
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'form_text_color' ), Avada()->settings->get_default( 'form_text_color' ) );
 
 	$elements = array(
@@ -2132,7 +2416,7 @@ function avada_dynamic_css_array() {
 		'#comment-input input',
 		'#comment-textarea textarea',
 		'.comment-form-comment textarea',
-		'.post-password-form .password',
+		'.post-password-form label input[type="password"]',
 		'.gravity-select-parent .select-arrow',
 		'.select-arrow',
 		'.main-nav-search-form input',
@@ -2157,9 +2441,14 @@ function avada_dynamic_css_array() {
 	if ( class_exists( 'GFForms' ) ) {
 		$elements[] = '.gform_wrapper .gfield input[type="text"]';
 		$elements[] = '.gform_wrapper .gfield input[type="email"]';
-		$elements[] = '.gform_wrapper .gfield textarea';
+		$elements[] = '.gform_wrapper .gfield input[type="tel"]';
+		$elements[] = '.gform_wrapper .gfield input[type="url"]';
+		$elements[] = '.gform_wrapper .gfield input[type="number"]';
+		$elements[] = '.gform_wrapper .gfield input[type="password"] input[type="number"]';
+		$elements[] = '.gform_wrapper .gfield input[type="password"]';
 		$elements[] = '.gform_wrapper .gfield_select[multiple=multiple]';
 		$elements[] = '.gform_wrapper .gfield select';
+		$elements[] = '.gform_wrapper .gfield textarea';
 	}
 	if ( defined( 'WPCF7_PLUGIN' ) ) {
 		$elements[] = '.wpcf7-form .wpcf7-text';
@@ -2190,10 +2479,99 @@ function avada_dynamic_css_array() {
 	if ( class_exists( 'WooCommerce' ) ) {
 		$elements[] = '.woocommerce-checkout .select2-drop-active';
 	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form input[type=text]';
+		$elements[] = '.tribe-bar-disabled #tribe-bar-form .tribe-bar-filters input[type=text]';
+	}
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'form_border_color' ), Avada()->settings->get_default( 'form_border_color' ) );
+
+	$elements = array(
+		'.input-text:not(textarea)',
+		'input[type="text"]',
+		'input.s',
+		'#comment-input input',
+		'.post-password-form label input[type="password"]',
+		'.main-nav-search-form input',
+		'.search-page-search-form input',
+		'.chzn-container-single .chzn-single',
+		'.chzn-container .chzn-drop',
+		'select',
+		'.searchform .search-table .search-field input',
+		'.avada-select-parent select',
+		'.avada-select .select2-container .select2-choice',
+	);
+
+	if ( class_exists( 'GFForms' ) ) {
+		$elements[] = '.gform_wrapper .gfield input[type="text"]';
+		$elements[] = '.gform_wrapper .gfield input[type="email"]';
+		$elements[] = '.gform_wrapper .gfield input[type="tel"]';
+		$elements[] = '.gform_wrapper .gfield input[type="url"]';
+		$elements[] = '.gform_wrapper .gfield input[type="number"]';
+		$elements[] = '.gform_wrapper .gfield input[type="password"] input[type="number"]';
+		$elements[] = '.gform_wrapper .gfield input[type="password"]';
+		$elements[] = '.gform_wrapper .gfield_select[multiple=multiple]';
+		$elements[] = '.gform_wrapper .gfield select';
+	}
+	if ( defined( 'WPCF7_PLUGIN' ) ) {
+		$elements[] = '.wpcf7-form .wpcf7-text';
+		$elements[] = '.wpcf7-form .wpcf7-quiz';
+		$elements[] = '.wpcf7-form .wpcf7-number';
+		$elements[] = '.wpcf7-form .wpcf7-select';
+		$elements[] = '.wpcf7-captchar';
+		$elements[] = '.wpcf7-form .wpcf7-date';
+	}
+	if ( class_exists( 'bbPress' ) ) {
+		$elements[] = '#bbpress-forums .bbp-search-form #bbp_search';
+		$elements[] = '.bbp-reply-form input#bbp_topic_tags';
+		$elements[] = '.bbp-topic-form input#bbp_topic_title';
+		$elements[] = '.bbp-topic-form input#bbp_topic_tags';
+		$elements[] = '.bbp-topic-form select#bbp_stick_topic_select';
+		$elements[] = '.bbp-topic-form select#bbp_topic_status_select';
+		$elements[] = '.bbp-login-form input';
+	}
+	if ( class_exists( 'WooCommerce' ) ) {
+		$elements[] = '.avada-shipping-calculator-form .avada-select-parent select';
+		$elements[] = '.shipping-calculator-form .avada-select-parent select';
+		$elements[] = '.cart-collaterals .form-row input';
+		$elements[] = '.cart-collaterals .avada-select-parent input';
+		$elements[] = '.cart-collaterals .woocommerce-shipping-calculator #calc_shipping_postcode';
+		$elements[] = '.coupon .input-text';
+		$elements[] = '.checkout .input-text:not(textarea)';
+		$elements[] = '.woocommerce-checkout .select2-drop-active';
+	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form input[type=text]';
+		$elements[] = '.tribe-bar-disabled #tribe-bar-form .tribe-bar-filters input[type=text]';
+	}
+
+	$css['global'][avada_implode( $elements )]['height'] = Avada()->settings->get( 'form_input_height' );
+	$css['global'][avada_implode( $elements )]['padding-top'] = '0';
+	$css['global'][avada_implode( $elements )]['padding-bottom'] = '0';
+
+	$elements = array(
+		'.avada-select .select2-container .select2-choice .select2-arrow',
+		'.avada-select .select2-container .select2-choice2 .select2-arrow',
+		'.searchform .search-table .search-button input[type="submit"]',
+	);
+
+	$css['global'][avada_implode( $elements )]['height'] = Avada()->settings->get( 'form_input_height' );
+	$css['global'][avada_implode( $elements )]['width'] = Avada()->settings->get( 'form_input_height' );
+	$css['global'][avada_implode( $elements )]['line-height'] = Avada()->settings->get( 'form_input_height' );
+
+	$css['global']['.select2-container .select2-choice > .select2-chosen']['line-height'] = Avada()->settings->get( 'form_input_height' );
 
 	$elements = array( '.select-arrow', '.select2-arrow' );
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'form_border_color' ), Avada()->settings->get_default( 'form_border_color' ) );
+
+	if ( class_exists( 'GFForms' ) ) {
+		$css['global']['.gfield_time_ampm .gravity-select-parent']['width'] = 'auto !important';
+		$css['global']['.gfield_time_ampm .gravity-select-parent select']['min-width'] = 'calc(' . Avada()->settings->get( 'form_input_height' ) . '*2) !important';
+	}
+
+	$height_fraction = intval( Avada()->settings->get( 'form_input_height' ) ) / 35;
+	if ( 1 < $height_fraction ) {
+		$css['global']['.fusion-main-menu .fusion-main-menu-search .fusion-custom-menu-item-contents']['width'] = 250 + 50 * $height_fraction . 'px';
+	}
 
 	if ( Avada()->settings->get( 'avada_styles_dropdowns' ) ) {
 
@@ -2207,8 +2585,9 @@ function avada_dynamic_css_array() {
 
 		$css['global']['select::-webkit-input-placeholder']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'form_text_color' ), Avada()->settings->get_default( 'form_text_color' ) );
 		$css['global']['select:-moz-placeholder']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'form_text_color' ), Avada()->settings->get_default( 'form_text_color' ) );
-
 	}
+
+
 
 	if ( Avada()->settings->get( 'page_title_font_size' ) ) {
 		$css['global']['.fusion-page-title-bar h1']['font-size']   = intval( Avada()->settings->get( 'page_title_font_size' ) ) . 'px';
@@ -2220,109 +2599,81 @@ function avada_dynamic_css_array() {
 		$css['global']['.fusion-page-title-bar h3']['line-height'] = intval( Avada()->settings->get( 'page_title_subheader_font_size' ) ) + 12 . 'px';
 	}
 
-	if ( Avada()->settings->get( 'content_width' ) ) {
-
-		if ( false !== strpos( Avada()->settings->get( 'content_width' ), 'px' ) ) {
-
-			$content_width = str_replace( 'px', '', Avada()->settings->get( 'content_width' ) );
-			$content_unit  = 'px';
-			$margin        = 100;
-
-		} else {
-
-			$content_width = str_replace( '%', '', Avada()->settings->get( 'content_width' ) );
-			$content_unit  = '%';
-			$margin        = 6;
-
-		}
-
-		$css['global']['#content']['width'] = Avada_Sanitize::size( $content_width - $margin . $content_unit );
-
+	if ( false !== strpos( Avada()->settings->get( 'site_width' ), 'px' ) ) {
+		$margin      = '80px';
+		$half_margin = '40px';
+	} else {
+		$margin      = '6%';
+		$half_margin = '3%';
 	}
 
-	if ( Avada()->settings->get( 'sidebar_width' ) ) {
-
-		if ( false !== strpos( Avada()->settings->get( 'sidebar_width' ), 'px' ) ) {
-
-			$sidebar_width = str_replace( 'px', '', Avada()->settings->get( 'sidebar_width' ) );
-			$sidebar_unit  = 'px';
-
-		} else {
-
-			$sidebar_width = str_replace( '%', '', Avada()->settings->get( 'sidebar_width' ) );
-			$sidebar_unit  = '%';
-
-		}
-
-		$css['global']['#main .sidebar']['width'] = Avada_Sanitize::size( $sidebar_width . $sidebar_unit );
-
+	/**
+	 * Single-sidebar Layouts
+	 */
+	$sidebar_width = Avada()->settings->get( 'sidebar_width' );
+	if ( false === strpos( $sidebar_width, 'px' ) && false === strpos( $sidebar_width, '%' ) ) {
+		$sidebar_width = ( 100 > intval( $sidebar_width ) ) ? intval( $sidebar_width ) . '%' : intval( $sidebar_width ) . 'px';
 	}
-
-	if ( Avada()->settings->get( 'content_width_2' ) && Avada()->settings->get( 'sidebar_2_1_width' ) && Avada()->settings->get( 'sidebar_2_2_width' ) ) {
-
-		if ( false !== strpos( Avada()->settings->get( 'content_width_2' ), 'px' ) ) {
-
-			$content_width_2 = str_replace( 'px', '', Avada()->settings->get( 'content_width_2' ) );
-			$content_2_unit  = 'px';
-			$margin          = 100;
-
-		} else {
-
-			$content_width_2 = str_replace( '%', '', Avada()->settings->get( 'content_width_2' ) );
-			$content_2_unit  = '%';
-			$margin          = 6;
-
-		}
-
-		if ( false !== strpos( Avada()->settings->get( 'sidebar_2_1_width' ), 'px' ) ) {
-
-			$sidebar_2_1_width = str_replace( 'px', '', Avada()->settings->get( 'sidebar_2_1_width' ) );
-			$sidebar_2_1_unit  = 'px';
-
-		} else {
-
-			$sidebar_2_1_width = str_replace( '%', '', Avada()->settings->get( 'sidebar_2_1_width' ) );
-			$sidebar_2_1_unit  = '%';
-
-		}
-
-		if ( false !== strpos( Avada()->settings->get( 'sidebar_2_2_width' ), 'px' ) ) {
-
-			$sidebar_2_2_width = str_replace( 'px', '', Avada()->settings->get( 'sidebar_2_2_width' ) );
-			$sidebar_2_2_unit  = 'px';
-
-		} else {
-
-			$sidebar_2_2_width = str_replace( '%', '', Avada()->settings->get( 'sidebar_2_2_width' ) );
-			$sidebar_2_2_unit  = '%';
-
-		}
-
+	$css['global']['body.has-sidebar #content']['width']       = 'calc(100% - ' . $sidebar_width . ' - ' . $margin . ')';
+	$css['global']['body.has-sidebar #main .sidebar']['width'] = $sidebar_width;
+	/**
+	 * Double-Sidebar layouts
+	 */
+	$sidebar_2_1_width = Avada()->settings->get( 'sidebar_2_1_width' );
+	if ( false === strpos( $sidebar_2_1_width, 'px' ) && false === strpos( $sidebar_2_1_width, '%' ) ) {
+		$sidebar_2_1_width = ( 100 > intval( $sidebar_2_1_width ) ) ? intval( $sidebar_2_1_width ) . '%' : intval( $sidebar_2_1_width ) . 'px';
 	}
-
-	if ( Avada()->settings->get( 'content_width_2' ) ) {
-
-		$css['global']['.double-sidebars #content']['width']       = ( $content_width_2 - $margin ) . $content_2_unit;
-		$css['global']['.double-sidebars #content']['margin-left'] = ( $sidebar_2_1_width + $margin / 2 ) . $content_2_unit;
-
+	$sidebar_2_2_width = Avada()->settings->get( 'sidebar_2_2_width' );
+	if ( false === strpos( $sidebar_2_2_width, 'px' ) && false === strpos( $sidebar_2_2_width, '%' ) ) {
+		$sidebar_2_2_width = ( 100 > intval( $sidebar_2_2_width ) ) ? intval( $sidebar_2_2_width ) . '%' : intval( $sidebar_2_2_width ) . 'px';
 	}
+	$css['global']['body.has-sidebar.double-sidebars #content']['width']               = 'calc(100% - ' . $sidebar_2_1_width . ' - ' . $sidebar_2_2_width . ' - ' . $margin . ')';
+	$css['global']['body.has-sidebar.double-sidebars #content']['margin-left']         = 'calc(' . $sidebar_2_1_width . ' + ' . $half_margin . ')';
+	$css['global']['body.has-sidebar.double-sidebars #main #sidebar']['width']         = $sidebar_2_1_width;
+	$css['global']['body.has-sidebar.double-sidebars #main #sidebar']['margin-left']   = 'calc(' . $half_margin . ' - (100% - ' . $sidebar_2_2_width . '))';
+	$css['global']['body.has-sidebar.double-sidebars #main #sidebar-2']['width']       = $sidebar_2_2_width;
+	$css['global']['body.has-sidebar.double-sidebars #main #sidebar-2']['margin-left'] = $half_margin;
 
-	if ( Avada()->settings->get( 'sidebar_2_1_width' ) ) {
-
-		$css['global']['.double-sidebars #main #sidebar']['width']       = $sidebar_2_1_width . $sidebar_2_1_unit;
-		$css['global']['.double-sidebars #main #sidebar']['margin-left'] = - ( $content_width_2 + $sidebar_2_1_width - $margin / 2 ) . $content_2_unit;
-
-	}
-
-	if ( Avada()->settings->get( 'sidebar_2_2_width' ) ) {
-
-		$css['global']['.double-sidebars #main #sidebar-2']['width']       = $sidebar_2_2_width . $sidebar_2_2_unit;
-		$css['global']['.double-sidebars #main #sidebar-2']['margin-left'] = ( $margin / 2 ) . $content_2_unit;
-
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		$sidebar_width = Avada()->settings->get( 'ec_sidebar_width' );
+		if ( false !== strpos( $sidebar_width, 'px' ) && false !== strpos( $sidebar_width, '%' ) ) {
+			$sidebar_width = ( 100 > intval( $sidebar_width ) ) ? intval( $sidebar_width ) . '%' : intval( $sidebar_width ) . 'px';
+		}
+		if ( tribe_get_option( 'tribeEventsTemplate', 'default' ) != '100-width.php' ) {
+			$css['global']['.single-tribe_events #content']['width'] = 'calc(100% - ' . $sidebar_width . ' - ' . $margin . ')';
+			$css['global']['.single-tribe_events #main .sidebar']['width'] = $sidebar_width;
+		}
+		/**
+		 * Single-sidebar Layouts
+		 */
+		$css['global']['body.has-sidebar.single-tribe_events #content']['width']       = 'calc(100% - ' . $sidebar_width . ' - ' . $margin . ')';
+		$css['global']['body.has-sidebar.single-tribe_events #main .sidebar']['width'] = $sidebar_width;
+		/**
+		 * Double-Sidebar layouts
+		 */
+		$sidebar_2_1_width = Avada()->settings->get( 'ec_sidebar_2_1_width' );
+		if ( false === strpos( $sidebar_2_1_width, 'px' ) && false === strpos( $sidebar_2_1_width, '%' ) ) {
+			$sidebar_2_1_width = ( 100 > intval( $sidebar_2_1_width ) ) ? intval( $sidebar_2_1_width ) . '%' : intval( $sidebar_2_1_width ) . 'px';
+		}
+		$sidebar_2_2_width = Avada()->settings->get( 'ec_sidebar_2_2_width' );
+		if ( false === strpos( $sidebar_2_2_width, 'px' ) && false === strpos( $sidebar_2_2_width, '%' ) ) {
+			$sidebar_2_2_width = ( 100 > intval( $sidebar_2_2_width ) ) ? intval( $sidebar_2_2_width ) . '%' : intval( $sidebar_2_2_width ) . 'px';
+		}
+		$css['global']['body.has-sidebar.double-sidebars.single-tribe_events #content']['width']               = 'calc(100% - ' . $sidebar_2_1_width . ' - ' . $sidebar_2_2_width . ' - ' . $margin . ')';
+		$css['global']['body.has-sidebar.double-sidebars.single-tribe_events #content']['margin-left']         = 'calc(' . $sidebar_2_1_width . ' + ' . $half_margin . ')';
+		$css['global']['body.has-sidebar.double-sidebars.single-tribe_events #main #sidebar']['width']         = $sidebar_2_1_width;
+		$css['global']['body.has-sidebar.double-sidebars.single-tribe_events #main #sidebar']['margin-left']   = 'calc(' . $half_margin . ' - (100% - ' . $sidebar_2_2_width . '))';
+		$css['global']['body.has-sidebar.double-sidebars.single-tribe_events #main #sidebar-2']['width']       = $sidebar_2_2_width;
+		$css['global']['body.has-sidebar.double-sidebars.single-tribe_events #main #sidebar-2']['margin-left'] = $half_margin;
 	}
 
 	$css['global']['#main .sidebar']['background-color'] = Avada()->settings->get( 'sidebar_bg_color' );
 	$css['global']['#main .sidebar']['padding']          = Avada_Sanitize::size( Avada()->settings->get( 'sidebar_padding' ) );
+
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		$css['global']['.single-tribe_events #main .sidebar']['background-color'] = Avada()->settings->get( 'ec_sidebar_bg_color' );
+		$css['global']['.single-tribe_events #main .sidebar']['padding']          = Avada_Sanitize::size( Avada()->settings->get( 'ec_sidebar_padding' ) );
+	}
 
 	$css['global']['.fusion-accordian .panel-title a .fa-fusion-box']['background-color'] = Avada()->settings->get( 'accordian_inactive_color' );
 
@@ -2334,7 +2685,7 @@ function avada_dynamic_css_array() {
 	$css['global']['.progress-bar']['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'counter_unfilled_color' ), Avada()->settings->get_default( 'counter_unfilled_color' ) );
 	$css['global']['.progress-bar']['border-color']     = Avada_Sanitize::color( Avada()->settings->get( 'counter_unfilled_color' ), Avada()->settings->get_default( 'counter_unfilled_color' ) );
 
-	$css['global']['#wrapper .fusion-date-and-formats .fusion-format-box']['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'dates_box_color' ), Avada()->settings->get_default( 'dates_box_color' ) );
+	$css['global']['#wrapper .fusion-date-and-formats .fusion-format-box, .tribe-mini-calendar-event .list-date .list-dayname']['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'dates_box_color' ), Avada()->settings->get_default( 'dates_box_color' ) );
 
 	$elements = array(
 		'.fusion-carousel .fusion-carousel-nav .fusion-nav-prev',
@@ -2356,34 +2707,34 @@ function avada_dynamic_css_array() {
 
 	$css['global']['.content-boxes .col']['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'content_box_bg_color' ), Avada()->settings->get_default( 'content_box_bg_color' ) );
 
-	$css['global']['#wrapper .sidebar .fusion-tabs-widget .tabs-container']['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'tabs_bg_color' ), Avada()->settings->get_default( 'tabs_bg_color' ) );
-	$css['global']['body .sidebar .fusion-tabs-widget .tab-hold .tabs li']['border-right'] = '1px solid ' . Avada_Sanitize::color( Avada()->settings->get( 'tabs_bg_color' ), Avada()->settings->get_default( 'tabs_bg_color' ) );
+	$css['global']['#wrapper .fusion-content-widget-area .fusion-tabs-widget .tabs-container']['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'tabs_bg_color' ), Avada()->settings->get_default( 'tabs_bg_color' ) );
+	$css['global']['body .fusion-content-widget-area .fusion-tabs-widget .tab-hold .tabs li']['border-right'] = '1px solid ' . Avada_Sanitize::color( Avada()->settings->get( 'tabs_bg_color' ), Avada()->settings->get_default( 'tabs_bg_color' ) );
 	if ( is_rtl() ) {
-		$css['global']['body.rtl #wrapper .sidebar .fusion-tabs-widget .tab-hold .tabset li']['border-left-color'] = Avada_Sanitize::color( Avada()->settings->get( 'tabs_bg_color' ), Avada()->settings->get_default( 'tabs_bg_color' ) );
+		$css['global']['body.rtl #wrapper .fusion-content-widget-area .fusion-tabs-widget .tab-hold .tabset li']['border-left-color'] = Avada_Sanitize::color( Avada()->settings->get( 'tabs_bg_color' ), Avada()->settings->get_default( 'tabs_bg_color' ) );
 	}
 
 	$elements = array(
-		'body .sidebar .fusion-tabs-widget .tab-holder .tabs li a',
-		'.sidebar .fusion-tabs-widget .tab-holder .tabs li a',
+		'body .fusion-content-widget-area .fusion-tabs-widget .tab-holder .tabs li a',
+		'.fusion-content-widget-area .fusion-tabs-widget .tab-holder .tabs li a',
 	);
 	$css['global'][avada_implode( $elements )]['background']    = Avada_Sanitize::color( Avada()->settings->get( 'tabs_inactive_color' ), Avada()->settings->get_default( 'tabs_inactive_color' ) );
 	$css['global'][avada_implode( $elements )]['border-bottom'] = '0';
 	$css['global'][avada_implode( $elements )]['color']         = Avada_Sanitize::color( Avada()->settings->get( 'body_text_color' ), Avada()->settings->get_default( 'body_text_color' ) );
 
-	$css['global']['body .sidebar .fusion-tabs-widget .tab-hold .tabs li a:hover']['background']    = Avada_Sanitize::color( Avada()->settings->get( 'tabs_bg_color' ), Avada()->settings->get_default( 'tabs_bg_color' ) );
-	$css['global']['body .sidebar .fusion-tabs-widget .tab-hold .tabs li a:hover']['border-bottom'] = '0';
+	$css['global']['body .fusion-content-widget-area .fusion-tabs-widget .tab-hold .tabs li a:hover']['background']    = Avada_Sanitize::color( Avada()->settings->get( 'tabs_bg_color' ), Avada()->settings->get_default( 'tabs_bg_color' ) );
+	$css['global']['body .fusion-content-widget-area .fusion-tabs-widget .tab-hold .tabs li a:hover']['border-bottom'] = '0';
 
 	$elements = array(
-		'body .sidebar .fusion-tabs-widget .tab-hold .tabs li.active a',
-		'body .sidebar .fusion-tabs-widget .tab-holder .tabs li.active a'
+		'body .fusion-content-widget-area .fusion-tabs-widget .tab-hold .tabs li.active a',
+		'body .fusion-content-widget-area .fusion-tabs-widget .tab-holder .tabs li.active a'
 	);
 	$css['global'][avada_implode( $elements )]['background']       = Avada_Sanitize::color( Avada()->settings->get( 'tabs_bg_color' ), Avada()->settings->get_default( 'tabs_bg_color' ) );
 	$css['global'][avada_implode( $elements )]['border-bottom']    = '0';
 	$css['global'][avada_implode( $elements )]['border-top-color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) );
 
 	$elements = array(
-		'#wrapper .sidebar .fusion-tabs-widget .tab-holder',
-		'.sidebar .fusion-tabs-widget .tab-holder .news-list li',
+		'#wrapper .fusion-content-widget-area .fusion-tabs-widget .tab-holder',
+		'.fusion-content-widget-area .fusion-tabs-widget .tab-holder .news-list li',
 	);
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'tabs_border_color' ), Avada()->settings->get_default( 'tabs_border_color' ) );
 
@@ -2396,9 +2747,14 @@ function avada_dynamic_css_array() {
 		'.fusion-blog-layout-grid .post .fusion-post-wrapper',
 		'.fusion-blog-layout-timeline .post',
 		'.fusion-portfolio.fusion-portfolio-boxed .fusion-portfolio-content-wrapper',
-		'.products li.product'
+		'.products li.product',
+		'.fusion-events-shortcode .fusion-layout-column'
 	);
 	$css['global'][avada_implode( $elements )]['background-color'] = Avada()->settings->get( 'timeline_bg_color' ) ? Avada_Sanitize::color( Avada()->settings->get( 'timeline_bg_color' ) ) : 'transparent';
+
+	if ( Avada()->settings->get( 'timeline_bg_color' ) != 'transparent' && Avada()->settings->get( 'timeline_bg_color' ) ) {
+		$css['global']['.fusion-events-shortcode .fusion-events-meta']['padding'] = '20px';
+	}
 
 	$elements = array(
 		'.fusion-blog-layout-grid .post .flexslider',
@@ -2418,7 +2774,9 @@ function avada_dynamic_css_array() {
 		'.fusion-portfolio.fusion-portfolio-boxed .fusion-portfolio-content-wrapper',
 		'.fusion-portfolio.fusion-portfolio-boxed .fusion-content-sep',
 		'.fusion-blog-layout-timeline .post .flexslider',
-		'.fusion-blog-layout-timeline .fusion-timeline-date'
+		'.fusion-blog-layout-timeline .fusion-timeline-date',
+		'.fusion-events-shortcode .fusion-layout-column',
+		'.fusion-events-shortcode .fusion-events-thumbnail'
 	);
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'timeline_color' ), Avada()->settings->get_default( 'timeline_color' ) );
 
@@ -2446,13 +2804,26 @@ function avada_dynamic_css_array() {
 		$elements[] = '#bbpress-forums div.bbp-reply-header';
 		$elements[] = '#bbpress-forums #bbp-single-user-details #bbp-user-navigation li.current a';
 		$elements[] = 'div.bbp-template-notice';
+		$elements[] = '#bbpress-forums .bbp-search-results .bbp-forum-header';
+		$elements[] = '#bbpress-forums .bbp-search-results .bbp-topic-header';
 
 	}
 	$css['global'][avada_implode( $elements )]['background'] = Avada_Sanitize::color( Avada()->settings->get( 'bbp_forum_header_bg' ), Avada()->settings->get_default( 'bbp_forum_header_bg' ) );
 
 	if ( class_exists( 'bbPress' ) ) {
+		$elements = array(
+			'#bbpress-forums .forum-titles li',
+			'span.bbp-admin-links',
+			'span.bbp-admin-links a',
+			'.bbp-forum-header a.bbp-forum-permalink',
+			'.bbp-reply-header a.bbp-reply-permalink',
+			'.bbp-topic-header a.bbp-topic-permalink'
+		);
+		$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'bbp_forum_header_font_color' ) );
+
 		$css['global']['#bbpress-forums .bbp-replies div.even']['background'] = 'transparent';
 	}
+
 	$elements = array( 'div.indicator-hint' );
 	if ( class_exists( 'bbPress' ) ) {
 		$elements[] = '#bbpress-forums ul.bbp-lead-topic';
@@ -2469,6 +2840,8 @@ function avada_dynamic_css_array() {
 		$elements[] = '#bbpress-forums #bbp-single-user-details';
 		$elements[] = 'div.bbp-template-notice';
 		$elements[] = '.bbp-arrow';
+		$elements[] = '#bbpress-forums .bbp-search-results .bbp-forum-content';
+		$elements[] = '#bbpress-forums .bbp-search-results .bbp-topic-content';
 	}
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'bbp_forum_border_color' ), Avada()->settings->get_default( 'bbp_forum_border_color' ) );
 
@@ -2573,16 +2946,6 @@ function avada_dynamic_css_array() {
 
 	$css['global']['.quicktags-toolbar input:hover']['background'] = Avada_Sanitize::color( Avada()->settings->get( 'form_bg_color' ), Avada()->settings->get_default( 'form_bg_color' ) );
 
-	if ( ! Avada()->settings->get( 'breadcrumb_mobile' ) ) {
-		if ( Avada()->settings->get( 'responsive' ) ) {
-			$media_query = '@media only screen and (max-width: ' . ( 940 + (int) Avada()->settings->get( 'side_header_width' ) ) . 'px)';
-			$css[$media_query]['	.fusion-body .fusion-page-title-bar .fusion-breadcrumbs']['display'] = 'none';
-
-			$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
-			$css[$media_query]['.fusion-body .fusion-page-title-bar .fusion-breadcrumbs']['display'] = 'none';
-		}
-	}
-
 	if ( ! Avada()->settings->get( 'image_rollover' ) ) {
 		$css['global']['.fusion-rollover']['display'] = 'none';
 	}
@@ -2591,6 +2954,12 @@ function avada_dynamic_css_array() {
 
 		switch ( Avada()->settings->get( 'image_rollover_direction' ) ) {
 
+			case 'fade' :
+				$image_rollover_direction_value = 'translateY(0%)';
+				$image_rollover_direction_hover_value = '';
+
+				$css['global']['.fusion-image-wrapper .fusion-rollover']['transition'] = 'opacity 0.5s ease-in-out';
+				break;
 			case 'right' :
 				$image_rollover_direction_value       = 'translateX(100%)';
 				$image_rollover_direction_hover_value = '';
@@ -2611,6 +2980,10 @@ function avada_dynamic_css_array() {
 				$image_rollover_direction_value       = 'scaleY(0)';
 				$image_rollover_direction_hover_value = 'scaleY(1)';
 				break;
+			default:
+				$image_rollover_direction_value       = 'scaleY(0)';
+				$image_rollover_direction_hover_value = 'scaleY(1)';
+				break;
 		}
 
 		$css['global']['.fusion-image-wrapper .fusion-rollover']['transform'] = $image_rollover_direction_value;
@@ -2618,7 +2991,6 @@ function avada_dynamic_css_array() {
 		if ( '' != $image_rollover_direction_hover_value ) {
 			$css['global']['.fusion-image-wrapper:hover .fusion-rollover']['transform'] = $image_rollover_direction_hover_value;
 		}
-
 	}
 
 	$css['global']['.ei-slider']['width']  = Avada_Sanitize::size( Avada()->settings->get( 'tfes_slider_width' ) );
@@ -2631,6 +3003,7 @@ function avada_dynamic_css_array() {
 	$elements = array(
 		'.button.default',
 		'.fusion-button.fusion-button-default',
+		'.post-password-form input[type="submit"]',
 		'#comment-submit',
 		'#reviews input#submit',
 		'.ticket-selector-submit-btn[type="submit"]',
@@ -2656,6 +3029,12 @@ function avada_dynamic_css_array() {
 		$elements[] = '.woocommerce .login .button';
 		$elements[] = '.woocommerce .register .button';
 	}
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form .tribe-bar-submit input[type=submit]';
+		$elements[] = '#tribe-events .tribe-events-button';
+		$elements[] = '#tribe_events_filter_control #tribe_events_filters_toggle';
+		$elements[] = '#tribe_events_filter_control #tribe_events_filters_reset';
+	}
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'button_accent_color' ), Avada()->settings->get_default( 'button_accent_color' ) );
 
 	$elements = avada_map_selector( $elements, ':hover' );
@@ -2666,6 +3045,7 @@ function avada_dynamic_css_array() {
 	$elements = array(
 		'.button.default',
 		'.fusion-button-default',
+		'.post-password-form input[type="submit"]'
 	);
 	if ( class_exists( 'GFForms' ) ) {
 		$elements[] = '.fusion-body #main .gform_wrapper .gform_button';
@@ -2678,6 +3058,13 @@ function avada_dynamic_css_array() {
 	}
 	if ( class_exists( 'WooCommerce' ) ) {
 		$elements[] = '.woocommerce .checkout #place_order';
+		$elements[] = '.woocommerce #wrapper .single_add_to_cart_button';
+		$elements[] = '.woocommerce .avada-shipping-calculator-form .button';
+	}
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-events .tribe-events-button';
+		$elements[] = '#tribe_events_filter_control #tribe_events_filters_toggle';
+		$elements[] = '#tribe_events_filter_control #tribe_events_filters_reset';
 	}
 
 	switch ( $button_size ) {
@@ -2773,6 +3160,7 @@ function avada_dynamic_css_array() {
 		$elements = array(
 			'.button.default.small',
 			'.fusion-button.fusion-button-default.fusion-button-small',
+			'.post-password-form input[type="submit"]',
 			'#reviews input#submit',
 			'.ticket-selector-submit-btn[type="submit"]',
 		);
@@ -2814,7 +3202,6 @@ function avada_dynamic_css_array() {
 			$elements[] = '.woocommerce .checkout #place_order';
 			$elements[] = '.woocommerce .single_add_to_cart_button';
 			$elements[] = '.woocommerce button.button';
-
 		}
 		$css['global'][avada_implode( $elements )]['box-shadow'] = 'inset 0px 1px 0px #ffffff, 0px 3px 0px ' . Avada_Sanitize::color( Avada()->settings->get( 'button_bevel_color' ), Avada()->settings->get_default( 'button_bevel_color' ) ) . ', 1px 5px 5px 3px rgba(0, 0, 0, 0.3)';
 
@@ -2831,6 +3218,9 @@ function avada_dynamic_css_array() {
 		}
 		if ( class_exists( 'bbPress' ) ) {
 			$elements[] = '.bbp-submit-wrapper .button.button-large';
+		}
+		if ( class_exists( 'Tribe__Events__Main' ) ) {
+			$elements[] = '#tribe-bar-form .tribe-bar-submit input[type=submit]';
 		}
 		$css['global'][avada_implode( $elements )]['box-shadow'] = 'inset 0px 1px 0px #ffffff, 0px 4px 0px ' . Avada_Sanitize::color( Avada()->settings->get( 'button_bevel_color' ), Avada()->settings->get_default( 'button_bevel_color' ) ) . ', 1px 6px 6px 3px rgba(0, 0, 0, 0.3)';
 
@@ -2860,6 +3250,7 @@ function avada_dynamic_css_array() {
 		'.fusion-button',
 		'.button-default',
 		'.fusion-button-default',
+		'.post-password-form input[type="submit"]',
 		'#comment-submit',
 		'#reviews input#submit',
 	);
@@ -2883,6 +3274,9 @@ function avada_dynamic_css_array() {
 		$elements[] = '.woocommerce .login .button';
 		$elements[] = '.woocommerce .register .button';
 	}
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form .tribe-bar-submit input[type=submit]';
+	}
 	$css['global'][avada_implode( $elements )]['border-width'] = Avada_Sanitize::size( Avada()->settings->get( 'button_border_width' ) );
 	$css['global'][avada_implode( $elements )]['border-style'] = 'solid';
 
@@ -2901,6 +3295,7 @@ function avada_dynamic_css_array() {
 		'.button.default',
 		'.button-default',
 		'.fusion-button-default',
+		'.post-password-form input[type="submit"]',
 		'#comment-submit',
 		'#reviews input#submit',
 		'.ticket-selector-submit-btn[type="submit"]',
@@ -2927,12 +3322,33 @@ function avada_dynamic_css_array() {
 		$elements[] = '.woocommerce .login .button';
 		$elements[] = '.woocommerce .register .button';
 	}
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements[] = '#tribe-bar-form .tribe-bar-submit input[type=submit]';
+	}
 	if ( 'Pill' == Avada()->settings->get( 'button_shape' ) ) {
 		$css['global'][avada_implode( $elements )]['border-radius'] = '25px';
 	} elseif ( 'Square' == Avada()->settings->get( 'button_shape' ) ) {
 		$css['global'][avada_implode( $elements )]['border-radius'] = '0';
 	} elseif ( 'Round' == Avada()->settings->get( 'button_shape' ) ) {
 		$css['global'][avada_implode( $elements )]['border-radius'] = '2px';
+	}
+
+	if ( 'yes' == Avada()->settings->get( 'button_span' ) ) {
+		$css['global'][avada_implode( $elements )]['width'] = '100%';
+
+		if ( class_exists( 'WooCommerce' ) ) {
+			$css['global']['.woocommerce #customer_login .col-1 .login .form-row']['float'] = 'none';
+			$css['global']['.woocommerce #customer_login .col-1 .login .form-row']['margin-right'] = '0';
+			$css['global']['.woocommerce #customer_login .col-1 .login .button']['margin'] = '0';
+			$css['global']['.woocommerce #customer_login .login .inline']['float'] = 'left';
+			$css['global']['.woocommerce #customer_login .login .inline']['margin-left'] = '0';
+			$css['global']['.woocommerce #customer_login .login .lost_password']['float'] = 'right';
+			$css['global']['.woocommerce #customer_login .login .lost_password']['margin-top'] = '10px';
+
+			$css['global']['.fusion-login-box-submit']['float'] = 'none';
+		}
+
+		$css['global']['.fusion-reading-box-container .fusion-desktop-button']['width'] = 'auto';
 	}
 
 	$css['global']['.reading-box']['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'tagline_bg' ), Avada()->settings->get_default( 'tagline_bg' ) );
@@ -3009,19 +3425,13 @@ function avada_dynamic_css_array() {
 
 	}
 
-	if ( Avada()->settings->get( 'responsive' ) ) {
-
-		if ( ! Avada()->settings->get( 'ipad_potrait' ) ) {
-
-			$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape)';
-			$css[$media_query]['#wrapper .fusion-page-title-bar']['height'] = Avada_Sanitize::size( Avada()->settings->get( 'page_title_height' ) ) . ' !important';
-
-		}
-
-	}
-
 	if ( Avada()->settings->get( 'page_title_100_width' ) ) {
 		$css['global']['.layout-wide-mode .fusion-page-title-row']['max-width'] = '100%';
+
+		if ( Avada()->settings->get( 'header_100_width' ) ) {
+			$css['global']['.layout-wide-mode .fusion-page-title-row']['padding-left']  = Avada_Sanitize::size( Avada()->settings->get( 'padding_header_left' ) );
+			$css['global']['.layout-wide-mode .fusion-page-title-row']['padding-right'] = Avada_Sanitize::size( Avada()->settings->get( 'padding_header_right' ) );
+		}
 	}
 
 	if ( 'None' != Avada()->settings->get( 'google_button' ) ) {
@@ -3045,6 +3455,7 @@ function avada_dynamic_css_array() {
 		$elements[] = '.wpcf7-form input[type="submit"]';
 	}
 	if ( class_exists( 'bbPress' ) ) {
+		$elements[] = '.bbp-submit-wrapper .button';
 		$elements[] = '#bbp_user_edit_submit';
 	}
 	if ( class_exists( 'WooCommerce' ) ) {
@@ -3090,13 +3501,6 @@ function avada_dynamic_css_array() {
 		}
 	}
 	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'image_rollover_icon_color' ), Avada()->settings->get_default( 'image_rollover_icon_color' ) );
-
-	$css['global']['.searchform .search-table .search-field input']['height'] = fusion_strip_unit( Avada()->settings->get( 'search_form_height' ) ) . 'px';
-
-	$css['global']['.searchform .search-table .search-button input[type="submit"]']['height']      = fusion_strip_unit( Avada()->settings->get( 'search_form_height' ) ) . 'px';
-	$css['global']['.searchform .search-table .search-button input[type="submit"]']['width']       = fusion_strip_unit( Avada()->settings->get( 'search_form_height' ) ) . 'px';
-	$css['global']['.searchform .search-table .search-button input[type="submit"]']['line-height'] = fusion_strip_unit( Avada()->settings->get( 'search_form_height' ) ) . 'px';
-
 
 	/**
 	 * Headings
@@ -3160,8 +3564,8 @@ function avada_dynamic_css_array() {
 
 		$elements = array(
 			'.fusion-header-shadow:after',
-			'body.side-header-left #side-header.header-shadow:before',
-			'body.side-header-right #side-header.header-shadow:before'
+			'body.side-header-left #side-header.header-shadow .side-header-border:before',
+			'body.side-header-right #side-header.header-shadow .side-header-border:before'
 		);
 		$css['global'][avada_implode( $elements )]['content']        = '""';
 		$css['global'][avada_implode( $elements )]['z-index']        = '99996';
@@ -3177,8 +3581,8 @@ function avada_dynamic_css_array() {
 			'.fusion-header-shadow .fusion-mobile-menu-design-modern'
 		);
 		$css['global'][avada_implode( $elements )]['box-shadow'] = '0px 10px 50px -2px rgba(0, 0, 0, 0.14)';
-		$css['global']['body.side-header-left #side-header.header-shadow:before']['box-shadow'] = '10px 0px 50px -2px rgba(0, 0, 0, 0.14)';
-		$css['global']['body.side-header-right #side-header.header-shadow:before']['box-shadow'] = '-10px 0px 50px -2px rgba(0, 0, 0, 0.14)';
+		$css['global']['body.side-header-left #side-header.header-shadow .side-header-border:before']['box-shadow'] = '10px 0px 50px -2px rgba(0, 0, 0, 0.14)';
+		$css['global']['body.side-header-right #side-header.header-shadow .side-header-border:before']['box-shadow'] = '-10px 0px 50px -2px rgba(0, 0, 0, 0.14)';
 
 		$elements = array(
 			'.fusion-is-sticky:before',
@@ -3234,9 +3638,12 @@ function avada_dynamic_css_array() {
 	$css['global'][avada_implode( $elements )]['border-bottom-color'] = Avada_Sanitize::color( Avada()->settings->get( 'header_border_color' ), Avada()->settings->get_default( 'header_border_color' ) );
 
 	$css['global']['#side-header']['width']          = intval( $side_header_width ) . 'px';
+	$css['global']['#side-header .side-header-background']['width']	= intval( $side_header_width ) . 'px';
+	$css['global']['#side-header .side-header-border']['width']	= intval( $side_header_width ) . 'px';
+
 	$css['global']['#side-header']['padding-top']    = Avada_Sanitize::size( Avada()->settings->get( 'margin_header_top' ) );
 	$css['global']['#side-header']['padding-bottom'] = Avada_Sanitize::size( Avada()->settings->get( 'margin_header_bottom' ) );
-	$css['global']['#side-header']['border-color']   = Avada_Sanitize::color( Avada()->settings->get( 'header_border_color' ), Avada()->settings->get_default( 'header_border_color' ) );
+	$css['global']['#side-header .side-header-border']['border-color']   = Avada_Sanitize::color( Avada()->settings->get( 'header_border_color' ), Avada()->settings->get_default( 'header_border_color' ) );
 
 	$css['global']['#side-header .side-header-content']['padding-left']  = Avada_Sanitize::size( Avada()->settings->get( 'padding_header_left' ) );
 	$css['global']['#side-header .side-header-content']['padding-right'] = Avada_Sanitize::size( Avada()->settings->get( 'padding_header_left' ) );
@@ -3251,7 +3658,7 @@ function avada_dynamic_css_array() {
 
 	$elements = array(
 		'#side-header .fusion-main-menu > ul > li.current-menu-ancestor > a',
-		'#side-header .fusion-main-menu > ul > li.current-menu-item > a'
+		'#side-header .fusion-main-menu > ul > li.current-menu-item > a',
 	);
 	$css['global'][avada_implode( $elements )]['color']              = Avada_Sanitize::color( Avada()->settings->get( 'menu_hover_first_color' ), Avada()->settings->get_default( 'menu_hover
 		' ) );
@@ -3293,19 +3700,23 @@ function avada_dynamic_css_array() {
 	$elements = array(
 		'.side-header-right #side-header .fusion-main-menu ul .fusion-dropdown-menu .sub-menu li ul',
 		'.side-header-right #side-header .fusion-main-menu ul .fusion-dropdown-menu .sub-menu',
-		'.side-header-right #side-header .fusion-main-menu ul .fusion-menu-login-box .sub-menu'
+		'.side-header-right #side-header .fusion-main-menu ul .fusion-menu-login-box .sub-menu',
+		'.side-header-right #side-header .fusion-main-menu .fusion-menu-cart-items',
+		'.side-header-right #side-header .fusion-main-menu .fusion-menu-login-box .fusion-custom-menu-item-contents'
 	);
 	$css['global'][avada_implode( $elements )]['left'] = '-' . Avada_Sanitize::size( Avada()->settings->get( 'dropdown_menu_width' ) );
 
 	$css['global']['.side-header-right #side-header .fusion-main-menu-search .fusion-custom-menu-item-contents']['left'] = '-250px';
-
-	$css['global']['.side-header-right #side-header .fusion-main-menu-cart .fusion-custom-menu-item-contents']['left'] = '-180px';
 
 	/**
 	 * Main Menu Styles
 	 */
 	if ( Avada()->settings->get( 'nav_padding' ) ) {
 		$css['global']['.fusion-main-menu > ul > li']['padding-right'] = intval( Avada()->settings->get( 'nav_padding' ) ) . 'px';
+		
+		if ( is_rtl() ) {
+			$css['global']['.rtl .fusion-main-menu .fusion-last-menu-item']['padding-right'] = intval( Avada()->settings->get( 'nav_padding' ) ) . 'px';
+		}
 	}
 	if ( Avada()->settings->get( 'nav_highlight_border' ) ) {
 		$css['global']['.fusion-main-menu > ul > li > a']['border-top'] = intval( Avada()->settings->get( 'nav_highlight_border' ) ) . 'px solid transparent';
@@ -3322,14 +3733,26 @@ function avada_dynamic_css_array() {
 		$css['global']['.fusion-main-menu > ul > li > a']['font-size'] = intval( Avada()->settings->get( 'nav_font_size' ) ) . 'px';
 		$css['global']['.fusion-megamenu-icon img']['max-height'] = intval( Avada()->settings->get( 'nav_font_size' ) ) . 'px';
 	}
-	$css['global']['.fusion-main-menu > ul > li > a']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_first_color' ), Avada()->settings->get_default( 'menu_first_color' ) );
+	$elements = array(
+		'.fusion-main-menu > ul > li > a',
+		'.fusion-main-menu .fusion-widget-cart-counter > a:before',
+	);
+	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_first_color' ), Avada()->settings->get_default( 'menu_first_color' ) );
+
 	if ( Avada()->settings->get( 'menu_font_ls' ) ) {
 		$css['global']['.fusion-main-menu > ul > li > a']['letter-spacing'] = intval( Avada()->settings->get( 'menu_font_ls' ) ) . 'px';
 	}
+	$elements = array(
+		'.fusion-main-menu > ul > li > a:hover',
+		'.fusion-main-menu .fusion-widget-cart-counter > a:hover:before',
+	);
+	$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_hover_first_color' ), Avada()->settings->get_default( 'menu_hover_first_color' ) );
 
-	$css['global']['.fusion-main-menu > ul > li > a:hover']['color']        = Avada_Sanitize::color( Avada()->settings->get( 'menu_hover_first_color' ), Avada()->settings->get_default( 'menu_hover_first_color' ) );
 	$css['global']['.fusion-main-menu > ul > li > a:hover']['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_hover_first_color' ), Avada()->settings->get_default( 'menu_hover_first_color' ) );
 	$css['global']['.fusion-main-menu > ul > .fusion-menu-item-button > a:hover']['border-color'] = 'transparent';
+	$css['global']['.fusion-widget-cart-number']['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_hover_first_color' ), Avada()->settings->get_default( 'menu_hover_first_color' ) );
+	$css['global']['.fusion-widget-cart-counter a:hover:before']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_hover_first_color' ), Avada()->settings->get_default( 'menu_hover_first_color' ) );
+	$css['global']['.fusion-widget-cart-number']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_first_color' ), Avada()->settings->get_default( 'menu_first_color' ) );
 
 	$css['global']['#side-header .fusion-main-menu > ul > li > a']['height'] = 'auto';
 	if ( Avada()->settings->get( 'nav_height' ) ) {
@@ -3346,7 +3769,19 @@ function avada_dynamic_css_array() {
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_hover_first_color' ), Avada()->settings->get_default( 'menu_hover_first_color' ) );
 	$css['global']['.fusion-main-menu > ul > .fusion-menu-item-button > a']['border-color'] = 'transparent';
 
-	$css['global']['.fusion-main-menu .fusion-main-menu-icon:after']['color']  = Avada_Sanitize::color( Avada()->settings->get( 'menu_first_color' ), Avada()->settings->get_default( 'menu_first_color' ) );
+	$elements = array(
+		'.fusion-main-menu .fusion-main-menu-icon:after',
+	);
+	$css['global'][avada_implode( $elements )]['color']  = Avada_Sanitize::color( Avada()->settings->get( 'menu_first_color' ), Avada()->settings->get_default( 'menu_first_color' ) );
+
+	$elements = array(
+		'.fusion-main-menu .fusion-menu-cart-link a:hover',
+		'.fusion-main-menu .fusion-menu-cart-checkout-link a:hover',
+		'.fusion-main-menu .fusion-menu-cart-link a:hover:before',
+		'.fusion-main-menu .fusion-menu-cart-checkout-link a:hover:before',
+	);
+	$css['global'][avada_implode( $elements )]['color']  = Avada_Sanitize::color( Avada()->settings->get( 'menu_hover_first_color' ), Avada()->settings->get_default( 'menu_hover_first_color' ) );
+
 	if ( Avada()->settings->get( 'nav_font_size' ) ) {
 		$css['global']['.fusion-main-menu .fusion-main-menu-icon:after']['height'] = intval( Avada()->settings->get( 'nav_font_size' ) ) . 'px';
 		$css['global']['.fusion-main-menu .fusion-main-menu-icon:after']['width']  = intval( Avada()->settings->get( 'nav_font_size' ) ) . 'px';
@@ -3380,7 +3815,7 @@ function avada_dynamic_css_array() {
 	}
 
 	$css['global']['.fusion-main-menu .sub-menu']['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_sub_bg_color' ), Avada()->settings->get_default( 'menu_sub_bg_color' ) );
-	$css['global']['.fusion-main-menu .sub-menu']['width']            = Avada_Sanitize::size( Avada()->settings->get( 'dropdown_menu_width' ) );
+	$css['global']['.fusion-main-menu .sub-menu, .fusion-main-menu .fusion-menu-cart-items, .fusion-main-menu .fusion-menu-login-box .fusion-custom-menu-item-contents']['width']            = Avada_Sanitize::size( Avada()->settings->get( 'dropdown_menu_width' ) );
 	$css['global']['.fusion-main-menu .sub-menu']['border-top']       = '3px solid ' . Avada_Sanitize::color( Avada()->settings->get( 'menu_hover_first_color' ), Avada()->settings->get_default( 'menu_hover_first_color' ) );
 	$css['global']['.fusion-main-menu .sub-menu']['font-family']      = $font;
 	$css['global']['.fusion-main-menu .sub-menu']['font-weight']      = esc_attr( Avada()->settings->get( 'font_weight_body' ) );
@@ -3424,12 +3859,20 @@ function avada_dynamic_css_array() {
 	);
 	$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_sub_bg_color' ), Avada()->settings->get_default( 'menu_sub_bg_color' ) );
 	$css['global'][avada_implode( $elements )]['border-color']     = Avada_Sanitize::color( Avada()->settings->get( 'menu_sub_sep_color' ), Avada()->settings->get_default( 'menu_sub_sep_color' ) );
+	if( trim( Avada()->settings->get( 'menu_sub_sep_color' ) ) == 'transparent' ) {
+		$css['global'][avada_implode( $elements )]['border'] = '0';
+	}
 
 	if ( is_rtl() ) {
+		$elements = array(
+			'.rtl .fusion-header-v1 .fusion-main-menu > ul > li',
+			'.rtl .fusion-header-v2 .fusion-main-menu > ul > li',
+			'.rtl .fusion-header-v3 .fusion-main-menu > ul > li'
+		);
 
-		$css['global']['.rtl .fusion-main-menu > ul > li']['padding-right'] = '0';
+		$css['global'][avada_implode( $elements )]['padding-right'] = '0';
 		if ( Avada()->settings->get( 'nav_padding' ) ) {
-			$css['global']['.rtl .fusion-main-menu > ul > li']['padding-left'] = intval( Avada()->settings->get( 'nav_padding' ) ) . 'px';
+			$css['global'][avada_implode( $elements )]['padding-left'] = intval( Avada()->settings->get( 'nav_padding' ) ) . 'px';
 		}
 
 		$css['global']['.rtl .fusion-main-menu .sub-menu ul']['left']  = 'auto';
@@ -3448,7 +3891,8 @@ function avada_dynamic_css_array() {
 		$css['global']['.fusion-secondary-menu > ul > li > a']['line-height'] = intval( Avada()->settings->get( 'sec_menu_lh' ) ) . 'px';
 	}
 
-	$css['global']['.fusion-secondary-menu .sub-menu']['width']            = Avada_Sanitize::size( Avada()->settings->get( 'topmenu_dropwdown_width' ) );
+	$css['global']['.fusion-secondary-menu .sub-menu, .fusion-secondary-menu .fusion-custom-menu-item-contents']['width'] = Avada_Sanitize::size( Avada()->settings->get( 'topmenu_dropwdown_width' ) );
+	$css['global']['.fusion-secondary-menu .fusion-secondary-menu-icon']['min-width'] = Avada_Sanitize::size( Avada()->settings->get( 'topmenu_dropwdown_width' ) );
 	$css['global']['.fusion-secondary-menu .sub-menu']['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'header_top_sub_bg_color' ), Avada()->settings->get_default( 'header_top_sub_bg_color' ) );
 	$css['global']['.fusion-secondary-menu .sub-menu']['border-color']     = Avada_Sanitize::color( Avada()->settings->get( 'header_top_menu_sub_sep_color' ), Avada()->settings->get_default( 'header_top_menu_sub_sep_color' ) );
 
@@ -3552,6 +3996,8 @@ function avada_dynamic_css_array() {
 	}
 
 	$css['global']['.fusion-megamenu-wrapper .fusion-megamenu-submenu']['border-color'] 				= Avada_Sanitize::color( Avada()->settings->get( 'menu_sub_sep_color' ), Avada()->settings->get_default( 'menu_sub_sep_color' ) );
+	$css['global']['.rtl .fusion-megamenu-wrapper .fusion-megamenu-submenu:last-child']['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_sub_sep_color' ), Avada()->settings->get_default( 'menu_sub_sep_color' ) );
+
 
 	$css['global']['.fusion-megamenu-wrapper .fusion-megamenu-submenu .sub-menu a']['padding-top']	 	= Avada_Sanitize::size( Avada()->settings->get( 'megamenu_item_vertical_padding' ) );
 	$css['global']['.fusion-megamenu-wrapper .fusion-megamenu-submenu .sub-menu a']['padding-bottom']	= Avada_Sanitize::size( Avada()->settings->get( 'megamenu_item_vertical_padding' ) );
@@ -3573,7 +4019,7 @@ function avada_dynamic_css_array() {
 		$css['global']['.fusion-megamenu-title']['font-family'] = $headings_font;
 	}
 	$css['global']['.fusion-megamenu-title']['font-weight'] = esc_attr( Avada()->settings->get( 'font_weight_headings' ) );
-	$css['global']['.fusion-megamenu-title']['font-size']   = fusion_strip_unit( Avada()->settings->get( 'megamenu_title_size' ) ). 'px';
+	$css['global']['.fusion-megamenu-title']['font-size']   = intval( Avada()->settings->get( 'megamenu_title_size' ) ). 'px';
 	$css['global']['.fusion-megamenu-title']['color']       = Avada_Sanitize::color( Avada()->settings->get( 'menu_first_color' ), Avada()->settings->get_default( 'menu_first_color' ) );
 
 	$css['global']['.fusion-megamenu-title a']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'menu_first_color' ), Avada()->settings->get_default( 'menu_first_color' ) );
@@ -3628,16 +4074,29 @@ function avada_dynamic_css_array() {
 
 	$css['global']['.fusion-is-sticky .fusion-main-menu > ul > li:last-child']['padding-right'] = '0';
 
+	if ( Avada()->settings->get( 'header_sticky_nav_padding' ) ) {
+		$css['global']['.rtl .fusion-is-sticky .fusion-main-menu > ul > li:last-child']['padding-right'] = intval( Avada()->settings->get( 'header_sticky_nav_padding' ) ) . 'px';
+	} else {
+		$css['global']['.rtl .fusion-is-sticky .fusion-main-menu > ul > li:last-child']['padding-right'] = intval( Avada()->settings->get( 'nav_padding' ) ) . 'px';
+	}
+
 	if ( Avada()->settings->get( 'header_sticky_nav_font_size' ) ) {
 		$css['global']['.fusion-is-sticky .fusion-main-menu > ul > li > a']['font-size'] = intval( Avada()->settings->get( 'header_sticky_nav_font_size' ) ) . 'px';
 	}
 
 	if ( is_rtl() ) {
-		$css['global']['.rtl .fusion-is-sticky .fusion-main-menu > ul > li']['padding-right'] = '0';
+		$elements = array(
+			'.rtl .fusion-is-sticky .fusion-header-v1 .fusion-main-menu > ul > li',
+			'.rtl .fusion-is-sticky .fusion-header-v2 .fusion-main-menu > ul > li',
+			'.rtl .fusion-is-sticky .fusion-header-v3 .fusion-main-menu > ul > li',
+		);
+	
+		$css['global'][avada_implode( $elements )]['padding-right'] = '0';
 		if ( Avada()->settings->get( 'header_sticky_nav_font_size' ) ) {
-			$css['global']['.rtl .fusion-is-sticky .fusion-main-menu > ul > li']['padding-left']  = intval( Avada()->settings->get( 'header_sticky_nav_padding' ) ) . 'px';
+			$css['global']['.rtl .fusion-is-sticky .fusion-main-menu > ul > li']['padding-left'] = intval( Avada()->settings->get( 'header_sticky_nav_padding' ) ) . 'px';
 		}
 		$css['global']['.rtl .fusion-is-sticky .fusion-main-menu > ul > li:last-child']['padding-left'] = '0';
+		
 	}
 
 	/**
@@ -3685,6 +4144,7 @@ function avada_dynamic_css_array() {
 	);
 	$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'mobile_menu_border_color' ), Avada()->settings->get_default( 'mobile_menu_border_color' ) );
 
+	$css['global']['.fusion-mobile-nav-item .fusion-open-submenu']['color']            = Avada_Sanitize::color( Avada()->settings->get( 'mobile_menu_font_color' ), Avada()->settings->get_default( 'mobile_menu_font_color' ) );
 	$css['global']['.fusion-mobile-nav-item a']['color']            = Avada_Sanitize::color( Avada()->settings->get( 'mobile_menu_font_color' ), Avada()->settings->get_default( 'mobile_menu_font_color' ) );
 	if ( Avada()->settings->get( 'mobile_menu_font_size' ) ) {
 		$css['global']['.fusion-mobile-nav-item a']['font-size']    = intval( Avada()->settings->get( 'mobile_menu_font_size' ) ) . 'px';
@@ -3732,7 +4192,7 @@ function avada_dynamic_css_array() {
 		$css['global']['#wrapper .post-content .content-box-heading']['line-height'] = intval( Avada()->settings->get( 'h2_font_lh' ) ) . 'px';
 	}
 	if ( Avada()->settings->get( 'content_box_title_color' ) ) {
-		$css['global']['#wrapper .post-content .content-box-heading']['color'] = Avada()->settings->get( 'content_box_title_color' );
+		$css['global']['.post-content .content-box-heading']['color'] = Avada()->settings->get( 'content_box_title_color' );
 	}
 	if ( Avada()->settings->get( 'content_box_body_color' ) ) {
 		$css['global']['.fusion-content-boxes .content-container']['color'] = Avada()->settings->get( 'content_box_body_color' );
@@ -3779,6 +4239,19 @@ function avada_dynamic_css_array() {
 		$css['global'][avada_implode( $elements )]['padding'] = intval( Avada()->settings->get( 'social_links_boxed_padding' ) ) . 'px';
 	}
 
+		/**
+		 * Search Page / Error Page - Dynamic Styling
+		 */
+		if ( Avada()->settings->get( 'checklist_icons_color' ) ) {
+			$elements = array(
+				'.fusion-body .error-menu li:before',
+				'.fusion-body .error-menu li:after'
+			);
+		
+			$css['global'][avada_implode( $elements )]['background-color'] = Avada()->settings->get( 'checklist_circle_color' );
+			$css['global'][avada_implode( $elements )]['color'] = Avada()->settings->get( 'checklist_icons_color' );
+		}
+
 	if ( class_exists( 'WooCommerce' ) ) {
 
 		/**
@@ -3793,6 +4266,7 @@ function avada_dynamic_css_array() {
 			'.products .product-list-view .product-excerpt-container',
 			'.products .product-list-view .product-details-container'
 		);
+
 		$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'sep_color' ), Avada()->settings->get_default( 'sep_color' ) );
 
 		$css['global']['.order-dropdown']['color'] = Avada_Sanitize::color( Avada()->settings->get( 'woo_dropdown_text_color' ), Avada()->settings->get_default( 'woo_dropdown_text_color' ) );
@@ -3843,108 +4317,632 @@ function avada_dynamic_css_array() {
 			$css['global']['.fusion-grid-list-view li.active-view a i']['color'] = Avada_Sanitize::color( fusion_color_luminance( Avada()->settings->get( 'woo_dropdown_text_color' ), 0.95 ) );
 		}
 
+		if ( is_rtl() ) {
+			$woo_message_direction = 'right';
+		} else {
+			$woo_message_direction = 'left';
+		}
+
+		$elements = array(
+			'.woocommerce-message:before',
+			'.woocommerce-info:before'
+		);
+		$css['global'][avada_implode( $elements )]['margin-' . $woo_message_direction] = -1 * ( intval( Avada()->settings->get( 'body_font_size' ) ) + 3 ) . 'px';
+
+		$elements = array(
+			'.woocommerce-message',
+			'.woocommerce-info'
+		);
+		$css['global'][avada_implode( $elements )]['padding-' . $woo_message_direction] = intval( Avada()->settings->get( 'body_font_size' ) ) + 3 . 'px';
+	}
+
+	if( class_exists( 'Tribe__Events__Main' ) ) {
+		$elements = array(
+			'.tribe-grid-allday .tribe-events-week-allday-single, .tribe-grid-allday .tribe-events-week-allday-single:hover, .tribe-grid-body .tribe-events-week-hourly-single',
+			'.datepicker.dropdown-menu .datepicker-days table tr td.active:hover'
+		);
+		$color = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) );
+		$rgb = fusion_hex2rgb( $color );
+		$rgba = 'rgba( ' . $rgb[0] . ',' . $rgb[1] . ',' . $rgb[2] . ',' . '0.7' . ')';
+		$css['global'][avada_implode( $elements )]['background-color'] = $rgba;
+
+		$elements = array(
+			'.fusion-tribe-primary-info .tribe-events-list-event-title a',
+			'.fusion-events-single-title-content',
+			'.fusion-tribe-primary-info .tribe-events-list-event-title a',
+			'.datepicker.dropdown-menu table tr td.day',
+			'.datepicker.dropdown-menu table tr td span.month',
+			'.tribe-events-venue-widget .tribe-venue-widget-thumbnail .tribe-venue-widget-venue-name',
+			".tribe-mini-calendar div[id*='daynum-'] a, .tribe-mini-calendar div[id*='daynum-'] span",
+		);
+		$color = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) );
+		$rgb = fusion_hex2rgb( $color );
+		$rgba = 'rgba( ' . $rgb[0] . ',' . $rgb[1] . ',' . $rgb[2] . ',' . '0.85' . ')';
+		$css['global'][avada_implode( $elements )]['background-color'] = $rgba;
+
+		$elements = array(
+			'.tribe-events-list .tribe-events-event-cost',
+			'.tribe-events-list .tribe-events-event-cost span',
+			'.fusion-tribe-events-headline',
+			'#tribe-events .tribe-events-day .tribe-events-day-time-slot h5',
+			'.tribe-mobile-day-date',
+			'.datepicker.dropdown-menu table thead tr:first-child',
+			'.datepicker.dropdown-menu table thead tr:first-child th:hover',
+			'.datepicker.dropdown-menu .datepicker-days table tr td.active',
+			'.datepicker.dropdown-menu .datepicker-days table tr td:hover',
+			'.tribe-grid-header',
+			'.datepicker.dropdown-menu table tr td span.month.active',
+			'.datepicker.dropdown-menu table tr td span.month:hover',
+			'.tribe-grid-body .tribe-events-week-hourly-single:hover',
+			'.tribe-events-venue-widget .tribe-venue-widget-venue-name',
+			'.tribe-mini-calendar .tribe-mini-calendar-nav td',
+			".tribe-mini-calendar div[id*='daynum-'] a:hover",
+			'.tribe-mini-calendar td.tribe-events-has-events:hover a',
+			'.fusion-body .tribe-mini-calendar td.tribe-events-has-events:hover a:hover',
+			'.fusion-body .tribe-mini-calendar td.tribe-events-has-events a:hover',
+			'.tribe-mini-calendar td.tribe-events-has-events.tribe-events-present a:hover',
+			'.tribe-mini-calendar td.tribe-events-has-events.tribe-mini-calendar-today a:hover',
+			".tribe-mini-calendar .tribe-mini-calendar-today div[id*='daynum-'] a",
+			".tribe-mini-calendar .tribe-mini-calendar-today div[id*='daynum-'] a",
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) );
+
+		$elements = array(
+			'.tribe-grid-header',
+			'.tribe-events-grid .tribe-grid-header .tribe-grid-content-wrap .column',
+			'.tribe-grid-allday .tribe-events-week-allday-single, .tribe-grid-allday .tribe-events-week-allday-single:hover, .tribe-grid-body .tribe-events-week-hourly-single, .tribe-grid-body .tribe-events-week-hourly-single:hover',
+		);
+		$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) );
+
+		$elements = array(
+			'.tribe-events-calendar thead th',
+			'.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]',
+			'.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]>a',
+			'.tribe-events-calendar div[id*=tribe-events-daynum-]',
+			'.tribe-events-calendar div[id*=tribe-events-daynum-] a',
+			'.tribe-events-calendar td.tribe-events-past div[id*=tribe-events-daynum-]',
+			'.tribe-events-calendar td.tribe-events-past div[id*=tribe-events-daynum-]>a',
+			'#tribe-events-content .tribe-events-tooltip h4',
+			'.tribe-events-list-separator-month',
+			'.fusion-tribe-primary-info .tribe-events-list-event-title',
+			'.fusion-tribe-primary-info .tribe-events-list-event-title a',
+			'.tribe-events-list .tribe-events-event-cost',
+			'#tribe-events .fusion-tribe-events-headline h3',
+			'#tribe-events .fusion-tribe-events-headline h3 a',
+			'#tribe-events .tribe-events-day .tribe-events-day-time-slot h5',
+			'.tribe-mobile-day .tribe-mobile-day-date',
+			'.datepicker.dropdown-menu table thead tr:first-child',
+			'.datepicker.dropdown-menu table tr td.day',
+			'.fusion-events-single-title-content h2',
+			'.fusion-events-single-title-content h3',
+			'.fusion-events-single-title-content span',
+			'.tribe-grid-header',
+			'.tribe-grid-allday .tribe-events-week-allday-single, .tribe-grid-allday .tribe-events-week-allday-single:hover, .tribe-grid-body .tribe-events-week-hourly-single, .tribe-grid-body .tribe-events-week-hourly-single:hover',
+			'.datepicker.dropdown-menu .datepicker-days table tr td.active:hover',
+			'.datepicker.dropdown-menu table tr td span.month',
+			'.datepicker.dropdown-menu table tr td span.month.active:hover',
+			'.recurringinfo',
+			'.fusion-events-featured-image .event-is-recurring',
+			'.fusion-events-featured-image .event-is-recurring:hover',
+			'.fusion-events-featured-image .event-is-recurring a',
+			'.tribe-events-venue-widget .tribe-venue-widget-venue-name, .tribe-events-venue-widget .tribe-venue-widget-venue-name a, #slidingbar-area .tribe-events-venue-widget .tribe-venue-widget-venue-name a',
+			'.tribe-events-venue-widget .tribe-venue-widget-venue-name, .tribe-events-venue-widget .tribe-venue-widget-venue-name a:hover, #slidingbar-area .tribe-events-venue-widget .tribe-venue-widget-venue-name a:hover',
+			'.tribe-mini-calendar .tribe-mini-calendar-nav td',
+			".tribe-mini-calendar div[id*='daynum-'] a, .tribe-mini-calendar div[id*='daynum-'] span",
+			"#slidingbar-area .tribe-mini-calendar div[id*='daynum-'] a",
+			".tribe-mini-calendar div[id*='daynum-'] a:hover",
+			'.tribe-mini-calendar .tribe-events-has-events:hover',
+			'.tribe-mini-calendar .tribe-events-has-events:hover a',
+			'.tribe-mini-calendar .tribe-events-has-events:hover a:hover',
+			'.tribe-mini-calendar .tribe-events-has-events a:hover',
+			'.tribe-mini-calendar .tribe-events-has-events.tribe-events-present a:hover',
+			'.tribe-mini-calendar td.tribe-events-has-events.tribe-mini-calendar-today a:hover',
+			'.tribe-mini-calendar .tribe-events-has-events.tribe-mini-calendar-today a',
+			'.tribe-mini-calendar .tribe-events-has-events.tribe-mini-calendar-today a',
+			".tribe-mini-calendar .tribe-events-othermonth.tribe-mini-calendar-today div[id*='daynum-'] a"
+		);
+		$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'primary_overlay_text_color' ), Avada()->settings->get_default( 'primary_overlay_text_color' ) );
+
+		$elements = array(
+			'#tribe-events .tribe-events-list .tribe-events-event-meta .author > div',
+			'.fusion-body #tribe-events .tribe-events-list .tribe-events-event-meta .author > div:last-child',
+			'.events-list #tribe-events-footer, .single-tribe_events #tribe-events-footer, #tribe-events #tribe-events-footer',
+			'.tribe-grid-allday',
+			'.tribe-events-grid .tribe-grid-content-wrap .column',
+			'.tribe-week-grid-block div',
+			'#tribe-events #tribe-geo-results .type-tribe_events:last-child',
+			'.events-archive.events-gridview #tribe-events-content table .type-tribe_events',
+			'.tribe-events-viewmore',
+			'.fusion-events-before-title h2',
+			'#tribe-events .tribe-events-list .type-tribe_events',
+			'#tribe-events .tribe-events-list-separator-month+.type-tribe_events.tribe-events-first'
+		);
+		$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_border_color' ), Avada()->settings->get_default( 'ec_border_color' ) );
+
+		$elements = array(
+			'.tribe-bar-views-inner',
+			'#tribe-bar-views .tribe-bar-views-list .tribe-bar-views-option a',
+			'#tribe_events_filters_wrapper .tribe-events-filters-group-heading'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_bar_bg_color' ), Avada()->settings->get_default( 'ec_bar_bg_color' ) );
+
+		$elements = array(
+			'#tribe_events_filters_wrapper .tribe-events-filters-group-heading',
+			'.tribe-events-filter-group',
+			'.tribe-events-filter-group:after',
+			'#tribe_events_filters_wrapper .tribe-events-filter-group label',
+			'.tribe-events-filters-horizontal .tribe-events-filter-group:before',
+			'.tribe-events-filters-horizontal .tribe-events-filter-group:after',
+		);
+		$css['global'][avada_implode( $elements )]['border-bottom-color'] = fusion_adjust_brightness( Avada_Sanitize::color( Avada()->settings->get( 'ec_bar_bg_color' ), Avada()->settings->get_default( 'ec_bar_bg_color' ) ), -25 );
+
+		$elements = array(
+			'#tribe-bar-form',
+			'#tribe-events-bar:before',
+			'#tribe-events-bar:after',
+			'#tribe-events-content-wrapper #tribe_events_filters_wrapper.tribe-events-filters-horizontal:before',
+			'#tribe-events-content-wrapper #tribe_events_filters_wrapper.tribe-events-filters-horizontal:after',
+			'#tribe-bar-collapse-toggle',
+			'#tribe-bar-views .tribe-bar-views-list .tribe-bar-views-option a:hover',
+			'#tribe-bar-views .tribe-bar-views-list .tribe-bar-views-option.tribe-bar-active a:hover',
+			'#tribe-events-content-wrapper #tribe_events_filters_wrapper.tribe-events-filters-horizontal',
+			'#tribe-events-content-wrapper #tribe_events_filters_wrapper.tribe-events-filters-vertical .tribe-events-filters-content',
+			'#tribe-events-content-wrapper #tribe_events_filters_wrapper:before',
+			'#tribe-events-content-wrapper #tribe_events_filters_wrapper:after',
+			'.tribe-events-filter-group.tribe-events-filter-autocomplete',
+			'.tribe-events-filter-group.tribe-events-filter-multiselect',
+			'.tribe-events-filter-group.tribe-events-filter-range',
+			'.tribe-events-filter-group.tribe-events-filter-select',
+			'#tribe_events_filters_wrapper .tribe-events-filters-group-heading:hover',
+			'#tribe_events_filters_wrapper .tribe-events-filter-group label',
+			'#tribe_events_filters_wrapper .closed .tribe-events-filters-group-heading:hover'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = fusion_adjust_brightness( Avada_Sanitize::color( Avada()->settings->get( 'ec_bar_bg_color' ), Avada()->settings->get_default( 'ec_bar_bg_color' ) ), 10 );
+
+		$elements = array(
+			'.tribe-events-filters-horizontal .tribe-events-filter-group'
+		);
+		$css['global'][avada_implode( $elements )]['border-color'] = fusion_adjust_brightness( Avada_Sanitize::color( Avada()->settings->get( 'ec_bar_bg_color' ), Avada()->settings->get_default( 'ec_bar_bg_color' ) ), -25 );
+
+		$elements = array(
+			'.tribe-events-filter-group:after'
+		);
+		$css['global'][avada_implode( $elements )]['border-bottom-color'] = fusion_adjust_brightness( Avada_Sanitize::color( Avada()->settings->get( 'ec_bar_bg_color' ), Avada()->settings->get_default( 'ec_bar_bg_color' ) ), 10 );
+
+		$elements = array(
+			'#tribe-bar-form label',
+			'.tribe-bar-disabled #tribe-bar-form label',
+			'#tribe-bar-views .tribe-bar-views-list .tribe-bar-views-option a',
+			'#tribe-bar-views .tribe-bar-views-list .tribe-bar-views-option a:hover',
+			'#tribe-bar-views .tribe-bar-views-list .tribe-bar-views-option.tribe-bar-active a:hover',
+			'#tribe_events_filters_wrapper .tribe-events-filters-label',
+			'#tribe_events_filters_wrapper .tribe-events-filters-group-heading',
+			'#tribe_events_filters_wrapper .tribe-events-filters-group-heading:after',
+			'#tribe_events_filters_wrapper .tribe-events-filters-content > label',
+			'#tribe_events_filters_wrapper label span'
+		);
+		$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_bar_text_color' ), Avada()->settings->get_default( 'ec_bar_text_color' ) );
+
+		$elements = array(
+			'.tribe-events-calendar div[id*=tribe-events-daynum-]',
+			'.tribe-events-calendar div[id*=tribe-events-daynum-] a',
+			'.tribe-events-grid .tribe-grid-header .tribe-week-today'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_calendar_heading_bg_color' ), Avada()->settings->get_default( 'ec_calendar_heading_bg_color' ) );
+
+
+		$elements = array(
+			'#tribe-events-content .tribe-events-calendar td.tribe-events-othermonth',
+			'.tribe-events-calendar td.tribe-events-past div[id*=tribe-events-daynum-]',
+			'.tribe-events-calendar td.tribe-events-past div[id*=tribe-events-daynum-]>a'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = fusion_adjust_brightness( Avada_Sanitize::color( Avada()->settings->get( 'ec_calendar_heading_bg_color' ), Avada()->settings->get_default( 'ec_calendar_heading_bg_color' ) ), 40 );
+
+		$elements = array(
+			'#tribe-events-content .tribe-events-calendar td'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_calendar_bg_color' ), Avada()->settings->get_default( 'ec_calendar_bg_color' ) );
+
+
+		$elements = array(
+			'#tribe-events-content .tribe-events-calendar td.tribe-events-othermonth'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = fusion_adjust_brightness( Avada_Sanitize::color( Avada()->settings->get( 'ec_calendar_bg_color' ), Avada()->settings->get_default( 'ec_calendar_bg_color' ) ), 80 );
+
+		$elements = array(
+			'#tribe-events-content .tribe-events-calendar td.tribe-events-othermonth'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = fusion_adjust_brightness( Avada_Sanitize::color( Avada()->settings->get( 'ec_calendar_bg_color' ), Avada()->settings->get_default( 'ec_calendar_bg_color' ) ), 80 );
+
+		$elements = array(
+			'#tribe-events-content .tribe-events-calendar td',
+			'#tribe-events-content table.tribe-events-calendar'
+		);
+		$css['global'][avada_implode( $elements )]['border-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_border_color' ), Avada()->settings->get_default( 'ec_border_color' ) );
+
+		$elements = array(
+			'#tribe-events-content .tribe-events-calendar td:hover',
+			'.tribe-week-today'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = fusion_adjust_brightness( Avada_Sanitize::color( Avada()->settings->get( 'ec_calendar_bg_color' ), Avada()->settings->get_default( 'ec_calendar_bg_color' ) ), 60 );
+
+		$elements = array(
+			'.tribe-grid-allday',
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = fusion_adjust_brightness( Avada_Sanitize::color( Avada()->settings->get( 'ec_calendar_bg_color' ), Avada()->settings->get_default( 'ec_calendar_bg_color' ) ), 70 );
+
+		$elements = array(
+			'.recurring-info-tooltip',
+			'#tribe-events-content .tribe-events-tooltip'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_tooltip_bg_color' ), Avada()->settings->get_default( 'ec_tooltip_bg_color' ) );
+
+		$elements = array(
+			'.tribe-events-tooltip:before',
+			'.tribe-events-right .tribe-events-tooltip:before'
+		);
+		$css['global'][avada_implode( $elements )]['border-top-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_tooltip_bg_color' ), Avada()->settings->get_default( 'ec_tooltip_bg_color' ) );
+
+		$elements = array(
+			'.tribe-grid-body .tribe-events-tooltip:before',
+			'.tribe-grid-body .tribe-events-tooltip:after',
+		);
+		$css['global'][avada_implode( $elements )]['border-right-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_tooltip_bg_color' ), Avada()->settings->get_default( 'ec_tooltip_bg_color' ) );
+
+		$elements = array(
+			'.tribe-grid-body .tribe-events-right .tribe-events-tooltip:before',
+			'.tribe-grid-body .tribe-events-right .tribe-events-tooltip:after'
+		);
+		$css['global'][avada_implode( $elements )]['border-left-color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_tooltip_bg_color' ), Avada()->settings->get_default( 'ec_tooltip_bg_color' ) );
+
+		$elements = array(
+			'#tribe-events-content .tribe-events-tooltip'
+		);
+		$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'ec_tooltip_body_color' ), Avada()->settings->get_default( 'ec_tooltip_body_color' ) );
+
+		$elements = array(
+			'.tribe-countdown-timer',
+			'.tribe-countdown-text'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'countdown_background_color' ), Avada()->settings->get_default( 'countdown_background_color' ) );
+
+		$elements = array(
+			'.tribe-countdown-timer .tribe-countdown-number'
+		);
+		$css['global'][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'countdown_counter_box_color' ), Avada()->settings->get_default( 'countdown_counter_box_color' ) );
+
+		$elements = array(
+			'.tribe-countdown-timer .tribe-countdown-number .fusion-tribe-counterdown-over',
+			'.tribe-countdown-timer .tribe-countdown-number .tribe-countdown-under',
+		);
+		$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'countdown_counter_text_color' ), Avada()->settings->get_default( 'countdown_counter_text_color' ) );
+
+		$elements = array(
+			'.tribe-events-countdown-widget .tribe-countdown-text, .tribe-events-countdown-widget .tribe-countdown-text a',
+			'#slidingbar-area .tribe-events-countdown-widget .tribe-countdown-text, #slidingbar-area .tribe-events-countdown-widget .tribe-countdown-text a',
+			'.tribe-events-countdown-widget .tribe-countdown-text, .tribe-events-countdown-widget .tribe-countdown-text a:hover',
+			'#slidingbar-area .tribe-events-countdown-widget .tribe-countdown-text, #slidingbar-area .tribe-events-countdown-widget .tribe-countdown-text a:hover'
+		);
+		$css['global'][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'countdown_heading_text_color' ), Avada()->settings->get_default( 'countdown_heading_text_color' ) );
 	}
 
 	if ( Avada()->settings->get( 'responsive' ) ) {
 
-		/**
-		 * Media
-		 */
+		/* =================================================================================================
+		Media Queries
+		----------------------------------------------------------------------------------------------------
+			00 Side Width / Layout Responsive Styles
+				# General Styles
+				# Grid System
+			01 Side Header Responsive Styles
+			02 Top Header Responsive Styles
+			03 Mobile Menu Responsive Styles
+			04 @media only screen and ( max-width: $content_break_point )
+				# Layout
+				# General Styles
+				# Page Title Bar
+				# Blog Layouts
+				# Author Page - Info
+				# Shortcodes
+				# Events Calendar
+				# Woocommerce
+				# Not restructured mobile.css styles
+			05 @media only screen and ( min-width: $content_break_point )
+				# Shortcodes
+			06 @media only screen and ( max-width: 640px )
+				# Layout
+				# General Styles
+				# Page Title Bar
+				# Blog Layouts
+				# Footer Styles
+				# Filters
+				# Not restructured mobile.css styles
+			07 @media only screen and ( min-device-width: 320px ) and ( max-device-width: 640px )
+			08 @media only screen and ( max-width: 480px )
+			09 media.css CSS
+			10 iPad Landscape Responsive Styles
+				# Footer Styles
+			11 iPad Portrait Responsive Styles
+				# Layout
+				# Footer Styles
+		================================================================================================= */
 
-		/**
-		 *  01 Side Header Mobile Styles
-		 *  02 only screen and ( max-width: 800px )
-		 *    # Layout
-		 *    # General Styles
-		 *    # Responsive Headers
-		 *    # Page Title Bar
-		 *    # Blog Layouts
-		 *    # Author Page - Info
-		 *  03 only screen and ( max-width: 640px )
-		 *    # General Styles
-		 *    # Page Title Bar
-		 *    # Blog Layouts
-		 *    # Filters
-		 *  04 only screen and ( min-device-width: 320px ) and ( max-device-width: 640px )
-		 *    # General Styles
-		 *    # Page Title Bar
-		 *  05 media.css CSS
-		 */
+		$side_header_width = ( 'Top' == Avada()->settings->get( 'header_position' ) ) ? 0 : intval( Avada()->settings->get( 'side_header_width' ) );
 
-		/**
-		 * Side Header Mobile Styles
-		 */
 
-		$media_query = '@media only screen and (max-width: ' . Avada_Sanitize::size( Avada()->settings->get( 'side_header_break_point' ) ) . ')';
+		/* Side Width / Layout Responsive Styles
+		================================================================================================= */
+		if ( ! $site_width_percent ) {
 
-		$css[$media_query]['body.side-header #wrapper']['margin-left']  = '0 !important';
-		$css[$media_query]['body.side-header #wrapper']['margin-right'] = '0 !important';
+			// Site width without units (px)
+			$site_width_media_query = '@media only screen and (max-width: ' . $site_width_with_units . ')';
 
-		$css[$media_query]['#side-header']['position'] = 'static';
-		$css[$media_query]['#side-header']['height']   = 'auto';
-		$css[$media_query]['#side-header']['width']    = '100% !important';
-		$css[$media_query]['#side-header']['padding']  = '20px 30px 20px 30px !important';
-		$css[$media_query]['#side-header']['margin']   = '0 !important';
-		$css[$media_query]['#side-header']['border']   = 'none !important';
+			// Side Header + Site Width without units (px)
+			$side_header_width_without_units = Avada_Sanitize::size( Avada()->settings->get( 'side_header_width' ) );
+			$side_header_fwc_breakpoint = $site_width_without_units + $side_header_width_without_units + 60;
+			$site_header_and_width_media_query = '@media only screen and (max-width: ' . $side_header_fwc_breakpoint . 'px)';
 
-		$css[$media_query]['#side-header .side-header-wrapper']['padding-bottom'] = '0';
+			$hundred_perecent_width_padding = '';
+			if ( ( Avada()->settings->get( 'hundredp_padding' ) || Avada()->settings->get( 'hundredp_padding' ) == '0' ) && ! get_post_meta( $c_pageID, 'pyre_hundredp_padding', true ) && ! ( get_post_meta( $c_pageID, 'pyre_hundredp_padding', true ) == '0' ) ) {
+				$hundred_perecent_width_padding = Avada()->settings->get( 'hundredp_padding' );
+			}
+			if ( get_post_meta( $c_pageID, 'pyre_hundredp_padding', true ) || get_post_meta( $c_pageID, 'pyre_hundredp_padding', true ) == '0' ) {
+				$hundred_perecent_width_padding = get_post_meta( $c_pageID, 'pyre_hundredp_padding', true );
+			}
+
+			if ( $hundred_perecent_width_padding ) {
+				$elements = array(
+					'.width-100 .nonhundred-percent-fullwidth',
+					'.width-100 .fusion-section-separator'
+				);
+				$css[$site_width_media_query][avada_implode( $elements )]['padding-left']  = $hundred_perecent_width_padding . '!important';
+				$css[$site_width_media_query][avada_implode( $elements )]['padding-right'] = $hundred_perecent_width_padding . '!important';
+
+				$elements = array(
+					'.width-100 .fullwidth-box',
+					'.width-100 .fusion-section-separator'
+				);
+				$css[$site_width_media_query][avada_implode( $elements )]['margin-left']   = sprintf( '-%s!important', $hundred_perecent_width_padding );
+				$css[$site_width_media_query][avada_implode( $elements )]['margin-right']  = sprintf( '-%s!important', $hundred_perecent_width_padding );
+			}
+
+			// For header left and right, we need to apply padding at:
+			// Site width + side header width + 30px * 2 ( 30 extra for it not to jump so harshly )
+			if( Avada()->settings->get( 'header_position' ) == 'Left' || Avada()->settings->get( 'header_position' ) == 'Right' ) {
+				$elements = array(
+					'.width-100 .nonhundred-percent-fullwidth',
+					'.width-100 .fusion-section-separator'
+				);
+				$css[$site_header_and_width_media_query][avada_implode( $elements )]['padding-left']  = $hundred_perecent_width_padding . '!important';
+				$css[$site_header_and_width_media_query][avada_implode( $elements )]['padding-right'] = $hundred_perecent_width_padding . '!important';
+			}
+
+		}
+
+		// # Grid System
+
+		$main_break_point = (int) Avada()->settings->get( 'grid_main_break_point' );
+		if ( $main_break_point > 640 ) {
+			$breakpoint_range = $main_break_point - 640;
+		} else {
+			$breakpoint_range = 360;
+		}
+
+		$breakpoint_interval = $breakpoint_range / 5;
+
+		$six_columns_breakpoint = $main_break_point + $side_header_width;
+		$five_columns_breakpoint = $six_columns_breakpoint - $breakpoint_interval;
+		$four_columns_breakpoint = $five_columns_breakpoint - $breakpoint_interval;
+		$three_columns_breakpoint = $four_columns_breakpoint - $breakpoint_interval;
+		$two_columns_breakpoint = $three_columns_breakpoint - $breakpoint_interval;
+		$one_column_breakpoint = $two_columns_breakpoint - $breakpoint_interval;
+
+		$six_columns_media_query = '@media only screen and (min-width: ' . $five_columns_breakpoint . 'px) and (max-width: ' . $six_columns_breakpoint . 'px)';
+		$five_columns_media_query = '@media only screen and (min-width: ' . $four_columns_breakpoint . 'px) and (max-width: ' . $five_columns_breakpoint . 'px)';
+		$four_columns_media_query = '@media only screen and (min-width: ' . $three_columns_breakpoint . 'px) and (max-width: ' . $four_columns_breakpoint . 'px)';
+		$three_columns_media_query = '@media only screen and (min-width: ' . $two_columns_breakpoint . 'px) and (max-width: ' . $three_columns_breakpoint . 'px)';
+		$two_columns_media_query = '@media only screen and (max-width: ' . $two_columns_breakpoint . 'px)';
+		$one_column_media_query = '@media only screen and (max-width: ' . $one_column_breakpoint . 'px)';
+
+		$ipad_portrait_media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
+
+		// Six Column Breakpoint
+		$elements = array(
+			'.grid-layout-6 .fusion-post-grid',
+			'.fusion-portfolio-six .fusion-portfolio-post'
+		);
+		$css[$six_columns_media_query][avada_implode( $elements )]['width']  = '20% !important';
+
+		$elements = array(
+			'.fusion-blog-layout-grid-5 .fusion-post-grid',
+			'.fusion-portfolio-five .fusion-portfolio-post'
+		);
+		$css[$six_columns_media_query][avada_implode( $elements )]['width'] = '25% !important';
+
+		// Five Column Breakpoint
+		$elements = array(
+			'.fusion-blog-layout-grid-6 .fusion-post-grid',
+			'.fusion-portfolio-six .fusion-portfolio-post'
+		);
+		$css[$five_columns_media_query][avada_implode( $elements )]['width']  = '20% !important';
+
+		$elements = array(
+			'.fusion-blog-layout-grid-5 .fusion-post-grid',
+			'.fusion-portfolio-five .fusion-portfolio-post'
+		);
+		$css[$five_columns_media_query][avada_implode( $elements )]['width'] = '33.3333333333% !important';
+
+		$elements = array(
+			'.fusion-blog-layout-grid-4 .fusion-post-grid',
+			'.fusion-portfolio-four .fusion-portfolio-post'
+		);
+		$css[$five_columns_media_query][avada_implode( $elements )]['width'] = '33.3333333333% !important';
+
+		// Four Column Breakpoint
+		$elements = array(
+			'.fusion-blog-layout-grid-6 .fusion-post-grid',
+			'.fusion-portfolio-six .fusion-portfolio-post'
+		);
+		$css[$four_columns_media_query][avada_implode( $elements )]['width'] = '25% !important';
+
+		$elements = array(
+			'.fusion-blog-layout-grid-5 .fusion-post-grid',
+			'.fusion-blog-layout-grid-4 .fusion-post-grid',
+			'.fusion-blog-layout-grid-3 .fusion-post-grid',
+			'.fusion-portfolio-five .fusion-portfolio-post',
+			'.fusion-portfolio-four .fusion-portfolio-post',
+			'.fusion-portfolio-three .fusion-portfolio-post',
+			'.fusion-portfolio-masonry .fusion-portfolio-post'
+		);
+		$css[$four_columns_media_query][avada_implode( $elements )]['width'] = '50% !important';
+
+		// Three Column Breakpoint
+		$elements = array(
+			'.fusion-blog-layout-grid-6 .fusion-post-grid',
+			'.fusion-portfolio-six .fusion-portfolio-post'
+		);
+		$css[$three_columns_media_query][avada_implode( $elements )]['width'] = '33.33% !important';
+
+		$elements = array(
+			'.fusion-blog-layout-grid-5 .fusion-post-grid',
+			'.fusion-blog-layout-grid-4 .fusion-post-grid',
+			'.fusion-blog-layout-grid-3 .fusion-post-grid',
+			'.fusion-portfolio-five .fusion-portfolio-post',
+			'.fusion-portfolio-four .fusion-portfolio-post',
+			'.fusion-portfolio-three .fusion-portfolio-post',
+			'.fusion-portfolio-masonry .fusion-portfolio-post'
+		);
+		$css[$three_columns_media_query][avada_implode( $elements )]['width'] = '50% !important';
+
+		// Two Column Breakpoint
+		$elements = array(
+			'.fusion-blog-layout-grid .fusion-post-grid',
+			'.fusion-portfolio-post',
+		);
+		$css[$two_columns_media_query][avada_implode( $elements )]['width'] = '100% !important';
+
+		$elements = array(
+			'.fusion-blog-layout-grid-6 .fusion-post-grid',
+			'.fusion-portfolio-six .fusion-portfolio-post'
+		);
+		$css[$two_columns_media_query][avada_implode( $elements )]['width'] = '50% !important';
+
+		// One Column Breakpoint
+		$elements = array(
+			'.fusion-blog-layout-grid-6 .fusion-post-grid',
+			'.fusion-portfolio-six .fusion-portfolio-post'
+		);
+		$css[$one_column_media_query][avada_implode( $elements )]['width'] = '100% !important';
+
+		// iPad Portrait Column Breakpoint
+		$elements = array(
+			'.fusion-blog-layout-grid-6 .fusion-post-grid',
+			'.fusion-portfolio-six .fusion-portfolio-post'
+		);
+		$css[$ipad_portrait_media_query][avada_implode( $elements )]['width'] = '33.3333333333% !important';
+
+		$elements = array(
+			'.fusion-blog-layout-grid-5 .fusion-post-grid',
+			'.fusion-blog-layout-grid-4 .fusion-post-grid',
+			'.fusion-blog-layout-grid-3 .fusion-post-grid',
+			'.fusion-portfolio-five .fusion-portfolio-post',
+			'.fusion-portfolio-four .fusion-portfolio-post',
+			'.fusion-portfolio-three .fusion-portfolio-post',
+			'.fusion-portfolio-masonry .fusion-portfolio-post'
+		);
+		$css[$ipad_portrait_media_query][avada_implode( $elements )]['width'] = '50% !important';
+
+
+		/* Side Header Only Responsive Styles
+		================================================================================================= */
+		$side_header_media_query = '@media only screen and (max-width: ' . intval( Avada()->settings->get( 'side_header_break_point' ) ) . 'px)';
+
+		if( Avada()->settings->get( 'layout' ) == 'Boxed' ) {
+			$css[$side_header_media_query]['body.side-header #wrapper']['margin-left']  = 'auto !important';
+			$css[$side_header_media_query]['body.side-header #wrapper']['margin-right'] = 'auto !important';
+		} else {
+			$css[$side_header_media_query]['body.side-header #wrapper']['margin-left']  = '0 !important';
+			$css[$side_header_media_query]['body.side-header #wrapper']['margin-right'] = '0 !important';
+		}
+
+		$elements = array(
+			'#side-header',
+			'.layout-boxed-mode .side-header-wrapper',
+			'.side-header-background'
+		);
+		$css[$side_header_media_query][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'mobile_header_bg_color' ), Avada()->settings->get_default( 'mobile_header_bg_color' ) );
+
+		$css[$side_header_media_query]['#side-header']['position'] = 'static';
+		$css[$side_header_media_query]['#side-header']['height']   = 'auto';
+		$css[$side_header_media_query]['#side-header']['width']    = '100% !important';
+		$css[$side_header_media_query]['#side-header']['padding']  = '20px 30px 20px 30px !important';
+		$css[$side_header_media_query]['#side-header']['margin']   = '0 !important';
+
+		$css[$side_header_media_query]['#side-header .side-header-background']['display']   = 'none';
+		$css[$side_header_media_query]['#side-header .side-header-border']['display']   = 'none';
+
+		$css[$side_header_media_query]['#side-header .side-header-wrapper']['padding-bottom'] = '0';
+		$css[$side_header_media_query]['#side-header .side-header-wrapper']['position'] = 'relative';
 
 		if ( is_rtl() ) {
-			$css[$media_query]['body.rtl #side-header']['position'] = 'static !important';
+			$css[$side_header_media_query]['body.rtl #side-header']['position'] = 'static !important';
 		}
 
 		$elements = array(
 			'#side-header .header-social',
 			'#side-header .header-v4-content'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$side_header_media_query][avada_implode( $elements )]['display'] = 'none';
 
-		$css[$media_query]['#side-header .fusion-logo']['margin'] = '0 !important';
-		$css[$media_query]['#side-header .fusion-logo']['float']  = 'left';
+		$css[$side_header_media_query]['#side-header .fusion-logo']['margin'] = '0 !important';
+		$css[$side_header_media_query]['#side-header .fusion-logo']['float']  = 'left';
 
-		$css[$media_query]['#side-header .side-header-content']['padding'] = '0 !important';
+		$css[$side_header_media_query]['#side-header .side-header-content']['padding'] = '0 !important';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-classic .fusion-logo']['float']      = 'none';
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-classic .fusion-logo']['text-align'] = 'center';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-classic .fusion-logo']['float']      = 'none';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-classic .fusion-logo']['text-align'] = 'center';
 
 		$elements = array(
-			'body.side-header #wrapper #side-header.header-shadow:before',
+			'body.side-header #wrapper #side-header.header-shadow .side-header-border:before',
 			'body #wrapper .header-shadow:after'
 		);
-		$css[$media_query][avada_implode( $elements )]['position']   = 'static';
-		$css[$media_query][avada_implode( $elements )]['height']     = 'auto';
-		$css[$media_query][avada_implode( $elements )]['box-shadow'] = 'none';
+		$css[$side_header_media_query][avada_implode( $elements )]['position']   = 'static';
+		$css[$side_header_media_query][avada_implode( $elements )]['height']     = 'auto';
+		$css[$side_header_media_query][avada_implode( $elements )]['box-shadow'] = 'none';
 
 		$elements = array(
 			'#side-header .fusion-main-menu',
 			'#side-header .side-header-content-1-2',
 			'#side-header .side-header-content-3'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$side_header_media_query][avada_implode( $elements )]['display'] = 'none';
 
-		$css[$media_query]['#side-header .fusion-logo']['margin'] = '0';
+		$css[$side_header_media_query]['#side-header .fusion-logo']['margin'] = '0';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-classic .fusion-main-menu-container .fusion-mobile-nav-holder']['display']    = 'block';
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-classic .fusion-main-menu-container .fusion-mobile-nav-holder']['margin-top'] = '20px';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-classic .fusion-main-menu-container .fusion-mobile-nav-holder']['display']    = 'block';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-classic .fusion-main-menu-container .fusion-mobile-nav-holder']['margin-top'] = '20px';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-classic .fusion-main-menu-container .fusion-mobile-sticky-nav-holder']['display'] = 'none';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-classic .fusion-main-menu-container .fusion-mobile-sticky-nav-holder']['display'] = 'none';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo']['float']  = 'left';
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo']['margin'] = '0';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo']['float']  = 'left';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo']['margin'] = '0';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-left']['float'] = 'left';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-left']['float'] = 'left';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-right']['float'] = 'right';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-right']['float'] = 'right';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-center']['float'] = 'left';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-center']['float'] = 'left';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-mobile-menu-icons']['display'] = 'block';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-mobile-menu-icons']['display'] = 'block';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-menu-right .fusion-mobile-menu-icons']['float'] = 'left';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-menu-right .fusion-mobile-menu-icons']['float'] = 'left';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-menu-right .fusion-mobile-menu-icons']['position'] = 'static';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-menu-right .fusion-mobile-menu-icons a']['float'] = 'left';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-menu-right .fusion-mobile-menu-icons :first-child']['margin-left'] = '0';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-menu-left .fusion-mobile-menu-icons']['float'] = 'right';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-menu-left .fusion-mobile-menu-icons']['float'] = 'right';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-menu-left .fusion-mobile-menu-icons a:last-child']['margin-left'] = '0';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-logo-menu-left .fusion-mobile-menu-icons a:last-child']['margin-left'] = '0';
 
 
 		$elements = array(
@@ -3952,83 +4950,125 @@ function avada_dynamic_css_array() {
 			'#side-header.fusion-mobile-menu-design-modern .side-header-wrapper > .fusion-secondary-menu-search'
 		);
 
-		$css[$media_query][avada_implode( $elements )]['padding-top']    = '20px';
-		$css[$media_query][avada_implode( $elements )]['margin-left']    = '-30px';
-		$css[$media_query][avada_implode( $elements )]['margin-right']   = '-30px';
-		$css[$media_query][avada_implode( $elements )]['margin-bottom']  = '-20px';
+		$css[$side_header_media_query][avada_implode( $elements )]['padding-top']    = '20px';
+		$css[$side_header_media_query][avada_implode( $elements )]['margin-left']    = '-30px';
+		$css[$side_header_media_query][avada_implode( $elements )]['margin-right']   = '-30px';
+		$css[$side_header_media_query][avada_implode( $elements )]['margin-bottom']  = '-20px';
 
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-main-menu-container .fusion-mobile-nav-holder > ul']['display']       = 'block';
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-main-menu-container .fusion-mobile-nav-holder > ul']['border-right']  = '0';
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-main-menu-container .fusion-mobile-nav-holder > ul']['border-left']   = '0';
-		$css[$media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-main-menu-container .fusion-mobile-nav-holder > ul']['border-bottom'] = '0';
-
-
-		$css[$media_query]['#side-header.fusion-is-sticky.fusion-sticky-menu-1 .fusion-mobile-nav-holder']['display'] = 'none';
-
-		$css[$media_query]['#side-header.fusion-is-sticky.fusion-sticky-menu-1 .fusion-mobile-sticky-nav-holder']['display'] = 'none';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-main-menu-container .fusion-mobile-nav-holder > ul']['display']       = 'block';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-main-menu-container .fusion-mobile-nav-holder > ul']['border-right']  = '0';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-main-menu-container .fusion-mobile-nav-holder > ul']['border-left']   = '0';
+		$css[$side_header_media_query]['#side-header.fusion-mobile-menu-design-modern .fusion-main-menu-container .fusion-mobile-nav-holder > ul']['border-bottom'] = '0';
 
 
-		$media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + 800 ) . 'px)';
+		$css[$side_header_media_query]['#side-header.fusion-is-sticky.fusion-sticky-menu-1 .fusion-mobile-nav-holder']['display'] = 'none';
 
-		$css[$media_query]['.no-overflow-y']['overflow-y'] = 'visible !important';
+		$css[$side_header_media_query]['#side-header.fusion-is-sticky.fusion-sticky-menu-1 .fusion-mobile-sticky-nav-holder']['display'] = 'none';
 
-		$css[$media_query]['.fusion-layout-column']['margin-left']  = '0';
-		$css[$media_query]['.fusion-layout-column']['margin-right'] = '0';
+
+		/* Top Header Only Responsive Styles
+		================================================================================================= */
+		$mobile_header_media_query = '@media only screen and (max-width: ' . intval( Avada()->settings->get( 'side_header_break_point' ) ) . 'px)';
+
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-header']['padding'] = '0px';
+
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-header .fusion-row']['padding-left']  = '0px';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-header .fusion-row']['padding-right'] = '0px';
+
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header']['max-width']  = '100%';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header']['text-align'] = 'center';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header']['margin-top'] = '10px';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header']['margin-bottom'] = '8px';
+
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header a']['margin-right']  = '20px';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header a']['margin-bottom'] = '5px';
+
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-alignleft']['border-bottom'] = '1px solid transparent';
 
 		$elements = array(
-			'.fusion-layout-column:nth-child(5n)',
-			'.fusion-layout-column:nth-child(4n)',
-			'.fusion-layout-column:nth-child(3n)',
-			'.fusion-layout-column:nth-child(2n)',
+			'.fusion-mobile-menu-design-modern .fusion-alignleft',
+			'.fusion-mobile-menu-design-modern .fusion-alignright'
 		);
-		$css[$media_query][avada_implode( $elements )]['margin-left']  = '0';
-		$css[$media_query][avada_implode( $elements )]['margin-right'] = '0';
+		$css[$mobile_header_media_query][avada_implode( $elements )]['width']      = '100%';
+		$css[$mobile_header_media_query][avada_implode( $elements )]['float']      = 'none';
+		$css[$mobile_header_media_query][avada_implode( $elements )]['display']    = 'block';
 
-		$css[$media_query]['.fusion-layout-column.fusion-spacing-no']['margin-bottom'] = '0';
-		$css[$media_query]['.fusion-layout-column.fusion-spacing-no']['width']         = '100%';
 
-		$css[$media_query]['.fusion-layout-column.fusion-spacing-yes']['width'] = '100%';
+		$elements = array(
+			'.fusion-body .fusion-mobile-menu-design-modern .fusion-secondary-header .fusion-alignleft',
+			'.fusion-body .fusion-mobile-menu-design-modern .fusion-secondary-header .fusion-alignright'
+		);
+		$css[$mobile_header_media_query][avada_implode( $elements )]['text-align'] = 'center';
 
-		$css[$media_query]['.fusion-filters']['border-bottom'] = '0';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu > ul > li']['display']    				= 'inline-block';
+		$css[$mobile_header_media_query]['.fusion-body .fusion-mobile-menu-design-modern .fusion-secondary-menu > ul > li']['float']      = 'none';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu > ul > li']['text-align'] 				= 'left';
 
-		$css[$media_query]['.fusion-body .fusion-filter']['float']         = 'none';
-		$css[$media_query]['.fusion-body .fusion-filter']['margin']        = '0';
-		$css[$media_query]['.fusion-body .fusion-filter']['border-bottom'] = '1px solid #E7E6E6';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-cart']['border-right'] = '0';
 
-		// Responsive Headers
-		$css[$media_query]['.fusion-header .fusion-row']['padding-left']  = '0';
-		$css[$media_query]['.fusion-header .fusion-row']['padding-right'] = '0';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon']['background-color'] = 'transparent';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon']['padding-left']     = '10px';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon']['padding-right']    = '7px';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon']['min-width']        = '100%';
+
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon:after']['display'] = 'none';
+
+		$elements = array(
+			'.fusion-mobile-menu-design-modern .fusion-secondary-menu .fusion-secondary-menu-icon',
+			'.fusion-mobile-menu-design-modern .fusion-secondary-menu .fusion-secondary-menu-icon:hover',
+			'.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon:before'
+		);
+		$css[$mobile_header_media_query][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'snav_color' ), Avada()->settings->get_default( 'snav_color' ) );
+
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-header-tagline']['margin-top']  = '10px';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-header-tagline']['float']       = 'none';
+		$css[$mobile_header_media_query]['.fusion-mobile-menu-design-modern .fusion-header-tagline']['line-height'] = '24px';
+
+		/* Mobile Menu Responsive Styles
+		================================================================================================= */
+		$mobile_menu_media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + intval( Avada()->settings->get( 'side_header_break_point' ) ) ) . 'px)';
+
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-header']['padding-left'] = '0 !important';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-header']['padding-right'] = '0 !important';
+
+		$css[$mobile_menu_media_query]['.fusion-header .fusion-row']['padding-left']  = '0';
+		$css[$mobile_menu_media_query]['.fusion-header .fusion-row']['padding-right'] = '0';
 
 		$elements = array(
 			'.fusion-header-wrapper .fusion-header',
-			'.fusion-header-wrapper #side-header',
 			'.fusion-header-wrapper .fusion-secondary-main-menu'
 		);
-		$css[$media_query][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'mobile_header_bg_color' ), Avada()->settings->get_default( 'mobile_header_bg_color' ) );
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['background-color'] = Avada_Sanitize::color( Avada()->settings->get( 'mobile_header_bg_color' ), Avada()->settings->get_default( 'mobile_header_bg_color' ) );
 
-		$css[$media_query]['.fusion-header-wrapper .fusion-row']['padding-left']  = '0';
-		$css[$media_query]['.fusion-header-wrapper .fusion-row']['padding-right'] = '0';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-row']['padding-left']  = '0';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-row']['padding-right'] = '0';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-row']['max-width'] = '100%';
 
 		$elements = array(
 			'.fusion-footer-widget-area > .fusion-row',
 			'.fusion-footer-copyright-area > .fusion-row'
 		);
-		$css[$media_query][avada_implode( $elements )]['padding-left']  = '0';
-		$css[$media_query][avada_implode( $elements )]['padding-right'] = '0';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-left']  = '0';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-right'] = '0';
 
-		$css[$media_query]['.fusion-secondary-header .fusion-row']['display'] = 'block';
-		$css[$media_query]['.fusion-secondary-header .fusion-alignleft']['margin-right'] = '0';
-		$css[$media_query]['.fusion-secondary-header .fusion-alignright']['margin-left'] = '0';
-		$css[$media_query]['body.fusion-body .fusion-secondary-header .fusion-alignright > *']['float'] = 'none';
-		$css[$media_query]['body.fusion-body .fusion-secondary-header .fusion-alignright .fusion-social-links-header .boxed-icons']['margin-bottom'] = '5px';
+		$css[$mobile_menu_media_query]['.fusion-secondary-header .fusion-row']['display'] = 'block';
+		$css[$mobile_menu_media_query]['.fusion-secondary-header .fusion-alignleft']['margin-right'] = '0';
+		$css[$mobile_menu_media_query]['.fusion-secondary-header .fusion-alignright']['margin-left'] = '0';
+		$css[$mobile_menu_media_query]['body.fusion-body .fusion-secondary-header .fusion-alignright > *']['float'] = 'none';
+		$css[$mobile_menu_media_query]['body.fusion-body .fusion-secondary-header .fusion-alignright .fusion-social-links-header .boxed-icons']['margin-bottom'] = '5px';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v1 .fusion-header',
 			'.fusion-mobile-menu-design-classic.fusion-header-v2 .fusion-header',
 			'.fusion-mobile-menu-design-classic.fusion-header-v3 .fusion-header'
 		);
-		$css[$media_query][avada_implode( $elements )]['padding-top']    = '20px';
-		$css[$media_query][avada_implode( $elements )]['padding-bottom'] = '20px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-top']    = '20px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-bottom'] = '20px';
+
+
+		$css[$mobile_menu_media_query]['.fusion-header-v4 .fusion-logo']['display']  = 'block';
+		$css[$mobile_menu_media_query]['.fusion-header-v4.fusion-mobile-menu-design-modern .fusion-logo .fusion-logo-link']['max-width']  = '75%';
+		$css[$mobile_menu_media_query]['.fusion-header-v4.fusion-mobile-menu-design-modern .fusion-mobile-menu-icons']['position'] = 'absolute';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v1 .fusion-logo',
@@ -4038,54 +5078,54 @@ function avada_dynamic_css_array() {
 			'.fusion-mobile-menu-design-classic.fusion-header-v2 .fusion-logo a',
 			'.fusion-mobile-menu-design-classic.fusion-header-v3 .fusion-logo a'
 		);
-		$css[$media_query][avada_implode( $elements )]['float']      = 'none';
-		$css[$media_query][avada_implode( $elements )]['text-align'] = 'center';
-		$css[$media_query][avada_implode( $elements )]['margin']     = '0 !important';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['float']      = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['text-align'] = 'center';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin']     = '0 !important';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v1 .fusion-main-menu',
 			'.fusion-mobile-menu-design-classic.fusion-header-v2 .fusion-main-menu',
 			'.fusion-mobile-menu-design-classic.fusion-header-v3 .fusion-main-menu'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'none';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v1 .fusion-mobile-nav-holder',
 			'.fusion-mobile-menu-design-classic.fusion-header-v2 .fusion-mobile-nav-holder',
 			'.fusion-mobile-menu-design-classic.fusion-header-v3 .fusion-mobile-nav-holder'
 		);
-		$css[$media_query][avada_implode( $elements )]['display']    = 'block';
-		$css[$media_query][avada_implode( $elements )]['margin-top'] = '20px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display']    = 'block';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-top'] = '20px';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-secondary-header']['padding'] = '10px';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-classic .fusion-secondary-header']['padding'] = '10px';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-secondary-header .fusion-mobile-nav-holder']['margin-top'] = '0';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-classic .fusion-secondary-header .fusion-mobile-nav-holder']['margin-top'] = '0';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-header',
 			'.fusion-mobile-menu-design-classic.fusion-header-v5 .fusion-header'
 		);
-		$css[$media_query][avada_implode( $elements )]['padding-top']    = '20px';
-		$css[$media_query][avada_implode( $elements )]['padding-bottom'] = '20px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-top']    = '20px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-bottom'] = '20px';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-secondary-main-menu',
 			'.fusion-mobile-menu-design-classic.fusion-header-v5 .fusion-secondary-main-menu'
 		);
-		$css[$media_query][avada_implode( $elements )]['padding-top']    = '6px';
-		$css[$media_query][avada_implode( $elements )]['padding-bottom'] = '6px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-top']    = '6px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-bottom'] = '6px';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-main-menu',
 			'.fusion-mobile-menu-design-classic.fusion-header-v5 .fusion-main-menu'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'none';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-mobile-nav-holder',
 			'.fusion-mobile-menu-design-classic.fusion-header-v5 .fusion-mobile-nav-holder'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'block';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'block';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-logo',
@@ -4093,71 +5133,73 @@ function avada_dynamic_css_array() {
 			'.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-logo a',
 			'.fusion-mobile-menu-design-classic.fusion-header-v5 .fusion-logo a'
 		);
-		$css[$media_query][avada_implode( $elements )]['float']      = 'none';
-		$css[$media_query][avada_implode( $elements )]['text-align'] = 'center';
-		$css[$media_query][avada_implode( $elements )]['margin']     = '0 !important';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['float']      = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['text-align'] = 'center';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin']     = '0 !important';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v4 .searchform',
 			'.fusion-mobile-menu-design-classic.fusion-header-v5 .searchform'
 		);
-		$css[$media_query][avada_implode( $elements )]['display']    = 'block';
-		$css[$media_query][avada_implode( $elements )]['float']      = 'none';
-		$css[$media_query][avada_implode( $elements )]['width']      = '100%';
-		$css[$media_query][avada_implode( $elements )]['margin']     = '0';
-		$css[$media_query][avada_implode( $elements )]['margin-top'] = '13px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display']    = 'block';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['float']      = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['width']      = '100%';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin']     = '0';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-top'] = '13px';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v4 .search-table',
 			'.fusion-mobile-menu-design-classic.fusion-header-v5 .search-table'
 		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '100%';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['width'] = '100%';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-logo a']['float'] = 'none';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-logo a']['float'] = 'none';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-header-banner']['margin-top'] = '10px';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-header-banner']['margin-top'] = '10px';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-secondary-main-menu .searchform']['display'] = 'none';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-classic.fusion-header-v4 .fusion-secondary-main-menu .searchform']['display'] = 'none';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-alignleft']['margin-bottom'] = '10px';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-classic .fusion-alignleft']['margin-bottom'] = '10px';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic .fusion-alignleft',
 			'.fusion-mobile-menu-design-classic .fusion-alignright'
 		);
-		$css[$media_query][avada_implode( $elements )]['float']       = 'none';
-		$css[$media_query][avada_implode( $elements )]['width']       = '100%';
-		$css[$media_query][avada_implode( $elements )]['line-height'] = 'normal';
-		$css[$media_query][avada_implode( $elements )]['display']     = 'block';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['float']       = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['width']       = '100%';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['line-height'] = 'normal';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display']     = 'block';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-contact-info']['text-align']  = 'center';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-contact-info']['line-height'] = 'normal';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-contact-info']['text-align']  = 'center';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-contact-info']['line-height'] = 'normal';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-secondary-menu']['display'] = 'none';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-secondary-menu']['display'] = 'none';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-social-links-header']['max-width']     = '100%';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-social-links-header']['margin-top']    = '5px';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-social-links-header']['text-align']    = 'center';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-social-links-header']['max-width']     = '100%';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-social-links-header']['margin-top']    = '5px';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-social-links-header']['text-align']    = 'center';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-social-links-header a']['margin-bottom'] = '5px';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-social-links-header a']['margin-bottom'] = '5px';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-header-tagline']['float']       = 'none';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-header-tagline']['text-align']  = 'center';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-header-tagline']['margin-top']  = '10px';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-header-tagline']['line-height'] = '24px';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-tagline']['float']       = 'none';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-tagline']['text-align']  = 'center';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-tagline']['margin-top']  = '10px';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-tagline']['line-height'] = '24px';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-tagline']['margin-left'] = 'auto';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-tagline']['margin-right'] = 'auto';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-header-banner']['float']      = 'none';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-header-banner']['text-align'] = 'center';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-header-banner']['margin']     = '0 auto';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-header-banner']['width']      = '100%';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-header-banner']['margin-top'] = '20px';
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-header-banner']['clear']      = 'both';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-banner']['float']      = 'none';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-banner']['text-align'] = 'center';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-banner']['margin']     = '0 auto';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-banner']['width']      = '100%';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-banner']['margin-top'] = '20px';
+		$css[$mobile_menu_media_query]['.fusion-header-wrapper .fusion-mobile-menu-design-classic .fusion-header-banner']['clear']      = 'both';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern .ubermenu-responsive-toggle',
 			'.fusion-mobile-menu-design-modern .ubermenu-sticky-toggle-wrapper'
 		);
-		$css[$media_query][avada_implode( $elements )]['clear'] = 'both';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['clear'] = 'both';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v1 .fusion-main-menu',
@@ -4166,7 +5208,7 @@ function avada_dynamic_css_array() {
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-main-menu',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-main-menu'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'none';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v1 .fusion-header',
@@ -4175,11 +5217,11 @@ function avada_dynamic_css_array() {
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-header',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-header'
 		);
-		$css[$media_query][avada_implode( $elements )]['padding-top']    = '20px';
-		$css[$media_query][avada_implode( $elements )]['padding-bottom'] = '20px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-top']    = '20px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-bottom'] = '20px';
 
 		$elements = avada_map_selector( $elements, ' .fusion-row' );
-		$css[$media_query][avada_implode( $elements )]['width'] = '100%';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['width'] = '100%';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v1 .fusion-logo',
@@ -4188,7 +5230,7 @@ function avada_dynamic_css_array() {
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-logo',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-logo'
 		);
-		$css[$media_query][avada_implode( $elements )]['margin'] = '0 !important';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin'] = '0 !important';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v1 .modern-mobile-menu-expanded .fusion-logo',
@@ -4197,7 +5239,7 @@ function avada_dynamic_css_array() {
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .modern-mobile-menu-expanded .fusion-logo',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .modern-mobile-menu-expanded .fusion-logo'
 		);
-		$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '20px !important';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-bottom'] = '20px !important';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v1 .fusion-mobile-nav-holder',
@@ -4206,13 +5248,13 @@ function avada_dynamic_css_array() {
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-mobile-nav-holder',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-mobile-nav-holder'
 		);
-		$css[$media_query][avada_implode( $elements )]['padding-top']   = '20px';
-		$css[$media_query][avada_implode( $elements )]['margin-left']   = '-30px';
-		$css[$media_query][avada_implode( $elements )]['margin-right']  = '-30px';
-		$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '-20px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-top']   = '20px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-left']   = '-30px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-right']  = '-30px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-bottom'] = 'calc(-20px - ' . Avada_Sanitize::get_value_with_unit( Avada()->settings->get( 'margin_header_bottom' ) ) . ')';
 
 		$elements = avada_map_selector( $elements, ' > ul' );
-		$css[$media_query][avada_implode( $elements )]['display'] = 'block';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'block';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v1 .fusion-mobile-sticky-nav-holder',
@@ -4221,7 +5263,7 @@ function avada_dynamic_css_array() {
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-mobile-sticky-nav-holder',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-mobile-sticky-nav-holder'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'none';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v1 .fusion-mobile-menu-icons',
@@ -4230,137 +5272,73 @@ function avada_dynamic_css_array() {
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-mobile-menu-icons',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-mobile-menu-icons'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'block';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'block';
 
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-logo a']['float'] = 'none';
 
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-header']['padding'] = '0px';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-logo .searchform']['float']   = 'none';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-logo .searchform']['display'] = 'none';
 
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-header .fusion-row']['padding-left']  = '0px';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-header .fusion-row']['padding-right'] = '0px';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-header-banner']['margin-top'] = '10px';
 
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header']['max-width']  = '100%';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header']['text-align'] = 'center';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header']['margin-top'] = '10px';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header']['margin-bottom'] = '8px';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header a']['margin-right']  = '20px';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-social-links-header a']['margin-bottom'] = '5px';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-alignleft']['border-bottom'] = '1px solid transparent';
-
-		$elements = array(
-			'.fusion-mobile-menu-design-modern .fusion-alignleft',
-			'.fusion-mobile-menu-design-modern .fusion-alignright'
-		);
-		$css[$media_query][avada_implode( $elements )]['width']      = '100%';
-		$css[$media_query][avada_implode( $elements )]['float']      = 'none';
-		$css[$media_query][avada_implode( $elements )]['display']    = 'block';
-
-
-		$elements = array(
-			'.fusion-body .fusion-mobile-menu-design-modern .fusion-secondary-header .fusion-alignleft',
-			'.fusion-body .fusion-mobile-menu-design-modern .fusion-secondary-header .fusion-alignright'
-		);
-		$css[$media_query][avada_implode( $elements )]['text-align'] = 'center';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu > ul > li']['display']    				= 'inline-block';
-		$css[$media_query]['.fusion-body .fusion-mobile-menu-design-modern .fusion-secondary-menu > ul > li']['float']      = 'none';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu > ul > li']['text-align'] 				= 'left';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-cart']['border-right'] = '0';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon']['background-color'] = 'transparent';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon']['padding-left']     = '10px';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon']['padding-right']    = '7px';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon']['min-width']        = '100%';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon:after']['display'] = 'none';
-
-		$elements = array(
-			'.fusion-mobile-menu-design-modern .fusion-secondary-menu .fusion-secondary-menu-icon',
-			'.fusion-mobile-menu-design-modern .fusion-secondary-menu .fusion-secondary-menu-icon:hover',
-			'.fusion-mobile-menu-design-modern .fusion-secondary-menu-icon:before'
-		);
-		$css[$media_query][avada_implode( $elements )]['color'] = Avada_Sanitize::color( Avada()->settings->get( 'snav_color' ), Avada()->settings->get_default( 'snav_color' ) );
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-header-tagline']['margin-top']  = '10px';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-header-tagline']['float']       = 'none';
-		$css[$media_query]['.fusion-mobile-menu-design-modern .fusion-header-tagline']['line-height'] = '24px';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-logo']['width'] = '50%';
-		$css[$media_query]['.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-logo']['float'] = 'left';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-logo a']['float'] = 'none';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-logo .searchform']['float']   = 'none';
-		$css[$media_query]['.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-logo .searchform']['display'] = 'none';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-header-banner']['margin-top'] = '10px';
-
-		$css[$media_query]['.fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-logo']['float'] = 'left';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-logo']['float'] = 'left';
 
 		if ( is_rtl() ) {
-			$css[$media_query]['.rtl .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-logo']['float'] = 'right';
+			$css[$mobile_menu_media_query]['.rtl .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-logo']['float'] = 'right';
 
-			$css[$media_query]['.rtl .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-mobile-menu-icons']['float'] = 'left';
+			$css[$mobile_menu_media_query]['.rtl .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-mobile-menu-icons']['float'] = 'left';
 
-			$css[$media_query]['.rtl .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-mobile-menu-icons a']['float']        = 'left';
-			$css[$media_query]['.rtl .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-mobile-menu-icons a']['margin-left']  = '0';
-			$css[$media_query]['.rtl .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-mobile-menu-icons a']['margin-right'] = '15px';
+			$css[$mobile_menu_media_query]['.rtl .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-mobile-menu-icons a']['float']        = 'left';
+			$css[$mobile_menu_media_query]['.rtl .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-mobile-menu-icons a']['margin-left']  = '0';
+			$css[$mobile_menu_media_query]['.rtl .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-logo-center .fusion-mobile-menu-icons a']['margin-right'] = '15px';
 		}
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-mobile-nav-holder',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-mobile-nav-holder'
 		);
-		$css[$media_query][avada_implode( $elements )]['padding-top']   = '0';
-		$css[$media_query][avada_implode( $elements )]['margin-left']   = '-30px';
-		$css[$media_query][avada_implode( $elements )]['margin-right']  = '-30px';
-		$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '0';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-top']   = '0';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-left']   = '-30px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-right']  = '-30px';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-bottom'] = '0';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-secondary-main-menu',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-secondary-main-menu'
 		);
-		$css[$media_query][avada_implode( $elements )]['position'] = 'static';
-		$css[$media_query][avada_implode( $elements )]['border']   = '0';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['position'] = 'static';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['border']   = '0';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-secondary-main-menu .fusion-mobile-nav-holder > ul',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-secondary-main-menu .fusion-mobile-nav-holder > ul'
 		);
-		$css[$media_query][avada_implode( $elements )]['border'] = '0';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['border'] = '0';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-secondary-main-menu .searchform',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-secondary-main-menu .searchform'
 		);
-		$css[$media_query][avada_implode( $elements )]['float'] = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['float'] = 'none';
 
 		$elements = array(
 			'.fusion-is-sticky .fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-sticky-header-wrapper',
 			'.fusion-is-sticky .fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-sticky-header-wrapper'
 		);
-		$css[$media_query][avada_implode( $elements )]['position'] = 'fixed';
-		$css[$media_query][avada_implode( $elements )]['width']    = '100%';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['position'] = 'fixed';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['width']    = '100%';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-logo-right.fusion-header-v4 .fusion-logo',
 			'.fusion-mobile-menu-design-modern.fusion-logo-right.fusion-header-v5 .fusion-logo'
 		);
-		$css[$media_query][avada_implode( $elements )]['float'] = 'right';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['float'] = 'right';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-modern.fusion-sticky-menu-only.fusion-header-v4 .fusion-secondary-main-menu',
 			'.fusion-mobile-menu-design-modern.fusion-sticky-menu-only.fusion-header-v5 .fusion-secondary-main-menu'
 		);
-		$css[$media_query][avada_implode( $elements )]['position'] = 'static';
-
-		$elements = array(
-			'.fusion-mobile-menu-design-modern.fusion-sticky-menu-only.fusion-header-v4 .fusion-header-tagline',
-			'.fusion-mobile-menu-design-modern.fusion-sticky-menu-only.fusion-header-v5 .fusion-header-tagline'
-		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['position'] = 'static';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic.fusion-header-v1 .fusion-mobile-sticky-nav-holder',
@@ -4374,7 +5352,7 @@ function avada_dynamic_css_array() {
 			'.fusion-mobile-menu-design-modern.fusion-header-v4 .fusion-mobile-sticky-nav-holder',
 			'.fusion-mobile-menu-design-modern.fusion-header-v5 .fusion-mobile-sticky-nav-holder'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'none';
 
 		$elements = array(
 			'.fusion-is-sticky .fusion-mobile-menu-design-classic.fusion-header-v1.fusion-sticky-menu-1 .fusion-mobile-nav-holder',
@@ -4388,7 +5366,7 @@ function avada_dynamic_css_array() {
 			'.fusion-is-sticky .fusion-mobile-menu-design-modern.fusion-header-v4.fusion-sticky-menu-1 .fusion-mobile-nav-holder',
 			'.fusion-is-sticky .fusion-mobile-menu-design-modern.fusion-header-v5.fusion-sticky-menu-1 .fusion-mobile-nav-holder'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'none';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic .fusion-mobile-nav-item',
@@ -4398,7 +5376,7 @@ function avada_dynamic_css_array() {
 		);
 
 		if ( in_array( Avada()->settings->get( 'mobile_menu_text_align' ), array( 'left', 'right', 'center' ) ) ) {
-			$css[$media_query][avada_implode( $elements )]['text-align'] = esc_attr( Avada()->settings->get( 'mobile_menu_text_align' ) );
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['text-align'] = esc_attr( Avada()->settings->get( 'mobile_menu_text_align' ) );
 		}
 
 		if ( 'right' == Avada()->settings->get( 'mobile_menu_text_align' ) ) {
@@ -4407,73 +5385,91 @@ function avada_dynamic_css_array() {
 				'.fusion-mobile-menu-design-classic .fusion-selector-down',
 				'.fusion-mobile-menu-design-modern .fusion-selector-down'
 			);
-			$css[$media_query][avada_implode( $elements )]['left']               = '7px';
-			$css[$media_query][avada_implode( $elements )]['right']              = '0px';
-			$css[$media_query][avada_implode( $elements )]['border-left']        = '0px';
-			$css[$media_query][avada_implode( $elements )]['border-right-width'] = '1px';
-			$css[$media_query][avada_implode( $elements )]['border-right-style'] = 'solid';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['left']               = '7px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['right']              = '0px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['border-left']        = '0px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['border-right-width'] = '1px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['border-right-style'] = 'solid';
 
 			$elements = avada_map_selector( $elements, ':before' );
-			$css[$media_query][avada_implode( $elements )]['margin-left']  = '0';
-			$css[$media_query][avada_implode( $elements )]['margin-right'] = '12px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-left']  = '0';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-right'] = '12px';
 
 			$elements = array(
 				'.fusion-mobile-menu-design-classic .fusion-open-submenu',
 				'.fusion-mobile-menu-design-modern .fusion-open-submenu'
 			);
-			$css[$media_query][avada_implode( $elements )]['right'] = 'auto';
-			$css[$media_query][avada_implode( $elements )]['left']  = '0';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['right'] = 'auto';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['left']  = '0';
+
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item .fusion-open-submenu']['padding-left']  = '30px';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item .fusion-open-submenu']['padding-right'] = '0';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item a']['padding-left']  = '30px';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item a']['padding-right'] = '30px';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li a']['padding-left']  = '0';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li a']['padding-right'] = '39px';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li a']['padding-left']  = '0';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li a']['padding-right'] = '48px';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li a']['padding-left']  = '0';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li a']['padding-right'] = '57px';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li li a']['padding-left']  = '0';
+			$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder .fusion-mobile-nav-item li li li li a']['padding-right'] = '66px';
+
+		}
+
+		if ( ( 'right' == Avada()->settings->get( 'mobile_menu_text_align' ) && ! is_rtl() ) ||
+			 ( 'right' != Avada()->settings->get( 'mobile_menu_text_align' ) && is_rtl() )
+		) {
 
 			$elements = array(
 				'.fusion-mobile-menu-design-classic .fusion-mobile-nav-holder li.fusion-mobile-nav-item a:before',
 				'.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder li.fusion-mobile-nav-item a:before'
 			);
-			$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'none';
 
 			$elements = array(
 				'.fusion-mobile-menu-design-classic .fusion-mobile-nav-holder li.fusion-mobile-nav-item li a',
 				'.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder li.fusion-mobile-nav-item li a'
 			);
-			$css[$media_query][avada_implode( $elements )]['padding-right'] = '27px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-right'] = '39px';
 
 			$elements = avada_map_selector( $elements, ':after' );
-			$css[$media_query][avada_implode( $elements )]['content']      = '"-"';
-			$css[$media_query][avada_implode( $elements )]['margin-right'] = '-6px';
-			$css[$media_query][avada_implode( $elements )]['margin-left']  = '2px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['content']      = '"-"';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-right'] = '0';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-left']  = '2px';
 
 			$elements = array(
 				'.fusion-mobile-menu-design-classic .fusion-mobile-nav-holder li.fusion-mobile-nav-item li li a',
 				'.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder li.fusion-mobile-nav-item li li a'
 			);
-			$css[$media_query][avada_implode( $elements )]['padding-right'] = '40px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-right'] = '48px';
 
 			$elements = avada_map_selector( $elements, ':after' );
-			$css[$media_query][avada_implode( $elements )]['content']      = '"--"';
-			$css[$media_query][avada_implode( $elements )]['margin-right'] = '-10px';
-			$css[$media_query][avada_implode( $elements )]['margin-left']  = '2px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['content']      = '"--"';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-right'] = '0';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-left']  = '2px';
 
 			$elements = array(
 				'.fusion-mobile-menu-design-classic .fusion-mobile-nav-holder li.fusion-mobile-nav-item li li li a',
 				'.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder li.fusion-mobile-nav-item li li li a'
 			);
-			$css[$media_query][avada_implode( $elements )]['padding-right'] = '53px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-right'] = '57px';
 
 			$elements = avada_map_selector( $elements, ':after' );
-			$css[$media_query][avada_implode( $elements )]['content']      = '"---"';
-			$css[$media_query][avada_implode( $elements )]['margin-right'] = '-14px';
-			$css[$media_query][avada_implode( $elements )]['margin-left']  = '2px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['content']      = '"---"';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-right'] = '0';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-left']  = '2px';
 
 			$elements = array(
 				'.fusion-mobile-menu-design-classic .fusion-mobile-nav-holder li.fusion-mobile-nav-item li li li li a',
 				'.fusion-mobile-menu-design-modern .fusion-mobile-nav-holder li.fusion-mobile-nav-item li li li li a'
 			);
-			$css[$media_query][avada_implode( $elements )]['padding-right'] = '66px';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['padding-right'] = '66px';
 
 			$elements = avada_map_selector( $elements, ':after' );
-			$css[$media_query][avada_implode( $elements )]['content']      = '"----"';
-			$css[$media_query][avada_implode( $elements )]['margin-right'] = '-18px';
-			$css[$media_query][avada_implode( $elements )]['margin-left']  = '2px';
-
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['content']      = '"----"';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-right'] = '0';
+			$css[$mobile_menu_media_query][avada_implode( $elements )]['margin-left']  = '2px';
 		}
 
 		$elements = array(
@@ -4483,33 +5479,130 @@ function avada_dynamic_css_array() {
 			'.fusion-is-sticky .fusion-mobile-menu-design-classic.fusion-header-v4.fusion-sticky-menu-1 .fusion-mobile-sticky-nav-holder',
 			'.fusion-is-sticky .fusion-mobile-menu-design-classic.fusion-header-v5.fusion-sticky-menu-1 .fusion-mobile-sticky-nav-holder'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'block';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'block';
 
-		$css[$media_query]['.fusion-mobile-menu-design-classic .fusion-mobile-nav-holder .fusion-secondary-menu-icon']['text-align'] = 'inherit';
+		$css[$mobile_menu_media_query]['.fusion-mobile-menu-design-classic .fusion-mobile-nav-holder .fusion-secondary-menu-icon']['text-align'] = 'inherit';
 
 		$elements = array(
 			'.fusion-mobile-menu-design-classic .fusion-mobile-nav-holder .fusion-secondary-menu-icon:before',
 			'.fusion-mobile-menu-design-classic .fusion-mobile-nav-holder .fusion-secondary-menu-icon:after'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$mobile_menu_media_query][avada_implode( $elements )]['display'] = 'none';
 
-		/**
-		 * Page Title Bar
-		 */
 
+		/* @media only screen and ( max-width: $content_break_point )
+		================================================================================================= */
+		$content_break_point_media_query = '@media only screen and (max-width: ' . intval( Avada()->settings->get( 'content_break_point' ) ) . 'px)';
+		$content_media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + intval( Avada()->settings->get( 'content_break_point' ) ) ) . 'px)';
+		$content_min_media_query = '@media only screen and (min-width: ' . ( intval( $side_header_width ) + intval( Avada()->settings->get( 'content_break_point' ) ) ) . 'px)';
+
+		// # Layout
+		if ( ! Avada()->settings->get( 'smooth_scrolling' ) ) {
+			if ( Avada()->settings->get( 'responsive' ) ) {
+				$css[$content_min_media_query]['.no-overflow-y body']['padding-right'] = '9px';
+				$css[$content_min_media_query]['.no-overflow-y #slidingbar-area']['right'] = '9px';
+			}
+		}
+
+		$css[$content_media_query]['.no-overflow-y']['overflow-y'] = 'visible !important';
+
+		// #content, .sidebar widths
+		$css[$content_media_query]['#content']['width']       = '100% !important';
+		$css[$content_media_query]['#content']['margin-left'] = '0px !important';
+		$css[$content_media_query]['.sidebar']['width']       = '100% !important';
+		$css[$content_media_query]['.sidebar']['float']       = 'none !important';
+		$css[$content_media_query]['.sidebar']['margin-left'] = '0 !important';
+		$css[$content_media_query]['.sidebar']['clear']       = 'both';
+
+
+		$css[$content_media_query]['.fusion-layout-column']['margin-left']  = '0';
+		$css[$content_media_query]['.fusion-layout-column']['margin-right'] = '0';
+
+		$elements = array(
+			'.fusion-layout-column:nth-child(5n)',
+			'.fusion-layout-column:nth-child(4n)',
+			'.fusion-layout-column:nth-child(3n)',
+			'.fusion-layout-column:nth-child(2n)',
+		);
+		$css[$content_media_query][avada_implode( $elements )]['margin-left']  = '0';
+		$css[$content_media_query][avada_implode( $elements )]['margin-right'] = '0';
+
+		$css[$content_media_query]['.fusion-layout-column.fusion-spacing-no']['margin-bottom']	= '0';
+		$css[$content_media_query]['.fusion-body .fusion-layout-column.fusion-spacing-no']['width']         	= '100%';
+
+		$css[$content_media_query]['.fusion-body .fusion-layout-column.fusion-spacing-yes']['width'] 		= '100%';
+
+		$elements = array(
+			'.fusion-columns-5 .fusion-column:first-child',
+			'.fusion-columns-4 .fusion-column:first-child',
+			'.fusion-columns-3 .fusion-column:first-child',
+			'.fusion-columns-2 .fusion-column:first-child',
+			'.fusion-columns-1 .fusion-column:first-child'
+		);
+		$css[$content_media_query][avada_implode( $elements )]['margin-left'] = '0';
+
+		$css[$content_media_query]['.fusion-columns .fusion-column']['width'] 	   = '100% !important';
+		$css[$content_media_query]['.fusion-columns .fusion-column']['float']      = 'none';
+		$css[$content_media_query]['.fusion-columns .fusion-column:not(.fusion-column-last)']['margin']     = '0 0 50px';
+		$css[$content_media_query]['.fusion-columns .fusion-column']['box-sizing'] = 'border-box';
+
+		if ( is_rtl() ) {
+			$css[$content_media_query]['.rtl .fusion-column']['float'] = 'none';
+		}
+
+		$elements = array(
+			'.col-sm-12',
+			'.col-sm-6',
+			'.col-sm-4',
+			'.col-sm-3',
+			'.col-sm-2',
+			'.fusion-columns-5 .col-lg-2',
+			'.fusion-columns-5 .col-md-2',
+			'.fusion-columns-5 .col-sm-2',
+			'.avada-container .columns .col',
+			'.footer-area .fusion-columns .fusion-column',
+			'#slidingbar-area .columns .col'
+		);
+		$css[$content_media_query][avada_implode( $elements )]['float'] = 'none';
+		$css[$content_media_query][avada_implode( $elements )]['width'] = '100%';
+
+		// # General Styles
+		$css[$content_media_query]['.fusion-filters']['border-bottom'] = '0';
+
+		$css[$content_media_query]['.fusion-body .fusion-filter']['float']         = 'none';
+		$css[$content_media_query]['.fusion-body .fusion-filter']['margin']        = '0';
+		$css[$content_media_query]['.fusion-body .fusion-filter']['border-bottom'] = '1px solid #E7E6E6';
+
+		// Mobile Logo
+		$elements = array(
+			'.fusion-mobile-logo-1 .fusion-standard-logo',
+			'#side-header .fusion-mobile-logo-1 .fusion-standard-logo'
+		);
+		$css[$mobile_header_media_query][avada_implode( $elements )]['display'] = 'none';
+
+		$elements = array(
+			'.fusion-mobile-logo-1 .fusion-mobile-logo-1x',
+			'#side-header .fusion-mobile-logo-1 .fusion-mobile-logo-1x'
+		);
+		$css[$mobile_header_media_query][avada_implode( $elements )]['display'] = 'inline-block';
+
+		$css[$content_media_query]['.fusion-secondary-menu-icon']['min-width'] = '100%';
+
+
+		 // # Page Title Bar
 		if ( 'auto' != Avada()->settings->get( 'page_title_mobile_height' ) ) {
 
-			$css[$media_query]['.fusion-body .fusion-page-title-bar']['padding-top']    = '5px';
-			$css[$media_query]['.fusion-body .fusion-page-title-bar']['padding-bottom'] = '5px';
-			$css[$media_query]['.fusion-body .fusion-page-title-bar']['min-height']     = fusion_strip_unit( Avada()->settings->get( 'page_title_mobile_height' ) ) - 10 . 'px';
-			$css[$media_query]['.fusion-body .fusion-page-title-bar']['height']         = 'auto';
+			$css[$content_media_query]['.fusion-body .fusion-page-title-bar']['padding-top']    = '5px';
+			$css[$content_media_query]['.fusion-body .fusion-page-title-bar']['padding-bottom'] = '5px';
+			$css[$content_media_query]['.fusion-body .fusion-page-title-bar']['min-height']     = intval( Avada()->settings->get( 'page_title_mobile_height' ) ) - 10 . 'px';
+			$css[$content_media_query]['.fusion-body .fusion-page-title-bar']['height']         = 'auto';
 
 		} else {
 
-			$css[$media_query]['.fusion-body .fusion-page-title-bar']['padding-top']    = '10px';
-			$css[$media_query]['.fusion-body .fusion-page-title-bar']['padding-bottom'] = '10px';
-			$css[$media_query]['.fusion-body .fusion-page-title-bar']['height']         = 'auto';
-			$css[$media_query]['.fusion-page-title-row']['height'] = 'auto';
+			$css[$content_media_query]['.fusion-body .fusion-page-title-bar']['padding-top']    = '10px';
+			$css[$content_media_query]['.fusion-body .fusion-page-title-bar']['padding-bottom'] = '10px';
+			$css[$content_media_query]['.fusion-body .fusion-page-title-bar']['height']         = 'auto';
+			$css[$content_media_query]['.fusion-page-title-row']['height'] = 'auto';
 
 		}
 
@@ -4519,459 +5612,355 @@ function avada_dynamic_css_array() {
 			'.fusion-page-title-bar-left .fusion-page-title-secondary',
 			'.fusion-page-title-bar-right .fusion-page-title-secondary'
 		);
-		$css[$media_query][avada_implode( $elements )]['display']     = 'block';
-		$css[$media_query][avada_implode( $elements )]['float']       = 'none';
-		$css[$media_query][avada_implode( $elements )]['width']       = '100%';
-		$css[$media_query][avada_implode( $elements )]['line-height'] = 'normal';
+		$css[$content_media_query][avada_implode( $elements )]['display']     = 'block';
+		$css[$content_media_query][avada_implode( $elements )]['float']       = 'none';
+		$css[$content_media_query][avada_implode( $elements )]['width']       = '100%';
+		$css[$content_media_query][avada_implode( $elements )]['line-height'] = 'normal';
 
-		$css[$media_query]['.fusion-page-title-bar-left .fusion-page-title-secondary']['text-align'] = 'left';
+		$css[$content_media_query]['.fusion-page-title-bar-left .fusion-page-title-secondary']['text-align'] = 'left';
 
-		$css[$media_query]['.fusion-page-title-bar-left .searchform']['display']   = 'block';
-		$css[$media_query]['.fusion-page-title-bar-left .searchform']['max-width'] = '100%';
+		$css[$content_media_query]['.fusion-page-title-bar-left .searchform']['display']   = 'block';
+		$css[$content_media_query]['.fusion-page-title-bar-left .searchform']['max-width'] = '100%';
 
-		$css[$media_query]['.fusion-page-title-bar-right .fusion-page-title-secondary']['text-align'] = 'right';
+		$css[$content_media_query]['.fusion-page-title-bar-right .fusion-page-title-secondary']['text-align'] = 'right';
 
-		$css[$media_query]['.fusion-page-title-bar-right .searchform']['max-width'] = '100%';
+		$css[$content_media_query]['.fusion-page-title-bar-right .searchform']['max-width'] = '100%';
+
+		if ( ! Avada()->settings->get( 'breadcrumb_mobile' ) ) {
+			$css[$content_media_query]['.fusion-body .fusion-page-title-bar .fusion-breadcrumbs']['display'] = 'none';
+		}
 
 		if ( 'auto' != Avada()->settings->get( 'page_title_mobile_height' ) ) {
 
-			$css[$media_query]['.fusion-page-title-row']['display']    = 'table';
-			$css[$media_query]['.fusion-page-title-row']['width']      = '100%';
-			$css[$media_query]['.fusion-page-title-row']['min-height'] = fusion_strip_unit( Avada()->settings->get( 'page_title_mobile_height' ) ) - 20 . 'px';
+			$css[$content_media_query]['.fusion-page-title-row']['display']    = 'table';
+			$css[$content_media_query]['.fusion-page-title-row']['width']      = '100%';
+			$css[$content_media_query]['.fusion-page-title-row']['min-height'] = intval( Avada()->settings->get( 'page_title_mobile_height' ) ) - 20 . 'px';
 
-			$css[$media_query]['.fusion-page-title-bar-center .fusion-page-title-row']['width'] = 'auto';
+			$css[$content_media_query]['.fusion-page-title-bar-center .fusion-page-title-row']['width'] = 'auto';
 
-			$css[$media_query]['.fusion-page-title-wrapper']['display']        = 'table-cell';
-			$css[$media_query]['.fusion-page-title-wrapper']['vertical-align'] = 'middle';
-
+			$css[$content_media_query]['.fusion-page-title-wrapper']['display']        = 'table-cell';
+			$css[$content_media_query]['.fusion-page-title-wrapper']['vertical-align'] = 'middle';
 		}
 
+		// # Blog Layouts
 		// Blog medium alternate layout
-
 		$elements = array(
 			'.fusion-body .fusion-blog-layout-medium-alternate .fusion-post-content',
 			'.fusion-body .fusion-blog-layout-medium-alternate .has-post-thumbnail .fusion-post-content'
 		);
-		$css[$media_query][avada_implode( $elements )]['float']       = 'none';
-		$css[$media_query][avada_implode( $elements )]['clear']       = 'both';
-		$css[$media_query][avada_implode( $elements )]['margin']      = '0';
-		$css[$media_query][avada_implode( $elements )]['padding-top'] = '20px';
+		$css[$content_media_query][avada_implode( $elements )]['float']       = 'none';
+		$css[$content_media_query][avada_implode( $elements )]['clear']       = 'both';
+		$css[$content_media_query][avada_implode( $elements )]['margin']      = '0';
+		$css[$content_media_query][avada_implode( $elements )]['padding-top'] = '20px';
 
-		// Author Page - Info
 
-		$css[$media_query]['.fusion-author .fusion-social-networks']['display'] = 'block';
-		$css[$media_query]['.fusion-body .fusion-author .fusion-social-networks']['text-align'] = 'center';
-		$css[$media_query]['.fusion-author .fusion-social-networks']['margin-top'] = '10px';
+		// # Author Page - Info
+		$css[$content_media_query]['.fusion-author .fusion-social-networks']['display'] = 'block';
+		$css[$content_media_query]['.fusion-body .fusion-author .fusion-social-networks']['text-align'] = 'center';
+		$css[$content_media_query]['.fusion-author .fusion-social-networks']['margin-top'] = '10px';
 
-		$css[$media_query]['.fusion-author .fusion-social-networks .fusion-social-network-icon:first-child']['margin-left'] = '0';
+		$css[$content_media_query]['.fusion-author-tagline']['display']      = 'block';
+		$css[$content_media_query]['.fusion-author-tagline']['float']      = 'none';
+		$css[$content_media_query]['.fusion-author-tagline']['text-align'] = 'center';
+		$css[$content_media_query]['.fusion-author-tagline']['max-width']  = '100%';
 
-		$css[$media_query]['.fusion-author-tagline']['display']      = 'block';
-		$css[$media_query]['.fusion-author-tagline']['float']      = 'none';
-		$css[$media_query]['.fusion-author-tagline']['text-align'] = 'center';
-		$css[$media_query]['.fusion-author-tagline']['max-width']  = '100%';
 
-		// Mobile Logo
-		$elements = array(
-			'.fusion-mobile-logo-1 .fusion-standard-logo',
-			'#side-header .fusion-mobile-logo-1 .fusion-standard-logo'
-		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
-
-		$elements = array(
-			'.fusion-mobile-logo-1 .fusion-mobile-logo-1x',
-			'#side-header .fusion-mobile-logo-1 .fusion-mobile-logo-1x'
-		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'inline-block';
-
-		$css[$media_query]['.fusion-secondary-menu-icon']['min-width'] = '100%';
-
+		// # Shortcodes
 		$elements = array(
 			'.fusion-content-boxes.content-boxes-clean-vertical .content-box-column',
 			'.fusion-content-boxes.content-boxes-clean-horizontal .content-box-column'
 		);
-		$css[$media_query][avada_implode( $elements )]['border-right-width'] = '1px';
+		$css[$content_media_query][avada_implode( $elements )]['border-right-width'] = '1px';
 
 		$elements = array(
 			'.fusion-content-boxes .content-box-shortcode-timeline'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$content_media_query][avada_implode( $elements )]['display'] = 'none';
 
-		$media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + 800 ) . 'px) and (-webkit-min-device-pixel-ratio: 1.5), only screen and (max-width: ' . ( $side_header_width + 800 ) . 'px) and (min-resolution: 144dpi), only screen and (max-width: ' . ( $side_header_width + 800 ) . 'px) and (min-resolution: 1.5dppx)';
+		$elements = array(
+			'.fusion-countdown',
+			'.fusion-countdown .fusion-countdown-heading-wrapper',
+			'.fusion-countdown .fusion-countdown-counter-wrapper',
+			'.fusion-countdown .fusion-countdown-link-wrapper'
+		);
+		 $css[$content_media_query][avada_implode( $elements )]['display'] = 'block';
+		 $css[$content_media_query]['.fusion-countdown .fusion-countdown-heading-wrapper']['text-align'] = 'center';
+		 $css[$content_media_query]['.fusion-countdown .fusion-countdown-counter-wrapper']['margin-top'] = '20px';
+		 $css[$content_media_query]['.fusion-countdown .fusion-countdown-counter-wrapper']['margin-bottom'] = '10px';
+		 $css[$content_media_query]['.fusion-countdown .fusion-dash-title']['display'] = 'block';
+		 $css[$content_media_query]['.fusion-body .fusion-countdown .fusion-dash-title']['padding'] = '0';
+		 $css[$content_media_query]['.fusion-countdown .fusion-dash-title']['font-size'] = '16px';
+		 $css[$content_media_query]['.fusion-countdown .fusion-countdown-link-wrapper']['text-align'] = 'center';
+		 
+
+		// Tagline Box
+		$css[$content_media_query]['.fusion-reading-box-container .reading-box.reading-box-center']['text-align'] = 'left';
+		$css[$content_media_query]['.fusion-reading-box-container .reading-box.reading-box-right']['text-align'] = 'left';
+
+		$css[$content_media_query]['.fusion-reading-box-container .fusion-desktop-button']['display'] = 'none';
+		$css[$content_media_query]['.fusion-reading-box-container .fusion-mobile-button']['display'] = 'block';
+		$css[$content_media_query]['.fusion-reading-box-container .fusion-mobile-button.continue-center']['display'] = 'block';		 
+
+
+		// # Events Calendar
+		if ( class_exists( 'Tribe__Events__Main' ) ) {
+			$css[$content_media_query]['.tribe-events-single ul.tribe-related-events li']['margin-right'] = '0';
+			$css[$content_media_query]['.tribe-events-single ul.tribe-related-events li']['width'] = '100%';
+			$css[$content_break_point_media_query]['.tribe-bar-collapse #tribe-bar-collapse-toggle']['width'] = '59%';
+		}
+
+		$retina_media_query = '@media only screen and (max-width: ' . ( intval( Avada()->settings->get( 'side_header_break_point' ) ) ) . 'px) and (-webkit-min-device-pixel-ratio: 1.5), only screen and (max-width: ' . ( intval( Avada()->settings->get( 'side_header_break_point' ) ) ) . 'px) and (min-resolution: 144dpi), only screen and (max-width: ' . ( intval( Avada()->settings->get( 'side_header_break_point' ) ) ) . 'px) and (min-resolution: 1.5dppx)';
 
 		$elements = array(
 			'.fusion-mobile-logo-1 .fusion-mobile-logo-1x',
 			'#side-header .fusion-mobile-logo-1 .fusion-mobile-logo-1x'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$retina_media_query][avada_implode( $elements )]['display'] = 'none';
 
 		$elements = array(
 			'.fusion-mobile-logo-1 .fusion-mobile-logo-2x',
 			'#side-header .fusion-mobile-logo-1 .fusion-mobile-logo-2x'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'inline-block';
+		$css[$retina_media_query][avada_implode( $elements )]['display'] = 'inline-block';
 
-		/**
-		 * only screen and ( max-width: 640px )
-		 */
-
-		$media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + 640 ) . 'px)';
-
-		// Page Title Bar
-
-		$css[$media_query]['.fusion-body .fusion-page-title-bar']['max-height'] = 'none';
-
-		$css[$media_query]['.fusion-body .fusion-page-title-bar h1']['margin'] = '0';
-
-		$css[$media_query]['.fusion-body .fusion-page-title-secondary']['margin-top'] = '2px';
-
-		// Blog general styles
-		$elements = array(
-			'.fusion-blog-layout-large .fusion-meta-info .fusion-alignleft',
-			'.fusion-blog-layout-medium .fusion-meta-info .fusion-alignleft',
-			'.fusion-blog-layout-large .fusion-meta-info .fusion-alignright',
-			'.fusion-blog-layout-medium .fusion-meta-info .fusion-alignright'
-		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'block';
-		$css[$media_query][avada_implode( $elements )]['float']   = 'none';
-		$css[$media_query][avada_implode( $elements )]['margin']  = '0';
-		$css[$media_query][avada_implode( $elements )]['width']   = '100%';
-
-		// Blog medium layout
-		$css[$media_query]['.fusion-body .fusion-blog-layout-medium .fusion-post-slideshow']['float']  = 'none';
-		$css[$media_query]['.fusion-body .fusion-blog-layout-medium .fusion-post-slideshow']['margin'] = '0 0 20px 0';
-		$css[$media_query]['.fusion-body .fusion-blog-layout-medium .fusion-post-slideshow']['height'] = 'auto';
-		$css[$media_query]['.fusion-body .fusion-blog-layout-medium .fusion-post-slideshow']['width']  = 'auto';
-
-		// Blog large alternate layout
-		$css[$media_query]['.fusion-blog-layout-large-alternate .fusion-date-and-formats']['margin-bottom'] = '55px';
-
-		$css[$media_query]['.fusion-body .fusion-blog-layout-large-alternate .fusion-post-content']['margin'] = '0';
-
-		// Blog medium alternate layout
-		$css[$media_query]['.fusion-blog-layout-medium-alternate .has-post-thumbnail .fusion-post-slideshow']['display']      = 'inline-block';
-		$css[$media_query]['.fusion-blog-layout-medium-alternate .has-post-thumbnail .fusion-post-slideshow']['float']        = 'none';
-		$css[$media_query]['.fusion-blog-layout-medium-alternate .has-post-thumbnail .fusion-post-slideshow']['margin-right'] = '0';
-		$css[$media_query]['.fusion-blog-layout-medium-alternate .has-post-thumbnail .fusion-post-slideshow']['max-width']    = '197px';
-
-		// Blog grid layout
-		$css[$media_query]['.fusion-blog-layout-grid .fusion-post-grid']['position'] = 'static';
-		$css[$media_query]['.fusion-blog-layout-grid .fusion-post-grid']['width']    = '100%';
-
-		/**
-		 * media.css CSS
-		 */
-
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
-
-		$elements = array(
-			'.fusion-secondary-header .fusion-row',
-			'.fusion-header .fusion-row',
-			'.footer-area > .fusion-row',
-			'#footer > .fusion-row'
-		);
-		$css[$media_query][avada_implode( $elements )]['padding-left']  = '0px !important';
-		$css[$media_query][avada_implode( $elements )]['padding-right'] = '0px !important';
-
-		$media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + 1000 ) . 'px)';
-		$css[$media_query]['.no-csstransforms .sep-boxed-pricing .column']['margin-left'] = '1.5% !important';
-
+		// # WooCommerce
 		if ( class_exists( 'WooCommerce' ) ) {
+			if ( 'horizontal' == Avada()->settings->get( 'woocommerce_product_tab_design' ) ) {
 
-			$media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + 965 ) . 'px)';
 
-			$elements = array(
-				'#wrapper .woocommerce-tabs .tabs',
-				'#wrapper .woocommerce-tabs .panel'
-			);
-			$css[$media_query][avada_implode( $elements )]['float']        = 'none';
-			$css[$media_query][avada_implode( $elements )]['margin-left']  = 'auto';
-			$css[$media_query][avada_implode( $elements )]['margin-right'] = 'auto';
-			$css[$media_query][avada_implode( $elements )]['width']        = '100% !important';
+				$elements = array(
+					'#wrapper .woocommerce-tabs .tabs',
+					'#wrapper .woocommerce-tabs .panel'
+				);
 
-			$elements = array(
-				'.woocommerce-tabs .tabs',
-				'.woocommerce-side-nav'
-			);
-			$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '25px';
 
-			$css[$media_query]['.coupon .input-text']['width'] = '100% !important';
+				$css[$content_media_query][avada_implode( $elements )]['float']        = 'none';
+				$css[$content_media_query][avada_implode( $elements )]['margin-left']  = 'auto';
+				$css[$content_media_query][avada_implode( $elements )]['margin-right'] = 'auto';
+				$css[$content_media_query][avada_implode( $elements )]['width']        = '100% !important';
 
-			$css[$media_query]['.coupon .button']['margin-top'] = '20px';
-
-			$media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + 900 ) . 'px)';
-
-			$elements = array(
-				'.woocommerce #customer_login .login .form-row',
-				'.woocommerce #customer_login .login .lost_password'
-			);
-			$css[$media_query][avada_implode( $elements )]['float'] = 'none';
-
-			$elements = array(
-				'.woocommerce #customer_login .login .inline',
-				'.woocommerce #customer_login .login .lost_password'
-			);
-			$css[$media_query][avada_implode( $elements )]['display']      = 'block';
-			$css[$media_query][avada_implode( $elements )]['margin-left']  = '0';
-			$css[$media_query][avada_implode( $elements )]['margin-right'] = '0';
-
+				$elements = array(
+					'.woocommerce-tabs .tabs',
+					'.woocommerce-side-nav'
+				);
+				$css[$content_media_query][avada_implode( $elements )]['margin-bottom'] = '25px';
+				
+				$css[$content_media_query]['.woocommerce-tabs > .tabs']['border'] = 'none';
+				$css[$content_media_query]['.woocommerce-tabs > .wc-tab']['border-top'] = '1px solid';
+				
+				$css[$content_media_query]['.woocommerce-tabs > .tabs .active']['border-top'] = 'none';
+				$css[$content_media_query]['.woocommerce-tabs > .tabs .active']['border-left'] = 'none';
+				$css[$content_media_query]['.woocommerce-tabs > .tabs .active']['border-right'] = 'none';
+				$css[$content_media_query]['.woocommerce-tabs > .tabs .active a']['background-color'] = 'transparent';
+				$css[$content_media_query]['.woocommerce-tabs > .tabs li']['float'] = 'none';
+				$css[$content_media_query]['.woocommerce-tabs > .tabs li']['border-bottom'] = '1px solid';
+				$css[$content_media_query]['.woocommerce-tabs > .tabs li a']['padding'] = '10px 0';
+			}
 		}
 
-		$media_query = '@media only screen and (min-width: 800px)';
+		// # Not restructured mobile.css styles
+		$css[$content_media_query]['#wrapper']['width'] = 'auto !important';
 
-		$css[$media_query]['body.side-header-right.layout-boxed-mode #side-header']['position'] = 'absolute';
-		$css[$media_query]['body.side-header-right.layout-boxed-mode #side-header']['top']      = '0';
+		$css[$content_media_query]['.create-block-format-context']['display'] = 'none';
 
-		$css[$media_query]['body.side-header-right.layout-boxed-mode #side-header .side-header-wrapper']['position'] = 'absolute';
-
-		$media_query = '@media only screen and (max-width: 800px)';
-
-		$elements = array(
-			'.fusion-columns-5 .fusion-column:first-child',
-			'.fusion-columns-4 .fusion-column:first-child',
-			'.fusion-columns-3 .fusion-column:first-child',
-			'.fusion-columns-2 .fusion-column:first-child',
-			'.fusion-columns-1 .fusion-column:first-child'
-		);
-		$css[$media_query][avada_implode( $elements )]['margin-left'] = '0';
-
-		$elements = array(
-			'.fusion-columns-5 .col-lg-2',
-			'.fusion-columns-5 .col-md-2',
-			'.fusion-columns-5 .col-sm-2'
-		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '100%';
-
-		$css[$media_query]['.fusion-columns .fusion-column']['float']      = 'none';
-		$css[$media_query]['.fusion-columns .fusion-column']['width']      = '100% !important';
-		$css[$media_query]['.fusion-columns .fusion-column']['margin']     = '0 0 50px';
-		$css[$media_query]['.fusion-columns .fusion-column']['box-sizing'] = 'border-box';
-
-		if ( is_rtl() ) {
-			$css[$media_query]['.rtl .fusion-column']['float'] = 'none';
-		}
-
-		$css[$media_query]['.avada-container .columns']['float']         = 'none';
-		$css[$media_query]['.avada-container .columns']['width']         = '100%';
-		$css[$media_query]['.avada-container .columns']['margin-bottom'] = '20px';
-
-		$css[$media_query]['.avada-container .columns .col']['float'] = 'left';
-
-		$css[$media_query]['.avada-container .col img']['display'] = 'block';
-		$css[$media_query]['.avada-container .col img']['margin']  = '0 auto';
-
-		$css[$media_query]['#wrapper']['width'] = 'auto !important';
-		// $css[$media_query]['#wrapper']['overflow-x'] = 'hidden';
-
-		$css[$media_query]['.create-block-format-context']['display'] = 'none';
-
-		$css[$media_query]['.review']['float'] = 'none';
-		$css[$media_query]['.review']['width'] = '100%';
+		$css[$content_media_query]['.review']['float'] = 'none';
+		$css[$content_media_query]['.review']['width'] = '100%';
 
 		$elements = array(
 			'.fusion-copyright-notice',
 			'.fusion-body .fusion-social-links-footer'
 		);
-		$css[$media_query][avada_implode( $elements )]['display']    = 'block';
-		$css[$media_query][avada_implode( $elements )]['text-align'] = 'center';
+		$css[$content_media_query][avada_implode( $elements )]['display']    = 'block';
+		$css[$content_media_query][avada_implode( $elements )]['text-align'] = 'center';
 
-		$css[$media_query]['.fusion-social-links-footer']['width'] = 'auto';
+		$css[$content_media_query]['.fusion-social-links-footer']['width'] = 'auto';
 
-		$css[$media_query]['.fusion-social-links-footer .fusion-social-networks']['display']    = 'inline-block';
-		$css[$media_query]['.fusion-social-links-footer .fusion-social-networks']['float']      = 'none';
-		$css[$media_query]['.fusion-social-links-footer .fusion-social-networks']['margin-top'] = '0';
+		$css[$content_media_query]['.fusion-social-links-footer .fusion-social-networks']['display']    = 'inline-block';
+		$css[$content_media_query]['.fusion-social-links-footer .fusion-social-networks']['float']      = 'none';
+		$css[$content_media_query]['.fusion-social-links-footer .fusion-social-networks']['margin-top'] = '0';
 
-		$css[$media_query]['.fusion-copyright-notice']['padding'] = '0 0 15px';
+		$css[$content_media_query]['.fusion-copyright-notice']['padding'] = '0 0 15px';
 
 		$elements = array(
 			'.fusion-copyright-notice:after',
 			'.fusion-social-networks:after'
 		);
-		$css[$media_query][avada_implode( $elements )]['content'] = '""';
-		$css[$media_query][avada_implode( $elements )]['display'] = 'block';
-		$css[$media_query][avada_implode( $elements )]['clear']   = 'both';
+		$css[$content_media_query][avada_implode( $elements )]['content'] = '""';
+		$css[$content_media_query][avada_implode( $elements )]['display'] = 'block';
+		$css[$content_media_query][avada_implode( $elements )]['clear']   = 'both';
 
 		$elements = array(
 			'.fusion-social-networks li',
 			'.fusion-copyright-notice li'
 		);
-		$css[$media_query][avada_implode( $elements )]['float']   = 'none';
-		$css[$media_query][avada_implode( $elements )]['display'] = 'inline-block';
+		$css[$content_media_query][avada_implode( $elements )]['float']   = 'none';
+		$css[$content_media_query][avada_implode( $elements )]['display'] = 'inline-block';
 
-		$css[$media_query]['.fusion-title']['margin-top']    = '0px !important';
-		$css[$media_query]['.fusion-title']['margin-bottom'] = '20px !important';
+		$css[$content_media_query]['.fusion-title']['margin-top']    = '0px !important';
+		$css[$content_media_query]['.fusion-title']['margin-bottom'] = '20px !important';
+		$css[$content_media_query]['.tfs-slider .fusion-title']['margin-bottom'] = '0 !important';
 
-		$css[$media_query]['#main .cart-empty']['float']         = 'none';
-		$css[$media_query]['#main .cart-empty']['text-align']    = 'center';
-		$css[$media_query]['#main .cart-empty']['border-top']    = '1px solid';
-		$css[$media_query]['#main .cart-empty']['border-bottom'] = 'none';
-		$css[$media_query]['#main .cart-empty']['width']         = '100%';
-		$css[$media_query]['#main .cart-empty']['line-height']   = 'normal !important';
-		$css[$media_query]['#main .cart-empty']['height']        = 'auto !important';
-		$css[$media_query]['#main .cart-empty']['margin-bottom'] = '10px';
-		$css[$media_query]['#main .cart-empty']['padding-top']   = '10px';
 
-		$css[$media_query]['#main .return-to-shop']['float']          = 'none';
-		$css[$media_query]['#main .return-to-shop']['border-top']     = 'none';
-		$css[$media_query]['#main .return-to-shop']['border-bottom']  = '1px solid';
-		$css[$media_query]['#main .return-to-shop']['width']          = '100%';
-		$css[$media_query]['#main .return-to-shop']['text-align']     = 'center';
-		$css[$media_query]['#main .return-to-shop']['line-height']    = 'normal !important';
-		$css[$media_query]['#main .return-to-shop']['height']         = 'auto !important';
-		$css[$media_query]['#main .return-to-shop']['padding-bottom'] = '10px';
+		$css[$content_media_query]['#main .cart-empty']['float']         = 'none';
+		$css[$content_media_query]['#main .cart-empty']['text-align']    = 'center';
+		$css[$content_media_query]['#main .cart-empty']['border-top']    = '1px solid';
+		$css[$content_media_query]['#main .cart-empty']['border-bottom'] = 'none';
+		$css[$content_media_query]['#main .cart-empty']['width']         = '100%';
+		$css[$content_media_query]['#main .cart-empty']['line-height']   = 'normal !important';
+		$css[$content_media_query]['#main .cart-empty']['height']        = 'auto !important';
+		$css[$content_media_query]['#main .cart-empty']['margin-bottom'] = '10px';
+		$css[$content_media_query]['#main .cart-empty']['padding-top']   = '10px';
+
+		$css[$content_media_query]['#main .return-to-shop']['float']          = 'none';
+		$css[$content_media_query]['#main .return-to-shop']['border-top']     = 'none';
+		$css[$content_media_query]['#main .return-to-shop']['border-bottom']  = '1px solid';
+		$css[$content_media_query]['#main .return-to-shop']['width']          = '100%';
+		$css[$content_media_query]['#main .return-to-shop']['text-align']     = 'center';
+		$css[$content_media_query]['#main .return-to-shop']['line-height']    = 'normal !important';
+		$css[$content_media_query]['#main .return-to-shop']['height']         = 'auto !important';
+		$css[$content_media_query]['#main .return-to-shop']['padding-bottom'] = '10px';
 
 		if ( class_exists( 'WooCommerce' ) ) {
 
-			$css[$media_query]['.woocommerce .checkout_coupon .promo-code-heading']['display']       = 'block';
-			$css[$media_query]['.woocommerce .checkout_coupon .promo-code-heading']['margin-bottom'] = '10px !important';
-			$css[$media_query]['.woocommerce .checkout_coupon .promo-code-heading']['float']         = 'none';
-			$css[$media_query]['.woocommerce .checkout_coupon .promo-code-heading']['text-align']    = 'center';
+			$css[$content_media_query]['.woocommerce .checkout_coupon']['-webkit-justify-content'] = 'center';
+			$css[$content_media_query]['.woocommerce .checkout_coupon']['-ms-justify-content'] = 'center';
+			$css[$content_media_query]['.woocommerce .checkout_coupon']['justify-content'] = 'center';
+			$css[$content_media_query]['.woocommerce .checkout_coupon']['-webkit-flex-wrap'] = 'wrap';
+			$css[$content_media_query]['.woocommerce .checkout_coupon']['-ms-flex-wrap'] = 'wrap';
+			$css[$content_media_query]['.woocommerce .checkout_coupon']['flex-wrap'] = 'wrap';
 
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-contents']['display'] = 'block';
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-contents']['float']   = 'none';
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-contents']['margin']  = '0';
+			$css[$content_media_query]['.woocommerce .checkout_coupon .promo-code-heading']['margin-bottom'] = '5px';
 
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['display']       = 'block';
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['width']         = 'auto !important';
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['float']         = 'none';
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['text-align']    = 'center';
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['margin-right']  = '0';
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['margin-bottom'] = '10px !important';
-
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-button']['display']      = 'block';
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-button']['margin-right'] = '0';
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-button']['float']        = 'none';
-			$css[$media_query]['.woocommerce .checkout_coupon .coupon-button']['text-align']   = 'center';
-
+			$css[$content_media_query]['.woocommerce .checkout_coupon .coupon-contents']['margin']  = '0';
 		}
 
-		$css[$media_query]['#content.full-width']['margin-bottom'] = '0';
+		$css[$content_media_query]['#content.full-width']['margin-bottom'] = '0';
 
-		$css[$media_query]['.sidebar .social_links .social li']['width']        = 'auto';
-		$css[$media_query]['.sidebar .social_links .social li']['margin-right'] = '5px';
+		$css[$content_media_query]['.sidebar .social_links .social li']['width']        = 'auto';
+		$css[$content_media_query]['.sidebar .social_links .social li']['margin-right'] = '5px';
 
-		$css[$media_query]['#comment-input']['margin-bottom'] = '0';
+		$css[$content_media_query]['#comment-input']['margin-bottom'] = '0';
 
-		$css[$media_query]['#comment-input input']['width']         = '90%';
-		$css[$media_query]['#comment-input input']['float']         = 'none !important';
-		$css[$media_query]['#comment-input input']['margin-bottom'] = '10px';
+		$css[$content_media_query]['#comment-input input']['width']         = '100%';
+		$css[$content_media_query]['#comment-input input']['float']         = 'none !important';
+		$css[$content_media_query]['#comment-input input']['margin-bottom'] = '10px';
 
-		$css[$media_query]['#comment-textarea textarea']['width'] = '90%';
+		$css[$content_media_query]['#comment-textarea textarea']['width'] = '100%';
 
-		$css[$media_query]['.widget.facebook_like iframe']['width']     = '100% !important';
-		$css[$media_query]['.widget.facebook_like iframe']['max-width'] = 'none !important';
+		$css[$content_media_query]['.widget.facebook_like iframe']['width']     = '100% !important';
+		$css[$content_media_query]['.widget.facebook_like iframe']['max-width'] = 'none !important';
 
-		$css[$media_query]['.pagination']['margin-top'] = '40px';
+		$css[$content_media_query]['.pagination']['margin-top'] = '40px';
 
-		$css[$media_query]['.portfolio-one .portfolio-item .image']['float']         = 'none';
-		$css[$media_query]['.portfolio-one .portfolio-item .image']['width']         = 'auto';
-		$css[$media_query]['.portfolio-one .portfolio-item .image']['height']        = 'auto';
-		$css[$media_query]['.portfolio-one .portfolio-item .image']['margin-bottom'] = '20px';
+		$css[$content_media_query]['.portfolio-one .portfolio-item .image']['float']         = 'none';
+		$css[$content_media_query]['.portfolio-one .portfolio-item .image']['width']         = 'auto';
+		$css[$content_media_query]['.portfolio-one .portfolio-item .image']['height']        = 'auto';
+		$css[$content_media_query]['.portfolio-one .portfolio-item .image']['margin-bottom'] = '20px';
 
-		$css[$media_query]['h5.toggle span.toggle-title']['width'] = '80%';
+		$css[$content_media_query]['h5.toggle span.toggle-title']['width'] = '80%';
 
-		$css[$media_query]['#wrapper .sep-boxed-pricing .panel-wrapper']['padding'] = '0';
+		$css[$content_media_query]['#wrapper .sep-boxed-pricing .panel-wrapper']['padding'] = '0';
 
 		$elements = array(
 			'#wrapper .full-boxed-pricing .column',
 			'#wrapper .sep-boxed-pricing .column'
 		);
-		$css[$media_query][avada_implode( $elements )]['float']         = 'none';
-		$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '10px';
-		$css[$media_query][avada_implode( $elements )]['margin-left']   = '0';
-		$css[$media_query][avada_implode( $elements )]['width']         = '100%';
+		$css[$content_media_query][avada_implode( $elements )]['float']         = 'none';
+		$css[$content_media_query][avada_implode( $elements )]['margin-bottom'] = '10px';
+		$css[$content_media_query][avada_implode( $elements )]['margin-left']   = '0';
+		$css[$content_media_query][avada_implode( $elements )]['width']         = '100%';
 
-		$css[$media_query]['.share-box']['height'] = 'auto';
+		$css[$content_media_query]['.share-box']['height'] = 'auto';
 
-		$css[$media_query]['#wrapper .share-box h4']['float']       = 'none';
-		$css[$media_query]['#wrapper .share-box h4']['line-height'] = '20px !important';
-		$css[$media_query]['#wrapper .share-box h4']['margin-top']  = '0';
-		$css[$media_query]['#wrapper .share-box h4']['padding']     = '0';
+		$css[$content_media_query]['#wrapper .share-box h4']['float']       = 'none';
+		$css[$content_media_query]['#wrapper .share-box h4']['line-height'] = '20px !important';
+		$css[$content_media_query]['#wrapper .share-box h4']['margin-top']  = '0';
+		$css[$content_media_query]['#wrapper .share-box h4']['padding']     = '0';
 
-		$css[$media_query]['.share-box ul']['float']          = 'none';
-		$css[$media_query]['.share-box ul']['overflow']       = 'hidden';
-		$css[$media_query]['.share-box ul']['padding']        = '0 25px';
-		$css[$media_query]['.share-box ul']['padding-bottom'] = '15px';
-		$css[$media_query]['.share-box ul']['margin-top']     = '0px';
+		$css[$content_media_query]['.share-box ul']['float']          = 'none';
+		$css[$content_media_query]['.share-box ul']['overflow']       = 'hidden';
+		$css[$content_media_query]['.share-box ul']['padding']        = '0 25px';
+		$css[$content_media_query]['.share-box ul']['padding-bottom'] = '15px';
+		$css[$content_media_query]['.share-box ul']['margin-top']     = '0px';
 
-		$css[$media_query]['.project-content .project-description']['float'] = 'none !important';
+		$css[$content_media_query]['.project-content .project-description']['float'] = 'none !important';
 
-		$css[$media_query]['.single-avada_portfolio .portfolio-half .project-content .project-description h3']['margin-top'] = '24px';
+		$css[$content_media_query]['.single-avada_portfolio .portfolio-half .project-content .project-description h3']['margin-top'] = '24px';
 
-		$css[$media_query]['.project-content .fusion-project-description-details']['margin-bottom'] = '50px';
+		$css[$content_media_query]['.project-content .fusion-project-description-details']['margin-bottom'] = '50px';
 
 		$elements = array(
 			'.project-content .project-description',
 			'.project-content .project-info'
 		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '100% !important';
+		$css[$content_media_query][avada_implode( $elements )]['width'] = '100% !important';
 
-		$css[$media_query]['.portfolio-half .flexslider']['width'] = '100% !important';
+		$css[$content_media_query]['.portfolio-half .flexslider']['width'] = '100% !important';
 
-		$css[$media_query]['.portfolio-half .project-content']['width'] = '100% !important';
+		$css[$content_media_query]['.portfolio-half .project-content']['width'] = '100% !important';
 
-		$css[$media_query]['#style_selector']['display'] = 'none';
+		$css[$content_media_query]['#style_selector']['display'] = 'none';
 
 		$elements = array(
 			'.ls-avada .ls-nav-prev',
 			'.ls-avada .ls-nav-next'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none !important';
+		$css[$content_media_query][avada_implode( $elements )]['display'] = 'none !important';
 
-		$css[$media_query]['#footer .social-networks']['width']    = '100%';
-		$css[$media_query]['#footer .social-networks']['margin']   = '0 auto';
-		$css[$media_query]['#footer .social-networks']['position'] = 'relative';
-		$css[$media_query]['#footer .social-networks']['left']     = '-11px';
+		$css[$content_media_query]['#footer .social-networks']['width']    = '100%';
+		$css[$content_media_query]['#footer .social-networks']['margin']   = '0 auto';
+		$css[$content_media_query]['#footer .social-networks']['position'] = 'relative';
+		$css[$content_media_query]['#footer .social-networks']['left']     = '-11px';
 
-		$css[$media_query]['.tab-holder .tabs']['height'] = 'auto !important';
-		$css[$media_query]['.tab-holder .tabs']['width']  = '100% !important';
+		$css[$content_media_query]['.tab-holder .tabs']['height'] = 'auto !important';
+		$css[$content_media_query]['.tab-holder .tabs']['width']  = '100% !important';
 
-		$css[$media_query]['.shortcode-tabs .tab-hold .tabs li']['width'] = '100% !important';
+		$css[$content_media_query]['.shortcode-tabs .tab-hold .tabs li']['width'] = '100% !important';
 
 		$elements = array(
 			'body .shortcode-tabs .tab-hold .tabs li',
 			'body.dark .sidebar .tab-hold .tabs li'
 		);
-		$css[$media_query][avada_implode( $elements )]['border-right'] = 'none !important';
+		$css[$content_media_query][avada_implode( $elements )]['border-right'] = 'none !important';
 
-		$css[$media_query]['.error-message']['line-height'] = '170px';
-		$css[$media_query]['.error-message']['margin-top']  = '20px';
+		$css[$content_media_query]['.error-message']['line-height'] = '170px';
+		$css[$content_media_query]['.error-message']['margin-top']  = '20px';
 
-		$css[$media_query]['.error_page .useful_links']['width']        = '100%';
-		$css[$media_query]['.error-page .useful_links']['padding-left'] = '0';
+		$css[$content_media_query]['.error_page .useful_links']['width']        = '100%';
+		$css[$content_media_query]['.error-page .useful_links']['padding-left'] = '0';
 
-		$css[$media_query]['.fusion-google-map']['width']         = '100% !important';
-		$css[$media_query]['.fusion-google-map']['margin-bottom'] = '20px !important';
+		$css[$content_media_query]['.fusion-google-map']['width']         = '100% !important';
 
-		$css[$media_query]['.social_links_shortcode .social li']['width'] = '10% !important';
+		$css[$content_media_query]['.social_links_shortcode .social li']['width'] = '10% !important';
 
-		$css[$media_query]['#wrapper .ei-slider']['width'] = '100% !important';
+		$css[$content_media_query]['#wrapper .ei-slider']['width'] = '100% !important';
 
-		$css[$media_query]['#wrapper .ei-slider']['height'] = '200px !important';
+		$css[$content_media_query]['#wrapper .ei-slider']['height'] = '200px !important';
 
-		$css[$media_query]['.progress-bar']['margin-bottom'] = '10px !important';
+		$css[$content_media_query]['.progress-bar']['margin-bottom'] = '10px !important';
 
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['min-height']     = 'inherit !important';
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-bottom'] = '20px';
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-left']   = '3%';
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-right']  = '3%';
+		$css[$content_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['min-height']     = 'inherit !important';
+		$css[$content_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-bottom'] = '20px';
+		$css[$content_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-left']   = '3%';
+		$css[$content_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-right']  = '3%';
 
 		$elements = array(
 			'#wrapper .content-boxes-icon-on-top .content-box-column',
 			'#wrapper .content-boxes-icon-boxed .content-box-column'
 		);
-		$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '55px';
+		$css[$content_media_query][avada_implode( $elements )]['margin-bottom'] = '55px';
 
-		$css[$media_query]['.fusion-counters-box .fusion-counter-box']['margin-bottom'] = '20px';
-		$css[$media_query]['.fusion-counters-box .fusion-counter-box']['padding']       = '0 15px';
+		$css[$content_media_query]['.fusion-counters-box .fusion-counter-box']['margin-bottom'] = '20px';
+		$css[$content_media_query]['.fusion-counters-box .fusion-counter-box']['padding']       = '0 15px';
 
-		$css[$media_query]['.fusion-counters-box .fusion-counter-box:last-child']['margin-bottom'] = '0';
+		$css[$content_media_query]['.fusion-counters-box .fusion-counter-box:last-child']['margin-bottom'] = '0';
 
-		$css[$media_query]['.popup']['display'] = 'none !important';
+		$css[$content_media_query]['.popup']['display'] = 'none !important';
 
-		$css[$media_query]['.share-box .social-networks']['text-align'] = 'left';
+		$css[$content_media_query]['.share-box .social-networks']['text-align'] = 'left';
 
 		if ( class_exists( 'WooCommerce' ) ) {
-			$css[$media_query]['.fusion-body .products li']['width'] = '225px';
+			$css[$content_media_query]['.fusion-body .products li']['width'] = '225px';
 
 			$elements = array(
 				'.products li',
@@ -4985,9 +5974,9 @@ function avada_dynamic_css_array() {
 				'.avada-customer-details .addresses .col-2'
 			);
 
-			$css[$media_query][avada_implode( $elements )]['float']        = 'none !important';
-			$css[$media_query][avada_implode( $elements )]['margin-left']  = 'auto !important';
-			$css[$media_query][avada_implode( $elements )]['margin-right'] = 'auto !important';
+			$css[$content_media_query][avada_implode( $elements )]['float']        = 'none !important';
+			$css[$content_media_query][avada_implode( $elements )]['margin-left']  = 'auto !important';
+			$css[$content_media_query][avada_implode( $elements )]['margin-right'] = 'auto !important';
 
 			$elements = array(
 				'.avada-myaccount-data .addresses .col-1',
@@ -4995,69 +5984,53 @@ function avada_dynamic_css_array() {
 				'.avada-customer-details .addresses .col-1',
 				'.avada-customer-details .addresses .col-2'
 			);
-			$css[$media_query][avada_implode( $elements )]['margin'] = '0 !important';
-			$css[$media_query][avada_implode( $elements )]['width']  = '100%';
+			$css[$content_media_query][avada_implode( $elements )]['margin'] = '0 !important';
+			$css[$content_media_query][avada_implode( $elements )]['width']  = '100%';
 
-			$css[$media_query]['#wrapper .catalog-ordering']['margin-bottom'] = '50px';
+			$css[$content_media_query]['#wrapper .catalog-ordering']['margin-bottom'] = '50px';
 
-			$css[$media_query]['#wrapper .catalog-ordering .order']['width'] = '33px';
+			$css[$content_media_query]['#wrapper .orderby-order-container']['display'] = 'block';
 
-			$elements = array(
-				'#wrapper .catalog-ordering > ul',
-				'.catalog-ordering .order'
-			);
-			$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '10px';
+			$css[$content_media_query]['#wrapper .order-dropdown > li:hover > ul']['display']  = 'block';
+			$css[$content_media_query]['#wrapper .order-dropdown > li:hover > ul']['position'] = 'relative';
+			$css[$content_media_query]['#wrapper .order-dropdown > li:hover > ul']['top']      = '0';
 
-			$css[$media_query]['#wrapper .order-dropdown > li:hover > ul']['display']  = 'block';
-			$css[$media_query]['#wrapper .order-dropdown > li:hover > ul']['position'] = 'relative';
-			$css[$media_query]['#wrapper .order-dropdown > li:hover > ul']['top']      = '0';
+			$css[$content_media_query]['#wrapper .orderby-order-container']['margin']        = '0 auto';
+			$css[$content_media_query]['#wrapper .orderby-order-container']['width']         = '225px';
+			$css[$content_media_query]['#wrapper .orderby-order-container']['float']         = 'none';
 
-			$css[$media_query]['#wrapper .orderby-order-container']['overflow']      = 'hidden';
-			$css[$media_query]['#wrapper .orderby-order-container']['margin']        = '0 auto';
-			$css[$media_query]['#wrapper .orderby-order-container']['width']         = '215px';
-			$css[$media_query]['#wrapper .orderby-order-container']['margin-bottom'] = '10px';
-			$css[$media_query]['#wrapper .orderby-order-container']['float']         = 'none';
+			$css[$content_media_query]['#wrapper .orderby.order-dropdown']['width']        = '176px';
 
-			$css[$media_query]['#wrapper .orderby.order-dropdown']['float']        = 'left';
-			$css[$media_query]['#wrapper .orderby.order-dropdown']['margin-right'] = '6px';
+			$css[$content_media_query]['#wrapper .sort-count.order-dropdown']['display'] = 'block';
+			$css[$content_media_query]['#wrapper .sort-count.order-dropdown']['width'] = '225px';
 
-			$css[$media_query]['#wrapper .sort-count.order-dropdown']['width'] = '215px';
+			$css[$content_media_query]['#wrapper .sort-count.order-dropdown ul a']['width'] = '225px';
 
-			$css[$media_query]['#wrapper .sort-count.order-dropdown ul a']['width'] = '215px';
+			$css[$content_media_query]['#wrapper .catalog-ordering .order']['margin'] = '0';
 
-			$css[$media_query]['#wrapper .catalog-ordering .order']['float']  = 'left';
-			$css[$media_query]['#wrapper .catalog-ordering .order']['margin'] = '0';
-
-			if ( is_rtl() ) {
-				$css[$media_query]['.rtl #wrapper .orderby.order-dropdown']['float']  = 'right';
-				$css[$media_query]['.rtl #wrapper .orderby.order-dropdown']['margin'] = '0';
-
-				$css[$media_query]['.rtl #wrapper .catalog-ordering .order']['float']        = 'right';
-				$css[$media_query]['.rtl #wrapper .catalog-ordering .order']['margin-right'] = '6px';
-			}
-
-			$css[$media_query]['.fusion-grid-list-view']['width'] = '74px';
+			$css[$content_media_query]['.catalog-ordering .fusion-grid-list-view']['display'] = 'block';
+			$css[$content_media_query]['.catalog-ordering .fusion-grid-list-view']['width'] = '78px';
 
 			$elements = array(
 				'.woocommerce #customer_login .login .form-row',
 				'.woocommerce #customer_login .login .lost_password'
 			);
-			$css[$media_query][avada_implode( $elements )]['float'] = 'none';
+			$css[$content_media_query][avada_implode( $elements )]['float'] = 'none';
 
 			$elements = array(
 				'.woocommerce #customer_login .login .inline',
 				'.woocommerce #customer_login .login .lost_password'
 			);
-			$css[$media_query][avada_implode( $elements )]['display']     = 'block';
-			$css[$media_query][avada_implode( $elements )]['margin-left'] = '0';
+			$css[$content_media_query][avada_implode( $elements )]['display']     = 'block';
+			$css[$content_media_query][avada_implode( $elements )]['margin-left'] = '0';
 
-			$css[$media_query]['.avada-myaccount-data .my_account_orders .order-number']['padding-right'] = '8px';
+			$css[$content_media_query]['.avada-myaccount-data .my_account_orders .order-number']['padding-right'] = '8px';
 
-			$css[$media_query]['.avada-myaccount-data .my_account_orders .order-actions']['padding-left'] = '8px';
+			$css[$content_media_query]['.avada-myaccount-data .my_account_orders .order-actions']['padding-left'] = '8px';
 
-			$css[$media_query]['.shop_table .product-name']['width'] = '35%';
+			$css[$content_media_query]['.shop_table .product-name']['width'] = '35%';
 
-			$css[$media_query]['form.checkout .shop_table tfoot th']['padding-right'] = '20px';
+			$css[$content_media_query]['form.checkout .shop_table tfoot th']['padding-right'] = '20px';
 
 			$elements = array(
 				'#wrapper .product .images',
@@ -5073,67 +6046,68 @@ function avada_dynamic_css_array() {
 				'#wrapper .woocommerce form.checkout #customer_details .col-1',
 				'#wrapper .woocommerce form.checkout #customer_details .col-2'
 			);
-			$css[$media_query][avada_implode( $elements )]['float']        = 'none';
-			$css[$media_query][avada_implode( $elements )]['margin-left']  = 'auto';
-			$css[$media_query][avada_implode( $elements )]['margin-right'] = 'auto';
-			$css[$media_query][avada_implode( $elements )]['width']        = '100% !important';
+			$css[$content_media_query][avada_implode( $elements )]['float']        = 'none';
+			$css[$content_media_query][avada_implode( $elements )]['margin-left']  = 'auto';
+			$css[$content_media_query][avada_implode( $elements )]['margin-right'] = 'auto';
+			$css[$content_media_query][avada_implode( $elements )]['width']        = '100% !important';
 
 			$elements = array(
 				'#customer_login .col-1',
 				'.coupon'
 			);
-			$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '20px';
+			$css[$content_media_query][avada_implode( $elements )]['margin-bottom'] = '20px';
 
-			$css[$media_query]['.shop_table .product-thumbnail']['float'] = 'none';
+			$css[$content_media_query]['.shop_table .product-thumbnail']['float'] = 'none';
 
-			$css[$media_query]['.product-info']['margin-left'] = '0';
-			$css[$media_query]['.product-info']['margin-top']  = '10px';
+			$css[$content_media_query]['.product-info']['margin-left'] = '0';
+			$css[$content_media_query]['.product-info']['margin-top']  = '10px';
 
-			$css[$media_query]['.product .entry-summary div .price']['float'] = 'none';
+			$css[$content_media_query]['.product .entry-summary div .price']['float'] = 'none';
 
-			$css[$media_query]['.product .entry-summary .woocommerce-product-rating']['float']       = 'none';
-			$css[$media_query]['.product .entry-summary .woocommerce-product-rating']['margin-left'] = '0';
+			$css[$content_media_query]['.product .entry-summary .woocommerce-product-rating']['float']       = 'none';
+			$css[$content_media_query]['.product .entry-summary .woocommerce-product-rating']['margin-left'] = '0';
 
 			$elements = array(
 				'.woocommerce-tabs .tabs',
 				'.woocommerce-side-nav'
 			);
-			$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '25px';
+			$css[$content_media_query][avada_implode( $elements )]['margin-bottom'] = '25px';
 
-			$css[$media_query]['.woocommerce-tabs .panel']['width']   = '91% !important';
-			$css[$media_query]['.woocommerce-tabs .panel']['padding'] = '4% !important';
+			$css[$content_media_query]['.woocommerce-tabs .panel']['width']   = '91% !important';
+			$css[$content_media_query]['.woocommerce-tabs .panel']['padding'] = '4% !important';
 
-			$css[$media_query]['#reviews li .avatar']['display'] = 'none';
+			$css[$content_media_query]['#reviews li .avatar']['display'] = 'none';
 
-			$css[$media_query]['#reviews li .comment-text']['width']       = '90% !important';
-			$css[$media_query]['#reviews li .comment-text']['margin-left'] = '0 !important';
-			$css[$media_query]['#reviews li .comment-text']['padding']     = '5% !important';
+			$css[$content_media_query]['#reviews li .comment-text']['width']       = '90% !important';
+			$css[$content_media_query]['#reviews li .comment-text']['margin-left'] = '0 !important';
+			$css[$content_media_query]['#reviews li .comment-text']['padding']     = '5% !important';
 
-			$css[$media_query]['.woocommerce-container .social-share']['overflow'] = 'hidden';
+			$css[$content_media_query]['html .woocommerce .woocommerce-container .social-share']['display'] = 'block';
+			$css[$content_media_query]['.woocommerce-container .social-share']['overflow'] = 'hidden';
 
-			$css[$media_query]['.woocommerce-container .social-share li']['display']       = 'block';
-			$css[$media_query]['.woocommerce-container .social-share li']['float']         = 'left';
-			$css[$media_query]['.woocommerce-container .social-share li']['margin']        = '0 auto';
-			$css[$media_query]['.woocommerce-container .social-share li']['border-right']  = '0 !important';
-			$css[$media_query]['.woocommerce-container .social-share li']['border-left']   = '0 !important';
-			$css[$media_query]['.woocommerce-container .social-share li']['padding-left']  = '0 !important';
-			$css[$media_query]['.woocommerce-container .social-share li']['padding-right'] = '0 !important';
-			$css[$media_query]['.woocommerce-container .social-share li']['width']         = '50%';
+			$css[$content_media_query]['.woocommerce-container .social-share li']['display']       = 'block';
+			$css[$content_media_query]['.woocommerce-container .social-share li']['float']         = 'left';
+			$css[$content_media_query]['.woocommerce-container .social-share li']['margin']        = '0 auto';
+			$css[$content_media_query]['.woocommerce-container .social-share li']['border-right']  = '0 !important';
+			$css[$content_media_query]['.woocommerce-container .social-share li']['border-left']   = '0 !important';
+			$css[$content_media_query]['.woocommerce-container .social-share li']['padding-left']  = '0 !important';
+			$css[$content_media_query]['.woocommerce-container .social-share li']['padding-right'] = '0 !important';
+			$css[$content_media_query]['.woocommerce-container .social-share li']['width']         = '50%';
 
-			$css[$media_query]['.has-sidebar .woocommerce-container .social-share li']['width'] = '50%';
+			$css[$content_media_query]['.has-sidebar .woocommerce-container .social-share li']['width'] = '50%';
 
-			$css[$media_query]['.myaccount_user_container span']['width']        = '100%';
-			$css[$media_query]['.myaccount_user_container span']['float']        = 'none';
-			$css[$media_query]['.myaccount_user_container span']['display']      = 'block';
-			$css[$media_query]['.myaccount_user_container span']['padding']      = '5px 0px';
-			$css[$media_query]['.myaccount_user_container span']['border-right'] = 0;
+			$css[$content_media_query]['.myaccount_user_container span']['width']        = '100%';
+			$css[$content_media_query]['.myaccount_user_container span']['float']        = 'none';
+			$css[$content_media_query]['.myaccount_user_container span']['display']      = 'block';
+			$css[$content_media_query]['.myaccount_user_container span']['padding']      = '5px 0px';
+			$css[$content_media_query]['.myaccount_user_container span']['border-right'] = 0;
 
-			$css[$media_query]['.myaccount_user_container span.username']['margin-top'] = '10px';
+			$css[$content_media_query]['.myaccount_user_container span.username']['margin-top'] = '10px';
 
-			$css[$media_query]['.myaccount_user_container span.view-cart']['margin-bottom'] = '10px';
+			$css[$content_media_query]['.myaccount_user_container span.view-cart']['margin-bottom'] = '10px';
 
 			if ( is_rtl() ) {
-				$css[$media_query]['.rtl .myaccount_user_container span']['border-left'] = '0';
+				$css[$content_media_query]['.rtl .myaccount_user_container span']['border-left'] = '0';
 			}
 
 			$elements = array(
@@ -5141,25 +6115,25 @@ function avada_dynamic_css_array() {
 				'.shop_table .product-thumbnail .product-info',
 				'.shop_table .product-thumbnail .product-info p'
 			);
-			$css[$media_query][avada_implode( $elements )]['float']   = 'none';
-			$css[$media_query][avada_implode( $elements )]['width']   = '100%';
-			$css[$media_query][avada_implode( $elements )]['margin']  = '0 !important';
-			$css[$media_query][avada_implode( $elements )]['padding'] = '0';
+			$css[$content_media_query][avada_implode( $elements )]['float']   = 'none';
+			$css[$content_media_query][avada_implode( $elements )]['width']   = '100%';
+			$css[$content_media_query][avada_implode( $elements )]['margin']  = '0 !important';
+			$css[$content_media_query][avada_implode( $elements )]['padding'] = '0';
 
-			$css[$media_query]['.shop_table .product-thumbnail']['padding'] = '10px 0px';
+			$css[$content_media_query]['.shop_table .product-thumbnail']['padding'] = '10px 0px';
 
-			$css[$media_query]['.product .images']['margin-bottom'] = '30px';
+			$css[$content_media_query]['.product .images']['margin-bottom'] = '30px';
 
-			$css[$media_query]['#customer_login_box .button']['float']         = 'left';
-			$css[$media_query]['#customer_login_box .button']['margin-bottom'] = '15px';
+			$css[$content_media_query]['#customer_login_box .button']['float']         = 'left';
+			$css[$content_media_query]['#customer_login_box .button']['margin-bottom'] = '15px';
 
-			$css[$media_query]['#customer_login_box .remember-box']['clear']   = 'both';
-			$css[$media_query]['#customer_login_box .remember-box']['display'] = 'block';
-			$css[$media_query]['#customer_login_box .remember-box']['padding'] = '0';
-			$css[$media_query]['#customer_login_box .remember-box']['width']   = '125px';
-			$css[$media_query]['#customer_login_box .remember-box']['float']   = 'left';
+			$css[$content_media_query]['#customer_login_box .remember-box']['clear']   = 'both';
+			$css[$content_media_query]['#customer_login_box .remember-box']['display'] = 'block';
+			$css[$content_media_query]['#customer_login_box .remember-box']['padding'] = '0';
+			$css[$content_media_query]['#customer_login_box .remember-box']['width']   = '125px';
+			$css[$content_media_query]['#customer_login_box .remember-box']['float']   = 'left';
 
-			$css[$media_query]['#customer_login_box .lost_password']['float'] = 'left';
+			$css[$content_media_query]['#customer_login_box .lost_password']['float'] = 'left';
 
 		}
 
@@ -5171,9 +6145,9 @@ function avada_dynamic_css_array() {
 				'.wpcf7-form .wpcf7-number',
 				'.wpcf7-form textarea'
 			);
-			$css[$media_query][avada_implode( $elements )]['float']      = 'none !important';
-			$css[$media_query][avada_implode( $elements )]['width']      = '100% !important';
-			$css[$media_query][avada_implode( $elements )]['box-sizing'] = 'border-box';
+			$css[$content_media_query][avada_implode( $elements )]['float']      = 'none !important';
+			$css[$content_media_query][avada_implode( $elements )]['width']      = '100% !important';
+			$css[$content_media_query][avada_implode( $elements )]['box-sizing'] = 'border-box';
 
 		}
 
@@ -5184,52 +6158,52 @@ function avada_dynamic_css_array() {
 				'.gform_wrapper .left_label input.medium',
 				'.gform_wrapper .left_label select.medium'
 			);
-			$css[$media_query][avada_implode( $elements )]['width'] = '35% !important';
+			$css[$content_media_query][avada_implode( $elements )]['width'] = '35% !important';
 		}
 
 		$elements = array(
 			'.product .images #slider .flex-direction-nav',
 			'.product .images #carousel .flex-direction-nav'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none !important';
+		$css[$content_media_query][avada_implode( $elements )]['display'] = 'none !important';
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			$elements = array(
 				'.myaccount_user_container span.msg',
 				'.myaccount_user_container span:last-child'
 			);
-			$css[$media_query][avada_implode( $elements )]['padding-left']  = '0 !important';
-			$css[$media_query][avada_implode( $elements )]['padding-right'] = '0 !important';
+			$css[$content_media_query][avada_implode( $elements )]['padding-left']  = '0 !important';
+			$css[$content_media_query][avada_implode( $elements )]['padding-right'] = '0 !important';
 		}
 
-		$css[$media_query]['.fullwidth-box']['background-attachment'] = 'scroll !important';
+		$css[$content_media_query]['.fullwidth-box']['background-attachment'] = 'scroll !important';
 
-		$css[$media_query]['#toTop']['bottom']        = '30px';
-		$css[$media_query]['#toTop']['border-radius'] = '4px';
-		$css[$media_query]['#toTop']['height']        = '40px';
-		$css[$media_query]['#toTop']['z-index']       = '10000';
+		$css[$content_media_query]['#toTop']['bottom']        = '30px';
+		$css[$content_media_query]['#toTop']['border-radius'] = '4px';
+		$css[$content_media_query]['#toTop']['height']        = '40px';
+		$css[$content_media_query]['#toTop']['z-index']       = '10000';
 
-		$css[$media_query]['#toTop:before']['line-height'] = '38px';
+		$css[$content_media_query]['#toTop:before']['line-height'] = '38px';
 
-		$css[$media_query]['#toTop:hover']['background-color'] = '#333333';
+		$css[$content_media_query]['#toTop:hover']['background-color'] = '#333333';
 
-		$css[$media_query]['.no-mobile-totop .to-top-container']['display'] = 'none';
+		$css[$content_media_query]['.no-mobile-totop .to-top-container']['display'] = 'none';
 
-		$css[$media_query]['.no-mobile-slidingbar #slidingbar-area']['display'] = 'none';
+		$css[$content_media_query]['.no-mobile-slidingbar #slidingbar-area']['display'] = 'none';
 
-		$css[$media_query]['.no-mobile-slidingbar.mobile-logo-pos-left .mobile-menu-icons']['margin-right'] = '0';
+		$css[$content_media_query]['.no-mobile-slidingbar.mobile-logo-pos-left .mobile-menu-icons']['margin-right'] = '0';
 
 		if ( is_rtl() ) {
-			$css[$media_query]['.rtl.no-mobile-slidingbar.mobile-logo-pos-right .mobile-menu-icons']['margin-left'] = '0';
+			$css[$content_media_query]['.rtl.no-mobile-slidingbar.mobile-logo-pos-right .mobile-menu-icons']['margin-left'] = '0';
 		}
 
-		$css[$media_query]['.tfs-slider .slide-content-container .btn']['min-height']    = '0 !important';
-		$css[$media_query]['.tfs-slider .slide-content-container .btn']['padding-left']  = '30px';
-		$css[$media_query]['.tfs-slider .slide-content-container .btn']['padding-right'] = '30px !important';
-		$css[$media_query]['.tfs-slider .slide-content-container .btn']['height']        = '26px !important';
-		$css[$media_query]['.tfs-slider .slide-content-container .btn']['line-height']   = '26px !important';
+		$css[$content_media_query]['.tfs-slider .slide-content-container .btn']['min-height']    = '0 !important';
+		$css[$content_media_query]['.tfs-slider .slide-content-container .btn']['padding-left']  = '30px';
+		$css[$content_media_query]['.tfs-slider .slide-content-container .btn']['padding-right'] = '30px !important';
+		$css[$content_media_query]['.tfs-slider .slide-content-container .btn']['height']        = '26px !important';
+		$css[$content_media_query]['.tfs-slider .slide-content-container .btn']['line-height']   = '26px !important';
 
-		$css[$media_query]['.fusion-soundcloud iframe']['width'] = '100%';
+		$css[$content_media_query]['.fusion-soundcloud iframe']['width'] = '100%';
 
 		$elements = array(
 			'.ua-mobile .fusion-page-title-bar',
@@ -5237,334 +6211,265 @@ function avada_dynamic_css_array() {
 			'.ua-mobile body',
 			'.ua-mobile #main'
 		);
-		$css[$media_query][avada_implode( $elements )]['background-attachment'] = 'scroll !important';
+		$css[$content_media_query][avada_implode( $elements )]['background-attachment'] = 'scroll !important';
 
 		if ( class_exists( 'RevSliderFront' ) ) {
-			$css[$media_query]['.fusion-revslider-mobile-padding']['padding-left']  = '30px !important';
-			$css[$media_query]['.fusion-revslider-mobile-padding']['padding-right'] = '30px !important';
+			$css[$content_media_query]['.fusion-revslider-mobile-padding']['padding-left']  = '30px !important';
+			$css[$content_media_query]['.fusion-revslider-mobile-padding']['padding-right'] = '30px !important';
 		}
 
-		$media_query = '@media screen and (max-width: 782px)';
+		// # Events Calendar
+		if ( class_exists( 'Tribe__Events__Main' ) ) {
+			if ( ! is_rtl() ) {
+				$css[$content_media_query]['.tribe-events-single ul.tribe-related-events .tribe-related-events-thumbnail']['float'] = 'left';
+				$css[$content_media_query]['.tribe-events-single ul.tribe-related-events li .tribe-related-event-info']['padding-left'] = '10px';
+				$css[$content_media_query]['.tribe-events-single ul.tribe-related-events li .tribe-related-event-info']['padding-right'] = '0';
+			}
+
+			if ( ( Avada()->settings->get( 'main_top_padding' ) || Avada()->settings->get( 'main_top_padding' ) == '0' ) && ! get_post_meta( $c_pageID, 'pyre_main_top_padding', true ) && get_post_meta( $c_pageID, 'pyre_main_top_padding', true ) != '0') {
+				$css['global']['.tribe-mobile #main']['padding-top'] = Avada_Sanitize::size( Avada()->settings->get( 'main_top_padding' ) );
+			} else 	if ( get_post_meta( $c_pageID, 'pyre_main_top_padding', true ) ) {
+				$css['global']['.tribe-mobile #main']['padding-top'] = get_post_meta( $c_pageID, 'pyre_main_top_padding', true );
+			} else {
+				$css['global']['.tribe-mobile #main']['padding-top'] = '55px';
+			}
+
+			// Filter
+			$elements = array(
+				'#tribe-events-bar #tribe-bar-views .tribe-bar-views-inner label',
+				'#tribe-events-bar #tribe-bar-views .tribe-bar-views-inner .tribe-bar-views-option a'
+			);
+			$css[$content_media_query][avada_implode( $elements )]['padding-left'] = '15px';
+			$css[$content_media_query][avada_implode( $elements )]['padding-right'] = '15px';
+
+			$elements = array(
+				'#tribe-events-bar .tribe-bar-filters .tribe-bar-date-filter',
+				'#tribe-events-bar .tribe-bar-filters .tribe-bar-search-filter',
+				'#tribe-events-bar .tribe-bar-filters .tribe-bar-geoloc-filter',
+				'#tribe-events-bar .tribe-bar-filters .tribe-bar-submit'
+			);
+			$css[$content_media_query][avada_implode( $elements )]['padding-left'] = '0';
+			$css[$content_media_query][avada_implode( $elements )]['padding-right'] = '0';
+			$css[$content_media_query][avada_implode( $elements )]['padding-top'] = '15px';
+			$css[$content_media_query][avada_implode( $elements )]['padding-bottom'] = '15px';
+
+			// Title and Navigation
+			$css[$content_media_query]['#tribe-events-content #tribe-events-header']['margin-bottom'] = '30px';
+
+			$elements = array(
+				'.tribe-events-list .fusion-events-before-title',
+				'.tribe-events-month .fusion-events-before-title',
+				'.tribe-events-week .fusion-events-before-title',
+				'.tribe-events-day .fusion-events-before-title',
+			);
+			$css[$content_media_query][avada_implode( $elements )]['height'] = '100px';
+			$css[$content_media_query]['.tribe-events-list.tribe-events-map .fusion-events-before-title']['height'] = 'auto';
+
+			$css[$content_media_query]['#tribe-events-content #tribe-events-header .tribe-events-sub-nav li']['margin-top'] = '-40px';
+
+			// Events Archive
+
+			// List View
+			$css[$content_media_query]['.tribe-events-loop .tribe-events-event-meta']['padding'] = '0';
+			$css[$content_media_query]['#tribe-events .tribe-events-list .tribe-events-event-meta .author > div']['display'] = 'block';
+			$css[$content_media_query]['#tribe-events .tribe-events-list .tribe-events-event-meta .author > div']['border-right'] = 'none';
+			$css[$content_media_query]['#tribe-events .tribe-events-list .tribe-events-event-meta .author > div']['width'] = '100%';
+
+			$elements = array(
+				'#tribe-events .tribe-events-list .fusion-tribe-primary-info',
+				'#tribe-events .tribe-events-list .fusion-tribe-secondary-info',
+				'#tribe-events .tribe-events-list .fusion-tribe-no-featured-image .fusion-tribe-events-headline'
+			);
+			$css[$content_media_query][avada_implode( $elements )]['width'] = '100%';
+
+			$elements = array(
+				'.tribe-events-list .tribe-events-venue-details',
+				'.tribe-events-list .time-details'
+			);
+			$css[$content_media_query][avada_implode( $elements )]['margin'] = '0';
+
+			// Month View
+			$css[$content_media_query]['.tribe-events-calendar td.tribe-events-past div[id*="tribe-events-daynum-"] > a']['background'] = 'none';
+
+			// Photo View
+			$css[$content_media_query]['.tribe-events-list .time-details']['padding'] = '0';
+
+
+			// Single Event Page
+			$elements = array(
+				'.fusion-events-featured-image .fusion-events-single-title-content h2',
+				'.fusion-events-featured-image .fusion-events-single-title-content .tribe-events-schedule'
+			);
+			$css[$content_media_query][avada_implode( $elements )]['float'] = 'none';
+
+			$elements = array(
+				'#tribe-events .tribe-events-list .type-tribe_events .tribe-events-event-image'
+			);
+			$css[$content_media_query][avada_implode( $elements )]['display'] = 'none';
+
+			$elements = array(
+				'#tribe-events .tribe-events-list .type-tribe_events .fusion-tribe-events-event-image-responsive'
+			);
+			$css[$content_media_query][avada_implode( $elements )]['display'] = 'block';
+		}
+
+		if( class_exists( 'WooCommerce') ) {
+			$css[$content_media_query]['.fusion-woo-slider .fusion-carousel-title-on-rollover .fusion-rollover-categories']['display'] = 'none';
+			$css[$content_media_query]['.fusion-woo-slider .fusion-carousel-title-on-rollover .price']['display'] = 'none';
+		}
+
+		/* @media only screen and ( max-width: 640px )
+		================================================================================================= */
+		$six_fourty_media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + 640 ) . 'px)';
+
+
+		// # General
+
+
+		// # Page Title Bar
+		$css[$six_fourty_media_query]['.fusion-body .fusion-page-title-bar']['max-height'] = 'none';
+
+		$css[$six_fourty_media_query]['.fusion-body .fusion-page-title-bar h1']['margin'] = '0';
+
+		$css[$six_fourty_media_query]['.fusion-body .fusion-page-title-secondary']['margin-top'] = '2px';
+
+
+		// # Blog Layouts
+		// Blog general styles
 		$elements = array(
-			'body.admin-bar #wrapper #slidingbar-area',
-			'body.layout-boxed-mode.side-header-right #slidingbar-area',
-			'.admin-bar p.demo_store'
+			'.fusion-blog-layout-large .fusion-meta-info .fusion-alignleft',
+			'.fusion-blog-layout-medium .fusion-meta-info .fusion-alignleft',
+			'.fusion-blog-layout-large .fusion-meta-info .fusion-alignright',
+			'.fusion-blog-layout-medium .fusion-meta-info .fusion-alignright'
 		);
-		$css[$media_query][avada_implode( $elements )]['top'] = '46px';
-		$css[$media_query]['body.body_blank.admin-bar']['top'] = '45px';
-		$css[$media_query]['html #wpadminbar']['z-index']  = '99999 !important';
-		$css[$media_query]['html #wpadminbar']['position'] = 'fixed !important';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['display'] = 'block';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['float']   = 'none';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['margin']  = '0';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['width']   = '100%';
 
-		$media_query = '@media screen and (max-width: 768px)';
-		$css[$media_query]['.fusion-tabs.vertical-tabs .tab-pane']['max-width'] = 'none !important';
+		// Blog medium layout
+		$css[$six_fourty_media_query]['.fusion-body .fusion-blog-layout-medium .fusion-post-slideshow']['float']  = 'none';
+		$css[$six_fourty_media_query]['.fusion-body .fusion-blog-layout-medium .fusion-post-slideshow']['margin'] = '0 0 20px 0';
+		$css[$six_fourty_media_query]['.fusion-body .fusion-blog-layout-medium .fusion-post-slideshow']['height'] = 'auto';
+		$css[$six_fourty_media_query]['.fusion-body .fusion-blog-layout-medium .fusion-post-slideshow']['width']  = 'auto';
 
-		$media_query = '@media screen and (max-width: 767px)';
-		$css[$media_query]['#content']['width']       = '100% !important';
-		$css[$media_query]['#content']['margin-left'] = '0px !important';
-		$css[$media_query]['.sidebar']['width']       = '100% !important';
-		$css[$media_query]['.sidebar']['float']       = 'none !important';
-		$css[$media_query]['.sidebar']['margin-left'] = '0 !important';
-		$css[$media_query]['.sidebar']['clear']       = 'both';
+		// Blog large alternate layout
+		$css[$six_fourty_media_query]['.fusion-blog-layout-large-alternate .fusion-date-and-formats']['margin-bottom'] = '55px';
 
-		$media_query = '@media only screen and (min-device-width: 320px) and (max-device-width: 640px)';
+		$css[$six_fourty_media_query]['.fusion-body .fusion-blog-layout-large-alternate .fusion-post-content']['margin'] = '0';
 
-		$css[$media_query]['#wrapper']['width']      = 'auto !important';
-		$css[$media_query]['#wrapper']['overflow-x'] = 'hidden !important';
+		// Blog medium alternate layout
+		$css[$six_fourty_media_query]['.fusion-blog-layout-medium-alternate .has-post-thumbnail .fusion-post-slideshow']['display']      = 'inline-block';
+		$css[$six_fourty_media_query]['.fusion-blog-layout-medium-alternate .has-post-thumbnail .fusion-post-slideshow']['float']        = 'none';
+		$css[$six_fourty_media_query]['.fusion-blog-layout-medium-alternate .has-post-thumbnail .fusion-post-slideshow']['margin-right'] = '0';
+		$css[$six_fourty_media_query]['.fusion-blog-layout-medium-alternate .has-post-thumbnail .fusion-post-slideshow']['max-width']    = '197px';
 
-		$css[$media_query]['.fusion-columns .fusion-column']['float']      = 'none';
-		$css[$media_query]['.fusion-columns .fusion-column']['width']      = '100% !important';
-		$css[$media_query]['.fusion-columns .fusion-column']['margin']     = '0 0 50px';
-		$css[$media_query]['.fusion-columns .fusion-column']['box-sizing'] = 'border-box';
+		// Blog grid layout
+		$css[$six_fourty_media_query]['.fusion-blog-layout-grid .fusion-post-grid']['position'] = 'static';
+		$css[$six_fourty_media_query]['.fusion-blog-layout-grid .fusion-post-grid']['width']    = '100%';
 
-		$elements = array(
-			'.footer-area .fusion-columns .fusion-column',
-			'#slidingbar-area .fusion-columns .fusion-column'
-		);
-		$css[$media_query][avada_implode( $elements )]['float'] = 'left';
-		$css[$media_query][avada_implode( $elements )]['width'] = '98% !important';
+		// # Footer Styles
+		if ( Avada()->settings->get( 'footer_sticky_height' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_sticky', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
+			$elements = array( 'html', 'body', '#boxed-wrapper', '#wrapper' );
+			$css[$six_fourty_media_query][avada_implode( $elements )]['height']     = 'auto';
+			$css[$six_fourty_media_query]['.above-footer-wrapper']['min-height']    = 'none';
+			$css[$six_fourty_media_query]['.above-footer-wrapper']['margin-bottom'] = '0';
+			$css[$six_fourty_media_query]['.above-footer-wrapper:after']['height']  = 'auto';
+			$css[$six_fourty_media_query]['.fusion-footer']['height']               = 'auto';
+		}
 
-		$css[$media_query]['.avada-container .columns']['float']         = 'none';
-		$css[$media_query]['.avada-container .columns']['width']         = '100%';
-		$css[$media_query]['.avada-container .columns']['margin-bottom'] = '20px';
-
-		$css[$media_query]['.avada-container .columns .col']['float'] = 'left';
-
-		$css[$media_query]['.avada-container .col img']['display'] = 'block';
-		$css[$media_query]['.avada-container .col img']['margin']  = '0 auto';
-
-		$css[$media_query]['.review']['float'] = 'none';
-		$css[$media_query]['.review']['width'] = '100%';
-
-		$elements = array(
-			'.social-networks',
-			'.copyright'
-		);
-		$css[$media_query][avada_implode( $elements )]['float']      = 'none';
-		$css[$media_query][avada_implode( $elements )]['padding']    = '0 0 15px';
-		$css[$media_query][avada_implode( $elements )]['text-align'] = 'center';
-
-		$elements = array(
-			'.copyright:after',
-			'.social-networks:after'
-		);
-		$css[$media_query][avada_implode( $elements )]['content'] = '""';
-		$css[$media_query][avada_implode( $elements )]['display'] = 'block';
-		$css[$media_query][avada_implode( $elements )]['clear']   = 'both';
-
-		$elements = array(
-			'.social-networks li',
-			'.copyright li'
-		);
-		$css[$media_query][avada_implode( $elements )]['float']   = 'none';
-		$css[$media_query][avada_implode( $elements )]['display'] = 'inline-block';
-
-		$css[$media_query]['.continue']['display'] = 'none';
-
-		$css[$media_query]['.mobile-button']['display'] = 'block !important';
-		$css[$media_query]['.mobile-button']['float']   = 'none';
-
-		$css[$media_query]['.title']['margin-top']    = '0px !important';
-		$css[$media_query]['.title']['margin-bottom'] = '20px !important';
-
-		$css[$media_query]['#content']['width']         = '100% !important';
-		$css[$media_query]['#content']['float']         = 'none !important';
-		$css[$media_query]['#content']['margin-left']   = '0 !important';
-		$css[$media_query]['#content']['margin-bottom'] = '50px';
-
-		$css[$media_query]['#content.full-width']['margin-bottom'] = '0';
-
-		$css[$media_query]['.sidebar']['width'] = '100% !important';
-		$css[$media_query]['.sidebar']['float'] = 'none !important';
-
-		$css[$media_query]['.sidebar .social_links .social li']['width']        = 'auto';
-		$css[$media_query]['.sidebar .social_links .social li']['margin-right'] = '5px';
-
-		$css[$media_query]['#comment-input']['margin-bottom'] = '0';
-
-		$css[$media_query]['#comment-input input']['width']         = '90%';
-		$css[$media_query]['#comment-input input']['float']         = 'none !important';
-		$css[$media_query]['#comment-input input']['margin-bottom'] = '10px';
-
-		$css[$media_query]['#comment-textarea textarea']['width'] = '90%';
-
-		$css[$media_query]['.widget.facebook_like iframe']['width']     = '100% !important';
-		$css[$media_query]['.widget.facebook_like iframe']['max-width'] = 'none !important';
-
-		$css[$media_query]['.pagination']['margin-top'] = '40px';
-
-		$css[$media_query]['.portfolio-one .portfolio-item .image']['float']         = 'none';
-		$css[$media_query]['.portfolio-one .portfolio-item .image']['width']         = 'auto';
-		$css[$media_query]['.portfolio-one .portfolio-item .image']['height']        = 'auto';
-		$css[$media_query]['.portfolio-one .portfolio-item .image']['margin-bottom'] = '20px';
-
-		$css[$media_query]['h5.toggle span.toggle-title']['width'] = '80%';
-
-		$css[$media_query]['#wrapper .sep-boxed-pricing .panel-wrapper']['padding'] = '0';
-
-		$elements = array(
-			'#wrapper .full-boxed-pricing .column',
-			'#wrapper .sep-boxed-pricing .column'
-		);
-		$css[$media_query][avada_implode( $elements )]['float']         = 'none';
-		$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '10px';
-		$css[$media_query][avada_implode( $elements )]['margin-left']   = '0';
-		$css[$media_query][avada_implode( $elements )]['width']         = '100%';
-
-		$css[$media_query]['.share-box']['height'] = 'auto';
-
-		$css[$media_query]['#wrapper .share-box h4']['float']       = 'none';
-		$css[$media_query]['#wrapper .share-box h4']['line-height'] = '20px !important';
-		$css[$media_query]['#wrapper .share-box h4']['margin-top']  = '0';
-		$css[$media_query]['#wrapper .share-box h4']['padding']     = '0';
-
-		$css[$media_query]['.share-box ul']['float']          = 'none';
-		$css[$media_query]['.share-box ul']['overflow']       ='hidden';
-		$css[$media_query]['.share-box ul']['padding']        = '0 25px';
-		$css[$media_query]['.share-box ul']['padding-bottom'] = '25px';
-		$css[$media_query]['.share-box ul']['margin-top']     = '0px';
-
-		$css[$media_query]['.project-content .project-description']['float'] = 'none !important';
-
-		$css[$media_query]['.project-content .fusion-project-description-details']['margin-bottom'] = '50px';
-
-		$elements = array(
-			'.project-content .project-description',
-			'.project-content .project-info'
-		);
-		$css[$media_query][avada_implode( $elements )]['width'] = '100% !important';
-
-		$css[$media_query]['.portfolio-half .flexslider']['width'] = '100% !important';
-
-		$css[$media_query]['.portfolio-half .project-content']['width'] = '100% !important';
-
-		$css[$media_query]['#style_selector']['display'] = 'none';
-
-		$elements = array(
-			'.ls-avada .ls-nav-prev',
-			'.ls-avada .ls-nav-next'
-		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none !important';
-
-		$css[$media_query]['#footer .social-networks']['width']    = '100%';
-		$css[$media_query]['#footer .social-networks']['margin']   = '0 auto';
-		$css[$media_query]['#footer .social-networks']['position'] = 'relative';
-		$css[$media_query]['#footer .social-networks']['left']     = '-11px';
-
-		$css[$media_query]['.recent-works-items a']['max-width'] = '64px';
-
-		$elements = array(
-			'.footer-area .flickr_badge_image img',
-			'#slidingbar-area .flickr_badge_image img'
-		);
-		$css[$media_query][avada_implode( $elements )]['max-width'] = '64px';
-		$css[$media_query][avada_implode( $elements )]['padding']   = '3px !important';
-
-		$css[$media_query]['.tab-holder .tabs']['height'] = 'auto !important';
-		$css[$media_query]['.tab-holder .tabs']['width']  = '100% !important';
-
-		$css[$media_query]['.shortcode-tabs .tab-hold .tabs li']['width'] = '100% !important';
-
-		$elements = array(
-			'body .shortcode-tabs .tab-hold .tabs li',
-			'body.dark .sidebar .tab-hold .tabs li'
-		);
-		$css[$media_query][avada_implode( $elements )]['border-right'] = 'none !important';
-
-		$css[$media_query]['.error_page .useful_links']['width']        = '100%';
-		$css[$media_query]['.error_page .useful_links']['padding-left'] = '0';
-
-		$css[$media_query]['.fusion-google-map']['width']         = '100% !important';
-		$css[$media_query]['.fusion-google-map']['margin-bottom'] = '20px !important';
-
-		$css[$media_query]['.social_links_shortcode .social li']['width'] = '10% !important';
-
-		$css[$media_query]['#wrapper .ei-slider']['width']  = '100% !important';
-		$css[$media_query]['#wrapper .ei-slider']['height'] = '200px !important';
-
-		$css[$media_query]['.progress-bar']['margin-bottom'] = '10px !important';
-
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['min-height']     = 'inherit !important';
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-bottom'] = '20px';
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-left']   = '3% !important';
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-right']  = '3% !important';
-
-		$elements = array(
-			'#wrapper .content-boxes-icon-on-top .content-box-column',
-			'#wrapper .content-boxes-icon-boxed .content-box-column'
-		);
-		$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '55px';
-
-		$css[$media_query]['.share-box .social-networks']['text-align'] = 'left';
-
-		$css[$media_query]['#content']['width']       = '100% !important';
-		$css[$media_query]['#content']['margin-left'] = '0px !important';
-
-		$css[$media_query]['.sidebar']['width']       = '100% !important';
-		$css[$media_query]['.sidebar']['float']       = 'none !important';
-		$css[$media_query]['.sidebar']['margin-left'] = '0 !important';
-		$css[$media_query]['.sidebar']['clear']       = 'both';
-
-		$media_query = '@media only screen and (max-width: 640px)';
-
-		$elements = array(
-			'.avada-container .columns .col',
-			'.footer-area .fusion-columns .fusion-column',
-			'#slidingbar-area .columns .col'
-		);
-		$css[$media_query][avada_implode( $elements )]['float'] = 'none';
-		$css[$media_query][avada_implode( $elements )]['width'] = '100%';
-
+		// # Not restructured mobile.css styles
 		$elements = array(
 			'.wooslider-direction-nav',
 			'.wooslider-pauseplay',
 			'.flex-direction-nav'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['display'] = 'none';
 
-		$css[$media_query]['.share-box ul li']['margin-bottom'] ='10px';
-		$css[$media_query]['.share-box ul li']['margin-right']  ='15px';
+		$css[$six_fourty_media_query]['.share-box ul li']['margin-bottom'] ='10px';
+		$css[$six_fourty_media_query]['.share-box ul li']['margin-right']  ='15px';
 
-		$css[$media_query]['.buttons a']['margin-right'] = '5px';
+		$css[$six_fourty_media_query]['.buttons a']['margin-right'] = '5px';
 
 		$elements = array(
 			'.ls-avada .ls-nav-prev',
 			'.ls-avada .ls-nav-next'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none !important';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['display'] = 'none !important';
 
-		$css[$media_query]['#wrapper .ei-slider']['width']  = '100% !important';
-		$css[$media_query]['#wrapper .ei-slider']['height'] = '200px !important';
+		$css[$six_fourty_media_query]['#wrapper .ei-slider']['width']  = '100% !important';
+		$css[$six_fourty_media_query]['#wrapper .ei-slider']['height'] = '200px !important';
 
-		$css[$media_query]['.progress-bar']['margin-bottom'] = '10px !important';
+		$css[$six_fourty_media_query]['.progress-bar']['margin-bottom'] = '10px !important';
 
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['min-height']     = 'inherit !important';
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-bottom'] = '20px';
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-left']   = '3% !important';
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-right']  = '3% !important';
+		$css[$six_fourty_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['min-height']     = 'inherit !important';
+		$css[$six_fourty_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-bottom'] = '20px';
+		$css[$six_fourty_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-left']   = '3% !important';
+		$css[$six_fourty_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-right']  = '3% !important';
 
 		$elements = array(
 			'#wrapper .content-boxes-icon-on-top .content-box-column',
 			'#wrapper .content-boxes-icon-boxed .content-box-column'
 		);
-		$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '55px';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['margin-bottom'] = '55px';
 
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-box-column .heading h2']['margin-top'] = '-5px';
+		$css[$six_fourty_media_query]['#wrapper .content-boxes-icon-boxed .content-box-column .heading h2']['margin-top'] = '-5px';
 
-		$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-box-column .more']['margin-top'] = '12px';
+		$css[$six_fourty_media_query]['#wrapper .content-boxes-icon-boxed .content-box-column .more']['margin-top'] = '12px';
 
-		$css[$media_query]['.page-template-contact-php .fusion-google-map']['height'] = '270px !important';
+		$css[$six_fourty_media_query]['.page-template-contact-php .fusion-google-map']['height'] = '270px !important';
 
-		$css[$media_query]['.share-box .social-networks li']['margin-right'] = '20px !important';
+		$css[$six_fourty_media_query]['.share-box .social-networks li']['margin-right'] = '20px !important';
 
-		$css[$media_query]['.timeline-icon']['display'] = 'none !important';
+		$css[$six_fourty_media_query]['.timeline-icon']['display'] = 'none !important';
 
-		$css[$media_query]['.timeline-layout']['padding-top'] = '0 !important';
+		$css[$six_fourty_media_query]['.timeline-layout']['padding-top'] = '0 !important';
 
-		$css[$media_query]['.fusion-counters-circle .counter-circle-wrapper']['display']      = 'block';
-		$css[$media_query]['.fusion-counters-circle .counter-circle-wrapper']['margin-right'] = 'auto';
-		$css[$media_query]['.fusion-counters-circle .counter-circle-wrapper']['margin-left']  = 'auto';
+		$css[$six_fourty_media_query]['.fusion-counters-circle .counter-circle-wrapper']['display']      = 'block';
+		$css[$six_fourty_media_query]['.fusion-counters-circle .counter-circle-wrapper']['margin-right'] = 'auto';
+		$css[$six_fourty_media_query]['.fusion-counters-circle .counter-circle-wrapper']['margin-left']  = 'auto';
 
-		$css[$media_query]['.post-content .wooslider .wooslider-control-thumbs']['margin-top'] = '-10px';
+		$css[$six_fourty_media_query]['.post-content .wooslider .wooslider-control-thumbs']['margin-top'] = '-10px';
 
-		$css[$media_query]['body .wooslider .overlay-full.layout-text-left .slide-excerpt']['padding'] = '20px !important';
+		$css[$six_fourty_media_query]['body .wooslider .overlay-full.layout-text-left .slide-excerpt']['padding'] = '20px !important';
 
-		$css[$media_query]['.content-boxes-icon-boxed .col']['box-sizing'] = 'border-box';
+		$css[$six_fourty_media_query]['.content-boxes-icon-boxed .col']['box-sizing'] = 'border-box';
 
-		$css[$media_query]['.social_links_shortcode li']['height'] = '40px !important';
+		$css[$six_fourty_media_query]['.social_links_shortcode li']['height'] = '40px !important';
 
-		$css[$media_query]['.products-slider .es-nav span']['transform'] = 'scale(0.5) !important';
+		$css[$six_fourty_media_query]['.products-slider .es-nav span']['transform'] = 'scale(0.5) !important';
 
 		if ( class_exists( 'WooCommerce' ) ) {
 
-			$css[$media_query]['.shop_table .product-quantity']['display'] = 'none';
+			$css[$six_fourty_media_query]['.shop_table .product-quantity']['display'] = 'none';
 
-			$css[$media_query]['.shop_table .filler-td']['display'] = 'none';
+			$css[$six_fourty_media_query]['.shop_table .filler-td']['display'] = 'none';
 
-			$css[$media_query]['.my_account_orders .order-status']['display'] = 'none';
+			$css[$six_fourty_media_query]['.my_account_orders .order-status']['display'] = 'none';
 
-			$css[$media_query]['.my_account_orders .order-date']['display'] = 'none';
+			$css[$six_fourty_media_query]['.my_account_orders .order-date']['display'] = 'none';
 
-			$css[$media_query]['.my_account_orders .order-number time']['display']     = 'block !important';
-			$css[$media_query]['.my_account_orders .order-number time']['font-size']   = '10px';
-			$css[$media_query]['.my_account_orders .order-number time']['line-height'] = 'normal';
+			$css[$six_fourty_media_query]['.my_account_orders .order-number time']['display']     = 'block !important';
+			$css[$six_fourty_media_query]['.my_account_orders .order-number time']['font-size']   = '10px';
+			$css[$six_fourty_media_query]['.my_account_orders .order-number time']['line-height'] = 'normal';
 
 		}
 
-		$css[$media_query]['.portfolio-masonry .portfolio-item']['width'] = '100% !important';
+		$css[$six_fourty_media_query]['.portfolio-masonry .portfolio-item']['width'] = '100% !important';
 
 		if ( class_exists( 'bbPress' ) ) {
 
-			$css[$media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-avatar img.avatar']['width']  = '80px !important';
-			$css[$media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-avatar img.avatar']['height'] = '80px !important';
+			$css[$six_fourty_media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-avatar img.avatar']['width']  = '80px !important';
+			$css[$six_fourty_media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-avatar img.avatar']['height'] = '80px !important';
 
-			$css[$media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-avatar']['width'] = '80px !important';
+			$css[$six_fourty_media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-avatar']['width'] = '80px !important';
 
-			$css[$media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-navigation']['margin-left'] = '110px !important';
+			$css[$six_fourty_media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-navigation']['margin-left'] = '110px !important';
 
-			$css[$media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-navigation .first-col']['width'] = '47% !important';
+			$css[$six_fourty_media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-navigation .first-col']['width'] = '47% !important';
 
-			$css[$media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-navigation .second-col']['margin-left'] = '53% !important';
-			$css[$media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-navigation .second-col']['width']       = '47% !important';
+			$css[$six_fourty_media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-navigation .second-col']['margin-left'] = '53% !important';
+			$css[$six_fourty_media_query]['#bbpress-forums #bbp-single-user-details #bbp-user-navigation .second-col']['width']       = '47% !important';
 
 		}
 
@@ -5572,9 +6477,9 @@ function avada_dynamic_css_array() {
 			'.table-1 table',
 			'.tkt-slctr-tbl-wrap-dv table'
 		);
-		$css[$media_query][avada_implode( $elements )]['border-collapse'] = 'collapse';
-		$css[$media_query][avada_implode( $elements )]['border-spacing']  = '0';
-		$css[$media_query][avada_implode( $elements )]['width']           = '100%';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['border-collapse'] = 'collapse';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['border-spacing']  = '0';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['width']           = '100%';
 
 		$elements = array(
 			'.table-1 td',
@@ -5582,17 +6487,17 @@ function avada_dynamic_css_array() {
 			'.tkt-slctr-tbl-wrap-dv td',
 			'.tkt-slctr-tbl-wrap-dv th'
 		);
-		$css[$media_query][avada_implode( $elements )]['white-space'] = 'nowrap';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['white-space'] = 'nowrap';
 
-		$css[$media_query]['.table-2 table']['border-collapse'] = 'collapse';
-		$css[$media_query]['.table-2 table']['border-spacing']  = '0';
-		$css[$media_query]['.table-2 table']['width']           = '100%';
+		$css[$six_fourty_media_query]['.table-2 table']['border-collapse'] = 'collapse';
+		$css[$six_fourty_media_query]['.table-2 table']['border-spacing']  = '0';
+		$css[$six_fourty_media_query]['.table-2 table']['width']           = '100%';
 
 		$elements = array(
 			'.table-2 td',
 			'.table-2 th'
 		);
-		$css[$media_query][avada_implode( $elements )]['white-space'] = 'nowrap';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['white-space'] = 'nowrap';
 
 		$elements = array(
 			'.page-title-bar',
@@ -5600,41 +6505,41 @@ function avada_dynamic_css_array() {
 			'body',
 			'#main'
 		);
-		$css[$media_query][avada_implode( $elements )]['background-attachment'] = 'scroll !important';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['background-attachment'] = 'scroll !important';
 
-		$css[$media_query]['.tfs-slider[data-animation="slide"]']['height'] = 'auto !important';
+		$css[$six_fourty_media_query]['.tfs-slider[data-animation="slide"]']['height'] = 'auto !important';
 
-		$css[$media_query]['#wrapper .share-box h4']['display']       = 'block';
-		$css[$media_query]['#wrapper .share-box h4']['float']         = 'none';
-		$css[$media_query]['#wrapper .share-box h4']['line-height']   = '20px !important';
-		$css[$media_query]['#wrapper .share-box h4']['margin-top']    = '0';
-		$css[$media_query]['#wrapper .share-box h4']['padding']       = '0';
-		$css[$media_query]['#wrapper .share-box h4']['margin-bottom'] = '10px';
+		$css[$six_fourty_media_query]['#wrapper .share-box h4']['display']       = 'block';
+		$css[$six_fourty_media_query]['#wrapper .share-box h4']['float']         = 'none';
+		$css[$six_fourty_media_query]['#wrapper .share-box h4']['line-height']   = '20px !important';
+		$css[$six_fourty_media_query]['#wrapper .share-box h4']['margin-top']    = '0';
+		$css[$six_fourty_media_query]['#wrapper .share-box h4']['padding']       = '0';
+		$css[$six_fourty_media_query]['#wrapper .share-box h4']['margin-bottom'] = '10px';
 
-		$css[$media_query]['.fusion-sharing-box .fusion-social-networks']['float']      = 'none';
-		$css[$media_query]['.fusion-sharing-box .fusion-social-networks']['display']    = 'block';
-		$css[$media_query]['.fusion-sharing-box .fusion-social-networks']['width']      = '100%';
-		$css[$media_query]['.fusion-sharing-box .fusion-social-networks']['text-align'] = 'left';
+		$css[$six_fourty_media_query]['.fusion-sharing-box .fusion-social-networks']['float']      = 'none';
+		$css[$six_fourty_media_query]['.fusion-sharing-box .fusion-social-networks']['display']    = 'block';
+		$css[$six_fourty_media_query]['.fusion-sharing-box .fusion-social-networks']['width']      = '100%';
+		$css[$six_fourty_media_query]['.fusion-sharing-box .fusion-social-networks']['text-align'] = 'left';
 
-		$css[$media_query]['#content']['width']        = '100% !important';
-		$css[$media_query]['#content']['margin-left'] = '0px !important';
+		$css[$six_fourty_media_query]['#content']['width']        = '100% !important';
+		$css[$six_fourty_media_query]['#content']['margin-left'] = '0px !important';
 
-		$css[$media_query]['.sidebar']['width']       = '100% !important';
-		$css[$media_query]['.sidebar']['float']       = 'none !important';
-		$css[$media_query]['.sidebar']['margin-left'] = '0 !important';
-		$css[$media_query]['.sidebar']['clear']       = 'both';
+		$css[$six_fourty_media_query]['.sidebar']['width']       = '100% !important';
+		$css[$six_fourty_media_query]['.sidebar']['float']       = 'none !important';
+		$css[$six_fourty_media_query]['.sidebar']['margin-left'] = '0 !important';
+		$css[$six_fourty_media_query]['.sidebar']['clear']       = 'both';
 
-		$css[$media_query]['.fusion-hide-on-mobile']['display'] = 'none';
+		$css[$six_fourty_media_query]['.fusion-hide-on-mobile']['display'] = 'none';
 
 		// Blog timeline layout
 
-		$css[$media_query]['.fusion-blog-layout-timeline']['padding-top'] = '0';
+		$css[$six_fourty_media_query]['.fusion-blog-layout-timeline']['padding-top'] = '0';
 
-		$css[$media_query]['.fusion-blog-layout-timeline .fusion-post-timeline']['float'] = 'none';
-		$css[$media_query]['.fusion-blog-layout-timeline .fusion-post-timeline']['width'] = '100%';
+		$css[$six_fourty_media_query]['.fusion-blog-layout-timeline .fusion-post-timeline']['float'] = 'none';
+		$css[$six_fourty_media_query]['.fusion-blog-layout-timeline .fusion-post-timeline']['width'] = '100%';
 
-		$css[$media_query]['.fusion-blog-layout-timeline .fusion-timeline-date']['margin-bottom'] = '0';
-		$css[$media_query]['.fusion-blog-layout-timeline .fusion-timeline-date']['margin-top']    = '2px';
+		$css[$six_fourty_media_query]['.fusion-blog-layout-timeline .fusion-timeline-date']['margin-bottom'] = '0';
+		$css[$six_fourty_media_query]['.fusion-blog-layout-timeline .fusion-timeline-date']['margin-top']    = '2px';
 
 		$elements = array(
 			'.fusion-timeline-icon',
@@ -5642,48 +6547,33 @@ function avada_dynamic_css_array() {
 			'.fusion-timeline-circle',
 			'.fusion-timeline-arrow'
 		);
-		$css[$media_query][avada_implode( $elements )]['display'] = 'none';
+		$css[$six_fourty_media_query][avada_implode( $elements )]['display'] = 'none';
 
-		if ( class_exists( 'bbPress' ) ) {
-
-			$media_query = '@media only screen and (max-width: 480px)';
-			$css[$media_query]['#bbpress-forums .bbp-body div.bbp-reply-author']['width'] = '71% !important';
-			$css[$media_query]['.bbp-arrow']['display'] = 'none';
-			$css[$media_query]['div.bbp-submit-wrapper']['float'] = 'right !important';
-
+		if ( class_exists( 'WooCommerce' ) ) {
+			if ( Avada()->settings->get( 'woocommerce_product_box_design' ) == 'clean' ) {
+				$css[$six_fourty_media_query]['.fusion-woo-slider .fusion-clean-product-image-wrapper .fusion-product-buttons']['height'] = 'auto';
+				$css[$six_fourty_media_query]['.fusion-woo-slider .fusion-clean-product-image-wrapper .fusion-product-buttons']['margin-top'] = '0';
+				$css[$six_fourty_media_query]['.fusion-woo-slider .fusion-clean-product-image-wrapper .fusion-product-buttons *']['display'] = 'block';
+				$css[$six_fourty_media_query]['.fusion-woo-slider .fusion-clean-product-image-wrapper .fusion-product-buttons *']['text-align'] = 'center';
+				$css[$six_fourty_media_query]['.fusion-woo-slider .fusion-clean-product-image-wrapper .fusion-product-buttons *']['float'] = 'none !important';
+				$css[$six_fourty_media_query]['.fusion-woo-slider .fusion-clean-product-image-wrapper .fusion-product-buttons *']['max-width'] = '100%';
+				$css[$six_fourty_media_query]['.fusion-woo-slider .fusion-clean-product-image-wrapper .fusion-product-buttons *']['margin-top'] = '0';
+			}
 		}
 
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
-		$css[$media_query]['#wrapper .ei-slider']['width'] = '100%';
-		$elements = array(
-			'.fullwidth-box',
-			'.page-title-bar',
-			'.fusion-footer-widget-area',
-			'body',
-			'#main'
-		);
-		$css[$media_query][avada_implode( $elements )]['background-attachment'] = 'scroll !important';
+		/* @media only screen and ( max-width: 480px )
+		================================================================================================= */
+		if ( class_exists( 'bbPress' ) ) {
+			$four_eigthy_media_query = '@media only screen and (max-width: 480px)';
 
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape)';
-		$css[$media_query]['#wrapper .ei-slider']['width'] = '100%';
-		$elements = array(
-			'.fullwidth-box',
-			'.page-title-bar',
-			'.fusion-footer-widget-area',
-			'body',
-			'#main'
-		);
-		$css[$media_query][avada_implode( $elements )]['background-attachment'] = 'scroll !important';
-
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px)';
-		$css[$media_query]['#wrapper .ei-slider']['width'] = '100%';
-
-		$media_query = '@media only screen and (min-device-width: 320px) and (max-device-width: 480px)';
-		$css[$media_query]['#wrapper .ei-slider']['width'] = '100%';
+			$css[$four_eigthy_media_query]['#bbpress-forums .bbp-body div.bbp-reply-author']['width'] = '71% !important';
+			$css[$four_eigthy_media_query]['.bbp-arrow']['display'] = 'none';
+			$css[$four_eigthy_media_query]['div.bbp-submit-wrapper']['float'] = 'right !important';
+		}
 
 		if ( class_exists( 'GFForms' ) ) {
+			$four_eigthy_media_query = '@media all and (max-width: 480px), all and (max-device-width: 480px)';
 
-			$media_query = '@media all and (max-width: 480px), all and (max-device-width: 480px)';
 			$elements = array(
 				'body.fusion-body .gform_wrapper .ginput_container',
 				'body.fusion-body .gform_wrapper div.ginput_complex',
@@ -5734,752 +6624,1124 @@ function avada_dynamic_css_array() {
 				'body.fusion-body .gform_wrapper .ginput_complex .gravity-select-parent',
 				'body.fusion-body .gravity-select-parent'
 			);
-			$css[$media_query][avada_implode( $elements )]['width'] = '100% !important';
+			$css[$four_eigthy_media_query][avada_implode( $elements )]['width'] = '100% !important';
 			$elements = array(
 				'.gform_wrapper .gform_page_footer input[type="button"]',
 				'.gform_wrapper .gform_button',
 				'.gform_wrapper .button'
 			);
-			$css[$media_query][avada_implode( $elements )]['padding-left']  = '0';
-			$css[$media_query][avada_implode( $elements )]['padding-right'] = '0';
+			$css[$four_eigthy_media_query][avada_implode( $elements )]['-webkit-box-sizing']  = 'border-box';
+			$css[$four_eigthy_media_query][avada_implode( $elements )]['box-sizing'] = 'border-box';
 
 		}
 
-		if ( ! Avada()->settings->get( 'ipad_potrait' ) ) {
+		/* @media only screen and (min-device-width: 320px) and (max-device-width: 640px)
+		================================================================================================= */
+		$three_twenty_six_fourty_media_query = '@media only screen and (min-device-width: 320px) and (max-device-width: 640px)';
 
-			$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
+		// # Layout
+		$css[$three_twenty_six_fourty_media_query]['#wrapper']['width']      = 'auto !important';
+		$css[$three_twenty_six_fourty_media_query]['#wrapper']['overflow-x'] = 'hidden !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.fusion-columns .fusion-column']['float']      = 'none';
+		$css[$three_twenty_six_fourty_media_query]['.fusion-columns .fusion-column']['width']      = '100% !important';
+		$css[$three_twenty_six_fourty_media_query]['.fusion-columns .fusion-column']['margin']     = '0 0 50px';
+		$css[$three_twenty_six_fourty_media_query]['.fusion-columns .fusion-column']['box-sizing'] = 'border-box';
+
+		$elements = array(
+			'.footer-area .fusion-columns .fusion-column',
+			'#slidingbar-area .fusion-columns .fusion-column'
+		);
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['float'] = 'left';
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['width'] = '98% !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.fullwidth-box']['background-attachment'] = 'scroll !important';
+		$css[$three_twenty_six_fourty_media_query]['.no-mobile-totop .to-top-container']['display'] = 'none';
+		$css[$three_twenty_six_fourty_media_query]['.no-mobile-slidingbar #slidingbar-area']['display'] = 'none';
+
+		$css[$three_twenty_six_fourty_media_query]['.review']['float'] = 'none';
+		$css[$three_twenty_six_fourty_media_query]['.review']['width'] = '100%';
+
+		$elements = array(
+			'.social-networks',
+			'.copyright'
+		);
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['float']      = 'none';
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['padding']    = '0 0 15px';
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['text-align'] = 'center';
+
+		$elements = array(
+			'.copyright:after',
+			'.social-networks:after'
+		);
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['content'] = '""';
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['display'] = 'block';
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['clear']   = 'both';
+
+		$elements = array(
+			'.social-networks li',
+			'.copyright li'
+		);
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['float']   = 'none';
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['display'] = 'inline-block';
+
+		$css[$three_twenty_six_fourty_media_query]['.continue']['display'] = 'none';
+
+		$css[$three_twenty_six_fourty_media_query]['.mobile-button']['display'] = 'block !important';
+		$css[$three_twenty_six_fourty_media_query]['.mobile-button']['float']   = 'none';
+
+		$css[$three_twenty_six_fourty_media_query]['.title']['margin-top']    = '0px !important';
+		$css[$three_twenty_six_fourty_media_query]['.title']['margin-bottom'] = '20px !important';
+
+		$css[$three_twenty_six_fourty_media_query]['#content']['width']         = '100% !important';
+		$css[$three_twenty_six_fourty_media_query]['#content']['float']         = 'none !important';
+		$css[$three_twenty_six_fourty_media_query]['#content']['margin-left']   = '0 !important';
+		$css[$three_twenty_six_fourty_media_query]['#content']['margin-bottom'] = '50px';
+
+		$css[$three_twenty_six_fourty_media_query]['#content.full-width']['margin-bottom'] = '0';
+
+		$css[$three_twenty_six_fourty_media_query]['.sidebar']['width'] = '100% !important';
+		$css[$three_twenty_six_fourty_media_query]['.sidebar']['float'] = 'none !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.sidebar .social_links .social li']['width']        = 'auto';
+		$css[$three_twenty_six_fourty_media_query]['.sidebar .social_links .social li']['margin-right'] = '5px';
+
+		$css[$three_twenty_six_fourty_media_query]['#comment-input']['margin-bottom'] = '0';
+
+		$css[$three_twenty_six_fourty_media_query]['#comment-input input']['width']         = '90%';
+		$css[$three_twenty_six_fourty_media_query]['#comment-input input']['float']         = 'none !important';
+		$css[$three_twenty_six_fourty_media_query]['#comment-input input']['margin-bottom'] = '10px';
+
+		$css[$three_twenty_six_fourty_media_query]['#comment-textarea textarea']['width'] = '90%';
+
+		$css[$three_twenty_six_fourty_media_query]['.widget.facebook_like iframe']['width']     = '100% !important';
+		$css[$three_twenty_six_fourty_media_query]['.widget.facebook_like iframe']['max-width'] = 'none !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.pagination']['margin-top'] = '40px';
+
+		$css[$three_twenty_six_fourty_media_query]['.portfolio-one .portfolio-item .image']['float']         = 'none';
+		$css[$three_twenty_six_fourty_media_query]['.portfolio-one .portfolio-item .image']['width']         = 'auto';
+		$css[$three_twenty_six_fourty_media_query]['.portfolio-one .portfolio-item .image']['height']        = 'auto';
+		$css[$three_twenty_six_fourty_media_query]['.portfolio-one .portfolio-item .image']['margin-bottom'] = '20px';
+
+		$css[$three_twenty_six_fourty_media_query]['h5.toggle span.toggle-title']['width'] = '80%';
+
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .sep-boxed-pricing .panel-wrapper']['padding'] = '0';
+
+		$elements = array(
+			'#wrapper .full-boxed-pricing .column',
+			'#wrapper .sep-boxed-pricing .column'
+		);
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['float']         = 'none';
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['margin-bottom'] = '10px';
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['margin-left']   = '0';
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['width']         = '100%';
+
+		$css[$three_twenty_six_fourty_media_query]['.share-box']['height'] = 'auto';
+
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .share-box h4']['float']       = 'none';
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .share-box h4']['line-height'] = '20px !important';
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .share-box h4']['margin-top']  = '0';
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .share-box h4']['padding']     = '0';
+
+		$css[$three_twenty_six_fourty_media_query]['.share-box ul']['float']          = 'none';
+		$css[$three_twenty_six_fourty_media_query]['.share-box ul']['overflow']       ='hidden';
+		$css[$three_twenty_six_fourty_media_query]['.share-box ul']['padding']        = '0 25px';
+		$css[$three_twenty_six_fourty_media_query]['.share-box ul']['padding-bottom'] = '25px';
+		$css[$three_twenty_six_fourty_media_query]['.share-box ul']['margin-top']     = '0px';
+
+		$css[$three_twenty_six_fourty_media_query]['.project-content .project-description']['float'] = 'none !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.project-content .fusion-project-description-details']['margin-bottom'] = '50px';
+
+		$elements = array(
+			'.project-content .project-description',
+			'.project-content .project-info'
+		);
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['width'] = '100% !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.portfolio-half .flexslider']['width'] = '100% !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.portfolio-half .project-content']['width'] = '100% !important';
+
+		$css[$three_twenty_six_fourty_media_query]['#style_selector']['display'] = 'none';
+
+		$elements = array(
+			'.ls-avada .ls-nav-prev',
+			'.ls-avada .ls-nav-next'
+		);
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['display'] = 'none !important';
+
+		$css[$three_twenty_six_fourty_media_query]['#footer .social-networks']['width']    = '100%';
+		$css[$three_twenty_six_fourty_media_query]['#footer .social-networks']['margin']   = '0 auto';
+		$css[$three_twenty_six_fourty_media_query]['#footer .social-networks']['position'] = 'relative';
+		$css[$three_twenty_six_fourty_media_query]['#footer .social-networks']['left']     = '-11px';
+
+		$css[$three_twenty_six_fourty_media_query]['.recent-works-items a']['max-width'] = '64px';
+
+		$elements = array(
+			'.footer-area .flickr_badge_image img',
+			'#slidingbar-area .flickr_badge_image img'
+		);
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['max-width'] = '64px';
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['padding']   = '3px !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.tab-holder .tabs']['height'] = 'auto !important';
+		$css[$three_twenty_six_fourty_media_query]['.tab-holder .tabs']['width']  = '100% !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.shortcode-tabs .tab-hold .tabs li']['width'] = '100% !important';
+
+		$elements = array(
+			'body .shortcode-tabs .tab-hold .tabs li',
+			'body.dark .sidebar .tab-hold .tabs li'
+		);
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['border-right'] = 'none !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.error_page .useful_links']['width']        = '100%';
+		$css[$three_twenty_six_fourty_media_query]['.error_page .useful_links']['padding-left'] = '0';
+
+		$css[$three_twenty_six_fourty_media_query]['.fusion-google-map']['width']         = '100% !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.social_links_shortcode .social li']['width'] = '10% !important';
+
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .ei-slider']['width']  = '100% !important';
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .ei-slider']['height'] = '200px !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.progress-bar']['margin-bottom'] = '10px !important';
+
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['min-height']     = 'inherit !important';
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-bottom'] = '20px';
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-left']   = '3% !important';
+		$css[$three_twenty_six_fourty_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-right']  = '3% !important';
+
+		$elements = array(
+			'#wrapper .content-boxes-icon-on-top .content-box-column',
+			'#wrapper .content-boxes-icon-boxed .content-box-column'
+		);
+		$css[$three_twenty_six_fourty_media_query][avada_implode( $elements )]['margin-bottom'] = '55px';
+
+		$css[$three_twenty_six_fourty_media_query]['.share-box .social-networks']['text-align'] = 'left';
+
+		$css[$three_twenty_six_fourty_media_query]['#content']['width']       = '100% !important';
+		$css[$three_twenty_six_fourty_media_query]['#content']['margin-left'] = '0px !important';
+
+		$css[$three_twenty_six_fourty_media_query]['.sidebar']['width']       = '100% !important';
+		$css[$three_twenty_six_fourty_media_query]['.sidebar']['float']       = 'none !important';
+		$css[$three_twenty_six_fourty_media_query]['.sidebar']['margin-left'] = '0 !important';
+
+
+		/* media.css CSS - to be split to the corresponding sections above
+		================================================================================================= */
+		$media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + 1000 ) . 'px)';
+
+		$css[$media_query]['.no-csstransforms .sep-boxed-pricing .column']['margin-left'] = '1.5% !important';
+
+		if ( class_exists( 'WooCommerce' ) ) {
+
+			$media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + 965 ) . 'px)';
+
+
+			$css[$media_query]['.coupon .input-text']['width'] = '100% !important';
+
+			$css[$media_query]['.coupon .button']['margin-top'] = '20px';
+
+			$media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + 900 ) . 'px)';
 
 			$elements = array(
-				'.fusion-columns-5 .fusion-column:first-child',
-				'.fusion-columns-4 .fusion-column:first-child',
-				'.fusion-columns-3 .fusion-column:first-child',
-				'.fusion-columns-2 .fusion-column:first-child',
-				'.fusion-columns-1 .fusion-column:first-child'
+				'.woocommerce #customer_login .login .form-row',
+				'.woocommerce #customer_login .login .lost_password'
 			);
-			$css[$media_query][avada_implode( $elements )]['margin-left'] = '0';
+			$css[$media_query][avada_implode( $elements )]['float'] = 'none';
 
 			$elements = array(
-				'.fusion-column:nth-child(5n)',
-				'.fusion-column:nth-child(4n)',
-				'.fusion-column:nth-child(3n)',
-				'.fusion-column:nth-child(2n)',
-				'.fusion-column'
+				'.woocommerce #customer_login .login .inline',
+				'.woocommerce #customer_login .login .lost_password'
 			);
+			$css[$media_query][avada_implode( $elements )]['display']      = 'block';
+			$css[$media_query][avada_implode( $elements )]['margin-left']  = '0';
 			$css[$media_query][avada_implode( $elements )]['margin-right'] = '0';
-
-			$css[$media_query]['#wrapper']['width']      = 'auto !important';
-			//$css[$media_query]['#wrapper']['overflow-x'] = 'hidden';
-
-			$css[$media_query]['.create-block-format-context']['display'] = 'none';
-
-			$css[$media_query]['.columns .col']['float']      = 'none';
-			$css[$media_query]['.columns .col']['width']      = '100% !important';
-			$css[$media_query]['.columns .col']['margin']     = '0 0 20px';
-			$css[$media_query]['.columns .col']['box-sizing'] = 'border-box';
-
-			$css[$media_query]['.avada-container .columns']['float']         = 'none';
-			$css[$media_query]['.avada-container .columns']['width']         = '100%';
-			$css[$media_query]['.avada-container .columns']['margin-bottom'] = '20px';
-
-			$css[$media_query]['.avada-container .columns .col']['float'] = 'left';
-
-			$css[$media_query]['.avada-container .col img']['display'] = 'block';
-			$css[$media_query]['.avada-container .col img']['margin']  = '0 auto';
-
-			$css[$media_query]['.review']['float'] = 'none';
-			$css[$media_query]['.review']['width'] = '100%';
-
-			$elements = array(
-				'.fusion-social-networks',
-				'.fusion-social-links-footer'
-			);
-			$css[$media_query][avada_implode( $elements )]['display']    = 'block';
-			$css[$media_query][avada_implode( $elements )]['text-align'] = 'center';
-
-			$css[$media_query]['.fusion-social-links-footer']['width'] = 'auto';
-
-			$css[$media_query]['.fusion-social-links-footer .fusion-social-networks']['display'] = 'inline-block';
-			$css[$media_query]['.fusion-social-links-footer .fusion-social-networks']['float']   = 'none';
-
-			$css[$media_query]['.fusion-social-links-footer .fusion-social-networks .fusion-social-network-icon:first-child']['margin-left']  = '0';
-			$css[$media_query]['.fusion-social-links-footer .fusion-social-networks .fusion-social-network-icon:first-child']['margin-right'] = '0';
-
-			$css[$media_query]['.fusion-social-networks']['padding'] = '0 0 15px';
-
-			$css[$media_query]['.fusion-author .fusion-author-ssocial .fusion-author-tagline']['float']      = 'none';
-			$css[$media_query]['.fusion-author .fusion-author-ssocial .fusion-author-tagline']['text-align'] = 'center';
-			$css[$media_query]['.fusion-author .fusion-author-ssocial .fusion-author-tagline']['max-width']  = '100%';
-
-			$css[$media_query]['.fusion-author .fusion-author-ssocial .fusion-social-networks']['text-align'] = 'center';
-
-			$css[$media_query]['.fusion-author .fusion-author-ssocial .fusion-social-networks .fusion-social-network-icon:first-child']['margin-left'] = '0';
-
-			$css[$media_query]['.fusion-social-networks:after']['content'] = '""';
-			$css[$media_query]['.fusion-social-networks:after']['display'] = 'block';
-			$css[$media_query]['.fusion-social-networks:after']['clear']   = 'both';
-
-			$css[$media_query]['.fusion-social-networks li']['float']   = 'none';
-			$css[$media_query]['.fusion-social-networks li']['display'] = 'inline-block';
-
-			$elements = array(
-				'.fusion-reading-box-container .reading-box.reading-box-center',
-				'.fusion-reading-box-container .reading-box.reading-box-right'
-			);
-			$css[$media_query][avada_implode( $elements )]['text-align'] = 'left';
-
-			$css[$media_query]['.fusion-reading-box-container .continue']['display'] = 'block';
-
-			$css[$media_query]['.fusion-reading-box-container .mobile-button']['display'] = 'none';
-			$css[$media_query]['.fusion-reading-box-container .mobile-button']['float']   = 'none';
-
-			$css[$media_query]['.fusion-title']['margin-top']    = '0px !important';
-			$css[$media_query]['.fusion-title']['margin-bottom'] = '20px !important';
-
-			if ( class_exists( 'WooCommerce' ) ) {
-
-				$css[$media_query]['#main .cart-empty']['float']         = 'none';
-				$css[$media_query]['#main .cart-empty']['text-align']    = 'center';
-				$css[$media_query]['#main .cart-empty']['border-top']    = '1px solid';
-				$css[$media_query]['#main .cart-empty']['border-bottom'] = 'none';
-				$css[$media_query]['#main .cart-empty']['width']         = '100%';
-				$css[$media_query]['#main .cart-empty']['line-height']   = 'normal !important';
-				$css[$media_query]['#main .cart-empty']['height']        = 'auto !important';
-				$css[$media_query]['#main .cart-empty']['margin-bottom'] = '10px';
-				$css[$media_query]['#main .cart-empty']['padding-top']   = '10px';
-
-				$css[$media_query]['#main .return-to-shop']['float']          = 'none';
-				$css[$media_query]['#main .return-to-shop']['border-top']     = 'none';
-				$css[$media_query]['#main .return-to-shop']['border-bottom']  = '1px solid';
-				$css[$media_query]['#main .return-to-shop']['width']          = '100%';
-				$css[$media_query]['#main .return-to-shop']['text-align']     = 'center';
-				$css[$media_query]['#main .return-to-shop']['line-height']    = 'normal !important';
-				$css[$media_query]['#main .return-to-shop']['height']         = 'auto !important';
-				$css[$media_query]['#main .return-to-shop']['padding-bottom'] = '10px';
-
-				$css[$media_query]['.woocommerce .checkout_coupon .promo-code-heading']['display']       = 'block';
-				$css[$media_query]['.woocommerce .checkout_coupon .promo-code-heading']['margin-bottom'] = '10px !important';
-				$css[$media_query]['.woocommerce .checkout_coupon .promo-code-heading']['float']         = 'none';
-				$css[$media_query]['.woocommerce .checkout_coupon .promo-code-heading']['text-align']    = 'center';
-
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-contents']['display'] = 'block';
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-contents']['float']   = 'none';
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-contents']['margin']  = '0';
-
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['display']       = 'block';
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['width']         = 'auto !important';
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['float']         = 'none';
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['text-align']    = 'center';
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['margin-right']  ='0';
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-input']['margin-bottom'] = '10px !important';
-
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-button']['display']      = 'block';
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-button']['margin-right'] = '0';
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-button']['float']        = 'none';
-				$css[$media_query]['.woocommerce .checkout_coupon .coupon-button']['text-align']   = 'center';
-
-			}
-
-			// Page Title Bar
-
-			if ( 'auto' != Avada()->settings->get( 'page_title_mobile_height' ) ) {
-
-				$css[$media_query]['.fusion-body .fusion-page-title-bar']['height'] = Avada_Sanitize::size( Avada()->settings->get( 'page_title_mobile_height' ) );
-
-			} else {
-
-				$css[$media_query]['.fusion-body .fusion-page-title-bar']['padding-top']    = '10px';
-				$css[$media_query]['.fusion-body .fusion-page-title-bar']['padding-bottom'] = '10px';
-				$css[$media_query]['.fusion-body .fusion-page-title-bar']['height']         = 'auto';
-
-			}
-
-			$elements = array(
-				'.fusion-page-title-bar-left .fusion-page-title-captions',
-				'.fusion-page-title-bar-right .fusion-page-title-captions',
-				'.fusion-page-title-bar-left .fusion-page-title-secondary',
-				'.fusion-page-title-bar-right .fusion-page-title-secondary'
-			);
-			$css[$media_query][avada_implode( $elements )]['display']     = 'block';
-			$css[$media_query][avada_implode( $elements )]['float']       = 'none';
-			$css[$media_query][avada_implode( $elements )]['width']       = '100%';
-			$css[$media_query][avada_implode( $elements )]['line-height'] = 'normal';
-
-			$css[$media_query]['.fusion-page-title-bar-left .fusion-page-title-secondary']['text-align'] = 'left';
-
-			$css[$media_query]['.fusion-page-title-bar-left .searchform']['display']   = 'block';
-			$css[$media_query]['.fusion-page-title-bar-left .searchform']['max-width'] = '100%';
-
-			$css[$media_query]['.fusion-page-title-bar-right .fusion-page-title-secondary']['text-align'] = 'right';
-
-			$css[$media_query]['.fusion-page-title-bar-right .searchform']['max-width'] = '100%';
-
-			if ( 'auto' != Avada()->settings->get( 'page_title_mobile_height' ) ) {
-
-				$css[$media_query]['.fusion-page-title-row']['display']    = 'table';
-				$css[$media_query]['.fusion-page-title-row']['width']      = '100%';
-				$css[$media_query]['.fusion-page-title-row']['height']      = '100%';
-				$css[$media_query]['.fusion-page-title-row']['min-height'] = fusion_strip_unit( Avada()->settings->get( 'page_title_mobile_height' ) ) - 20 . 'px';
-
-				$css[$media_query]['.fusion-page-title-wrapper']['display']        = 'table-cell';
-				$css[$media_query]['.fusion-page-title-wrapper']['vertical-align'] = 'middle';
-
-			}
-
-			$css[$media_query]['.sidebar .social_links .social li']['width']        = 'auto';
-			$css[$media_query]['.sidebar .social_links .social li']['margin-right'] = '5px';
-
-			$css[$media_query]['#comment-input']['margin-bottom'] = '0';
-
-			$css[$media_query]['#comment-input input']['width']         = '90%';
-			$css[$media_query]['#comment-input input']['float']         = 'none !important';
-			$css[$media_query]['#comment-input input']['margin-bottom'] = '10px';
-
-			$css[$media_query]['#comment-textarea textarea']['width'] = '90%';
-
-			$css[$media_query]['.pagination']['margin-top'] = '40px';
-
-			$css[$media_query]['.portfolio-one .portfolio-item .image']['float']         = 'none';
-			$css[$media_query]['.portfolio-one .portfolio-item .image']['width']         = 'auto';
-			$css[$media_query]['.portfolio-one .portfolio-item .image']['height']        = 'auto';
-			$css[$media_query]['.portfolio-one .portfolio-item .image']['margin-bottom'] = '20px';
-
-			$css[$media_query]['h5.toggle span.toggle-title']['width'] = '80%';
-
-			$css[$media_query]['#wrapper .sep-boxed-pricing .panel-wrapper']['padding'] = '0';
-
-			$elements = array(
-				'#wrapper .full-boxed-pricing .column',
-				'#wrapper .sep-boxed-pricing .column'
-			);
-			$css[$media_query][avada_implode( $elements )]['float']         = 'none';
-			$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '10px';
-			$css[$media_query][avada_implode( $elements )]['margin-left']   = '0';
-			$css[$media_query][avada_implode( $elements )]['width']         = '100%';
-
-			$css[$media_query]['.share-box']['height'] = 'auto';
-
-			$css[$media_query]['#wrapper .share-box h4']['float']       = 'none';
-			$css[$media_query]['#wrapper .share-box h4']['line-height'] = '20px !important';
-			$css[$media_query]['#wrapper .share-box h4']['padding']     = '0';
-
-			$css[$media_query]['.share-box ul']['float']          = 'none';
-			$css[$media_query]['.share-box ul']['overflow']       = 'hidden';
-			$css[$media_query]['.share-box ul']['padding']        = '0 25px';
-			$css[$media_query]['.share-box ul']['padding-bottom'] = '15px';
-			$css[$media_query]['.share-box ul']['margin-top']     = '0px';
-
-			$css[$media_query]['.project-content .project-description']['float'] = 'none !important';
-
-			$css[$media_query]['.project-content .fusion-project-description-details']['margin-bottom'] = '50px';
-
-			$elements = array(
-				'.project-content .project-description',
-				'.project-content .project-info'
-			);
-			$css[$media_query][avada_implode( $elements )]['width'] = '100% !important';
-
-			$css[$media_query]['.portfolio-half .flexslider']['width'] = '100%';
-
-			$css[$media_query]['.portfolio-half .project-content']['width'] = '100% !important';
-
-			$css[$media_query]['#style_selector']['display'] = 'none';
-
-			$elements = array(
-				'.portfolio-tabs',
-				'.faq-tabs'
-			);
-			$css[$media_query][avada_implode( $elements )]['height']              = 'auto';
-			$css[$media_query][avada_implode( $elements )]['border-bottom-width'] = '1px';
-			$css[$media_query][avada_implode( $elements )]['border-bottom-style'] = 'solid';
-
-			$elements = array(
-				'.portfolio-tabs li',
-				'.faq-tabs li'
-			);
-			$css[$media_query][avada_implode( $elements )]['float']         = 'left';
-			$css[$media_query][avada_implode( $elements )]['margin-right']  = '30px';
-			$css[$media_query][avada_implode( $elements )]['border-bottom'] = '0';
-
-			$elements = array(
-				'.ls-avada .ls-nav-prev',
-				'.ls-avada .ls-nav-next'
-			);
-			$css[$media_query][avada_implode( $elements )]['display'] = 'none !important';
-
-			$elements = array(
-				'nav#nav',
-				'nav#sticky-nav'
-			);
-			$css[$media_query][avada_implode( $elements )]['margin-right'] = '0';
-
-			$css[$media_query]['#footer .social-networks']['width']    = '100%';
-			$css[$media_query]['#footer .social-networks']['margin']   = '0 auto';
-			$css[$media_query]['#footer .social-networks']['position'] = 'relative';
-			$css[$media_query]['#footer .social-networks']['left']     = '-11px';
-
-			$css[$media_query]['.tab-holder .tabs']['height'] = 'auto !important';
-			$css[$media_query]['.tab-holder .tabs']['width']  = '100% !important';
-
-			$css[$media_query]['.shortcode-tabs .tab-hold .tabs li']['width'] = '100% !important';
-
-			$elements = array(
-				'body .shortcode-tabs .tab-hold .tabs li',
-				'body.dark .sidebar .tab-hold .tabs li'
-			);
-			$css[$media_query][avada_implode( $elements )]['border-right'] = 'none !important';
-
-			$css[$media_query]['.error-message']['line-height'] = '170px';
-			$css[$media_query]['.error-message']['margin-top']  = '20px';
-
-			$css[$media_query]['.error_page .useful_links']['width']        = '100%';
-			$css[$media_query]['.error_page .useful_links']['padding-left'] = '0';
-
-			$css[$media_query]['.fusion-google-map']['width']         = '100% !important';
-			$css[$media_query]['.fusion-google-map']['margin-bottom'] = '20px !important';
-
-			$css[$media_query]['.social_links_shortcode .social li']['width'] = '10% !important';
-
-			$css[$media_query]['#wrapper .ei-slider']['width']  = '100% !important';
-			$css[$media_query]['#wrapper .ei-slider']['height'] = '200px !important';
-
-			$css[$media_query]['.progress-bar']['margin-bottom'] = '10px !important';
-
-			$css[$media_query]['.fusion-blog-layout-medium-alternate .fusion-post-content']['float']      = 'none';
-			$css[$media_query]['.fusion-blog-layout-medium-alternate .fusion-post-content']['width']      = '100% !important';
-			$css[$media_query]['.fusion-blog-layout-medium-alternate .fusion-post-content']['margin-top'] = '20px';
-
-			$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['min-height']     = 'inherit !important';
-			$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-bottom'] = '20px';
-			$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-left']   = '3%';
-			$css[$media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-right']  = '3%';
-
-			$elements = array(
-				'#wrapper .content-boxes-icon-on-top .content-box-column',
-				'#wrapper .content-boxes-icon-boxed .content-box-column'
-			);
-			$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '55px';
-
-			$css[$media_query]['.fusion-counters-box .fusion-counter-box']['margin-bottom'] = '20px';
-			$css[$media_query]['.fusion-counters-box .fusion-counter-box']['padding']       = '0 15px';
-
-			$css[$media_query]['.fusion-counters-box .fusion-counter-box:last-child']['margin-bottom'] = '0';
-
-			$css[$media_query]['.popup']['display'] = 'none !important';
-
-			$css[$media_query]['.share-box .social-networks']['text-align'] = 'left';
-
-			if ( class_exists( 'WooCommerce' ) ) {
-
-				$elements = array(
-					'.catalog-ordering .order',
-					'.avada-myaccount-data .addresses .col-1',
-					'.avada-myaccount-data .addresses .col-2',
-					'.avada-customer-details .addresses .col-1',
-					'.avada-customer-details .addresses .col-2'
-				);
-				$css[$media_query][avada_implode( $elements )]['float']        = 'none !important';
-				$css[$media_query][avada_implode( $elements )]['margin-left']  = 'auto !important';
-				$css[$media_query][avada_implode( $elements )]['margin-right'] = 'auto !important';
-
-				$css[$media_query]['#wrapper .catalog-ordering > .fusion-grid-list-view']['float']        = 'left !important';
-				$css[$media_query]['#wrapper .catalog-ordering > .fusion-grid-list-view']['margin-left']  = '0 !important';
-				$css[$media_query]['#wrapper .catalog-ordering > .fusion-grid-list-view']['margin-right'] = '0 !important';
-
-				$elements = array(
-					'.avada-myaccount-data .addresses .col-1',
-					'.avada-myaccount-data .addresses .col-2',
-					'.avada-customer-details .addresses .col-1',
-					'.avada-customer-details .addresses .col-2'
-				);
-				$css[$media_query][avada_implode( $elements )]['margin'] = '0 !important';
-				$css[$media_query][avada_implode( $elements )]['width']  = '100%';
-
-				$css[$media_query]['.catalog-ordering']['margin-bottom'] = '50px';
-
-				$css[$media_query]['.catalog-ordering .order']['width'] = '33px';
-
-				$elements = array(
-					'.catalog-ordering > ul',
-					'.catalog-ordering .order'
-				);
-				$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '10px';
-
-				$css[$media_query]['.order-dropdown > li:hover > ul']['display']  = 'block';
-				$css[$media_query]['.order-dropdown > li:hover > ul']['position'] = 'relative';
-				$css[$media_query]['.order-dropdown > li:hover > ul']['top']      = '0';
-
-				$css[$media_query]['#wrapper .orderby-order-container']['overflow']      = 'visible';
-				$css[$media_query]['#wrapper .orderby-order-container']['width']         = 'auto';
-				$css[$media_query]['#wrapper .orderby-order-container']['margin-bottom'] = '10px';
-				$css[$media_query]['#wrapper .orderby-order-container']['float']         = 'left';
-
-				$css[$media_query]['#wrapper .orderby.order-dropdown']['float']        = 'left';
-				$css[$media_query]['#wrapper .orderby.order-dropdown']['margin-right'] = '7px';
-
-				$css[$media_query]['#wrapper .catalog-ordering .sort-count.order-dropdown']['width']        = '215px';
-				$css[$media_query]['#wrapper .catalog-ordering .sort-count.order-dropdown']['float']        = 'left !important';
-				$css[$media_query]['#wrapper .catalog-ordering .sort-count.order-dropdown']['margin-left']  = '7px !important';
-				$css[$media_query]['#wrapper .catalog-ordering .sort-count.order-dropdown']['margin-right'] = '7px !important';
-
-				$css[$media_query]['#wrapper .sort-count.order-dropdown ul a']['width'] = '215px';
-
-				$css[$media_query]['#wrapper .catalog-ordering .order']['float']         = 'left !important';
-				$css[$media_query]['#wrapper .catalog-ordering .order']['margin-bottom'] = '0 !important';
-
-				$elements = array(
-					'.products-2 li:nth-child(2n+1)',
-					'.products-3 li:nth-child(3n+1)',
-					'.products-4 li:nth-child(4n+1)',
-					'.products-5 li:nth-child(5n+1)',
-					'.products-6 li:nth-child(6n+1)'
-				);
-				$css[$media_query][avada_implode( $elements )]['clear'] = 'none !important';
-
-				$css[$media_query]['#main .products li:nth-child(3n+1)']['clear'] = 'both !important';
-
-				$elements = array(
-					'.products li',
-					'#main .products li:nth-child(3n)',
-					'#main .products li:nth-child(4n)'
-				);
-				$css[$media_query][avada_implode( $elements )]['width']        = '32.3% !important';
-				$css[$media_query][avada_implode( $elements )]['float']        = 'left !important';
-				$css[$media_query][avada_implode( $elements )]['margin-right'] = '1% !important';
-
-				$elements = array(
-					'.woocommerce #customer_login .login .form-row',
-					'.woocommerce #customer_login .login .lost_password'
-				);
-				$css[$media_query][avada_implode( $elements )]['float'] = 'none';
-
-				$elements = array(
-					'.woocommerce #customer_login .login .inline',
-					'.woocommerce #customer_login .login .lost_password'
-				);
-				$css[$media_query][avada_implode( $elements )]['display']     = 'block';
-				$css[$media_query][avada_implode( $elements )]['margin-left'] = '0';
-
-				$css[$media_query]['.avada-myaccount-data .my_account_orders .order-number']['padding-right'] = '8px';
-
-				$css[$media_query]['.avada-myaccount-data .my_account_orders .order-actions']['padding-left'] = '8px';
-
-				$css[$media_query]['.shop_table .product-name']['width'] = '35%';
-
-				$elements = array(
-					'#wrapper .woocommerce-side-nav',
-					'#wrapper .woocommerce-content-box',
-					'#wrapper .shipping-coupon',
-					'#wrapper .cart_totals',
-					'#wrapper #customer_login .col-1',
-					'#wrapper #customer_login .col-2',
-					'#wrapper .woocommerce form.checkout #customer_details .col-1',
-					'#wrapper .woocommerce form.checkout #customer_details .col-2'
-				);
-				$css[$media_query][avada_implode( $elements )]['float']        = 'none';
-				$css[$media_query][avada_implode( $elements )]['margin-left']  = 'auto';
-				$css[$media_query][avada_implode( $elements )]['margin-right'] = 'auto';
-				$css[$media_query][avada_implode( $elements )]['width']        = '100% !important';
-
-				$elements = array(
-					'#customer_login .col-1',
-					'.coupon'
-				);
-				$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '20px';
-
-				$css[$media_query]['.shop_table .product-thumbnail']['float'] = 'none';
-
-				$css[$media_query]['.product-info']['margin-left'] = '0';
-				$css[$media_query]['.product-info']['margin-top']  = '10px';
-
-				$css[$media_query]['.product .entry-summary div .price']['float'] = 'none';
-
-				$css[$media_query]['.product .entry-summary .woocommerce-product-rating']['float']       = 'none';
-				$css[$media_query]['.product .entry-summary .woocommerce-product-rating']['margin-left'] = '0';
-
-				$elements = array(
-					'.woocommerce-tabs .tabs',
-					'.woocommerce-side-nav'
-				);
-				$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '25px';
-
-				$css[$media_query]['.woocommerce-tabs .panel']['width']   = '91% !important';
-				$css[$media_query]['.woocommerce-tabs .panel']['padding'] = '4% !important';
-
-				$css[$media_query]['#reviews li .avatar']['display'] = 'none';
-
-				$css[$media_query]['#reviews li .comment-text']['width']       = '90% !important';
-				$css[$media_query]['#reviews li .comment-text']['margin-left'] = '0 !important';
-				$css[$media_query]['#reviews li .comment-text']['padding']     = '5% !important';
-
-				$css[$media_query]['.woocommerce-container .social-share']['overflow'] = 'hidden';
-
-				$css[$media_query]['.woocommerce-container .social-share li']['display']       = 'block';
-				$css[$media_query]['.woocommerce-container .social-share li']['float']         = 'left';
-				$css[$media_query]['.woocommerce-container .social-share li']['margin']        = '0 auto';
-				$css[$media_query]['.woocommerce-container .social-share li']['border-right']  = '0 !important';
-				$css[$media_query]['.woocommerce-container .social-share li']['border-left']   = '0 !important';
-				$css[$media_query]['.woocommerce-container .social-share li']['padding-left']  = '0 !important';
-				$css[$media_query]['.woocommerce-container .social-share li']['padding-right'] = '0 !important';
-				$css[$media_query]['.woocommerce-container .social-share li']['width']         = '25%';
-
-				$css[$media_query]['.has-sidebar .woocommerce-container .social-share li']['width'] = '50%';
-
-				$css[$media_query]['.myaccount_user_container span']['width']        = '100%';
-				$css[$media_query]['.myaccount_user_container span']['float']        = 'none';
-				$css[$media_query]['.myaccount_user_container span']['display']      = 'block';
-				$css[$media_query]['.myaccount_user_container span']['padding']      = '10px 0px';
-				$css[$media_query]['.myaccount_user_container span']['border-right'] = '0';
-
-				if ( is_rtl() ) {
-					$css[$media_query]['.rtl .myaccount_user_container span']['border-left'] = '0';
-				}
-
-				$elements = array(
-					'.shop_table .product-thumbnail img',
-					'.shop_table .product-thumbnail .product-info',
-					'.shop_table .product-thumbnail .product-info p'
-				);
-				$css[$media_query][avada_implode( $elements )]['float']   = 'none';
-				$css[$media_query][avada_implode( $elements )]['width']   = '100%';
-				$css[$media_query][avada_implode( $elements )]['margin']  = '0 !important';
-				$css[$media_query][avada_implode( $elements )]['padding'] = '0';
-
-				$css[$media_query]['.shop_table .product-thumbnail']['padding'] = '10px 0px';
-
-				$css[$media_query]['.product .images']['margin-bottom'] = '30px';
-
-				$css[$media_query]['#customer_login_box .button']['float']         = 'left';
-				$css[$media_query]['#customer_login_box .button']['margin-bottom'] = '15px';
-
-				$css[$media_query]['#customer_login_box .remember-box']['clear']   = 'both';
-				$css[$media_query]['#customer_login_box .remember-box']['display'] = 'block';
-				$css[$media_query]['#customer_login_box .remember-box']['padding'] = '0';
-				$css[$media_query]['#customer_login_box .remember-box']['width']   = '125px';
-				$css[$media_query]['#customer_login_box .remember-box']['float']   = 'left';
-
-				$css[$media_query]['#customer_login_box .lost_password']['float'] = 'left';
-
-				$elements = array(
-					'#wrapper .product .images',
-					'#wrapper .product .summary.entry-summary'
-				);
-				$css[$media_query][avada_implode( $elements )]['width'] = '50% !important';
-				$css[$media_query][avada_implode( $elements )]['float'] = 'left !important';
-
-				$css[$media_query]['#wrapper .product .summary.entry-summary']['width']       = '48% !important';
-				$css[$media_query]['#wrapper .product .summary.entry-summary']['margin-left'] = '2% !important';
-
-				$css[$media_query]['#wrapper .woocommerce-tabs .tabs']['width'] = '24% !important';
-				$css[$media_query]['#wrapper .woocommerce-tabs .tabs']['float'] = 'left !important';
-
-				$css[$media_query]['#wrapper .woocommerce-tabs .panel']['float']   = 'right !important';
-				$css[$media_query]['#wrapper .woocommerce-tabs .panel']['width']   = '70% !important';
-				$css[$media_query]['#wrapper .woocommerce-tabs .panel']['padding'] = '4% !important';
-
-				$elements = array(
-					'.product .images #slider .flex-direction-nav',
-					'.product .images #carousel .flex-direction-nav'
-				);
-				$css[$media_query][avada_implode( $elements )]['display'] = 'none !important';
-
-				$elements = array(
-					'.myaccount_user_container span.msg',
-					'.myaccount_user_container span:last-child'
-				);
-				$css[$media_query][avada_implode( $elements )]['padding-left']  = '0 !important';
-				$css[$media_query][avada_implode( $elements )]['padding-right'] = '0 !important';
-
-			}
-
-			$css[$media_query]['body #small-nav']['visibility'] = 'visible !important';
-
-			$elements = array();
-			if ( class_exists( 'GFForms' ) ) {
-				$elements[] = '.gform_wrapper .ginput_complex .ginput_left';
-				$elements[] = '.gform_wrapper .ginput_complex .ginput_right';
-				$elements[] = '.gform_wrapper .gfield input[type="text"]';
-				$elements[] = '.gform_wrapper .gfield textarea';
-			}
-			if ( defined( 'WPCF7_PLUGIN' ) ) {
-				$elements[] = '.wpcf7-form .wpcf7-text';
-				$elements[] = '.wpcf7-form .wpcf7-quiz';
-				$elements[] = '.wpcf7-form .wpcf7-number';
-				$elements[] = '.wpcf7-form textarea';
-			}
-
-			$css[$media_query][avada_implode( $elements )]['float']      = 'none !important';
-			$css[$media_query][avada_implode( $elements )]['width']      = '100% !important';
-			$css[$media_query][avada_implode( $elements )]['box-sizing'] = 'border-box';
-
-			$css[$media_query]['#nav-uber #megaMenu']['width'] = '100%';
-
-			$css[$media_query]['.fullwidth-box']['background-attachment'] = 'scroll';
-
-			$css[$media_query]['#toTop']['bottom']        = '30px';
-			$css[$media_query]['#toTop']['border-radius'] = '4px';
-			$css[$media_query]['#toTop']['height']        = '40px';
-			$css[$media_query]['#toTop']['z-index']       = '10000';
-
-			$css[$media_query]['#toTop:before']['line-height'] = '38px';
-
-			$css[$media_query]['#toTop:hover']['background-color'] = '#333333';
-
-			$css[$media_query]['.no-mobile-totop .to-top-container']['display'] = 'none';
-
-			$css[$media_query]['.no-mobile-slidingbar #slidingbar-area']['display'] = 'none';
-
-			$css[$media_query]['.tfs-slider .slide-content-container .btn']['min-height']    = '0 !important';
-			$css[$media_query]['.tfs-slider .slide-content-container .btn']['padding-left']  = '20px';
-			$css[$media_query]['.tfs-slider .slide-content-container .btn']['padding-right'] = '20px !important';
-			$css[$media_query]['.tfs-slider .slide-content-container .btn']['height']        = '26px !important';
-			$css[$media_query]['.tfs-slider .slide-content-container .btn']['line-height']   = '26px !important';
-
-			$css[$media_query]['.fusion-soundcloud iframe']['width'] = '100%';
-
-			$elements = array(
-				'.fusion-columns-2 .fusion-column',
-				'.fusion-columns-2 .fusion-flip-box-wrapper',
-				'.fusion-columns-4 .fusion-column',
-				'.fusion-columns-4 .fusion-flip-box-wrapper'
-			);
-			$css[$media_query][avada_implode( $elements )]['width'] = '50% !important';
-			$css[$media_query][avada_implode( $elements )]['float'] = 'left !important';
-
-			$elements = array(
-				'.fusion-columns-2 .fusion-column:nth-child(3n)',
-				'.fusion-columns-4 .fusion-column:nth-child(3n)',
-				'.fusion-columns-2 .fusion-flip-box-wrapper:nth-child(3n)'
-			);
-			$css[$media_query][avada_implode( $elements )]['clear'] = 'both';
-
-			$elements = array(
-				'.fusion-columns-3 .fusion-column',
-				'.fusion-columns-3 .fusion-flip-box-wrapper',
-				'.fusion-columns-5 .fusion-column',
-				'.fusion-columns-5 .fusion-flip-box-wrapper',
-				'.fusion-columns-6 .fusion-column',
-				'.fusion-columns-6 .fusion-flip-box-wrapper',
-				'.fusion-columns-5 .col-lg-2',
-				'.fusion-columns-5 .col-md-2',
-				'.fusion-columns-5 .col-sm-2'
-			);
-			$css[$media_query][avada_implode( $elements )]['width'] = '33.33% !important';
-			$css[$media_query][avada_implode( $elements )]['float'] = 'left !important';
-
-			$elements = array(
-				'.fusion-columns-3 .fusion-column:nth-child(4n)',
-				'.fusion-columns-3 .fusion-flip-box-wrapper:nth-child(4n)',
-				'.fusion-columns-5 .fusion-column:nth-child(4n)',
-				'.fusion-columns-5 .fusion-flip-box-wrapper:nth-child(4n)',
-				'.fusion-columns-6 .fusion-column:nth-child(4n)',
-				'.fusion-columns-6 .fusion-flip-box-wrapper:nth-child(4n)'
-			);
-			$css[$media_query][avada_implode( $elements )]['clear'] = 'both';
-
-			$elements = array(
-				'.footer-area .fusion-column',
-				'#slidingbar .fusion-column'
-			);
-			$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '40px';
-
-			$elements = array(
-				'.fusion-layout-column.fusion-one-sixth',
-				'.fusion-layout-column.fusion-five-sixth',
-				'.fusion-layout-column.fusion-one-fifth',
-				'.fusion-layout-column.fusion-two-fifth',
-				'.fusion-layout-column.fusion-three-fifth',
-				'.fusion-layout-column.fusion-four-fifth',
-				'.fusion-layout-column.fusion-one-fourth',
-				'.fusion-layout-column.fusion-three-fourth',
-				'.fusion-layout-column.fusion-one-third',
-				'.fusion-layout-column.fusion-two-third',
-				'.fusion-layout-column.fusion-one-half'
-			);
-			$css[$media_query][avada_implode( $elements )]['position']      = 'relative';
-			$css[$media_query][avada_implode( $elements )]['float']         = 'left';
-			$css[$media_query][avada_implode( $elements )]['margin-right']  = '4%';
-			$css[$media_query][avada_implode( $elements )]['margin-bottom'] = '20px';
-
-			$css[$media_query]['.fusion-layout-column.fusion-one-sixth']['width']    = '13.3333%';
-			$css[$media_query]['.fusion-layout-column.fusion-five-sixth']['width']   = '82.6666%';
-			$css[$media_query]['.fusion-layout-column.fusion-one-fifth']['width']    = '16.8%';
-			$css[$media_query]['.fusion-layout-column.fusion-two-fifth']['width']    = '37.6%';
-			$css[$media_query]['.fusion-layout-column.fusion-three-fifth']['width']  = '58.4%';
-			$css[$media_query]['.fusion-layout-column.fusion-four-fifth']['width']   = '79.2%';
-			$css[$media_query]['.fusion-layout-column.fusion-one-fourth']['width']   = '22%';
-			$css[$media_query]['.fusion-layout-column.fusion-three-fourth']['width'] = '74%';
-			$css[$media_query]['.fusion-layout-column.fusion-one-third']['width']    = '30.6666%';
-			$css[$media_query]['.fusion-layout-column.fusion-two-third']['width']    = '65.3333%';
-			$css[$media_query]['.fusion-layout-column.fusion-one-half']['width']     = '48%';
-
-			// No spacing Columns
-
-			$css[$media_query]['.fusion-layout-column.fusion-spacing-no']['margin-left']  = '0';
-			$css[$media_query]['.fusion-layout-column.fusion-spacing-no']['margin-right'] = '0';
-
-			$css[$media_query]['.fusion-layout-column.fusion-one-sixth.fusion-spacing-no']['width']    = '16.6666666667% !important';
-			$css[$media_query]['.fusion-layout-column.fusion-five-sixth.fusion-spacing-no']['width']   = '83.333333333% !important';
-			$css[$media_query]['.fusion-layout-column.fusion-one-fifth.fusion-spacing-no']['width']    = '20% !important';
-			$css[$media_query]['.fusion-layout-column.fusion-two-fifth.fusion-spacing-no']['width']    = '40% !important';
-			$css[$media_query]['.fusion-layout-column.fusion-three-fifth.fusion-spacing-no']['width']  = '60% !important';
-			$css[$media_query]['.fusion-layout-column.fusion-four-fifth.fusion-spacing-no']['width']   = '80% !important';
-			$css[$media_query]['.fusion-layout-column.fusion-one-fourth.fusion-spacing-no']['width']   = '25% !important';
-			$css[$media_query]['.fusion-layout-column.fusion-three-fourth.fusion-spacing-no']['width'] = '75% !important';
-			$css[$media_query]['.fusion-layout-column.fusion-one-third.fusion-spacing-no']['width']    = '33.33333333% !important';
-			$css[$media_query]['.fusion-layout-column.fusion-two-third.fusion-spacing-no']['width']    = '66.66666667% !important';
-			$css[$media_query]['.fusion-layout-column.fusion-one-half.fusion-spacing-no']['width']     = '50% !important';
-
-			$css[$media_query]['.fusion-layout-column.fusion-column-last']['clear']        = 'right';
-			$css[$media_query]['.fusion-layout-column.fusion-column-last']['zoom']         = '1';
-			$css[$media_query]['.fusion-layout-column.fusion-column-last']['margin-left']  = '0';
-			$css[$media_query]['.fusion-layout-column.fusion-column-last']['margin-right'] = '0';
-
-			$css[$media_query]['.fusion-column.fusion-spacing-no']['margin-bottom'] = '0';
-			$css[$media_query]['.fusion-column.fusion-spacing-no']['width']         = '100% !important';
-
-			$css[$media_query]['.sidebar']['margin-left'] = '0 !important';
-			$css[$media_query]['.sidebar']['width']       = '25% !important';
-
-			$css[$media_query]['#content']['margin-left'] = '0 !important';
-
-			$elements = array(
-				'.has-sidebar #main #content',
-				'#main #content.with-sidebar',
-				'.has-sidebar .project-content .project-description'
-			);
-			$css[$media_query][avada_implode( $elements )]['width'] = '72% !important';
-
-			$css[$media_query]['.sidebar-position-left .sidebar']['float'] = 'left !important';
-
-			$css[$media_query]['.sidebar-position-left #content']['float'] = 'right !important';
-
-			$css[$media_query]['.sidebar-position-right .sidebar']['float'] = 'right !important';
-
-			$css[$media_query]['.sidebar-position-right #content']['float'] = 'left !important';
-
-			$css[$media_query]['#sidebar-2']['clear'] = 'left';
-
-			$elements = array(
-				'.ua-mobile .page-title-bar',
-				'.ua-mobile .fusion-footer-widget-area',
-				'.ua-mobile body',
-				'.ua-mobile #main'
-			);
-			$css[$media_query][avada_implode( $elements )]['background-attachment'] = 'scroll !important';
-
-			$elements = array(
-				'.fusion-secondary-header .fusion-row',
-				'.fusion-header .fusion-row',
-				'.footer-area > .fusion-row',
-				'#footer > .fusion-row',
-				'#header-sticky .fusion-row'
-			);
-			$css[$media_query][avada_implode( $elements )]['padding-left']  = '0px !important';
-			$css[$media_query][avada_implode( $elements )]['padding-right'] = '0px !important';
-
-			$css[$media_query]['.error-message']['font-size'] = '130px';
 
 		}
+
+		$media_query = '@media only screen and (min-width: ' . intval( Avada()->settings->get( 'side_header_break_point' ) ) . 'px)';
+
+		$css[$media_query]['body.side-header-right.layout-boxed-mode #side-header']['position'] = 'absolute';
+		$css[$media_query]['body.side-header-right.layout-boxed-mode #side-header']['top']      = '0';
+
+		$css[$media_query]['body.side-header-right.layout-boxed-mode #side-header .side-header-wrapper']['position'] = 'absolute';
+
+
+
+		$media_query = '@media screen and (max-width: ' . intval( Avada()->settings->get( 'side_header_break_point' ) - 18 ) . 'px)';
+		$elements = array(
+			'body.admin-bar #wrapper #slidingbar-area',
+			'body.layout-boxed-mode.side-header-right #slidingbar-area',
+			'.admin-bar p.demo_store'
+		);
+		$css[$media_query][avada_implode( $elements )]['top'] = '46px';
+		$css[$media_query]['body.body_blank.admin-bar']['top'] = '45px';
+		$css[$media_query]['html #wpadminbar']['z-index']  = '99999 !important';
+		$css[$media_query]['html #wpadminbar']['position'] = 'fixed !important';
+
+		$media_query = '@media screen and (max-width: ' . intval( Avada()->settings->get( 'side_header_break_point' ) - 32 ) . 'px)';
+		$css[$media_query]['.fusion-tabs.vertical-tabs .tab-pane']['max-width'] = 'none !important';
+
+		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px)';
+		$css[$media_query]['#wrapper .ei-slider']['width'] = '100%';
+
+		$media_query = '@media only screen and (min-device-width: 320px) and (max-device-width: 480px)';
+		$css[$media_query]['#wrapper .ei-slider']['width'] = '100%';
+
+
+		/* iPad Landscape Responsive Styles
+		================================================================================================= */
+		$ipad_landscape_media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape)';
+
+		// #Layout
+		$css[$ipad_landscape_media_query]['.fullwidth-box']['background-attachment'] = 'scroll !important';
+
+		if ( Avada()->settings->get( 'mobile_nav_padding' ) ) {
+			$css[$ipad_landscape_media_query]['.fusion-main-menu > ul > li']['padding-right'] = intval( Avada()->settings->get( 'mobile_nav_padding' ) ) . 'px';
+		}
+
+		$css[$ipad_landscape_media_query]['#wrapper .fusion-page-title-bar']['height'] = Avada_Sanitize::size( Avada()->settings->get( 'page_title_height' ) ) . ' !important';
+
+		// # Footer Styles
+		if ( Avada()->settings->get( 'footer_sticky_height' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_sticky', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
+			$elements = array( 'html', 'body', '#boxed-wrapper', '#wrapper' );
+			$css[$ipad_landscape_media_query][avada_implode( $elements )]['height']     = 'auto';
+			$css[$ipad_landscape_media_query]['.above-footer-wrapper']['min-height']    = 'none';
+			$css[$ipad_landscape_media_query]['.above-footer-wrapper']['margin-bottom'] = '0';
+			$css[$ipad_landscape_media_query]['.above-footer-wrapper:after']['height']  = 'auto';
+			$css[$ipad_landscape_media_query]['.fusion-footer']['height']               = 'auto';
+		}
+
+		if ( Avada()->settings->get( 'footer_special_effects' ) == 'footer_area_bg_parallax' ) {
+
+			$css[$ipad_landscape_media_query]['.fusion-footer-widget-area']['background-attachment'] = 'static';
+			$css[$ipad_landscape_media_query]['.fusion-footer-widget-area']['margin']   = '0';
+
+			$css[$ipad_landscape_media_query]['#main']['margin-bottom']   = '0';
+		}
+
+
+		$css[$ipad_landscape_media_query]['#wrapper .ei-slider']['width'] = '100%';
+		$elements = array(
+			'.fullwidth-box',
+			'.page-title-bar',
+			'.fusion-footer-widget-area',
+			'body',
+			'#main'
+		);
+
+		$css[$ipad_landscape_media_query][avada_implode( $elements )]['background-attachment'] = 'scroll !important';
+		if ( Avada()->settings->get( 'footerw_bg_image' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_parallax_effect', 'footer_area_bg_parallax', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
+			$css[$ipad_landscape_media_query]['.fusion-body #wrapper']['background-color'] = 'transparent';
+		}
+
+		if ( Avada()->settings->get( 'footer_sticky_height' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_sticky', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
+			$elements = array( 'html', 'body', '#boxed-wrapper', '#wrapper' );
+			$css[$ipad_landscape_media_query][avada_implode( $elements )]['height']     = 'auto';
+			$css[$ipad_landscape_media_query]['.above-footer-wrapper']['min-height']    = 'none';
+			$css[$ipad_landscape_media_query]['.above-footer-wrapper']['margin-bottom'] = '0';
+			$css[$ipad_landscape_media_query]['.above-footer-wrapper:after']['height']  = 'auto';
+			$css[$ipad_landscape_media_query]['.fusion-footer']['height']               = 'auto';
+		}
+
+		if ( Avada()->settings->get( 'footer_special_effects' ) == 'footer_area_bg_parallax' ) {
+			$css[$ipad_landscape_media_query]['.fusion-footer-widget-area']['background-attachment'] = 'static';
+			$css[$ipad_landscape_media_query]['.fusion-footer-widget-area']['margin']   = '0';
+
+			$css[$ipad_landscape_media_query]['#main']['margin-bottom']   = '0';
+		}
+
+		/* iPad Portrait Responsive Styles
+		================================================================================================= */
+		$ipad_portrait_media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
+
+		// # Layout
+		if ( Avada()->settings->get( 'footerw_bg_image' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_parallax_effect', 'footer_area_bg_parallax', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
+			$css[$ipad_portrait_media_query]['.fusion-body #wrapper']['background-color'] = 'transparent';
+		}
+
+
+		if ( Avada()->settings->get( 'footer_sticky_height' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_sticky', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
+			$elements = array( 'html', 'body', '#boxed-wrapper', '#wrapper' );
+			$css[$ipad_portrait_media_query][avada_implode( $elements )]['height']     = 'auto';
+			$css[$ipad_portrait_media_query]['.above-footer-wrapper']['min-height']    = 'none';
+			$css[$ipad_portrait_media_query]['.above-footer-wrapper']['margin-bottom'] = '0';
+			$css[$ipad_portrait_media_query]['.above-footer-wrapper:after']['height']  = 'auto';
+			$css[$ipad_portrait_media_query]['.fusion-footer']['height']               = 'auto';
+		}
+
+		if ( Avada()->settings->get( 'footer_special_effects' ) == 'footer_area_bg_parallax' ) {
+			$css[$ipad_portrait_media_query]['.fusion-footer-widget-area']['background-attachment'] = 'static';
+			$css[$ipad_portrait_media_query]['.fusion-footer-widget-area']['margin']   = '0';
+
+			$css[$ipad_portrait_media_query]['#main']['margin-bottom']   = '0';
+		}
+
+		$elements = array(
+			'.fusion-columns-5 .fusion-column:first-child',
+			'.fusion-columns-4 .fusion-column:first-child',
+			'.fusion-columns-3 .fusion-column:first-child',
+			'.fusion-columns-2 .fusion-column:first-child',
+			'.fusion-columns-1 .fusion-column:first-child'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-left'] = '0';
+
+		$elements = array(
+			'.fusion-column:nth-child(5n)',
+			'.fusion-column:nth-child(4n)',
+			'.fusion-column:nth-child(3n)',
+			'.fusion-column:nth-child(2n)',
+			'.fusion-column'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-right'] = '0';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper']['width']      = 'auto !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.create-block-format-context']['display'] = 'none';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.columns .col']['float']      = 'none';
+		$ipad_portrait[$ipad_portrait_media_query]['.columns .col']['width']      = '100% !important';
+		$ipad_portrait[$ipad_portrait_media_query]['.columns .col']['margin']     = '0 0 20px';
+		$ipad_portrait[$ipad_portrait_media_query]['.columns .col']['box-sizing'] = 'border-box';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fullwidth-box']['background-attachment'] = 'scroll !important';
+
+		if ( Avada()->settings->get( 'mobile_nav_padding' ) ) {
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-main-menu > ul > li']['padding-right'] = intval( Avada()->settings->get( 'mobile_nav_padding' ) ) . 'px';
+		}
+
+		if ( ! Avada()->settings->get( 'breadcrumb_mobile' ) ) {
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-body .fusion-page-title-bar .fusion-breadcrumbs']['display'] = 'none';
+		}
+
+		// # Footer Styles
+		if ( Avada()->settings->get( 'footer_sticky_height' ) && ( in_array( Avada()->settings->get( 'footer_special_effects' ), array( 'footer_sticky', 'footer_sticky_with_parallax_bg_image' ) ) ) ) {
+			$elements = array( 'html', 'body', '#boxed-wrapper', '#wrapper' );
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['height']     = 'auto';
+			$ipad_portrait[$ipad_portrait_media_query]['.above-footer-wrapper']['min-height']    = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['.above-footer-wrapper']['margin-bottom'] = '0';
+			$ipad_portrait[$ipad_portrait_media_query]['.above-footer-wrapper:after']['height']  = 'auto';
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-footer']['height']               = 'auto';
+		}
+
+		if ( Avada()->settings->get( 'footer_special_effects' ) == 'footer_area_bg_parallax' ) {
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-footer-widget-area']['background-attachment'] = 'static';
+			$css[$ipad_portrait_media_query]['.fusion-footer-widget-area']['margin']   = '0';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#main']['margin-bottom']   = '0';
+		}
+
+		$ipad_portrait[$ipad_portrait_media_query]['.review']['float'] = 'none';
+		$ipad_portrait[$ipad_portrait_media_query]['.review']['width'] = '100%';
+
+		$elements = array(
+			'.fusion-social-networks',
+			'.fusion-social-links-footer'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['display']    = 'block';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['text-align'] = 'center';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-social-links-footer']['width'] = 'auto';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-social-links-footer .fusion-social-networks']['display'] = 'inline-block';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-social-links-footer .fusion-social-networks']['float']   = 'none';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-social-networks']['padding'] = '0 0 15px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-author .fusion-author-ssocial .fusion-author-tagline']['float']      = 'none';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-author .fusion-author-ssocial .fusion-author-tagline']['text-align'] = 'center';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-author .fusion-author-ssocial .fusion-author-tagline']['max-width']  = '100%';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-author .fusion-author-ssocial .fusion-social-networks']['text-align'] = 'center';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-author .fusion-author-ssocial .fusion-social-networks .fusion-social-network-icon:first-child']['margin-left'] = '0';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-social-networks:after']['content'] = '""';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-social-networks:after']['display'] = 'block';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-social-networks:after']['clear']   = 'both';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-social-networks li']['float']   = 'none';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-social-networks li']['display'] = 'inline-block';
+
+		$elements = array(
+			'.fusion-reading-box-container .reading-box.reading-box-center',
+			'.fusion-reading-box-container .reading-box.reading-box-right'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['text-align'] = 'left';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-reading-box-container .continue']['display'] = 'block';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-reading-box-container .mobile-button']['display'] = 'none';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-reading-box-container .mobile-button']['float']   = 'none';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-title']['margin-top']    = '0px !important';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-title']['margin-bottom'] = '20px !important';
+
+		if ( class_exists( 'WooCommerce' ) ) {
+
+			$ipad_portrait[$ipad_portrait_media_query]['#main .cart-empty']['float']         = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .cart-empty']['text-align']    = 'center';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .cart-empty']['border-top']    = '1px solid';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .cart-empty']['border-bottom'] = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .cart-empty']['width']         = '100%';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .cart-empty']['line-height']   = 'normal !important';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .cart-empty']['height']        = 'auto !important';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .cart-empty']['margin-bottom'] = '10px';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .cart-empty']['padding-top']   = '10px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#main .return-to-shop']['float']          = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .return-to-shop']['border-top']     = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .return-to-shop']['border-bottom']  = '1px solid';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .return-to-shop']['width']          = '100%';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .return-to-shop']['text-align']     = 'center';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .return-to-shop']['line-height']    = 'normal !important';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .return-to-shop']['height']         = 'auto !important';
+			$ipad_portrait[$ipad_portrait_media_query]['#main .return-to-shop']['padding-bottom'] = '10px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .promo-code-heading']['display']       = 'block';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .promo-code-heading']['margin-bottom'] = '10px !important';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .promo-code-heading']['float']         = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .promo-code-heading']['text-align']    = 'center';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-contents']['display'] = 'block';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-contents']['float']   = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-contents']['margin']  = '0';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-input']['display']       = 'block';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-input']['width']         = 'auto !important';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-input']['float']         = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-input']['text-align']    = 'center';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-input']['margin-right']  ='0';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-input']['margin-bottom'] = '10px !important';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-button']['display']      = 'block';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-button']['margin-right'] = '0';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-button']['float']        = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce .checkout_coupon .coupon-button']['text-align']   = 'center';
+
+		}
+
+		// Page Title Bar
+
+		if ( 'auto' != Avada()->settings->get( 'page_title_mobile_height' ) ) {
+
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-body .fusion-page-title-bar']['height'] = Avada_Sanitize::size( Avada()->settings->get( 'page_title_mobile_height' ) );
+
+		} else {
+
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-body .fusion-page-title-bar']['padding-top']    = '10px';
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-body .fusion-page-title-bar']['padding-bottom'] = '10px';
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-body .fusion-page-title-bar']['height']         = 'auto';
+
+		}
+
+		$elements = array(
+			'.fusion-page-title-bar-left .fusion-page-title-captions',
+			'.fusion-page-title-bar-right .fusion-page-title-captions',
+			'.fusion-page-title-bar-left .fusion-page-title-secondary',
+			'.fusion-page-title-bar-right .fusion-page-title-secondary'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['display']     = 'block';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float']       = 'none';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width']       = '100%';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['line-height'] = 'normal';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-bar-left .fusion-page-title-secondary']['text-align'] = 'left';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-bar-left .searchform']['display']   = 'block';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-bar-left .searchform']['max-width'] = '100%';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-bar-right .fusion-page-title-secondary']['text-align'] = 'right';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-bar-right .searchform']['max-width'] = '100%';
+
+		if ( 'auto' != Avada()->settings->get( 'page_title_mobile_height' ) ) {
+
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-row']['display']    = 'table';
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-row']['width']      = '100%';
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-row']['height']     = '100%';
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-row']['min-height'] = intval( Avada()->settings->get( 'page_title_mobile_height' ) ) - 20 . 'px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-wrapper']['display']        = 'table-cell';
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-page-title-wrapper']['vertical-align'] = 'middle';
+
+		}
+
+		if ( get_post_meta( $c_pageID, 'pyre_page_title_height', true ) ) {
+			$ipad_portrait[$ipad_portrait_media_query]['#wrapper .fusion-page-title-bar']['height'] = Avada_Sanitize::size( get_post_meta( $c_pageID, 'pyre_page_title_height', true ) ) . ' !important';
+		}
+
+		$ipad_portrait[$ipad_portrait_media_query]['.products .product-list-view']['width']     = '100% !important';
+		$ipad_portrait[$ipad_portrait_media_query]['.products .product-list-view']['min-width'] = '100% !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.sidebar .social_links .social li']['width']        = 'auto';
+		$ipad_portrait[$ipad_portrait_media_query]['.sidebar .social_links .social li']['margin-right'] = '5px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#comment-input']['margin-bottom'] = '0';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#comment-input input']['width']         = '90%';
+		$ipad_portrait[$ipad_portrait_media_query]['#comment-input input']['float']         = 'none !important';
+		$ipad_portrait[$ipad_portrait_media_query]['#comment-input input']['margin-bottom'] = '10px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#comment-textarea textarea']['width'] = '90%';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.pagination']['margin-top'] = '40px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.portfolio-one .portfolio-item .image']['float']         = 'none';
+		$ipad_portrait[$ipad_portrait_media_query]['.portfolio-one .portfolio-item .image']['width']         = 'auto';
+		$ipad_portrait[$ipad_portrait_media_query]['.portfolio-one .portfolio-item .image']['height']        = 'auto';
+		$ipad_portrait[$ipad_portrait_media_query]['.portfolio-one .portfolio-item .image']['margin-bottom'] = '20px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['h5.toggle span.toggle-title']['width'] = '80%';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .sep-boxed-pricing .panel-wrapper']['padding'] = '0';
+
+		$elements = array(
+			'#wrapper .full-boxed-pricing .column',
+			'#wrapper .sep-boxed-pricing .column'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float']         = 'none';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-bottom'] = '10px';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-left']   = '0';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width']         = '100%';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.share-box']['height'] = 'auto';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .share-box h4']['float']       = 'none';
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .share-box h4']['line-height'] = '20px !important';
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .share-box h4']['padding']     = '0';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.share-box ul']['float']          = 'none';
+		$ipad_portrait[$ipad_portrait_media_query]['.share-box ul']['overflow']       = 'hidden';
+		$ipad_portrait[$ipad_portrait_media_query]['.share-box ul']['padding']        = '0 25px';
+		$ipad_portrait[$ipad_portrait_media_query]['.share-box ul']['padding-bottom'] = '15px';
+		$ipad_portrait[$ipad_portrait_media_query]['.share-box ul']['margin-top']     = '0px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.project-content .project-description']['float'] = 'none !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.project-content .fusion-project-description-details']['margin-bottom'] = '50px';
+
+		$elements = array(
+			'.project-content .project-description',
+			'.project-content .project-info'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width'] = '100% !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.portfolio-half .flexslider']['width'] = '100%';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.portfolio-half .project-content']['width'] = '100% !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#style_selector']['display'] = 'none';
+
+		$elements = array(
+			'.portfolio-tabs',
+			'.faq-tabs'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['height']              = 'auto';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['border-bottom-width'] = '1px';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['border-bottom-style'] = 'solid';
+
+		$elements = array(
+			'.portfolio-tabs li',
+			'.faq-tabs li'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float']         = 'left';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-right']  = '30px';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['border-bottom'] = '0';
+
+		$elements = array(
+			'.ls-avada .ls-nav-prev',
+			'.ls-avada .ls-nav-next'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['display'] = 'none !important';
+
+		$elements = array(
+			'nav#nav',
+			'nav#sticky-nav'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-right'] = '0';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#footer .social-networks']['width']    = '100%';
+		$ipad_portrait[$ipad_portrait_media_query]['#footer .social-networks']['margin']   = '0 auto';
+		$ipad_portrait[$ipad_portrait_media_query]['#footer .social-networks']['position'] = 'relative';
+		$ipad_portrait[$ipad_portrait_media_query]['#footer .social-networks']['left']     = '-11px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.tab-holder .tabs']['height'] = 'auto !important';
+		$ipad_portrait[$ipad_portrait_media_query]['.tab-holder .tabs']['width']  = '100% !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.shortcode-tabs .tab-hold .tabs li']['width'] = '100% !important';
+
+		$elements = array(
+			'body .shortcode-tabs .tab-hold .tabs li',
+			'body.dark .sidebar .tab-hold .tabs li'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['border-right'] = 'none !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.error-message']['line-height'] = '170px';
+		$ipad_portrait[$ipad_portrait_media_query]['.error-message']['margin-top']  = '20px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.error_page .useful_links']['width']        = '100%';
+		$ipad_portrait[$ipad_portrait_media_query]['.error_page .useful_links']['padding-left'] = '0';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-google-map']['width']         = '100% !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.social_links_shortcode .social li']['width'] = '10% !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .ei-slider']['width']  = '100% !important';
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .ei-slider']['height'] = '200px !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.progress-bar']['margin-bottom'] = '10px !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-blog-layout-medium-alternate .fusion-post-content']['float']      = 'none';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-blog-layout-medium-alternate .fusion-post-content']['width']      = '100% !important';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-blog-layout-medium-alternate .fusion-post-content']['margin-top'] = '20px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['min-height']     = 'inherit !important';
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-bottom'] = '20px';
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-left']   = '3%';
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .content-boxes-icon-boxed .content-wrapper-boxed']['padding-right']  = '3%';
+
+		$elements = array(
+			'#wrapper .content-boxes-icon-on-top .content-box-column',
+			'#wrapper .content-boxes-icon-boxed .content-box-column'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-bottom'] = '55px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-counters-box .fusion-counter-box']['margin-bottom'] = '20px';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-counters-box .fusion-counter-box']['padding']       = '0 15px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-counters-box .fusion-counter-box:last-child']['margin-bottom'] = '0';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.popup']['display'] = 'none !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.share-box .social-networks']['text-align'] = 'left';
+
+		if ( class_exists( 'WooCommerce' ) ) {
+
+			$elements = array(
+				'.catalog-ordering .order',
+				'.avada-myaccount-data .addresses .col-1',
+				'.avada-myaccount-data .addresses .col-2',
+				'.avada-customer-details .addresses .col-1',
+				'.avada-customer-details .addresses .col-2',
+				'#wrapper .catalog-ordering > .fusion-grid-list-view'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float']        = 'none !important';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-left']  = 'auto !important';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-right'] = 'auto !important';
+
+			$elements = array(
+				'.avada-myaccount-data .addresses .col-1',
+				'.avada-myaccount-data .addresses .col-2',
+				'.avada-customer-details .addresses .col-1',
+				'.avada-customer-details .addresses .col-2'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin'] = '0 !important';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width']  = '100%';
+
+			$css[$ipad_portrait_media_query]['#wrapper .catalog-ordering']['margin-bottom'] = '50px';
+
+			$css[$ipad_portrait_media_query]['#wrapper .orderby-order-container']['display'] = 'block';
+
+			$css[$ipad_portrait_media_query]['#wrapper .order-dropdown > li:hover > ul']['display']  = 'block';
+			$css[$ipad_portrait_media_query]['#wrapper .order-dropdown > li:hover > ul']['position'] = 'relative';
+			$css[$ipad_portrait_media_query]['#wrapper .order-dropdown > li:hover > ul']['top']      = '0';
+
+			$css[$ipad_portrait_media_query]['#wrapper .orderby-order-container']['margin']        = '0 auto';
+			$css[$ipad_portrait_media_query]['#wrapper .orderby-order-container']['width']         = '225px';
+			$css[$ipad_portrait_media_query]['#wrapper .orderby-order-container']['float']         = 'none';
+
+			$css[$ipad_portrait_media_query]['#wrapper .orderby.order-dropdown']['width']        = '176px';
+
+			$css[$ipad_portrait_media_query]['#wrapper .sort-count.order-dropdown']['display'] = 'block';
+			$css[$ipad_portrait_media_query]['#wrapper .sort-count.order-dropdown']['width'] = '225px';
+
+			$css[$ipad_portrait_media_query]['#wrapper .sort-count.order-dropdown ul a']['width'] = '225px';
+
+			$css[$ipad_portrait_media_query]['#wrapper .catalog-ordering .order']['margin'] = '0';
+
+			$css[$ipad_portrait_media_query]['.catalog-ordering .fusion-grid-list-view']['display'] = 'block';
+			$css[$ipad_portrait_media_query]['.catalog-ordering .fusion-grid-list-view']['width'] = '78px';
+
+			$elements = array(
+				'.products-2 li:nth-child(2n+1)',
+				'.products-3 li:nth-child(3n+1)',
+				'.products-4 li:nth-child(4n+1)',
+				'.products-5 li:nth-child(5n+1)',
+				'.products-6 li:nth-child(6n+1)'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['clear'] = 'none !important';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#main .products li:nth-child(3n+1)']['clear'] = 'both !important';
+
+			$elements = array(
+				'.products li',
+				'#main .products li:nth-child(3n)',
+				'#main .products li:nth-child(4n)'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width']        = '32.3% !important';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float']        = 'left !important';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-right'] = '1% !important';
+
+			$elements = array(
+				'.woocommerce #customer_login .login .form-row',
+				'.woocommerce #customer_login .login .lost_password'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float'] = 'none';
+
+			$elements = array(
+				'.woocommerce #customer_login .login .inline',
+				'.woocommerce #customer_login .login .lost_password'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['display']     = 'block';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-left'] = '0';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.avada-myaccount-data .my_account_orders .order-number']['padding-right'] = '8px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.avada-myaccount-data .my_account_orders .order-actions']['padding-left'] = '8px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.shop_table .product-name']['width'] = '35%';
+
+			$elements = array(
+				'#wrapper .woocommerce-side-nav',
+				'#wrapper .woocommerce-content-box',
+				'#wrapper .shipping-coupon',
+				'#wrapper .cart_totals',
+				'#wrapper #customer_login .col-1',
+				'#wrapper #customer_login .col-2',
+				'#wrapper .woocommerce form.checkout #customer_details .col-1',
+				'#wrapper .woocommerce form.checkout #customer_details .col-2'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float']        = 'none';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-left']  = 'auto';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-right'] = 'auto';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width']        = '100% !important';
+
+			$elements = array(
+				'#customer_login .col-1',
+				'.coupon'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-bottom'] = '20px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.shop_table .product-thumbnail']['float'] = 'none';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.product-info']['margin-left'] = '0';
+			$ipad_portrait[$ipad_portrait_media_query]['.product-info']['margin-top']  = '10px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.product .entry-summary div .price']['float'] = 'none';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.product .entry-summary .woocommerce-product-rating']['float']       = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['.product .entry-summary .woocommerce-product-rating']['margin-left'] = '0';
+
+			$elements = array(
+				'.woocommerce-tabs .tabs',
+				'.woocommerce-side-nav'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-bottom'] = '25px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-tabs .panel']['width']   = '91% !important';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-tabs .panel']['padding'] = '4% !important';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#reviews li .avatar']['display'] = 'none';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#reviews li .comment-text']['width']       = '90% !important';
+			$ipad_portrait[$ipad_portrait_media_query]['#reviews li .comment-text']['margin-left'] = '0 !important';
+			$ipad_portrait[$ipad_portrait_media_query]['#reviews li .comment-text']['padding']     = '5% !important';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-container .social-share']['overflow'] = 'hidden';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-container .social-share li']['display']       = 'block';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-container .social-share li']['float']         = 'left';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-container .social-share li']['margin']        = '0 auto';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-container .social-share li']['border-right']  = '0 !important';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-container .social-share li']['border-left']   = '0 !important';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-container .social-share li']['padding-left']  = '0 !important';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-container .social-share li']['padding-right'] = '0 !important';
+			$ipad_portrait[$ipad_portrait_media_query]['.woocommerce-container .social-share li']['width']         = '25%';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.has-sidebar .woocommerce-container .social-share li']['width'] = '50%';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.myaccount_user_container span']['width']        = '100%';
+			$ipad_portrait[$ipad_portrait_media_query]['.myaccount_user_container span']['float']        = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['.myaccount_user_container span']['display']      = 'block';
+			$ipad_portrait[$ipad_portrait_media_query]['.myaccount_user_container span']['padding']      = '10px 0px';
+			$ipad_portrait[$ipad_portrait_media_query]['.myaccount_user_container span']['border-right'] = '0';
+
+			if ( is_rtl() ) {
+				$ipad_portrait[$ipad_portrait_media_query]['.rtl .myaccount_user_container span']['border-left'] = '0';
+			}
+
+			$elements = array(
+				'.shop_table .product-thumbnail img',
+				'.shop_table .product-thumbnail .product-info',
+				'.shop_table .product-thumbnail .product-info p'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float']   = 'none';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width']   = '100%';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin']  = '0 !important';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['padding'] = '0';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.shop_table .product-thumbnail']['padding'] = '10px 0px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['.product .images']['margin-bottom'] = '30px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#customer_login_box .button']['float']         = 'left';
+			$ipad_portrait[$ipad_portrait_media_query]['#customer_login_box .button']['margin-bottom'] = '15px';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#customer_login_box .remember-box']['clear']   = 'both';
+			$ipad_portrait[$ipad_portrait_media_query]['#customer_login_box .remember-box']['display'] = 'block';
+			$ipad_portrait[$ipad_portrait_media_query]['#customer_login_box .remember-box']['padding'] = '0';
+			$ipad_portrait[$ipad_portrait_media_query]['#customer_login_box .remember-box']['width']   = '125px';
+			$ipad_portrait[$ipad_portrait_media_query]['#customer_login_box .remember-box']['float']   = 'left';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#customer_login_box .lost_password']['float'] = 'left';
+
+			$elements = array(
+				'#wrapper .product .images',
+				'#wrapper .product .summary.entry-summary'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width'] = '50% !important';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float'] = 'left !important';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#wrapper .product .summary.entry-summary']['width']       = '48% !important';
+			$ipad_portrait[$ipad_portrait_media_query]['#wrapper .product .summary.entry-summary']['margin-left'] = '2% !important';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#wrapper .woocommerce-tabs .tabs']['width'] = '24% !important';
+			$ipad_portrait[$ipad_portrait_media_query]['#wrapper .woocommerce-tabs .tabs']['float'] = 'left !important';
+
+			$ipad_portrait[$ipad_portrait_media_query]['#wrapper .woocommerce-tabs .panel']['float']   = 'right !important';
+			$ipad_portrait[$ipad_portrait_media_query]['#wrapper .woocommerce-tabs .panel']['width']   = '70% !important';
+			$ipad_portrait[$ipad_portrait_media_query]['#wrapper .woocommerce-tabs .panel']['padding'] = '4% !important';
+
+			$elements = array(
+				'.product .images #slider .flex-direction-nav',
+				'.product .images #carousel .flex-direction-nav'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['display'] = 'none !important';
+
+			$elements = array(
+				'.myaccount_user_container span.msg',
+				'.myaccount_user_container span:last-child'
+			);
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['padding-left']  = '0 !important';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['padding-right'] = '0 !important';
+
+		}
+
+		$ipad_portrait[$ipad_portrait_media_query]['body #small-nav']['visibility'] = 'visible !important';
+
+		$elements = array();
+		if ( class_exists( 'GFForms' ) ) {
+			$elements[] = '.gform_wrapper .ginput_complex .ginput_left';
+			$elements[] = '.gform_wrapper .ginput_complex .ginput_right';
+			$elements[] = '.gform_wrapper .gfield input[type="text"]';
+			$elements[] = '.gform_wrapper .gfield textarea';
+		}
+		if ( defined( 'WPCF7_PLUGIN' ) ) {
+			$elements[] = '.wpcf7-form .wpcf7-text';
+			$elements[] = '.wpcf7-form .wpcf7-quiz';
+			$elements[] = '.wpcf7-form .wpcf7-number';
+			$elements[] = '.wpcf7-form textarea';
+		}
+
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float']      = 'none !important';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width']      = '100% !important';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['box-sizing'] = 'border-box';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#nav-uber #megaMenu']['width'] = '100%';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fullwidth-box']['background-attachment'] = 'scroll';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#toTop']['bottom']        = '30px';
+		$ipad_portrait[$ipad_portrait_media_query]['#toTop']['border-radius'] = '4px';
+		$ipad_portrait[$ipad_portrait_media_query]['#toTop']['height']        = '40px';
+		$ipad_portrait[$ipad_portrait_media_query]['#toTop']['z-index']       = '10000';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#toTop:before']['line-height'] = '38px';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#toTop:hover']['background-color'] = '#333333';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.no-mobile-totop .to-top-container']['display'] = 'none';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.no-mobile-slidingbar #slidingbar-area']['display'] = 'none';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.tfs-slider .slide-content-container .btn']['min-height']    = '0 !important';
+		$ipad_portrait[$ipad_portrait_media_query]['.tfs-slider .slide-content-container .btn']['padding-left']  = '20px';
+		$ipad_portrait[$ipad_portrait_media_query]['.tfs-slider .slide-content-container .btn']['padding-right'] = '20px !important';
+		$ipad_portrait[$ipad_portrait_media_query]['.tfs-slider .slide-content-container .btn']['height']        = '26px !important';
+		$ipad_portrait[$ipad_portrait_media_query]['.tfs-slider .slide-content-container .btn']['line-height']   = '26px !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-soundcloud iframe']['width'] = '100%';
+
+		$elements = array(
+			'.fusion-columns-2 .fusion-column',
+			'.fusion-columns-2 .fusion-flip-box-wrapper',
+			'.fusion-columns-4 .fusion-column',
+			'.fusion-columns-4 .fusion-flip-box-wrapper'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width'] = '50% !important';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float'] = 'left !important';
+
+		$elements = array(
+			'.fusion-columns-2 .fusion-column:nth-of-type(3n)',
+			'.fusion-columns-4 .fusion-column:nth-of-type(3n)',
+			'.fusion-columns-2 .fusion-flip-box-wrapper:nth-of-type(3n)'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['clear'] = 'both';
+
+		$elements = array(
+			'.fusion-columns-3 .fusion-column',
+			'.fusion-columns-3 .fusion-flip-box-wrapper',
+			'.fusion-columns-5 .fusion-column',
+			'.fusion-columns-5 .fusion-flip-box-wrapper',
+			'.fusion-columns-6 .fusion-column',
+			'.fusion-columns-6 .fusion-flip-box-wrapper',
+			'.fusion-columns-5 .col-lg-2',
+			'.fusion-columns-5 .col-md-2',
+			'.fusion-columns-5 .col-sm-2'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['width'] = '33.33% !important';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float'] = 'left !important';
+
+		$elements = array(
+			'.fusion-columns-3 .fusion-column:nth-of-type(4n)',
+			'.fusion-columns-3 .fusion-flip-box-wrapper:nth-of-type(4n)',
+			'.fusion-columns-5 .fusion-column:nth-of-type(4n)',
+			'.fusion-columns-5 .fusion-flip-box-wrapper:nth-of-type(4n)',
+			'.fusion-columns-6 .fusion-column:nth-of-type(4n)',
+			'.fusion-columns-6 .fusion-flip-box-wrapper:nth-of-type(4n)'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['clear'] = 'both';
+
+		$elements = array(
+			'.footer-area .fusion-column',
+			'#slidingbar .fusion-column'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-bottom'] = '40px';
+
+		$elements = array(
+			'.fusion-layout-column.fusion-one-sixth',
+			'.fusion-layout-column.fusion-five-sixth',
+			'.fusion-layout-column.fusion-one-fifth',
+			'.fusion-layout-column.fusion-two-fifth',
+			'.fusion-layout-column.fusion-three-fifth',
+			'.fusion-layout-column.fusion-four-fifth',
+			'.fusion-layout-column.fusion-one-fourth',
+			'.fusion-layout-column.fusion-three-fourth',
+			'.fusion-layout-column.fusion-one-third',
+			'.fusion-layout-column.fusion-two-third',
+			'.fusion-layout-column.fusion-one-half'
+		);
+
+		if( is_rtl() ) {
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['position']      = 'relative';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float']         = 'right';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-left']   = '4%';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-right']  = '0%';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-bottom'] = '20px';
+		} else {
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['position']      = 'relative';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['float']         = 'left';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-right']  = '4%';
+			$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['margin-bottom'] = '20px';
+		}
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-one-sixth']['width']    = '13.3333%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-five-sixth']['width']   = '82.6666%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-one-fifth']['width']    = '16.8%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-two-fifth']['width']    = '37.6%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-three-fifth']['width']  = '58.4%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-four-fifth']['width']   = '79.2%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-one-fourth']['width']   = '22%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-three-fourth']['width'] = '74%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-one-third']['width']    = '30.6666%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-two-third']['width']    = '65.3333%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-one-half']['width']     = '48%';
+
+		// No spacing Columns
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-spacing-no']['margin-left']  = '0';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-spacing-no']['margin-right'] = '0';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-one-sixth.fusion-spacing-no']['width']    = '16.6666666667%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-five-sixth.fusion-spacing-no']['width']   = '83.333333333%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-one-fifth.fusion-spacing-no']['width']    = '20%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-two-fifth.fusion-spacing-no']['width']    = '40%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-three-fifth.fusion-spacing-no']['width']  = '60%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-four-fifth.fusion-spacing-no']['width']   = '80%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-one-fourth.fusion-spacing-no']['width']   = '25%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-three-fourth.fusion-spacing-no']['width'] = '75%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-one-third.fusion-spacing-no']['width']    = '33.33333333%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-two-third.fusion-spacing-no']['width']    = '66.66666667%';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-one-half.fusion-spacing-no']['width']     = '50%';
+
+		if( is_rtl() ) {
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-column-last']['clear'] = 'left';
+		} else {
+			$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-column-last']['clear'] = 'right';
+		}
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-column-last']['zoom']         = '1';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-column-last']['margin-left']  = '0';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-layout-column.fusion-column-last']['margin-right'] = '0';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-column.fusion-spacing-no']['margin-bottom'] = '0';
+		$ipad_portrait[$ipad_portrait_media_query]['.fusion-column.fusion-spacing-no']['width']         = '100% !important';
+
+		$elements = array(
+			'.ua-mobile .page-title-bar',
+			'.ua-mobile .fusion-footer-widget-area',
+			'.ua-mobile body',
+			'.ua-mobile #main'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['background-attachment'] = 'scroll !important';
+
+		$elements = array(
+			'.fusion-secondary-header .fusion-row',
+			'.fusion-header .fusion-row',
+			'.footer-area > .fusion-row',
+			'#footer > .fusion-row',
+			'#header-sticky .fusion-row'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['padding-left']  = '0px !important';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['padding-right'] = '0px !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['.error-message']['font-size'] = '130px';
+
+		$elements = array(
+			'.fusion-secondary-header .fusion-row',
+			'.fusion-header .fusion-row',
+			'.footer-area > .fusion-row',
+			'#footer > .fusion-row'
+		);
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['padding-left']  = '0px !important';
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['padding-right'] = '0px !important';
+
+		$ipad_portrait[$ipad_portrait_media_query]['#wrapper .ei-slider']['width'] = '100%';
+		$elements = array(
+			'.fullwidth-box',
+			'.page-title-bar',
+			'.fusion-footer-widget-area',
+			'body',
+			'#main'
+		);
+
+		$ipad_portrait[$ipad_portrait_media_query][avada_implode( $elements )]['background-attachment'] = 'scroll !important';
+
+		if ( get_post_meta( $c_pageID, 'pyre_fallback', true ) ) {
+			$ipad_portrait[$ipad_portrait_media_query]['#sliders-container']['display'] = 'none';
+			$ipad_portrait[$ipad_portrait_media_query]['#fallback-slide']['display'] = 'block';
+
+		}
+
+		// Filter for editing the iPad Portrait Media Query Styles
+		$ipad_portrait = apply_filters( 'avada_ipad_portrait_styles', $ipad_portrait );
+		$css = array_merge( $css, $ipad_portrait );
+
+		// End iPad Portrait Media Query Styles
 
 	}
 
@@ -6563,6 +7825,13 @@ function avada_dynamic_css_array() {
 		$hundredp_padding     = get_post_meta( $c_pageID, 'pyre_hundredp_padding', true );
 		$hundredp_padding_int = (int) $hundredp_padding;
 	}
+	
+	$negative_margin = '-' . $hundredp_padding_int . 'px';
+	
+	if ( false !== strpos( $hundredp_padding, '%' ) ) {
+		$fullwidth_max_width = 100 - 2 * $hundredp_padding_int;
+		$negative_margin = '-' . $hundredp_padding_int / $fullwidth_max_width * 100 . '%';
+	}
 
 	if ( $site_width_percent) {
 
@@ -6592,8 +7861,8 @@ function avada_dynamic_css_array() {
 			'.fullwidth-box',
 			'.fullwidth-box .fusion-row .fusion-full-width-sep'
 		);
-		$css['global'][avada_implode( $elements )]['margin-left']  = '-' . $hundredp_padding_int . 'px';
-		$css['global'][avada_implode( $elements )]['margin-right'] = '-' . $hundredp_padding_int . 'px';
+		$css['global'][avada_implode( $elements )]['margin-left']  = $negative_margin;
+		$css['global'][avada_implode( $elements )]['margin-right'] = $negative_margin;
 
 		$css['global']['#main.width-100 > .fusion-row']['padding-left']  = '0';
 		$css['global']['#main.width-100 > .fusion-row']['padding-right'] = '0';
@@ -6785,20 +8054,6 @@ function avada_dynamic_css_array() {
 		$css['global']['html']['background'] = 'none';
 	}
 
-	if ( Avada()->settings->get( 'mobile_nav_padding' ) ) {
-
-		if ( Avada()->settings->get( 'mobile_nav_padding' ) ) {
-			$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
-			$css[$media_query]['.fusion-main-menu > ul > li']['padding-right'] = intval( Avada()->settings->get( 'mobile_nav_padding' ) ) . 'px';
-		}
-
-		if ( Avada()->settings->get( 'mobile_nav_padding' ) ) {
-			$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape)';
-			$css[$media_query]['.fusion-main-menu > ul > li']['padding-right'] = intval( Avada()->settings->get( 'mobile_nav_padding' ) ) . 'px';
-		}
-
-	}
-
 	if ( get_post_meta ( $c_pageID, 'pyre_page_title_bar_bg', true ) ) {
 		$css['global']['.fusion-page-title-bar']['background-image'] = 'url("' . Avada_Sanitize::css_asset_url( get_post_meta( $c_pageID, 'pyre_page_title_bar_bg', true ) ) . '")';
 	} elseif( Avada()->settings->get( 'page_title_bg' ) ) {
@@ -6816,10 +8071,12 @@ function avada_dynamic_css_array() {
 	}
 
 
-	$elements = array( '.fusion-header', '#side-header' );
+	$elements = array( '#side-header', '.fusion-header' );
 	if ( Avada()->settings->get( 'header_bg_image' ) ) {
 
-		$css['global'][avada_implode( $elements )]['background-image'] = 'url("' . Avada_Sanitize::css_asset_url( Avada()->settings->get( 'header_bg_image' ) ) . '")';
+		$css['global']['#side-header']['background-image'] = 'url("' . Avada_Sanitize::css_asset_url( Avada()->settings->get( 'header_bg_image' ) ) . '")';
+		$css['global']['.fusion-header']['background-image'] = 'url("' . Avada_Sanitize::css_asset_url( Avada()->settings->get( 'header_bg_image' ) ) . '")';
+
 		if ( in_array( Avada()->settings->get( 'header_bg_repeat' ), array( 'repeat-y', 'no-repeat' ) ) ) {
 			$css['global'][avada_implode( $elements )]['background-position'] = 'center center';
 		}
@@ -6835,11 +8092,14 @@ function avada_dynamic_css_array() {
 			$css['global'][avada_implode( $elements )]['background-attachment'] = 'fixed';
 			$css['global'][avada_implode( $elements )]['background-position']   = 'top center';
 		}
+
+		$css['global']['.side-header-background']['background'] = 'none';
 	}
 
 	$elements = array(
 		'.fusion-header',
 		'#side-header',
+		'.side-header-background',
 		'.layout-boxed-mode .side-header-wrapper'
 	);
 	if ( get_post_meta( $c_pageID, 'pyre_header_bg_color', true ) ) {
@@ -6939,40 +8199,41 @@ function avada_dynamic_css_array() {
 			$css['global'][avada_implode( $elements )]['background-position']   = 'top center';
 		}
 
+		$css['global']['.side-header-background']['background'] = 'none';
+
 	}
 
 	if ( ( ( 1 > Avada()->settings->get( 'header_bg_color', 'opacity' ) && ! get_post_meta( $c_pageID, 'pyre_header_bg_opacity', true ) ) || ( '' != get_post_meta( $c_pageID, 'pyre_header_bg_opacity', true ) && 1 > get_post_meta( $c_pageID, 'pyre_header_bg_opacity', true ) ) ) && ! is_search() && ! is_404() && ! is_author() && ( ! is_archive() || ( class_exists( 'WooCommerce') && is_shop() ) ) ) {
 
-		$media_query = '@media only screen and (min-width: 800px)';
+		$media_query = '@media only screen and (min-width: ' . intval( Avada()->settings->get( 'side_header_break_point' ) ) . 'px)';
 		$elements = array(
 			'.fusion-header',
 			'.fusion-secondary-header'
 		);
-		$css['global'][avada_implode( $elements )]['border-top'] = 'none';
+		$css[$media_query][avada_implode( $elements )]['border-top'] = 'none';
 
 		$elements = array(
 			'.fusion-header-v1 .fusion-header',
 			'.fusion-secondary-main-menu'
 		);
-		$css['global'][avada_implode( $elements )]['border'] = 'none';
+		$css[$media_query][avada_implode( $elements )]['border'] = 'none';
 
 		if ( 'boxed' == fusion_get_option( 'layout', 'page_bg_layout', $c_pageID ) ) {
-
-			$css['global']['.fusion-header-wrapper']['position'] = 'absolute';
-			$css['global']['.fusion-header-wrapper']['z-index']  = '10000';
+			$css[$media_query]['.fusion-header-wrapper']['position'] = 'absolute';
+			$css[$media_query]['.fusion-header-wrapper']['z-index']  = '10000';
 
 			if ( $site_width_percent ) {
-				$css['global']['.fusion-header-wrapper']['width']    = $site_width_with_units;
+				$css[$media_query]['.fusion-header-wrapper']['width']    = $site_width_with_units;
 			} else {
-				$css['global']['.fusion-header-wrapper']['width']    = ( $site_width + 60 ) . 'px';
+				$css[$media_query]['.fusion-header-wrapper']['width']		 = '100%';
+				$css[$media_query]['.fusion-header-wrapper']['max-width']    = ( $site_width + 60 ) . 'px';
 			}
 
 		} else {
-
-			$css['global']['.fusion-header-wrapper']['position'] = 'absolute';
-			$css['global']['.fusion-header-wrapper']['left']     = '0';
-			$css['global']['.fusion-header-wrapper']['right']    = '0';
-			$css['global']['.fusion-header-wrapper']['z-index']  = '10000';
+			$css[$media_query]['.fusion-header-wrapper']['position'] = 'absolute';
+			$css[$media_query]['.fusion-header-wrapper']['left']     = '0';
+			$css[$media_query]['.fusion-header-wrapper']['right']    = '0';
+			$css[$media_query]['.fusion-header-wrapper']['z-index']  = '10000';
 
 		}
 
@@ -7040,10 +8301,10 @@ function avada_dynamic_css_array() {
 		if ( class_exists( 'RevSliderFront' ) ) {
 
 			$elements = array(
-				'.rev_slider_wrapper .tp-leftarrow',
-				'.rev_slider_wrapper .tp-rightarrow'
+				'.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows',
+				'.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows'
 			);
-			$css['global'][avada_implode( $elements )]['opacity']          = '0.8';
+			$css['global'][avada_implode( $elements )]['opacity']          = '0.8 !important';
 			$css['global'][avada_implode( $elements )]['position']         = 'absolute';
 			$css['global'][avada_implode( $elements )]['top']              = '50% !important';
 			$css['global'][avada_implode( $elements )]['margin-top']       = '-31px !important';
@@ -7052,17 +8313,18 @@ function avada_dynamic_css_array() {
 			$css['global'][avada_implode( $elements )]['background']       = 'none';
 			$css['global'][avada_implode( $elements )]['background-color'] = 'rgba(0, 0, 0, 0.5)';
 			$css['global'][avada_implode( $elements )]['color']            = '#fff';
+			$css['global'][avada_implode( $elements )]['border-radius']    = '0';
 
 
-			$css['global']['.rev_slider_wrapper .tp-leftarrow:before']['content']                = '"\e61e"';
-			$css['global']['.rev_slider_wrapper .tp-leftarrow:before']['-webkit-font-smoothing'] = 'antialiased';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows:before']['content']                = '"\e61e"';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows:before']['-webkit-font-smoothing'] = 'antialiased';
 
-			$css['global']['.rev_slider_wrapper .tp-rightarrow:before']['content']                = '"\e620"';
-			$css['global']['.rev_slider_wrapper .tp-rightarrow:before']['-webkit-font-smoothing'] = 'antialiased';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows:before']['content']                = '"\e620"';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows:before']['-webkit-font-smoothing'] = 'antialiased';
 
 			$elements = array(
-				'.rev_slider_wrapper .tp-leftarrow:before',
-				'.rev_slider_wrapper .tp-rightarrow:before'
+				'.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows:before',
+				'.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows:before'
 			);
 			$css['global'][avada_implode( $elements )]['position']    = 'absolute';
 			$css['global'][avada_implode( $elements )]['padding']     = '0';
@@ -7072,48 +8334,79 @@ function avada_dynamic_css_array() {
 			$css['global'][avada_implode( $elements )]['font-size']   = '25px';
 			$css['global'][avada_implode( $elements )]['font-family'] = "'icomoon'";
 
-			$css['global']['.rev_slider_wrapper .tp-leftarrow:before']['margin-left']  = '-2px';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows:before']['margin-left']  = '-2px';
 
-			$css['global']['.rev_slider_wrapper .tp-rightarrow:before']['margin-left'] = '-1px';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows:before']['margin-left'] = '-1px';
 
-			$css['global']['.rev_slider_wrapper .tp-rightarrow']['left']  = 'auto';
-			$css['global']['.rev_slider_wrapper .tp-rightarrow']['right'] = '0';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows']['left']  = 'auto';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows']['right'] = '0';
 
 			$elements = array(
-				'.no-rgba .rev_slider_wrapper .tp-leftarrow',
-				'.no-rgba .rev_slider_wrapper .tp-rightarrow'
+				'.no-rgba .rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows',
+				'.no-rgba .rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows'
 			);
 			$css['global'][avada_implode( $elements )]['background-color'] = '#ccc';
 
 			$elements = array(
-				'.rev_slider_wrapper:hover .tp-leftarrow',
-				'.rev_slider_wrapper:hover .tp-rightarrow'
+				'.rev_slider_wrapper:hover .rev_slider .tp-leftarrow.tparrows',
+				'.rev_slider_wrapper:hover .rev_slider .tp-rightarrow.tparrows'
 			);
 			$css['global'][avada_implode( $elements )]['display'] = 'block';
-			$css['global'][avada_implode( $elements )]['opacity'] = '0.8';
+			$css['global'][avada_implode( $elements )]['opacity'] = '0.8 !important';
 
 			$elements = array(
-				'.rev_slider_wrapper .tp-leftarrow:hover',
-				'.rev_slider_wrapper .tp-rightarrow:hover'
+				'.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows:hover',
+				'.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows:hover'
 			);
-			$css['global'][avada_implode( $elements )]['opacity'] = '1';
+			$css['global'][avada_implode( $elements )]['opacity'] = '1 !important';
 
-			$css['global']['.rev_slider_wrapper .tp-leftarrow']['background-position'] = '19px 19px';
-			$css['global']['.rev_slider_wrapper .tp-leftarrow']['left']                = '0';
-			$css['global']['.rev_slider_wrapper .tp-leftarrow']['margin-left']         = '0';
-			$css['global']['.rev_slider_wrapper .tp-leftarrow']['z-index']             = '100';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows']['background-position'] = '19px 19px';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows']['left']                = '0';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows']['margin-left']         = '0';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows']['z-index']             = '100';
 
-			$css['global']['.rev_slider_wrapper .tp-rightarrow']['background-position'] = '29px 19px';
-			$css['global']['.rev_slider_wrapper .tp-rightarrow']['right']               = '0';
-			$css['global']['.rev_slider_wrapper .tp-rightarrow']['margin-left']         = '0';
-			$css['global']['.rev_slider_wrapper .tp-rightarrow']['z-index']             = '100';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows']['background-position'] = '29px 19px';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows']['right']               = '0';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows']['margin-left']         = '0';
+			$css['global']['.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows']['z-index']             = '100';
 
 			$elements = array(
-				'.rev_slider_wrapper .tp-leftarrow.hidearrows',
-				'.rev_slider_wrapper .tp-rightarrow.hidearrows'
+				'.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows.hidearrows',
+				'.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows.hidearrows'
 			);
 			$css['global'][avada_implode( $elements )]['opacity'] = '0';
 
+			// Additional arrow styles
+			$css['global']['.rev_slider_wrapper .rev_slider .tparrows.hades .tp-arr-allwrapper']['width']    = '63px';
+			$css['global']['.rev_slider_wrapper .rev_slider .tparrows.hades .tp-arr-allwrapper']['height']    = '63px';
+
+			$elements = array(
+				'.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows.hebe:before',
+				'.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows.hebe:before'
+			);
+			$css['global'][avada_implode( $elements )]['position']    = 'relative';
+			$css['global'][avada_implode( $elements )]['width']       = 'auto';
+
+
+			$elements = array(
+				'.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows.zeus',
+				'.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows.zeus'
+			);
+			$css['global'][avada_implode( $elements )]['min-width']    = '63px';
+			$css['global'][avada_implode( $elements )]['min-height']    = '63px';
+
+			$elements = array(
+				'.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows.zeus .tp-title-wrap',
+				'.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows.zeus .tp-title-wrap'
+			);
+			$css['global'][avada_implode( $elements )]['border-radius']    = '0';
+
+
+			$elements = array(
+				'.rev_slider_wrapper .rev_slider .tp-leftarrow.tparrows.metis',
+				'.rev_slider_wrapper .rev_slider .tp-rightarrow.tparrows.metis'
+			);
+			$css['global'][avada_implode( $elements )]['padding']    = '0';
 		}
 
 		$css['global']['.tp-bullets .bullet.last']['clear'] = 'none';
@@ -7135,11 +8428,11 @@ function avada_dynamic_css_array() {
 
 	}
 
-	if ( ( Avada()->settings->get( 'main_top_padding' ) || Avada()->settings->get( 'main_top_padding' ) == '0' ) && ! get_post_meta( $c_pageID, 'pyre_main_top_padding', true ) && get_post_meta( $c_pageID, 'pyre_main_top_padding', true ) != '0') {
+	if ( ( Avada()->settings->get( 'main_top_padding' ) || Avada()->settings->get( 'main_top_padding' ) == '0' ) && ( ( ! get_post_meta( $c_pageID, 'pyre_main_top_padding', true ) && get_post_meta( $c_pageID, 'pyre_main_top_padding', true ) !== '0' ) || ! $c_pageID ) ) {
 		$css['global']['#main']['padding-top'] = Avada_Sanitize::size( Avada()->settings->get( 'main_top_padding' ) );
 	}
 
-	if ( ( Avada()->settings->get( 'main_bottom_padding' ) || Avada()->settings->get( 'main_bottom_padding' ) == '0' ) && ! get_post_meta( $c_pageID, 'pyre_main_bottom_padding', true ) &&  get_post_meta( $c_pageID, 'pyre_main_bottom_padding', true ) != '0' ) {
+	if ( ( Avada()->settings->get( 'main_bottom_padding' ) || Avada()->settings->get( 'main_bottom_padding' ) == '0' ) && ( ( ! get_post_meta( $c_pageID, 'pyre_main_bottom_padding', true ) &&  get_post_meta( $c_pageID, 'pyre_main_bottom_padding', true ) !== '0' ) || ! $c_pageID ) ) {
 		$css['global']['#main']['padding-bottom'] = Avada_Sanitize::size( Avada()->settings->get( 'main_bottom_padding' ) );
 	}
 
@@ -7161,25 +8454,28 @@ function avada_dynamic_css_array() {
 	}
 
 	if ( get_post_meta( $c_pageID, 'pyre_wide_page_bg', true ) ) {
-
-		$css['global']['#main']['background-image']  = 'url("' . Avada_Sanitize::css_asset_url( get_post_meta( $c_pageID, 'pyre_wide_page_bg', true ) ) . '")';
-		$css['global']['#main']['background-repeat'] = get_post_meta( $c_pageID, 'pyre_wide_page_bg_repeat', true );
+		$elements = array(
+			'.wrapper_blank #main',
+			'#main'
+		);
+		$css['global'][avada_implode( $elements )]['background-image']  = 'url("' . Avada_Sanitize::css_asset_url( get_post_meta( $c_pageID, 'pyre_wide_page_bg', true ) ) . '")';
+		$css['global'][avada_implode( $elements )]['background-repeat'] = get_post_meta( $c_pageID, 'pyre_wide_page_bg_repeat', true );
 
 		if ( 'yes' == get_post_meta( $c_pageID, 'pyre_wide_page_bg_full', true ) ) {
 
-			$css['global']['#main']['background-attachment'] = 'fixed';
-			$css['global']['#main']['background-position']   = 'center center';
-			$css['global']['#main']['background-size']       = 'cover';
+			$css['global'][avada_implode( $elements )]['background-attachment'] = 'fixed';
+			$css['global'][avada_implode( $elements )]['background-position']   = 'center center';
+			$css['global'][avada_implode( $elements )]['background-size']       = 'cover';
 
 		}
 
 	}
 
-	if ( get_post_meta( $c_pageID, 'pyre_main_top_padding', true ) ) {
+	if ( get_post_meta( $c_pageID, 'pyre_main_top_padding', true ) || get_post_meta( $c_pageID, 'pyre_main_top_padding', true ) === '0' ) {
 		$css['global']['#main']['padding-top'] = get_post_meta( $c_pageID, 'pyre_main_top_padding', true );
 	}
 
-	if ( get_post_meta( $c_pageID, 'pyre_main_bottom_padding', true ) ) {
+	if ( get_post_meta( $c_pageID, 'pyre_main_bottom_padding', true ) || get_post_meta( $c_pageID, 'pyre_main_bottom_padding', true ) === '0' ) {
 		$css['global']['#main']['padding-bottom'] = get_post_meta( $c_pageID, 'pyre_main_bottom_padding', true );
 	}
 
@@ -7215,7 +8511,6 @@ function avada_dynamic_css_array() {
 		$css['global']['.fusion-page-title-bar']['height'] = Avada_Sanitize::size( Avada()->settings->get( 'page_title_height' ) );
 	}
 
-
 	if ( is_single() && get_post_meta( $c_pageID, 'pyre_fimg_width', true ) ) {
 
 		if ( 'auto' != get_post_meta( $c_pageID, 'pyre_fimg_width', true ) ) {
@@ -7224,14 +8519,11 @@ function avada_dynamic_css_array() {
 			$css['global']['.fusion-post-slideshow .flex-control-nav']['position']   = 'relative';
 			$css['global']['.fusion-post-slideshow .flex-control-nav']['text-align'] = 'center';
 			$css['global']['.fusion-post-slideshow .flex-control-nav']['margin-top'] = '10px';
-		}
 
-		$css['global']['#post-' . $c_pageID . ' .fusion-post-slideshow img']['max-width'] = Avada_Sanitize::size( get_post_meta( $c_pageID, 'pyre_fimg_width', true ) );
-
-		if ( 'auto' == get_post_meta( $c_pageID, 'pyre_fimg_width', true ) ) {
 			$css['global']['#post-' . $c_pageID . ' .fusion-post-slideshow img']['width'] = Avada_Sanitize::size( get_post_meta( $c_pageID, 'pyre_fimg_width', true ) );
 		}
 
+		$css['global']['#post-' . $c_pageID . ' .fusion-post-slideshow img']['max-width'] = Avada_Sanitize::size( get_post_meta( $c_pageID, 'pyre_fimg_width', true ) );
 	}
 
 	if ( is_single() && get_post_meta( $c_pageID, 'pyre_fimg_height', true ) ) {
@@ -7297,11 +8589,6 @@ function avada_dynamic_css_array() {
 		$media_query = '@media only screen and (max-width: 940px)';
 		$css[$media_query]['#sliders-container']['display'] = 'none';
 		$css[$media_query]['#fallback-slide']['display'] = 'block';
-
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
-		$css[$media_query]['#sliders-container']['display'] = 'none';
-		$css[$media_query]['#fallback-slide']['display'] = 'block';
-
 	}
 
 	if ( Avada()->settings->get( 'side_header_width' ) && 'no' != get_post_meta( get_queried_object_id(), 'pyre_display_header', true ) ) {
@@ -7401,12 +8688,11 @@ function avada_dynamic_css_array() {
 			$css['global']['.side-header-right .fusion-footer-parallax']['margin'] = '0 auto';
 			$css['global']['.side-header-right .fusion-footer-parallax']['padding-right'] = Avada_Sanitize::size( Avada()->settings->get( 'side_header_width' ) );
 
-			$media_query = '@media only screen and (min-width: 800px)';
+			$media_query = '@media only screen and (min-width: ' . intval( Avada()->settings->get( 'side_header_break_point' ) ) . 'px)';
 			$css[$media_query]['body.side-header-right #side-header']['position'] = 'absolute';
 			$css[$media_query]['body.side-header-right #side-header']['top']      = '0';
 
 			$css[$media_query]['body.side-header-right #side-header .side-header-wrapper']['position'] = 'fixed';
-			$css[$media_query]['body.side-header-right #side-header .side-header-wrapper']['width']    = Avada_Sanitize::size( Avada()->settings->get( 'side_header_width' ) );
 
 		}
 
@@ -7480,13 +8766,6 @@ function avada_dynamic_css_array() {
 
 	}
 
-	if ( Avada()->settings->get( 'responsive' ) && ! Avada()->settings->get( 'ipad_potrait' ) && get_post_meta( $c_pageID, 'pyre_page_title_height', true ) ) {
-
-		$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
-		$css[$media_query]['#wrapper .fusion-page-title-bar']['height'] = Avada_Sanitize::size( get_post_meta( $c_pageID, 'pyre_page_title_height', true ) ) . ' !important';
-
-	}
-
 	if ( 'yes' == get_post_meta( $c_pageID, 'pyre_page_title_100_width', true ) ) {
 		$css['global']['.layout-wide-mode .fusion-page-title-row']['max-width'] = '100%';
 	}
@@ -7503,10 +8782,6 @@ function avada_dynamic_css_array() {
 		$css['global']['.layout-wide-mode .fusion-header-wrapper .fusion-row']['max-width'] = '100%';
 	}
 
-	$media_query = '@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait)';
-	$css[$media_query]['.products .product-list-view']['width']     = '100% !important';
-	$css[$media_query]['.products .product-list-view']['min-width'] = '100% !important';
-
 	$button_text_color_brightness       = Avada_Sanitize::color( fusion_calc_color_brightness( Avada()->settings->get( 'button_accent_color' ) ) );
 	$button_hover_text_color_brightness = Avada_Sanitize::color( fusion_calc_color_brightness( Avada()->settings->get( 'button_accent_hover_color' ) ) );
 
@@ -7514,7 +8789,7 @@ function avada_dynamic_css_array() {
 
 	if ( get_post_meta( $c_pageID, 'pyre_page_title_mobile_height', true ) ) {
 
-		$media_query = '@media only screen and (max-width: 800px)';
+		$media_query = '@media only screen and (max-width: ' . ( intval( $side_header_width ) + intval( Avada()->settings->get( 'content_break_point' ) ) ) . 'px)';
 
 		if ( 'auto' != get_post_meta( $c_pageID, 'pyre_page_title_mobile_height', true ) ) {
 
@@ -7536,7 +8811,7 @@ function avada_dynamic_css_array() {
 	}
 
 	if ( Avada()->settings->get( 'responsive' ) ) {
-		$media_query = '@media only screen and (max-width: 800px)';
+		$media_query = '@media only screen and (max-width: ' . intval( Avada()->settings->get( 'side_header_break_point' ) ) . 'px)';
 		$css[$media_query]['.fusion-contact-info']['padding']     = '1em 30px';
 		$css[$media_query]['.fusion-contact-info']['line-height'] = '1.5em';
 	}
@@ -7550,26 +8825,141 @@ function avada_dynamic_css_array() {
 		}
 	}
 
+	$elements = array(
+		'.fusion-flexslider .flex-direction-nav a',
+		'.fusion-flexslider.flexslider-posts .flex-direction-nav a',
+		'.fusion-flexslider.flexslider-posts-with-excerpt .flex-direction-nav a',
+		'.fusion-flexslider.flexslider-attachments .flex-direction-nav a',
+		'.fusion-slider-sc .flex-direction-nav a'
+	);
+
+	$carousel_elements = array(
+		'.fusion-carousel .fusion-carousel-nav .fusion-nav-prev',
+		'.fusion-carousel .fusion-carousel-nav .fusion-nav-next'
+	);
+
+	if( Avada()->settings->get( 'slider_nav_box_width' ) ) {
+		$css['global'][avada_implode( $elements )]['width'] = Avada_Sanitize::size( Avada()->settings->get( 'slider_nav_box_width' ) );
+		$css['global'][avada_implode( $carousel_elements )]['width'] = Avada_Sanitize::size( Avada()->settings->get( 'slider_nav_box_width' ) );
+	}
+
+	if( Avada()->settings->get( 'slider_nav_box_height' ) ) {
+		$half_slider_nav_box_height = Avada_Sanitize::size( ( intval( Avada()->settings->get( 'slider_nav_box_height' ) ) / 2 ) . 'px' );
+
+		$css['global'][avada_implode( $elements )]['height'] = Avada_Sanitize::size( Avada()->settings->get( 'slider_nav_box_height' ) );
+		$css['global'][avada_implode( $elements )]['line-height'] = Avada_Sanitize::size( Avada()->settings->get( 'slider_nav_box_height' ) );
+
+		$css['global'][avada_implode( $carousel_elements )]['height'] = Avada_Sanitize::size( Avada()->settings->get( 'slider_nav_box_height' ) );
+		$css['global'][avada_implode( $carousel_elements )]['margin-top'] = '-' . $half_slider_nav_box_height;
+	}
+
+	$carousel_elements = array(
+		'.fusion-carousel .fusion-carousel-nav .fusion-nav-prev:before',
+		'.fusion-carousel .fusion-carousel-nav .fusion-nav-next:before'
+	);
+
+
+	if( Avada()->settings->get( 'slider_nav_box_height' ) ) {
+		$css['global'][avada_implode( $carousel_elements )]['line-height'] = Avada_Sanitize::size( Avada()->settings->get( 'slider_nav_box_height' ) );
+	}
+
+
+	if( Avada()->settings->get( 'slider_arrow_size' ) ) {
+		$css['global'][avada_implode( $elements )]['font-size'] = Avada_Sanitize::size( Avada()->settings->get( 'slider_arrow_size' ) );
+
+		$css['global'][avada_implode( $carousel_elements )]['font-size'] = Avada_Sanitize::size( Avada()->settings->get( 'slider_arrow_size' ) );
+	}
+
+
+	if( Avada()->settings->get( 'pagination_box_padding' ) ) {
+		$elements = array(
+			'.pagination a.inactive',
+			'.page-links a',
+			'.woocommerce-pagination .page-numbers',
+			'.bbp-pagination .bbp-pagination-links a.inactive',
+			'.bbp-topic-pagination .page-numbers'
+		);
+		$css['global'][avada_implode( $elements )]['padding'] = Avada()->settings->get( 'pagination_box_padding' );
+
+		$elements = array(
+			'.pagination .current',
+			'.page-links > .page-number',
+			'.woocommerce-pagination .current',
+			'.bbp-pagination .bbp-pagination-links .current'
+		);
+		$css['global'][avada_implode( $elements )]['padding'] = Avada()->settings->get( 'pagination_box_padding' );
+
+		$elements = array(
+			'.pagination .pagination-prev',
+			'.woocommerce-pagination .prev',
+			'.bbp-pagination .bbp-pagination-links .pagination-prev'
+		);
+		$css['global'][avada_implode( $elements )]['padding'] = Avada()->settings->get( 'pagination_box_padding' );
+
+		$elements = array(
+			'.pagination .pagination-next',
+			'.woocommerce-pagination .next',
+			'.bbp-pagination .bbp-pagination-links .pagination-next',
+			'.bbp-pagination-links span.dots'
+		);
+		$css['global'][avada_implode( $elements )]['padding'] = Avada()->settings->get( 'pagination_box_padding' );
+	}
+
+	if( ! Avada()->settings->get( 'pagination_text_display' ) ) {
+		$elements = array(
+			'.fusion-hide-pagination-text .page-text'
+		);
+		$css['global'][avada_implode( $elements )]['display'] = 'inline-block';
+		$css['global'][avada_implode( $elements )]['text-indent'] = '-10000000px';
+
+		$css['global']['.fusion-hide-pagination-text .pagination-prev, .fusion-hide-pagination-text .pagination-next']['border-width'] = '1px';
+		$css['global']['.fusion-hide-pagination-text .pagination-prev, .fusion-hide-pagination-text .pagination-next']['border-style'] = 'solid';
+		$css['global']['.fusion-hide-pagination-text .pagination-prev']['margin'] = '0';
+		$css['global']['.fusion-hide-pagination-text .pagination-next']['margin-left'] = '5px';
+		$css['global']['.fusion-hide-pagination-text .pagination-prev:before, .fusion-hide-pagination-text .pagination-next:after']['line-height'] = 'normal';
+		$css['global']['.fusion-hide-pagination-text .pagination-prev:before, .fusion-hide-pagination-text .pagination-next:after']['position'] = 'relative';
+		$css['global']['.fusion-hide-pagination-text .pagination-prev:before, .fusion-hide-pagination-text .pagination-next:after']['margin'] = '0';
+		$css['global']['.fusion-hide-pagination-text .pagination-prev:before, .fusion-hide-pagination-text .pagination-next:after']['padding'] = '0';
+
+		$css['global']['.fusion-hide-pagination-text .woocommerce-pagination .prev, .fusion-hide-pagination-text .woocommerce-pagination .next']['border-width'] = '1px';
+		$css['global']['.fusion-hide-pagination-text .woocommerce-pagination .prev, .fusion-hide-pagination-text .woocommerce-pagination .next']['border-style'] = 'solid';
+		$css['global']['.fusion-hide-pagination-text .woocommerce-pagination .prev']['margin'] = '0';
+		$css['global']['.fusion-hide-pagination-text .woocommerce-pagination .next']['margin-left'] = '5px';
+		$css['global']['.fusion-hide-pagination-text .woocommerce-pagination .prev:before, .fusion-hide-pagination-text .woocommerce-pagination .next:after']['line-height'] = 'normal';
+		$css['global']['.fusion-hide-pagination-text .woocommerce-pagination .prev:before, .fusion-hide-pagination-text .woocommerce-pagination .next:after']['position'] = 'relative';
+		$css['global']['.fusion-hide-pagination-text .woocommerce-pagination .prev:before, .fusion-hide-pagination-text .woocommerce-pagination .next:after']['margin'] = '0';
+		$css['global']['.fusion-hide-pagination-text .woocommerce-pagination .prev:before, .fusion-hide-pagination-text .woocommerce-pagination .next:after']['padding'] = '0';
+
+		$elements = array(
+			'.fusion-hide-pagination-text  .bbp-pagination-links .page-text'
+		);
+		$css['global'][avada_implode( $elements )]['display'] = 'none';
+
+		$css['global']['.fusion-hide-pagination-text .bbp-pagination-links .pagination-prev, .fusion-hide-pagination-text .bbp-pagination-links .pagination-next']['border-width'] = '1px';
+		$css['global']['.fusion-hide-pagination-text .bbp-pagination-links .pagination-prev, .fusion-hide-pagination-text .bbp-pagination-links .pagination-next']['border-style'] = 'solid';
+		$css['global']['.fusion-hide-pagination-text .bbp-pagination-links .pagination-prev']['margin'] = '0';
+		$css['global']['.fusion-hide-pagination-text .bbp-pagination-links .pagination-next']['margin-left'] = '5px';
+		$css['global']['.fusion-hide-pagination-text .bbp-pagination-links .pagination-prev:before, .fusion-hide-pagination-text .bbp-pagination-links .pagination-next:after']['line-height'] = 'normal';
+		$css['global']['.fusion-hide-pagination-text .bbp-pagination-links .pagination-prev:before, .fusion-hide-pagination-text .bbp-pagination-links .pagination-next:after']['position'] = 'relative';
+		$css['global']['.fusion-hide-pagination-text .bbp-pagination-links .pagination-prev:before, .fusion-hide-pagination-text .bbp-pagination-links .pagination-next:after']['margin'] = '0';
+		$css['global']['.fusion-hide-pagination-text .bbp-pagination-links .pagination-prev:before, .fusion-hide-pagination-text .bbp-pagination-links .pagination-next:after']['padding'] = '0';
+	}
+
 
 	// Animations
+
 	$css['@-webkit-keyframes avadaSonarEffect']['0%']['opacity']             = '0.3';
 	$css['@-webkit-keyframes avadaSonarEffect']['40%']['opacity']            = '0.5';
-	$css['@-webkit-keyframes avadaSonarEffect']['40%']['box-shadow']         = '0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px ' . Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) ) . ', 0 0 0 10px rgba(255,255,255,0.5)';
-	$css['@-webkit-keyframes avadaSonarEffect']['100%']['box-shadow']        = '0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px '  . Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) ) . ', 0 0 0 10px rgba(255,255,255,0.5)';
 	$css['@-webkit-keyframes avadaSonarEffect']['100%']['-webkit-transform'] = 'scale(1.5)';
 	$css['@-webkit-keyframes avadaSonarEffect']['100%']['opacity']           = '0';
 
 	$css['@-moz-keyframes avadaSonarEffect']['0%']['opacity']          = '0.3';
 	$css['@-moz-keyframes avadaSonarEffect']['40%']['opacity']         = '0.5';
-	$css['@-moz-keyframes avadaSonarEffect']['40%']['box-shadow']      = '0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px ' . Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) ) . ', 0 0 0 10px rgba(255,255,255,0.5)';
-	$css['@-moz-keyframes avadaSonarEffect']['100%']['box-shadow']     = '0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px ' . Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) ) . ', 0 0 0 10px rgba(255,255,255,0.5)';
 	$css['@-moz-keyframes avadaSonarEffect']['100%']['-moz-transform'] = 'scale(1.5)';
 	$css['@-moz-keyframes avadaSonarEffect']['100%']['opacity']        = '0';
 
 	$css['@keyframes avadaSonarEffect']['0%']['opacity']      = '0.3';
 	$css['@keyframes avadaSonarEffect']['40%']['opacity']     = '0.5';
-	$css['@keyframes avadaSonarEffect']['40%']['box-shadow']  = '0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px ' . Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) ) . ', 0 0 0 10px rgba(255,255,255,0.5)';
-	$css['@keyframes avadaSonarEffect']['100%']['box-shadow'] = '0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px ' . Avada_Sanitize::color( Avada()->settings->get( 'primary_color' ), Avada()->settings->get_default( 'primary_color' ) ) . ', 0 0 0 10px rgba(255,255,255,0.5)';
 	$css['@keyframes avadaSonarEffect']['100%']['transform']  = 'scale(1.5)';
 	$css['@keyframes avadaSonarEffect']['100%']['opacity']    = '0';
 
@@ -7693,13 +9083,6 @@ function avada_dynamic_css_parser( $css ) {
 	$final_css = '';
 	foreach ( $css as $media_query => $styles ) {
 
-		/**
-		 * Do not include any media queries if we're not in responsive mode.
-		 */
-		if ( false !== strpos( $media_query, '@media' ) && ! Avada()->settings->get( 'responsive' ) ) {
-			continue;
-		}
-
 		$final_css .= ( 'global' != $media_query ) ? $media_query . '{' : '';
 
 		foreach ( $styles as $style => $style_array ) {
@@ -7738,11 +9121,34 @@ function avada_dynamic_css_cached() {
 
 	/**
 	 * do we have WP_DEBUG set to true?
-	 * If not then we can try caching it.
-	 * If yes then we won't cache anything.
+	 * If yes, then do not cache.
 	 */
-	if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+	$cache = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? false : true;
+	/**
+	 * If the dynamic_css_db_caching option is not set
+	 * or set to off, then do not cache.
+	 */
+	$cache = ( $cache && ( null == Avada()->settings->get( 'dynamic_css_db_caching' ) || ! Avada()->settings->get( 'dynamic_css_db_caching' ) ) ) ? false : $cache;
+	/**
+	 * If we're compiling to file, then do not use transients for caching.
+	 */
+	/**
+	 * Check if we're using file mode or inline mode.
+	 * This simply checks the dynamic_css_compiler options.
+	 */
+	$mode = Avada_Dynamic_CSS::$mode;
 
+	/**
+	 * ALWAYS use 'inline' mode when in the customizer.
+	 */
+	global $wp_customize;
+	if ( $wp_customize ) {
+		$mode = 'inline';
+	}
+
+	$cache = ( $cache && 'file' == $mode ) ? false : $cache;
+
+	if ( $cache ) {
 		/**
 		 * Build the transient name
 		 */
@@ -7752,7 +9158,7 @@ function avada_dynamic_css_cached() {
 		 * Check if the dynamic CSS needs updating
 		 * If it does, then calculate the CSS and then update the transient.
 		 */
-		if ( Avada()->dynamic_css->needs_update() ) {
+		if ( Avada_Dynamic_CSS::needs_update() ) {
 			/**
 			 * Calculate the dynamic CSS
 			 */

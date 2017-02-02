@@ -9,7 +9,9 @@
 .group:after {
   clear: both;
 }
-.fusion-alert {
+/* Flexbox */
+.fusion-alert,
+.tribe-events-notices {
   position: relative;
   padding: 25px;
   border-radius: 0;
@@ -18,14 +20,13 @@
   text-transform: uppercase;
   margin-bottom: 20px;
 }
-.fusion-alert.alert-shadow {
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+.fusion-alert.alert-shadow,
+.tribe-events-notices.alert-shadow {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
-.fusion-alert .close {
+.fusion-alert .close,
+.tribe-events-notices .close {
   position: absolute;
-  -moz-box-sizing: content-box;
   box-sizing: content-box;
   right: -1px;
   top: -1px;
@@ -37,26 +38,33 @@
   border-color: inherit;
   color: inherit;
   font-size: 15px;
-  -webkit-transition: all .2s;
-  -moz-transition: all .2s;
-  -ms-transition: all .2s;
-  -o-transition: all .2s;
   transition: all .2s;
 }
-.fusion-alert .close:hover {
+.fusion-alert .close:hover,
+.tribe-events-notices .close:hover {
   opacity: 1;
   background-color: rgba(0, 0, 0, 0.05);
 }
-.fusion-alert .alert-icon {
+.fusion-alert .alert-icon,
+.tribe-events-notices .alert-icon {
   margin-right: 10px;
 }
-.fusion-alert.alert-blank {
+.fusion-alert.alert-blank,
+.tribe-events-notices.alert-blank {
   border: 1px solid #747474;
 }
-.fusion-alert.alert-info {
+.fusion-alert.alert-info,
+.tribe-events-notices.alert-info {
   background-color: #fff;
   border-color: #D7D6D6;
   color: inherit;
+}
+.tribe-events-notices {
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-color: #D7D6D6;
+  color: inherit;
+  text-shadow: none;
 }
 /* All styles in Avada/less/theme/blog.less */
 .fusion-button-wrapper {
@@ -66,10 +74,12 @@
   display: block;
 }
 .fusion-button,
+.post-password-form input[type="submit"],
 .wpcf7-submit,
 .gform_wrapper .gform_button,
 .gform_wrapper .button,
-.woocommerce .checkout #place_order {
+.woocommerce .checkout #place_order,
+.bbp-submit-wrapper .button {
   display: inline-block;
   position: relative;
   outline: 0;
@@ -79,90 +89,98 @@
   text-transform: uppercase;
   font-weight: bold;
   cursor: pointer;
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-  -webkit-transition: all .2s;
-  -moz-transition: all .2s;
-  -ms-transition: all .2s;
-  -o-transition: all .2s;
+  box-sizing: border-box;
   transition: all .2s;
 }
 .fusion-button:before,
+.post-password-form input[type="submit"]:before,
 .wpcf7-submit:before,
 .gform_wrapper .gform_button:before,
 .gform_wrapper .button:before,
 .woocommerce .checkout #place_order:before,
+.bbp-submit-wrapper .button:before,
 .fusion-button:after,
+.post-password-form input[type="submit"]:after,
 .wpcf7-submit:after,
 .gform_wrapper .gform_button:after,
 .gform_wrapper .button:after,
-.woocommerce .checkout #place_order:after {
+.woocommerce .checkout #place_order:after,
+.bbp-submit-wrapper .button:after {
   content: " ";
   display: table;
 }
 .fusion-button:after,
+.post-password-form input[type="submit"]:after,
 .wpcf7-submit:after,
 .gform_wrapper .gform_button:after,
 .gform_wrapper .button:after,
-.woocommerce .checkout #place_order:after {
+.woocommerce .checkout #place_order:after,
+.bbp-submit-wrapper .button:after {
   clear: both;
 }
 .fusion-button:hover,
+.post-password-form input[type="submit"]:hover,
 .wpcf7-submit:hover,
 .gform_wrapper .gform_button:hover,
 .gform_wrapper .button:hover,
-.woocommerce .checkout #place_order:hover {
-  -webkit-transition: all .3s;
-  -moz-transition: all .3s;
-  -ms-transition: all .3s;
-  -o-transition: all .3s;
+.woocommerce .checkout #place_order:hover,
+.bbp-submit-wrapper .button:hover {
   transition: all .3s;
 }
 .fusion-button:focus,
+.post-password-form input[type="submit"]:focus,
 .wpcf7-submit:focus,
 .gform_wrapper .gform_button:focus,
 .gform_wrapper .button:focus,
-.woocommerce .checkout #place_order:focus {
+.woocommerce .checkout #place_order:focus,
+.bbp-submit-wrapper .button:focus {
   outline: 0;
+}
+.fusion-button-text,
+.fusion-button-icon-divider,
+.fusion-button i {
+  transition: all .2s;
+}
+.fusion-button-text:hover,
+.fusion-button-icon-divider:hover,
+.fusion-button i:hover {
+  transition: all .3s;
 }
 .ls-container .button,
 .ls-container .fusion-button {
-  -webkit-transition: none !important;
-  -moz-transition: none !important;
-  -ms-transition: none !important;
-  -o-transition: none !important;
   transition: none !important;
 }
 .ls-container .button:hover,
 .ls-container .fusion-button:hover {
-  -webkit-transition: none !important;
-  -moz-transition: none !important;
-  -ms-transition: none !important;
-  -o-transition: none !important;
   transition: none !important;
 }
 #wrapper .fusion-button-square,
+.fusion-body .fusion-button-square,
 #wrapper .button-square {
   border-radius: 0;
 }
 #wrapper .fusion-button-round,
+.fusion-body .fusion-button-round,
 #wrapper .button-round {
   border-radius: 2px;
 }
 #wrapper .fusion-button-round.button-3d,
+.fusion-body .fusion-button-round.button-3d,
 #wrapper .button-round.button-3d {
   border-radius: 4px;
 }
 #wrapper .fusion-button-pill,
+.fusion-body .fusion-button-pill,
 #wrapper .button-pill {
   border-radius: 25px !important;
 }
 .fusion-body .fusion-button-small,
 .button-small,
 .button.small,
+.post-password-form input[type="submit"],
 #bbp_user_edit_submit,
-.woocommerce .single_add_to_cart_button {
+.woocommerce .single_add_to_cart_button,
+.bbp-submit-wrapper .button {
   padding: 9px 20px;
   line-height: 14px;
   font-size: 12px;
@@ -170,74 +188,96 @@
 .fusion-body .fusion-button-small.button-3d:active,
 .button-small.button-3d:active,
 .button.small.button-3d:active,
+.post-password-form input[type="submit"].button-3d:active,
 #bbp_user_edit_submit.button-3d:active,
-.woocommerce .single_add_to_cart_button.button-3d:active {
+.woocommerce .single_add_to_cart_button.button-3d:active,
+.bbp-submit-wrapper .button.button-3d:active {
   top: 2px;
 }
 .fusion-body .fusion-button-small .fusion-button-text-left,
 .button-small .fusion-button-text-left,
 .button.small .fusion-button-text-left,
+.post-password-form input[type="submit"] .fusion-button-text-left,
 #bbp_user_edit_submit .fusion-button-text-left,
-.woocommerce .single_add_to_cart_button .fusion-button-text-left {
+.woocommerce .single_add_to_cart_button .fusion-button-text-left,
+.bbp-submit-wrapper .button .fusion-button-text-left {
   display: inline-block;
   padding-left: 25px;
 }
 .fusion-body .fusion-button-small .fusion-button-text-right,
 .button-small .fusion-button-text-right,
 .button.small .fusion-button-text-right,
+.post-password-form input[type="submit"] .fusion-button-text-right,
 #bbp_user_edit_submit .fusion-button-text-right,
-.woocommerce .single_add_to_cart_button .fusion-button-text-right {
+.woocommerce .single_add_to_cart_button .fusion-button-text-right,
+.bbp-submit-wrapper .button .fusion-button-text-right {
   display: inline-block;
   padding-right: 25px;
 }
 .fusion-body .fusion-button-small .button-icon-divider-left,
 .button-small .button-icon-divider-left,
 .button.small .button-icon-divider-left,
+.post-password-form input[type="submit"] .button-icon-divider-left,
 #bbp_user_edit_submit .button-icon-divider-left,
-.woocommerce .single_add_to_cart_button .button-icon-divider-left {
+.woocommerce .single_add_to_cart_button .button-icon-divider-left,
+.bbp-submit-wrapper .button .button-icon-divider-left {
   padding: 0 10px;
 }
 .fusion-body .fusion-button-small .button-icon-divider-left.fusion-megamenu-image,
 .button-small .button-icon-divider-left.fusion-megamenu-image,
 .button.small .button-icon-divider-left.fusion-megamenu-image,
+.post-password-form input[type="submit"] .button-icon-divider-left.fusion-megamenu-image,
 #bbp_user_edit_submit .button-icon-divider-left.fusion-megamenu-image,
-.woocommerce .single_add_to_cart_button .button-icon-divider-left.fusion-megamenu-image {
+.woocommerce .single_add_to_cart_button .button-icon-divider-left.fusion-megamenu-image,
+.bbp-submit-wrapper .button .button-icon-divider-left.fusion-megamenu-image {
   padding: 0 5px;
 }
 .fusion-body .fusion-button-small .button-icon-divider-right,
 .button-small .button-icon-divider-right,
 .button.small .button-icon-divider-right,
+.post-password-form input[type="submit"] .button-icon-divider-right,
 #bbp_user_edit_submit .button-icon-divider-right,
-.woocommerce .single_add_to_cart_button .button-icon-divider-right {
+.woocommerce .single_add_to_cart_button .button-icon-divider-right,
+.bbp-submit-wrapper .button .button-icon-divider-right {
   padding: 0 10px;
 }
 .fusion-body .fusion-button-small .button-icon-divider-right.fusion-megamenu-image,
 .button-small .button-icon-divider-right.fusion-megamenu-image,
 .button.small .button-icon-divider-right.fusion-megamenu-image,
+.post-password-form input[type="submit"] .button-icon-divider-right.fusion-megamenu-image,
 #bbp_user_edit_submit .button-icon-divider-right.fusion-megamenu-image,
-.woocommerce .single_add_to_cart_button .button-icon-divider-right.fusion-megamenu-image {
+.woocommerce .single_add_to_cart_button .button-icon-divider-right.fusion-megamenu-image,
+.bbp-submit-wrapper .button .button-icon-divider-right.fusion-megamenu-image {
   padding: 0 5px;
 }
 .fusion-body .fusion-button-small .button-icon-divider-left i,
 .button-small .button-icon-divider-left i,
 .button.small .button-icon-divider-left i,
+.post-password-form input[type="submit"] .button-icon-divider-left i,
 #bbp_user_edit_submit .button-icon-divider-left i,
 .woocommerce .single_add_to_cart_button .button-icon-divider-left i,
+.bbp-submit-wrapper .button .button-icon-divider-left i,
 .fusion-body .fusion-button-small .button-icon-divider-right i,
 .button-small .button-icon-divider-right i,
 .button.small .button-icon-divider-right i,
+.post-password-form input[type="submit"] .button-icon-divider-right i,
 #bbp_user_edit_submit .button-icon-divider-right i,
 .woocommerce .single_add_to_cart_button .button-icon-divider-right i,
+.bbp-submit-wrapper .button .button-icon-divider-right i,
 .fusion-body .fusion-button-small .button-icon-divider-left img,
 .button-small .button-icon-divider-left img,
 .button.small .button-icon-divider-left img,
+.post-password-form input[type="submit"] .button-icon-divider-left img,
 #bbp_user_edit_submit .button-icon-divider-left img,
 .woocommerce .single_add_to_cart_button .button-icon-divider-left img,
+.bbp-submit-wrapper .button .button-icon-divider-left img,
 .fusion-body .fusion-button-small .button-icon-divider-right img,
 .button-small .button-icon-divider-right img,
 .button.small .button-icon-divider-right img,
+.post-password-form input[type="submit"] .button-icon-divider-right img,
 #bbp_user_edit_submit .button-icon-divider-right img,
-.woocommerce .single_add_to_cart_button .button-icon-divider-right img {
+.woocommerce .single_add_to_cart_button .button-icon-divider-right img,
+.bbp-submit-wrapper .button .button-icon-divider-right img {
   top: 50%;
   margin-top: -6px;
   display: block;
@@ -328,60 +368,72 @@
 }
 .fusion-body .fusion-button-large,
 .button-large,
-.button.large {
+.button.large,
+#tribe-bar-form .tribe-bar-submit input[type=submit] {
   padding: 13px 29px;
   line-height: 17px;
   font-size: 14px;
 }
 .fusion-body .fusion-button-large.button-3d:active,
 .button-large.button-3d:active,
-.button.large.button-3d:active {
+.button.large.button-3d:active,
+#tribe-bar-form .tribe-bar-submit input[type=submit].button-3d:active {
   top: 4px;
 }
 .fusion-body .fusion-button-large .fusion-button-text-left,
 .button-large .fusion-button-text-left,
-.button.large .fusion-button-text-left {
+.button.large .fusion-button-text-left,
+#tribe-bar-form .tribe-bar-submit input[type=submit] .fusion-button-text-left {
   display: inline-block;
   padding-left: 34px;
 }
 .fusion-body .fusion-button-large .fusion-button-text-right,
 .button-large .fusion-button-text-right,
-.button.large .fusion-button-text-right {
+.button.large .fusion-button-text-right,
+#tribe-bar-form .tribe-bar-submit input[type=submit] .fusion-button-text-right {
   display: inline-block;
   padding-right: 34px;
 }
 .fusion-body .fusion-button-large .button-icon-divider-left,
 .button-large .button-icon-divider-left,
-.button.large .button-icon-divider-left {
+.button.large .button-icon-divider-left,
+#tribe-bar-form .tribe-bar-submit input[type=submit] .button-icon-divider-left {
   padding: 0 14.5px;
 }
 .fusion-body .fusion-button-large .button-icon-divider-left.fusion-megamenu-image,
 .button-large .button-icon-divider-left.fusion-megamenu-image,
-.button.large .button-icon-divider-left.fusion-megamenu-image {
+.button.large .button-icon-divider-left.fusion-megamenu-image,
+#tribe-bar-form .tribe-bar-submit input[type=submit] .button-icon-divider-left.fusion-megamenu-image {
   padding: 0 7.25px;
 }
 .fusion-body .fusion-button-large .button-icon-divider-right,
 .button-large .button-icon-divider-right,
-.button.large .button-icon-divider-right {
+.button.large .button-icon-divider-right,
+#tribe-bar-form .tribe-bar-submit input[type=submit] .button-icon-divider-right {
   padding: 0 14.5px;
 }
 .fusion-body .fusion-button-large .button-icon-divider-right.fusion-megamenu-image,
 .button-large .button-icon-divider-right.fusion-megamenu-image,
-.button.large .button-icon-divider-right.fusion-megamenu-image {
+.button.large .button-icon-divider-right.fusion-megamenu-image,
+#tribe-bar-form .tribe-bar-submit input[type=submit] .button-icon-divider-right.fusion-megamenu-image {
   padding: 0 7.25px;
 }
 .fusion-body .fusion-button-large .button-icon-divider-left i,
 .button-large .button-icon-divider-left i,
 .button.large .button-icon-divider-left i,
+#tribe-bar-form .tribe-bar-submit input[type=submit] .button-icon-divider-left i,
 .fusion-body .fusion-button-large .button-icon-divider-right i,
 .button-large .button-icon-divider-right i,
 .button.large .button-icon-divider-right i,
+#tribe-bar-form .tribe-bar-submit input[type=submit] .button-icon-divider-right i,
 .fusion-body .fusion-button-large .button-icon-divider-left img,
 .button-large .button-icon-divider-left img,
 .button.large .button-icon-divider-left img,
+#tribe-bar-form .tribe-bar-submit input[type=submit] .button-icon-divider-left img,
 .fusion-body .fusion-button-large .button-icon-divider-right img,
 .button-large .button-icon-divider-right img,
-.button.large .button-icon-divider-right img {
+.button.large .button-icon-divider-right img,
+#tribe-bar-form .tribe-bar-submit input[type=submit] .button-icon-divider-right img {
   top: 50%;
   margin-top: -7px;
   display: block;
@@ -634,8 +686,6 @@
   }
 }
 button.fusion-button.button-3d:active {
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 1px 2px 3px 2px rgba(0, 0, 0, 0.3), 0 0 0 #000000;
-  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 1px 2px 3px 2px rgba(0, 0, 0, 0.3), 0 0 0 #000000;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 1px 2px 3px 2px rgba(0, 0, 0, 0.3), 0 0 0 #000000;
 }
 .button-icon-left {
@@ -687,10 +737,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-green.wpcf7-submit,
 .button.green {
   background: #d1e990;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#aad75d), to(#d1e990));
-  background-image: -webkit-linear-gradient(bottom, #aad75d, #d1e990);
-  background-image: -moz-linear-gradient(bottom, #aad75d, #d1e990);
-  background-image: -o-linear-gradient(bottom, #aad75d, #d1e990);
   background-image: linear-gradient(to top, #aad75d, #d1e990);
   border: 1px solid #9dba60;
   color: #54770f;
@@ -713,10 +759,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-green.wpcf7-submit:active,
 .button.green:active {
   background: #aad75d;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#d1e990), to(#aad75d));
-  background-image: -webkit-linear-gradient(bottom, #d1e990, #aad75d);
-  background-image: -moz-linear-gradient(bottom, #d1e990, #aad75d);
-  background-image: -o-linear-gradient(bottom, #d1e990, #aad75d);
   background-image: linear-gradient(to top, #d1e990, #aad75d);
   border: 1px solid #9dba60;
   color: #54770f;
@@ -763,8 +805,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-green.button-3d.button-small,
 .fusion-button.button-green.wpcf7-submit.button-3d.button-small,
 .button.green.button-3d.button-small {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-green.button-3d.fusion-button-small:active,
@@ -773,8 +813,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-green.button-3d.button-small:active,
 .fusion-button.button-green.wpcf7-submit.button-3d.button-small:active,
 .button.green.button-3d.button-small:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-green.button-3d.fusion-button-medium,
@@ -783,8 +821,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-green.button-3d.button-medium,
 .fusion-button.button-green.wpcf7-submit.button-3d.button-medium,
 .button.green.button-3d.button-medium {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-green.button-3d.fusion-button-medium:active,
@@ -793,8 +829,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-green.button-3d.button-medium:active,
 .fusion-button.button-green.wpcf7-submit.button-3d.button-medium:active,
 .button.green.button-3d.button-medium:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-green.button-3d.fusion-button-large,
@@ -803,8 +837,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-green.button-3d.button-large,
 .fusion-button.button-green.wpcf7-submit.button-3d.button-large,
 .button.green.button-3d.button-large {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-green.button-3d.fusion-button-large:active,
@@ -813,8 +845,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-green.button-3d.button-large:active,
 .fusion-button.button-green.wpcf7-submit.button-3d.button-large:active,
 .button.green.button-3d.button-large:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-green.button-3d.fusion-button-xlarge,
@@ -823,8 +853,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-green.button-3d.button-xlarge,
 .fusion-button.button-green.wpcf7-submit.button-3d.button-xlarge,
 .button.green.button-3d.button-xlarge {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-green.button-3d.fusion-button-xlarge:active,
@@ -833,18 +861,12 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-green.button-3d.button-xlarge:active,
 .fusion-button.button-green.wpcf7-submit.button-3d.button-xlarge:active,
 .button.green.button-3d.button-xlarge:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgreen,
 .fusion-button.button-darkgreen.wpcf7-submit,
 .button.darkgreen {
   background: #d0e0a5;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#a8c76a), to(#d0e0a5));
-  background-image: -webkit-linear-gradient(bottom, #a8c76a, #d0e0a5);
-  background-image: -moz-linear-gradient(bottom, #a8c76a, #d0e0a5);
-  background-image: -o-linear-gradient(bottom, #a8c76a, #d0e0a5);
   background-image: linear-gradient(to top, #a8c76a, #d0e0a5);
   border: 1px solid #9dba60;
   color: #54770f;
@@ -867,10 +889,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgreen.wpcf7-submit:active,
 .button.darkgreen:active {
   background: #a8c76a;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#d0e0a5), to(#a8c76a));
-  background-image: -webkit-linear-gradient(bottom, #d0e0a5, #a8c76a);
-  background-image: -moz-linear-gradient(bottom, #d0e0a5, #a8c76a);
-  background-image: -o-linear-gradient(bottom, #d0e0a5, #a8c76a);
   background-image: linear-gradient(to top, #d0e0a5, #a8c76a);
   border: 1px solid #9dba60;
   color: #54770f;
@@ -917,8 +935,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgreen.button-3d.button-small,
 .fusion-button.button-darkgreen.wpcf7-submit.button-3d.button-small,
 .button.darkgreen.button-3d.button-small {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgreen.button-3d.fusion-button-small:active,
@@ -927,8 +943,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgreen.button-3d.button-small:active,
 .fusion-button.button-darkgreen.wpcf7-submit.button-3d.button-small:active,
 .button.darkgreen.button-3d.button-small:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgreen.button-3d.fusion-button-medium,
@@ -937,8 +951,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgreen.button-3d.button-medium,
 .fusion-button.button-darkgreen.wpcf7-submit.button-3d.button-medium,
 .button.darkgreen.button-3d.button-medium {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgreen.button-3d.fusion-button-medium:active,
@@ -947,8 +959,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgreen.button-3d.button-medium:active,
 .fusion-button.button-darkgreen.wpcf7-submit.button-3d.button-medium:active,
 .button.darkgreen.button-3d.button-medium:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgreen.button-3d.fusion-button-large,
@@ -957,8 +967,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgreen.button-3d.button-large,
 .fusion-button.button-darkgreen.wpcf7-submit.button-3d.button-large,
 .button.darkgreen.button-3d.button-large {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgreen.button-3d.fusion-button-large:active,
@@ -967,8 +975,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgreen.button-3d.button-large:active,
 .fusion-button.button-darkgreen.wpcf7-submit.button-3d.button-large:active,
 .button.darkgreen.button-3d.button-large:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #54770f, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgreen.button-3d.fusion-button-xlarge,
@@ -977,8 +983,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgreen.button-3d.button-xlarge,
 .fusion-button.button-darkgreen.wpcf7-submit.button-3d.button-xlarge,
 .button.darkgreen.button-3d.button-xlarge {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgreen.button-3d.fusion-button-xlarge:active,
@@ -987,18 +991,12 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgreen.button-3d.button-xlarge:active,
 .fusion-button.button-darkgreen.wpcf7-submit.button-3d.button-xlarge:active,
 .button.darkgreen.button-3d.button-xlarge:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #54770f, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-orange,
 .fusion-button.button-orange.wpcf7-submit,
 .button.orange {
   background: #fbdc86;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#f8bf56), to(#fbdc86));
-  background-image: -webkit-linear-gradient(bottom, #f8bf56, #fbdc86);
-  background-image: -moz-linear-gradient(bottom, #f8bf56, #fbdc86);
-  background-image: -o-linear-gradient(bottom, #f8bf56, #fbdc86);
   background-image: linear-gradient(to top, #f8bf56, #fbdc86);
   border: 1px solid #c0830b;
   color: #c0830b;
@@ -1021,10 +1019,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-orange.wpcf7-submit:active,
 .button.orange:active {
   background: #f8bf56;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#fbdc86), to(#f8bf56));
-  background-image: -webkit-linear-gradient(bottom, #fbdc86, #f8bf56);
-  background-image: -moz-linear-gradient(bottom, #fbdc86, #f8bf56);
-  background-image: -o-linear-gradient(bottom, #fbdc86, #f8bf56);
   background-image: linear-gradient(to top, #fbdc86, #f8bf56);
   border: 1px solid #c0830b;
   color: #c0830b;
@@ -1071,8 +1065,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-orange.button-3d.button-small,
 .fusion-button.button-orange.wpcf7-submit.button-3d.button-small,
 .button.orange.button-3d.button-small {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #c0830b, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #c0830b, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #c0830b, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-orange.button-3d.fusion-button-small:active,
@@ -1081,8 +1073,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-orange.button-3d.button-small:active,
 .fusion-button.button-orange.wpcf7-submit.button-3d.button-small:active,
 .button.orange.button-3d.button-small:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #c0830b, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #c0830b, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #c0830b, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-orange.button-3d.fusion-button-medium,
@@ -1091,8 +1081,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-orange.button-3d.button-medium,
 .fusion-button.button-orange.wpcf7-submit.button-3d.button-medium,
 .button.orange.button-3d.button-medium {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #c0830b, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #c0830b, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #c0830b, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-orange.button-3d.fusion-button-medium:active,
@@ -1101,8 +1089,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-orange.button-3d.button-medium:active,
 .fusion-button.button-orange.wpcf7-submit.button-3d.button-medium:active,
 .button.orange.button-3d.button-medium:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #c0830b, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #c0830b, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #c0830b, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-orange.button-3d.fusion-button-large,
@@ -1111,8 +1097,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-orange.button-3d.button-large,
 .fusion-button.button-orange.wpcf7-submit.button-3d.button-large,
 .button.orange.button-3d.button-large {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #c0830b, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #c0830b, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #c0830b, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-orange.button-3d.fusion-button-large:active,
@@ -1121,8 +1105,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-orange.button-3d.button-large:active,
 .fusion-button.button-orange.wpcf7-submit.button-3d.button-large:active,
 .button.orange.button-3d.button-large:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #c0830b, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #c0830b, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #c0830b, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-orange.button-3d.fusion-button-xlarge,
@@ -1131,8 +1113,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-orange.button-3d.button-xlarge,
 .fusion-button.button-orange.wpcf7-submit.button-3d.button-xlarge,
 .button.orange.button-3d.button-xlarge {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #c0830b, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #c0830b, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #c0830b, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-orange.button-3d.fusion-button-xlarge:active,
@@ -1141,18 +1121,12 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-orange.button-3d.button-xlarge:active,
 .fusion-button.button-orange.wpcf7-submit.button-3d.button-xlarge:active,
 .button.orange.button-3d.button-xlarge:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #c0830b, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #c0830b, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #c0830b, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-blue,
 .fusion-button.button-blue.wpcf7-submit,
 .button.blue {
   background: #b5e0f7;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#76c7f1), to(#b5e0f7));
-  background-image: -webkit-linear-gradient(bottom, #76c7f1, #b5e0f7);
-  background-image: -moz-linear-gradient(bottom, #76c7f1, #b5e0f7);
-  background-image: -o-linear-gradient(bottom, #76c7f1, #b5e0f7);
   background-image: linear-gradient(to top, #76c7f1, #b5e0f7);
   border: 1px solid #1172c1;
   color: #1172c1;
@@ -1175,10 +1149,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-blue.wpcf7-submit:active,
 .button.blue:active {
   background: #76c7f1;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#b5e0f7), to(#76c7f1));
-  background-image: -webkit-linear-gradient(bottom, #b5e0f7, #76c7f1);
-  background-image: -moz-linear-gradient(bottom, #b5e0f7, #76c7f1);
-  background-image: -o-linear-gradient(bottom, #b5e0f7, #76c7f1);
   background-image: linear-gradient(to top, #b5e0f7, #76c7f1);
   border: 1px solid #1172c1;
   color: #1172c1;
@@ -1225,8 +1195,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-blue.button-3d.button-small,
 .fusion-button.button-blue.wpcf7-submit.button-3d.button-small,
 .button.blue.button-3d.button-small {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #1172c1, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #1172c1, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #1172c1, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-blue.button-3d.fusion-button-small:active,
@@ -1235,8 +1203,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-blue.button-3d.button-small:active,
 .fusion-button.button-blue.wpcf7-submit.button-3d.button-small:active,
 .button.blue.button-3d.button-small:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #1172c1, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #1172c1, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #1172c1, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-blue.button-3d.fusion-button-medium,
@@ -1245,8 +1211,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-blue.button-3d.button-medium,
 .fusion-button.button-blue.wpcf7-submit.button-3d.button-medium,
 .button.blue.button-3d.button-medium {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #1172c1, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #1172c1, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #1172c1, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-blue.button-3d.fusion-button-medium:active,
@@ -1255,8 +1219,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-blue.button-3d.button-medium:active,
 .fusion-button.button-blue.wpcf7-submit.button-3d.button-medium:active,
 .button.blue.button-3d.button-medium:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #1172c1, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #1172c1, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #1172c1, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-blue.button-3d.fusion-button-large,
@@ -1265,8 +1227,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-blue.button-3d.button-large,
 .fusion-button.button-blue.wpcf7-submit.button-3d.button-large,
 .button.blue.button-3d.button-large {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #1172c1, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #1172c1, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #1172c1, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-blue.button-3d.fusion-button-large:active,
@@ -1275,8 +1235,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-blue.button-3d.button-large:active,
 .fusion-button.button-blue.wpcf7-submit.button-3d.button-large:active,
 .button.blue.button-3d.button-large:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #1172c1, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #1172c1, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #1172c1, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-blue.button-3d.fusion-button-xlarge,
@@ -1285,8 +1243,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-blue.button-3d.button-xlarge,
 .fusion-button.button-blue.wpcf7-submit.button-3d.button-xlarge,
 .button.blue.button-3d.button-xlarge {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #1172c1, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #1172c1, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #1172c1, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-blue.button-3d.fusion-button-xlarge:active,
@@ -1295,18 +1251,12 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-blue.button-3d.button-xlarge:active,
 .fusion-button.button-blue.wpcf7-submit.button-3d.button-xlarge:active,
 .button.blue.button-3d.button-xlarge:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #1172c1, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #1172c1, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #1172c1, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button.button-darkblue,
 .fusion-button.button.button-darkblue.wpcf7-submit,
 .button.darkblue {
   background: #428bca;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#2a6496), to(#428bca));
-  background-image: -webkit-linear-gradient(bottom, #2a6496, #428bca);
-  background-image: -moz-linear-gradient(bottom, #2a6496, #428bca);
-  background-image: -o-linear-gradient(bottom, #2a6496, #428bca);
   background-image: linear-gradient(to top, #2a6496, #428bca);
   border: 1px solid #072c5e;
   color: #072c5e;
@@ -1329,10 +1279,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button.button-darkblue.wpcf7-submit:active,
 .button.darkblue:active {
   background: #2a6496;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#428bca), to(#2a6496));
-  background-image: -webkit-linear-gradient(bottom, #428bca, #2a6496);
-  background-image: -moz-linear-gradient(bottom, #428bca, #2a6496);
-  background-image: -o-linear-gradient(bottom, #428bca, #2a6496);
   background-image: linear-gradient(to top, #428bca, #2a6496);
   border: 1px solid #072c5e;
   color: #072c5e;
@@ -1379,8 +1325,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button.button-darkblue.button-3d.button-small,
 .fusion-button.button.button-darkblue.wpcf7-submit.button-3d.button-small,
 .button.darkblue.button-3d.button-small {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #072c5e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #072c5e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #072c5e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button.button-darkblue.button-3d.fusion-button-small:active,
@@ -1389,8 +1333,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button.button-darkblue.button-3d.button-small:active,
 .fusion-button.button.button-darkblue.wpcf7-submit.button-3d.button-small:active,
 .button.darkblue.button-3d.button-small:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #072c5e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #072c5e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #072c5e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button.button-darkblue.button-3d.fusion-button-medium,
@@ -1399,8 +1341,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button.button-darkblue.button-3d.button-medium,
 .fusion-button.button.button-darkblue.wpcf7-submit.button-3d.button-medium,
 .button.darkblue.button-3d.button-medium {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #072c5e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #072c5e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #072c5e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button.button-darkblue.button-3d.fusion-button-medium:active,
@@ -1409,8 +1349,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button.button-darkblue.button-3d.button-medium:active,
 .fusion-button.button.button-darkblue.wpcf7-submit.button-3d.button-medium:active,
 .button.darkblue.button-3d.button-medium:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #072c5e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #072c5e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #072c5e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button.button-darkblue.button-3d.fusion-button-large,
@@ -1419,8 +1357,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button.button-darkblue.button-3d.button-large,
 .fusion-button.button.button-darkblue.wpcf7-submit.button-3d.button-large,
 .button.darkblue.button-3d.button-large {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #072c5e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #072c5e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #072c5e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button.button-darkblue.button-3d.fusion-button-large:active,
@@ -1429,8 +1365,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button.button-darkblue.button-3d.button-large:active,
 .fusion-button.button.button-darkblue.wpcf7-submit.button-3d.button-large:active,
 .button.darkblue.button-3d.button-large:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #072c5e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #072c5e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #072c5e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button.button-darkblue.button-3d.fusion-button-xlarge,
@@ -1439,8 +1373,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button.button-darkblue.button-3d.button-xlarge,
 .fusion-button.button.button-darkblue.wpcf7-submit.button-3d.button-xlarge,
 .button.darkblue.button-3d.button-xlarge {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #072c5e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #072c5e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #072c5e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button.button-darkblue.button-3d.fusion-button-xlarge:active,
@@ -1449,18 +1381,12 @@ button.fusion-button.button-3d:active {
 .fusion-button.button.button-darkblue.button-3d.button-xlarge:active,
 .fusion-button.button.button-darkblue.wpcf7-submit.button-3d.button-xlarge:active,
 .button.darkblue.button-3d.button-xlarge:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #072c5e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #072c5e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #072c5e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-red,
 .fusion-button.button-red.wpcf7-submit,
 .button.red {
   background: #fd9c9c;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#fc7d7d), to(#fd9c9c));
-  background-image: -webkit-linear-gradient(bottom, #fc7d7d, #fd9c9c);
-  background-image: -moz-linear-gradient(bottom, #fc7d7d, #fd9c9c);
-  background-image: -o-linear-gradient(bottom, #fc7d7d, #fd9c9c);
   background-image: linear-gradient(to top, #fc7d7d, #fd9c9c);
   border: 1px solid #9d1111;
   color: #9d1111;
@@ -1483,10 +1409,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-red.wpcf7-submit:active,
 .button.red:active {
   background: #fc7d7d;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#fd9c9c), to(#fc7d7d));
-  background-image: -webkit-linear-gradient(bottom, #fd9c9c, #fc7d7d);
-  background-image: -moz-linear-gradient(bottom, #fd9c9c, #fc7d7d);
-  background-image: -o-linear-gradient(bottom, #fd9c9c, #fc7d7d);
   background-image: linear-gradient(to top, #fd9c9c, #fc7d7d);
   border: 1px solid #9d1111;
   color: #9d1111;
@@ -1533,8 +1455,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-red.button-3d.button-small,
 .fusion-button.button-red.wpcf7-submit.button-3d.button-small,
 .button.red.button-3d.button-small {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #9d1111, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #9d1111, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #9d1111, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-red.button-3d.fusion-button-small:active,
@@ -1543,8 +1463,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-red.button-3d.button-small:active,
 .fusion-button.button-red.wpcf7-submit.button-3d.button-small:active,
 .button.red.button-3d.button-small:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #9d1111, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #9d1111, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #9d1111, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-red.button-3d.fusion-button-medium,
@@ -1553,8 +1471,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-red.button-3d.button-medium,
 .fusion-button.button-red.wpcf7-submit.button-3d.button-medium,
 .button.red.button-3d.button-medium {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #9d1111, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #9d1111, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #9d1111, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-red.button-3d.fusion-button-medium:active,
@@ -1563,8 +1479,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-red.button-3d.button-medium:active,
 .fusion-button.button-red.wpcf7-submit.button-3d.button-medium:active,
 .button.red.button-3d.button-medium:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #9d1111, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #9d1111, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #9d1111, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-red.button-3d.fusion-button-large,
@@ -1573,8 +1487,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-red.button-3d.button-large,
 .fusion-button.button-red.wpcf7-submit.button-3d.button-large,
 .button.red.button-3d.button-large {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #9d1111, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #9d1111, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #9d1111, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-red.button-3d.fusion-button-large:active,
@@ -1583,8 +1495,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-red.button-3d.button-large:active,
 .fusion-button.button-red.wpcf7-submit.button-3d.button-large:active,
 .button.red.button-3d.button-large:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #9d1111, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #9d1111, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #9d1111, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-red.button-3d.fusion-button-xlarge,
@@ -1593,8 +1503,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-red.button-3d.button-xlarge,
 .fusion-button.button-red.wpcf7-submit.button-3d.button-xlarge,
 .button.red.button-3d.button-xlarge {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #9d1111, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #9d1111, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #9d1111, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-red.button-3d.fusion-button-xlarge:active,
@@ -1603,18 +1511,12 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-red.button-3d.button-xlarge:active,
 .fusion-button.button-red.wpcf7-submit.button-3d.button-xlarge:active,
 .button.red.button-3d.button-xlarge:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #9d1111, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #9d1111, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #9d1111, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkred,
 .fusion-button.button-darkred.wpcf7-submit,
 .button.darkred {
   background: #fe2020;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#b01818), to(#fe2020));
-  background-image: -webkit-linear-gradient(bottom, #b01818, #fe2020);
-  background-image: -moz-linear-gradient(bottom, #b01818, #fe2020);
-  background-image: -o-linear-gradient(bottom, #b01818, #fe2020);
   background-image: linear-gradient(to top, #b01818, #fe2020);
   border: 1px solid #690e0e;
   color: #690e0e;
@@ -1637,10 +1539,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkred.wpcf7-submit:active,
 .button.darkred:active {
   background: #b01818;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#fe2020), to(#b01818));
-  background-image: -webkit-linear-gradient(bottom, #fe2020, #b01818);
-  background-image: -moz-linear-gradient(bottom, #fe2020, #b01818);
-  background-image: -o-linear-gradient(bottom, #fe2020, #b01818);
   background-image: linear-gradient(to top, #fe2020, #b01818);
   border: 1px solid #690e0e;
   color: #690e0e;
@@ -1687,8 +1585,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkred.button-3d.button-small,
 .fusion-button.button-darkred.wpcf7-submit.button-3d.button-small,
 .button.darkred.button-3d.button-small {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #690e0e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #690e0e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #690e0e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkred.button-3d.fusion-button-small:active,
@@ -1697,8 +1593,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkred.button-3d.button-small:active,
 .fusion-button.button-darkred.wpcf7-submit.button-3d.button-small:active,
 .button.darkred.button-3d.button-small:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #690e0e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #690e0e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #690e0e, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkred.button-3d.fusion-button-medium,
@@ -1707,8 +1601,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkred.button-3d.button-medium,
 .fusion-button.button-darkred.wpcf7-submit.button-3d.button-medium,
 .button.darkred.button-3d.button-medium {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #690e0e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #690e0e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #690e0e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkred.button-3d.fusion-button-medium:active,
@@ -1717,8 +1609,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkred.button-3d.button-medium:active,
 .fusion-button.button-darkred.wpcf7-submit.button-3d.button-medium:active,
 .button.darkred.button-3d.button-medium:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #690e0e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #690e0e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #690e0e, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkred.button-3d.fusion-button-large,
@@ -1727,8 +1617,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkred.button-3d.button-large,
 .fusion-button.button-darkred.wpcf7-submit.button-3d.button-large,
 .button.darkred.button-3d.button-large {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #690e0e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #690e0e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #690e0e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkred.button-3d.fusion-button-large:active,
@@ -1737,8 +1625,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkred.button-3d.button-large:active,
 .fusion-button.button-darkred.wpcf7-submit.button-3d.button-large:active,
 .button.darkred.button-3d.button-large:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #690e0e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #690e0e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #690e0e, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkred.button-3d.fusion-button-xlarge,
@@ -1747,8 +1633,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkred.button-3d.button-xlarge,
 .fusion-button.button-darkred.wpcf7-submit.button-3d.button-xlarge,
 .button.darkred.button-3d.button-xlarge {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #690e0e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #690e0e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #690e0e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkred.button-3d.fusion-button-xlarge:active,
@@ -1757,18 +1641,12 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkred.button-3d.button-xlarge:active,
 .fusion-button.button-darkred.wpcf7-submit.button-3d.button-xlarge:active,
 .button.darkred.button-3d.button-xlarge:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #690e0e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #690e0e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #690e0e, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-pink,
 .fusion-button.button-pink.wpcf7-submit,
 .button.pink {
   background: #fda1d5;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#fc84c8), to(#fda1d5));
-  background-image: -webkit-linear-gradient(bottom, #fc84c8, #fda1d5);
-  background-image: -moz-linear-gradient(bottom, #fc84c8, #fda1d5);
-  background-image: -o-linear-gradient(bottom, #fc84c8, #fda1d5);
   background-image: linear-gradient(to top, #fc84c8, #fda1d5);
   border: 1px solid #a31366;
   color: #a31366;
@@ -1791,10 +1669,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-pink.wpcf7-submit:active,
 .button.pink:active {
   background: #fc84c8;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#fda1d5), to(#fc84c8));
-  background-image: -webkit-linear-gradient(bottom, #fda1d5, #fc84c8);
-  background-image: -moz-linear-gradient(bottom, #fda1d5, #fc84c8);
-  background-image: -o-linear-gradient(bottom, #fda1d5, #fc84c8);
   background-image: linear-gradient(to top, #fda1d5, #fc84c8);
   border: 1px solid #a31366;
   color: #a31366;
@@ -1841,8 +1715,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-pink.button-3d.button-small,
 .fusion-button.button-pink.wpcf7-submit.button-3d.button-small,
 .button.pink.button-3d.button-small {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #a31366, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #a31366, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #a31366, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-pink.button-3d.fusion-button-small:active,
@@ -1851,8 +1723,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-pink.button-3d.button-small:active,
 .fusion-button.button-pink.wpcf7-submit.button-3d.button-small:active,
 .button.pink.button-3d.button-small:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #a31366, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #a31366, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #a31366, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-pink.button-3d.fusion-button-medium,
@@ -1861,8 +1731,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-pink.button-3d.button-medium,
 .fusion-button.button-pink.wpcf7-submit.button-3d.button-medium,
 .button.pink.button-3d.button-medium {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #a31366, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #a31366, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #a31366, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-pink.button-3d.fusion-button-medium:active,
@@ -1871,8 +1739,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-pink.button-3d.button-medium:active,
 .fusion-button.button-pink.wpcf7-submit.button-3d.button-medium:active,
 .button.pink.button-3d.button-medium:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #a31366, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #a31366, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #a31366, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-pink.button-3d.fusion-button-large,
@@ -1881,8 +1747,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-pink.button-3d.button-large,
 .fusion-button.button-pink.wpcf7-submit.button-3d.button-large,
 .button.pink.button-3d.button-large {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #a31366, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #a31366, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #a31366, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-pink.button-3d.fusion-button-large:active,
@@ -1891,8 +1755,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-pink.button-3d.button-large:active,
 .fusion-button.button-pink.wpcf7-submit.button-3d.button-large:active,
 .button.pink.button-3d.button-large:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #a31366, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #a31366, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #a31366, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-pink.button-3d.fusion-button-xlarge,
@@ -1901,8 +1763,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-pink.button-3d.button-xlarge,
 .fusion-button.button-pink.wpcf7-submit.button-3d.button-xlarge,
 .button.pink.button-3d.button-xlarge {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #a31366, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #a31366, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #a31366, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-pink.button-3d.fusion-button-xlarge:active,
@@ -1911,18 +1771,12 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-pink.button-3d.button-xlarge:active,
 .fusion-button.button-pink.wpcf7-submit.button-3d.button-xlarge:active,
 .button.pink.button-3d.button-xlarge:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #a31366, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #a31366, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #a31366, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-lightgray,
 .fusion-button.button-lightgray.wpcf7-submit,
 .button.lightgray {
   background: #fbfbfb;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#f0f0f0), to(#fbfbfb));
-  background-image: -webkit-linear-gradient(bottom, #f0f0f0, #fbfbfb);
-  background-image: -moz-linear-gradient(bottom, #f0f0f0, #fbfbfb);
-  background-image: -o-linear-gradient(bottom, #f0f0f0, #fbfbfb);
   background-image: linear-gradient(to top, #f0f0f0, #fbfbfb);
   border: 1px solid #ababab;
   color: #ababab;
@@ -1945,10 +1799,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-lightgray.wpcf7-submit:active,
 .button.lightgray:active {
   background: #f0f0f0;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#fbfbfb), to(#f0f0f0));
-  background-image: -webkit-linear-gradient(bottom, #fbfbfb, #f0f0f0);
-  background-image: -moz-linear-gradient(bottom, #fbfbfb, #f0f0f0);
-  background-image: -o-linear-gradient(bottom, #fbfbfb, #f0f0f0);
   background-image: linear-gradient(to top, #fbfbfb, #f0f0f0);
   border: 1px solid #ababab;
   color: #ababab;
@@ -1995,8 +1845,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-lightgray.button-3d.button-small,
 .fusion-button.button-lightgray.wpcf7-submit.button-3d.button-small,
 .button.lightgray.button-3d.button-small {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #ababab, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #ababab, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #ababab, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-lightgray.button-3d.fusion-button-small:active,
@@ -2005,8 +1853,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-lightgray.button-3d.button-small:active,
 .fusion-button.button-lightgray.wpcf7-submit.button-3d.button-small:active,
 .button.lightgray.button-3d.button-small:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #ababab, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #ababab, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #ababab, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-lightgray.button-3d.fusion-button-medium,
@@ -2015,8 +1861,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-lightgray.button-3d.button-medium,
 .fusion-button.button-lightgray.wpcf7-submit.button-3d.button-medium,
 .button.lightgray.button-3d.button-medium {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #ababab, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #ababab, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #ababab, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-lightgray.button-3d.fusion-button-medium:active,
@@ -2025,8 +1869,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-lightgray.button-3d.button-medium:active,
 .fusion-button.button-lightgray.wpcf7-submit.button-3d.button-medium:active,
 .button.lightgray.button-3d.button-medium:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #ababab, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #ababab, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #ababab, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-lightgray.button-3d.fusion-button-large,
@@ -2035,8 +1877,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-lightgray.button-3d.button-large,
 .fusion-button.button-lightgray.wpcf7-submit.button-3d.button-large,
 .button.lightgray.button-3d.button-large {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #ababab, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #ababab, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #ababab, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-lightgray.button-3d.fusion-button-large:active,
@@ -2045,8 +1885,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-lightgray.button-3d.button-large:active,
 .fusion-button.button-lightgray.wpcf7-submit.button-3d.button-large:active,
 .button.lightgray.button-3d.button-large:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #ababab, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #ababab, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #ababab, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-lightgray.button-3d.fusion-button-xlarge,
@@ -2055,8 +1893,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-lightgray.button-3d.button-xlarge,
 .fusion-button.button-lightgray.wpcf7-submit.button-3d.button-xlarge,
 .button.lightgray.button-3d.button-xlarge {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #ababab, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #ababab, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #ababab, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-lightgray.button-3d.fusion-button-xlarge:active,
@@ -2065,18 +1901,12 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-lightgray.button-3d.button-xlarge:active,
 .fusion-button.button-lightgray.wpcf7-submit.button-3d.button-xlarge:active,
 .button.lightgray.button-3d.button-xlarge:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #ababab, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #ababab, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #ababab, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgray,
 .fusion-button.button-darkgray.wpcf7-submit,
 .button.darkgray {
   background: #c0c0c0;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#9e9e9e), to(#c0c0c0));
-  background-image: -webkit-linear-gradient(bottom, #9e9e9e, #c0c0c0);
-  background-image: -moz-linear-gradient(bottom, #9e9e9e, #c0c0c0);
-  background-image: -o-linear-gradient(bottom, #9e9e9e, #c0c0c0);
   background-image: linear-gradient(to top, #9e9e9e, #c0c0c0);
   border: 1px solid #434c50;
   color: #434c50;
@@ -2099,10 +1929,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgray.wpcf7-submit:active,
 .button.darkgray:active {
   background: #9e9e9e;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#c0c0c0), to(#9e9e9e));
-  background-image: -webkit-linear-gradient(bottom, #c0c0c0, #9e9e9e);
-  background-image: -moz-linear-gradient(bottom, #c0c0c0, #9e9e9e);
-  background-image: -o-linear-gradient(bottom, #c0c0c0, #9e9e9e);
   background-image: linear-gradient(to top, #c0c0c0, #9e9e9e);
   border: 1px solid #434c50;
   color: #434c50;
@@ -2149,8 +1975,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgray.button-3d.button-small,
 .fusion-button.button-darkgray.wpcf7-submit.button-3d.button-small,
 .button.darkgray.button-3d.button-small {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #434c50, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #434c50, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #434c50, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgray.button-3d.fusion-button-small:active,
@@ -2159,8 +1983,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgray.button-3d.button-small:active,
 .fusion-button.button-darkgray.wpcf7-submit.button-3d.button-small:active,
 .button.darkgray.button-3d.button-small:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #434c50, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #434c50, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #434c50, 1px 4px 4px 2px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgray.button-3d.fusion-button-medium,
@@ -2169,8 +1991,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgray.button-3d.button-medium,
 .fusion-button.button-darkgray.wpcf7-submit.button-3d.button-medium,
 .button.darkgray.button-3d.button-medium {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #434c50, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #434c50, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 3px 0px #434c50, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgray.button-3d.fusion-button-medium:active,
@@ -2179,8 +1999,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgray.button-3d.button-medium:active,
 .fusion-button.button-darkgray.wpcf7-submit.button-3d.button-medium:active,
 .button.darkgray.button-3d.button-medium:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #434c50, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #434c50, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #434c50, 1px 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgray.button-3d.fusion-button-large,
@@ -2189,8 +2007,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgray.button-3d.button-large,
 .fusion-button.button-darkgray.wpcf7-submit.button-3d.button-large,
 .button.darkgray.button-3d.button-large {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #434c50, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #434c50, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 4px 0px #434c50, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgray.button-3d.fusion-button-large:active,
@@ -2199,8 +2015,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgray.button-3d.button-large:active,
 .fusion-button.button-darkgray.wpcf7-submit.button-3d.button-large:active,
 .button.darkgray.button-3d.button-large:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #434c50, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #434c50, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 1px 0px #434c50, 1px 6px 6px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgray.button-3d.fusion-button-xlarge,
@@ -2209,8 +2023,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgray.button-3d.button-xlarge,
 .fusion-button.button-darkgray.wpcf7-submit.button-3d.button-xlarge,
 .button.darkgray.button-3d.button-xlarge {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #434c50, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #434c50, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 5px 0px #434c50, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-button.button-darkgray.button-3d.fusion-button-xlarge:active,
@@ -2219,8 +2031,6 @@ button.fusion-button.button-3d:active {
 .fusion-button.button-darkgray.button-3d.button-xlarge:active,
 .fusion-button.button-darkgray.wpcf7-submit.button-3d.button-xlarge:active,
 .button.darkgray.button-3d.button-xlarge:active {
-  -webkit-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #434c50, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #434c50, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 1px 0px #ffffff, 0px 2px 0px #434c50, 1px 7px 7px 3px rgba(0, 0, 0, 0.3);
 }
 .fusion-checklist {
@@ -2242,12 +2052,8 @@ button.fusion-button.button-3d:active {
   text-align: center;
 }
 .fusion-checklist .circle-yes {
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
   border-radius: 50%;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   background-color: #333333;
   color: #fff;
@@ -2262,6 +2068,9 @@ button.fusion-button.button-3d:active {
 }
 .fusion-content-boxes .fusion-column {
   margin-bottom: 20px;
+}
+.fusion-content-boxes.fusion-columns-1 .fusion-column {
+  margin-bottom: 40px;
 }
 .fusion-content-boxes .link-area-box {
   cursor: pointer;
@@ -2278,11 +2087,8 @@ button.fusion-button.button-3d:active {
   border-color: #a0ce4e;
 }
 .fusion-content-boxes .heading .heading-link a,
+.fusion-content-boxes .heading .heading-link .fontawesome-icon,
 .fusion-content-boxes .heading .heading-link .content-box-heading {
-  -webkit-transition: all .3s;
-  -moz-transition: all .3s;
-  -ms-transition: all .3s;
-  -o-transition: all .3s;
   transition: all .3s;
 }
 .fusion-content-boxes .heading .content-box-heading {
@@ -2300,16 +2106,12 @@ button.fusion-button.button-3d:active {
 .fusion-content-boxes .fusion-read-more,
 .fusion-content-boxes .fusion-read-more:after,
 .fusion-content-boxes .fusion-read-more:before {
-  -webkit-transition: all .3s;
-  -moz-transition: all .3s;
-  -ms-transition: all .3s;
-  -o-transition: all .3s;
   transition: all .3s;
 }
 .fusion-content-boxes .fusion-read-more-button {
   margin-top: 18px;
 }
-.fusion-content-boxes .link-type-button-bar {
+.fusion-content-boxes .link-type-button-bar .content-container {
   padding-bottom: 50px;
 }
 .fusion-content-boxes .link-type-button-bar .fusion-read-more {
@@ -2367,7 +2169,6 @@ button.fusion-button.button-3d:active {
   animation: avadaExpandAndShow 1s 1 cubic-bezier(0.17, 0.67, 0.83, 0.67);
   opacity: 1;
   -webkit-transform: scale(1);
-  -ms-transform: scale(1);
   transform: scale(1);
 }
 .fusion-content-boxes.content-boxes-timeline-horizontal .content-box-column.fusion-appear .content-box-shortcode-timeline {
@@ -2380,7 +2181,6 @@ button.fusion-button.button-3d:active {
   animation: avadaExpandAndShow 1s 1 cubic-bezier(0.17, 0.67, 0.83, 0.67);
   opacity: 1;
   -webkit-transform: scale(1);
-  -ms-transform: scale(1);
   transform: scale(1);
 }
 .fusion-content-boxes.content-boxes-timeline-vertical .content-box-column.fusion-appear .content-box-shortcode-timeline-vertical {
@@ -2422,6 +2222,13 @@ button.fusion-button.button-3d:active {
 .fusion-content-boxes.content-boxes-icon-on-side .heading-with-icon.icon-right .icon,
 .fusion-content-boxes.content-boxes-icon-on-side .heading-with-icon.icon-right .image {
   right: 0;
+}
+.fusion-content-boxes.content-boxes-icon-on-side .heading-with-icon.icon-right .icon img,
+.fusion-content-boxes.content-boxes-icon-on-side .heading-with-icon.icon-right .image img,
+.fusion-content-boxes.content-boxes-icon-on-side .heading-with-icon.icon-right .icon i,
+.fusion-content-boxes.content-boxes-icon-on-side .heading-with-icon.icon-right .image i {
+  margin-left: 20px;
+  margin-right: 0;
 }
 .fusion-content-boxes.content-boxes-icon-on-side .icon,
 .fusion-content-boxes.content-boxes-icon-on-side .image {
@@ -2573,7 +2380,7 @@ button.fusion-button.button-3d:active {
   padding: 50px 35px 35px 35px;
   text-align: center;
 }
-.fusion-content-boxes.content-boxes-icon-boxed .link-type-button-bar {
+.fusion-content-boxes.content-boxes-icon-boxed .link-type-button-bar .content-container {
   padding-bottom: 50px;
 }
 .fusion-content-boxes.content-boxes-icon-boxed .heading {
@@ -2644,9 +2451,6 @@ button.fusion-button.button-3d:active {
 }
 .do-animate .fusion-content-boxes .fusion-animated {
   -webkit-animation-fill-mode: none;
-  -moz-animation-fill-mode: none;
-  -ms-animation-fill-mode: none;
-  -o-animation-fill-mode: none;
   animation-fill-mode: none;
   position: static;
 }
@@ -2666,7 +2470,7 @@ button.fusion-button.button-3d:active {
 .fusion-content-boxes.content-boxes-clean-vertical .link-type-button {
   padding-bottom: 0;
 }
-.fusion-content-boxes.content-boxes-clean-vertical .link-type-button-bar {
+.fusion-content-boxes.content-boxes-clean-vertical .link-type-button-bar .content-container {
   padding-bottom: 60px;
 }
 .fusion-content-boxes.content-boxes-clean-horizontal {
@@ -2682,11 +2486,88 @@ button.fusion-button.button-3d:active {
 .fusion-content-boxes.content-boxes-clean-horizontal .col {
   padding: 30px;
 }
-.fusion-content-boxes.content-boxes-clean-horizontal .link-type-button-bar {
+.fusion-content-boxes.content-boxes-clean-horizontal .link-type-button-bar .content-container {
   padding-bottom: 60px;
 }
-.fusion-content-boxes .link-type-button-bar {
+.fusion-content-boxes .link-type-button-bar .content-container {
   position: relative;
+}
+.fusion-countdown {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+      flex-direction: row;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+      align-items: center;
+  padding: 30px;
+}
+.fusion-countdown.fusion-no-bg {
+  padding: 0;
+}
+.fusion-countdown .fusion-countdown-heading-wrapper {
+  line-height: 25px;
+}
+.fusion-countdown .fusion-countdown-heading {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+.fusion-countdown .fusion-countdown-subheading {
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.fusion-countdown .fusion-countdown-counter-wrapper {
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  overflow: hidden;
+  margin: 0 10px;
+  font-size: 20px;
+  text-align: center;
+}
+.fusion-countdown .fusion-dash-wrapper {
+  display: inline-block;
+  padding: 5px;
+}
+.fusion-countdown .fusion-dash-wrapper.fusion-no-bg {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.fusion-countdown .fusion-dash-wrapper.fusion-no-bg .fusion-dash {
+  padding: 0;
+}
+.fusion-countdown .fusion-dash {
+  padding: 12px 22px;
+  text-align: center;
+}
+.fusion-countdown .fusion-digit {
+  display: inline-block;
+}
+.fusion-countdown .fusion-digit > div {
+  width: 11px;
+}
+.fusion-countdown .fusion-first-digit {
+  display: none;
+}
+.fusion-countdown .fusion-dash-title {
+  display: inline-block;
+  padding-left: 5px;
+  min-width: 46px;
+}
+.fusion-countdown .fusion-countdown-link {
+  letter-spacing: 2px;
+}
+.fusion-countdown .fusion-countdown-link:hover {
+  opacity: 0.7;
 }
 .fusion-counters-circle {
   margin-bottom: 20px;
@@ -2729,7 +2610,7 @@ button.fusion-button.button-3d:active {
 }
 .fusion-counters-box .fusion-counter-box {
   padding: 0 7px;
-  margin-bottom: 7px;
+  margin-bottom: 14px;
   text-align: center;
 }
 .fusion-counters-box .fusion-counter-box .counter-box-container {
@@ -2763,15 +2644,9 @@ button.fusion-button.button-3d:active {
 .fusion-dropcap.dropcap-boxed {
   height: 51px;
   width: 51px;
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;
   border-radius: 8px;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   color: #fff;
   font-size: 45px;
@@ -2834,9 +2709,6 @@ button.fusion-button.button-3d:active {
   font-family: 'icomoon';
   -webkit-font-smoothing: none;
   color: #fff;
-  -webkit-transition: all .3s ease;
-  -moz-transition: all .3s ease;
-  -o-transition: opacity all .3s ease;
   transition: opacity all .3s ease;
 }
 .fusion-flexslider .flex-direction-nav .flex-next {
@@ -2924,7 +2796,6 @@ button.fusion-button.button-3d:active {
   bottom: 0;
   padding: 5%;
   width: 30%;
-  -moz-box-sizing: content-box;
   box-sizing: content-box;
   background: rgba(0, 0, 0, 0.7);
   color: #fff;
@@ -2961,8 +2832,6 @@ button.fusion-button.button-3d:active {
   padding: 0;
   margin: 0;
   -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  -o-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 .fusion-flip-box .flip-box-inner-wrapper {
@@ -2973,28 +2842,17 @@ button.fusion-button.button-3d:active {
 .fusion-flip-box .flip-box-front,
 .fusion-flip-box .flip-box-back {
   -webkit-perspective: 600px;
-  -moz-perspective: 600px;
   -ms-perspective: 600px;
   perspective: 600px;
   padding: 27px 20px 27px 20px;
   text-align: center;
   -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  -o-backface-visibility: hidden;
   backface-visibility: hidden;
-  -webkit-background-clip: padding-box;
-  -moz-background-clip: padding;
   background-clip: padding-box;
-  -webkit-transition: all 0.4s cubic-bezier(0.2, 0.85, 0.4, 1.275) !important;
-  -moz-transition: all 0.4s cubic-bezier(0.2, 0.85, 0.4, 1.275) !important;
-  -o-transition: all 0.4s cubic-bezier(0.2, 0.85, 0.4, 1.275) !important;
   transition: all 0.4s cubic-bezier(0.2, 0.85, 0.4, 1.275) !important;
 }
 .fusion-flip-box .flip-box-front {
   -webkit-transform: rotateY(0deg);
-  -moz-transform: rotateY(0deg);
-  -ms-transform: rotateY(0deg);
-  -o-transform: rotateY(0deg);
   transform: rotateY(0deg);
   z-index: 10;
 }
@@ -3005,9 +2863,6 @@ button.fusion-button.button-3d:active {
   height: auto;
   width: 100%;
   -webkit-transform: rotateY(-180deg);
-  -moz-transform: rotateY(-180deg);
-  -ms-transform: rotateY(-180deg);
-  -o-transform: rotateY(-180deg);
   transform: rotateY(-180deg);
   z-index: -1;
 }
@@ -3017,17 +2872,11 @@ button.fusion-button.button-3d:active {
 }
 .fusion-flip-box.hover .flip-box-back {
   -webkit-transform: rotateY(0deg);
-  -moz-transform: rotateY(0deg);
-  -ms-transform: rotateY(0deg);
-  -o-transform: rotateY(0deg);
   transform: rotateY(0deg);
   z-index: 1;
 }
 .fusion-flip-box.hover .flip-box-front {
   -webkit-transform: rotateY(180deg);
-  -moz-transform: rotateY(180deg);
-  -ms-transform: rotateY(180deg);
-  -o-transform: rotateY(180deg);
   transform: rotateY(180deg);
   z-index: -1;
 }
@@ -3047,16 +2896,9 @@ button.fusion-button.button-3d:active {
   height: 64px;
   width: 64px;
   border: 1px solid;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
   border-radius: 50%;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
-  -webkit-background-clip: border-box;
-  -moz-background-clip: border-box;
-  background-clip: border-box;
 }
 .fusion-flip-box .flip-box-circle i {
   display: table-cell;
@@ -3080,13 +2922,8 @@ button.fusion-button.button-3d:active {
   text-transform: uppercase;
 }
 .fusion-flip-box .finished-animating {
-  -webkit-transition: none !important;
-  -moz-transition: none !important;
-  -o-transition: none !important;
   transition: none !important;
   -webkit-animation: none !important;
-  -moz-animation: none !important;
-  -o-animation: none !important;
   animation: none !important;
 }
 .fontawesome-icon {
@@ -3095,15 +2932,9 @@ button.fusion-button.button-3d:active {
   margin-right: 10px;
 }
 .fontawesome-icon.circle-yes {
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
   border-radius: 50%;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
-  -webkit-background-clip: inherit;
-  -moz-background-clip: inherit;
   background-clip: inherit;
   border-width: 1px;
   border-style: solid;
@@ -3120,6 +2951,47 @@ button.fusion-button.button-3d:active {
 }
 .fontawesome-icon.circle-no.size-small {
   margin-top: 5px;
+}
+.fusion-login-box .fusion-login-caption {
+  margin-bottom: 20px;
+}
+.fusion-login-box .fusion-login-form {
+  padding: 25px;
+  background-color: #f6f6f6;
+}
+.fusion-login-box .fusion-login-input-wrapper {
+  margin-bottom: 20px;
+}
+.fusion-login-box .fusion-login-button-fullwidth {
+  width: 100%;
+}
+.fusion-login-box .fusion-login-links {
+  margin: 0 -10px;
+}
+.fusion-login-box .fusion-login-links > a {
+  padding: 0 10px;
+}
+.fusion-login-box .fusion-login-loggedin-links {
+  display: inline-block;
+  list-style: outside none none;
+  margin: 0;
+  padding: 0;
+  text-align: initial;
+}
+.fusion-login-box .fusion-login-avatar {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 10px;
+}
+.fusion-login-box .fusion-login-box-error {
+  margin-bottom: 20px;
+  color: #d04544;
+}
+.fusion-login-box.fusion-login-box-login .fusion-login-submit-wrapperr {
+  margin-bottom: 20px;
+}
+.fusion-login-box.fusion-login-align-center {
+  text-align: center;
 }
 .fullwidth-box.video-background {
   position: relative;
@@ -3143,11 +3015,16 @@ button.fusion-button.button-3d:active {
 }
 .fullwidth-box.video-background .fullwidth-video video {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
   z-index: 1;
   min-height: 100%;
   min-width: 100%;
+  height: auto;
+  width: 100%;
+  object-fit: cover;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 .fullwidth-box.video-background .fusion-row {
   position: relative;
@@ -3207,15 +3084,9 @@ button.fusion-button.button-3d:active {
 }
 .fusion-google-map .fusion-info-box {
   padding: 5px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
   border-radius: 5px;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
   background-color: #a0ce4e;
   color: #fff;
@@ -3226,12 +3097,8 @@ button.fusion-button.button-3d:active {
   line-height: 1.7em;
 }
 .fusion-highlight.rounded {
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
   border-radius: 4px;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
 .fusion-highlight.dark {
@@ -3266,14 +3133,11 @@ button.fusion-button.button-3d:active {
   position: relative;
 }
 .fusion-carousel .fusion-carousel-wrapper {
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
   box-sizing: content-box;
   padding: 8px 0;
 }
 .fusion-carousel .fusion-carousel-swipe {
   cursor: -webkit-grab;
-  cursor: -moz-grab;
   cursor: grab;
 }
 .fusion-carousel .fusion-carousel-holder {
@@ -3375,7 +3239,7 @@ button.fusion-button.button-3d:active {
   text-align: center;
 }
 .fusion-image-carousel-fixed .fusion-carousel .fusion-image-wrapper {
-  display: inline-block;
+  display: inline;
   vertical-align: middle;
 }
 .fusion-image-carousel-fixed .fusion-carousel .fusion-image-wrapper a {
@@ -3471,12 +3335,8 @@ button.fusion-button.button-3d:active {
   margin-left: 0;
   margin-right: 0;
 }
-.fusion-equal-height-columns {
-  /*
-	.fusion-column-wrapper {
-		overflow: hidden;
-	}
-	*/
+.fusion-spacing-no .fusion-column-wrapper {
+  min-height: 1px;
 }
 .fusion-equal-height-columns .fusion-column-table {
   display: table;
@@ -3487,8 +3347,34 @@ button.fusion-button.button-3d:active {
   display: table-cell;
   vertical-align: middle;
 }
+.fusion-column-inner-bg-wrapper .fusion-column-wrapper {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+.fusion-column-inner-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.fusion-column-inner-bg a {
+  width: 100%;
+  height: 100%;
+}
+.fusion-column-inner-bg a span {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 .modal-dialog {
   margin-top: 60px;
+}
+.fusion-modal {
+  -webkit-overflow-scrolling: auto !important;
 }
 .fusion-modal .modal-header {
   min-height: 54px;
@@ -3499,6 +3385,7 @@ button.fusion-button.button-3d:active {
 .fusion-modal .close {
   font-size: 30px;
   margin-top: -5px;
+  text-shadow: none;
 }
 .fusion-modal .fusion-separator {
   width: 100% !important;
@@ -3506,19 +3393,16 @@ button.fusion-button.button-3d:active {
 .fusion-person .person-shortcode-image-wrapper {
   text-align: center;
 }
-.fusion-person .person-imgage-container {
+.fusion-person .person-image-container {
   display: inline-block;
   z-index: 1;
   max-width: 100%;
+  vertical-align: bottom;
 }
-.fusion-person .person-imgage-container.glow {
-  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+.fusion-person .person-image-container.glow {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 }
-.fusion-person .person-imgage-container.dropshadow {
-  -webkit-box-shadow: 2px 3px 7px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 2px 3px 7px rgba(0, 0, 0, 0.3);
+.fusion-person .person-image-container.dropshadow {
   box-shadow: 2px 3px 7px rgba(0, 0, 0, 0.3);
 }
 .fusion-person .person-desc {
@@ -3542,17 +3426,6 @@ button.fusion-button.button-3d:active {
   max-width: 50%;
   text-align: right;
 }
-.fusion-person .person-desc .person-author .fusion-social-networks a:first-child {
-  margin-left: 0;
-}
-.fusion-person .person-desc .person-author .fusion-social-networks a {
-  margin-bottom: 10px;
-  margin-right: 0;
-  margin-left: 20px;
-}
-.fusion-person .person-desc .person-author .boxed-icons a {
-  margin-left: 10px;
-}
 .fusion-person .person-desc .person-author .person-name,
 .fusion-person .person-desc .person-author .person-title {
   display: block;
@@ -3560,7 +3433,43 @@ button.fusion-button.button-3d:active {
 .fusion-person .person-content {
   margin-top: 25px;
 }
+.fusion-person-left {
+  text-align: left;
+}
+.fusion-person-center {
+  text-align: center;
+}
+.fusion-person-center .person-desc .person-author {
+  display: block;
+  width: 100%;
+}
+.fusion-person-center .person-desc .person-author .person-author-wrapper {
+  display: block;
+  width: 100%;
+}
+.fusion-person-center .person-desc .person-author .fusion-social-networks {
+  display: block;
+  width: 100%;
+  max-width: none;
+  text-align: center;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+.fusion-person-center .person-content {
+  margin-top: 25px;
+}
+.fusion-person-right {
+  text-align: right;
+}
+.fusion-person-right .person-desc .person-author .fusion-social-networks {
+  text-align: left;
+}
+.fusion-person-icon-bottom .fusion-social-networks {
+  margin-top: 35px;
+}
 .fusion-popover {
+  display: inline-block;
+  max-width: 100%;
   cursor: pointer;
   color: #a0ce4e;
 }
@@ -3569,11 +3478,9 @@ button.fusion-button.button-3d:active {
 }
 .fusion-pricing-table {
   margin: 0 0 20px 0;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 .fusion-pricing-table * {
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 .fusion-pricing-table .fusion-panel {
@@ -3581,23 +3488,15 @@ button.fusion-button.button-3d:active {
   margin: 0;
   background-color: #ffffff;
   box-shadow: none;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
   border-radius: 0;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   border: 1px solid #e5e4e3;
 }
 .fusion-pricing-table .panel-heading {
   padding: 15px 15px;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
   border-radius: 0;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   border-bottom: 1px solid #e5e4e3;
   text-align: center;
@@ -3668,12 +3567,8 @@ button.fusion-button.button-3d:active {
 .fusion-pricing-table .panel-footer {
   padding: 15px;
   background-color: #f8f8f8;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
   border-radius: 0;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   border-color: 1px solid #e5e4e3;
   text-align: center;
@@ -3721,12 +3616,8 @@ button.fusion-button.button-3d:active {
 }
 .sep-boxed-pricing .panel-heading {
   background-color: #a0ce4e;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
   border-radius: 0;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   border-bottom: 1px solid #e5e4e3;
   text-align: center;
@@ -3770,12 +3661,9 @@ button.fusion-button.button-3d:active {
   }
   .full-boxed-pricing .standout .panel-container {
     position: relative;
-    -moz-box-sizing: content-box;
     box-sizing: content-box;
     margin: -10px -9px;
     padding: 9px;
-    -webkit-box-shadow: 0 0 6px 6px rgba(0, 0, 0, 0.08);
-    -moz-box-shadow: 0 0 6px 6px rgba(0, 0, 0, 0.08);
     box-shadow: 0 0 6px 6px rgba(0, 0, 0, 0.08);
     background-color: #f8f8f8;
   }
@@ -3795,8 +3683,6 @@ button.fusion-button.button-3d:active {
   }
   .sep-boxed-pricing .standout .panel-container {
     margin: -10px;
-    -webkit-box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.16);
-    -moz-box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.16);
     box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.16);
   }
 }
@@ -3806,30 +3692,19 @@ button.fusion-button.button-3d:active {
   height: 37px;
   width: 100%;
   background-color: #E6E7E8;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
   border-radius: 0;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
   box-shadow: none;
 }
 .fusion-progressbar .progress {
   background-color: #A0CE4E;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
   box-shadow: none;
 }
 .fusion-progressbar .progress-title {
   left: 15px;
   top: 50%;
   -webkit-transform: translate(0, -50%);
-  -moz-transform: translate(0, -50%);
-  -ms-transform: translate(0, -50%);
-  -o-transform: translate(0, -50%);
   transform: translate(0, -50%);
   clip: auto;
   margin: 0;
@@ -3916,6 +3791,7 @@ button.fusion-button.button-3d:active {
   margin-top: 0;
 }
 .fusion-recent-works {
+  overflow: hidden;
   margin-bottom: 80px;
 }
 .fusion-recent-works-carousel {
@@ -3948,25 +3824,16 @@ button.fusion-button.button-3d:active {
 .fusion-section-separator .divider-candy.bottom {
   bottom: -21px;
   -webkit-transform: rotate(-45deg);
-  -moz-transform: rotate(-45deg);
-  -ms-transform: rotate(-45deg);
-  -o-transform: rotate(-45deg);
   transform: rotate(-45deg);
 }
 .fusion-section-separator .divider-candy.top {
   top: -21px;
   -webkit-transform: rotate(135deg);
-  -moz-transform: rotate(135deg);
-  -ms-transform: rotate(135deg);
-  -o-transform: rotate(135deg);
   transform: rotate(135deg);
 }
 .fusion-section-separator .divider-candy.both {
   top: -21px;
   -webkit-transform: rotate(135deg);
-  -moz-transform: rotate(135deg);
-  -ms-transform: rotate(135deg);
-  -o-transform: rotate(135deg);
   transform: rotate(135deg);
 }
 .fusion-section-separator .divider-candy-arrow {
@@ -4040,11 +3907,6 @@ button.fusion-button.button-3d:active {
   overflow: visible;
   border: none;
   background: none;
-  background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(150, 150, 150, 0)), color-stop(15%, rgba(150, 150, 150, 0)), color-stop(50%, rgba(150, 150, 150, 0.65)), color-stop(85%, rgba(150, 150, 150, 0)), color-stop(100%, rgba(150, 150, 150, 0)));
-  background: -webkit-linear-gradient(left, rgba(150, 150, 150, 0) 0%, rgba(150, 150, 150, 0) 15%, rgba(150, 150, 150, 0.65) 50%, rgba(150, 150, 150, 0) 85%, rgba(150, 150, 150, 0) 100%);
-  background: -moz-linear-gradient(left, rgba(150, 150, 150, 0) 0%, rgba(150, 150, 150, 0) 15%, rgba(150, 150, 150, 0.65) 50%, rgba(150, 150, 150, 0) 85%, rgba(150, 150, 150, 0) 100%);
-  background: -ms-linear-gradient(left, rgba(150, 150, 150, 0) 0%, rgba(150, 150, 150, 0) 15%, rgba(150, 150, 150, 0.65) 50%, rgba(150, 150, 150, 0) 85%, rgba(150, 150, 150, 0) 100%);
-  background: -o-linear-gradient(left, rgba(150, 150, 150, 0) 0%, rgba(150, 150, 150, 0) 15%, rgba(150, 150, 150, 0.65) 50%, rgba(150, 150, 150, 0) 85%, rgba(150, 150, 150, 0) 100%);
   background: linear-gradient(left, rgba(150, 150, 150, 0) 0%, rgba(150, 150, 150, 0) 15%, rgba(150, 150, 150, 0.65) 50%, rgba(150, 150, 150, 0) 85%, rgba(150, 150, 150, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#00000000', GradientType=1);
 }
@@ -4054,9 +3916,6 @@ button.fusion-button.button-3d:active {
   height: 6px;
   width: 100%;
   content: '';
-  background: -webkit-radial-gradient(ellipse at 50% -50%, rgba(0, 0, 0, 0.5) 0px, rgba(255, 255, 255, 0) 65%);
-  background: -moz-radial-gradient(ellipse at 50% -50%, rgba(0, 0, 0, 0.5) 0px, rgba(255, 255, 255, 0) 80%);
-  background: -o-radial-gradient(ellipse at 50% -50%, rgba(0, 0, 0, 0.5) 0px, rgba(255, 255, 255, 0) 80%);
   background: radial-gradient(ellipse at 50% -50%, rgba(0, 0, 0, 0.5) 0px, rgba(255, 255, 255, 0) 65%);
 }
 .fusion-separator .icon-wrapper {
@@ -4069,12 +3928,8 @@ button.fusion-button.button-3d:active {
   width: 26px;
   background-color: #FFFFFF;
   border: 1px solid #AAAAAA;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
   border-radius: 50%;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   text-align: center;
 }
@@ -4132,13 +3987,17 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
 .fusion-slider-sc:hover .flex-prev:hover {
   opacity: 1;
 }
+.fusion-social-networks {
+  overflow: hidden;
+}
+.fusion-social-networks .fusion-social-networks-wrapper {
+  margin: 0 -10px;
+}
 .fusion-social-networks .fusion-social-network-icon {
-  margin-left: 0;
-  margin-right: 20px;
-  margin-bottom: 10px;
+  display: inline-block;
+  margin: 0 10px 10px 10px;
   font-size: 16px;
   color: #46494a;
-  display: inline-block;
 }
 .fusion-social-networks .fusion-social-network-icon:hover {
   opacity: 0.8;
@@ -4146,34 +4005,21 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
 .fusion-social-networks .fusion-social-network-icon:before {
   color: inherit;
 }
+.fusion-social-networks.boxed-icons .fusion-social-networks-wrapper {
+  margin: 0 -5px;
+}
 .fusion-social-networks.boxed-icons .fusion-social-network-icon {
-  margin-right: 10px;
+  margin: 0 5px 10px 5px;
   padding: 8px;
   background-color: #46494a;
   border: none;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
   border-radius: 3px;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-  -webkit-background-clip: inherit;
-  -moz-background-clip: inherit;
   background-clip: inherit;
   border: 1px solid #46494a;
   color: #ffffff;
-}
-.fusion-secondary-header .fusion-alignright .fusion-social-links-header .fusion-social-network-icon {
-  margin-right: 0;
-  margin-left: 20px;
-}
-.fusion-secondary-header .fusion-alignright .fusion-social-links-header .boxed-icons .fusion-social-network-icon {
-  margin-right: 0;
-  margin-left: 10px;
 }
 .fusion-social-links-footer {
   display: table-cell;
@@ -4184,22 +4030,29 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
 .fusion-social-links-footer .fusion-social-networks {
   margin-top: 10px;
 }
-.fusion-social-links-footer .fusion-social-networks.boxed-icons {
-  margin-top: 0;
+.widget .fusion-social-networks .fusion-social-networks-wrapper {
+  margin: 0 -5.5px;
 }
-.fusion-social-links-footer .fusion-social-networks.boxed-icons .fusion-social-network-icon {
-  margin-right: 0;
-  margin-left: 10px;
+.widget .fusion-social-networks .fusion-social-network-icon {
+  margin: 0 5.5px 14px 5.5px;
 }
-.fusion-social-links-footer .fusion-social-networks .fusion-social-network-icon {
-  margin-right: 0;
-  margin-left: 20px;
+.widget .fusion-social-networks.boxed-icons .fusion-social-networks-wrapper {
+  margin: 0 -3.5px;
 }
-.fusion-social-links-footer .fusion-social-networks .fusion-social-network-icon:first-child {
-  margin-left: 0;
+.widget .fusion-social-networks.boxed-icons .fusion-social-network-icon {
+  margin: 0 3.5px 10px 3.5px;
 }
 .fusion-tabs {
   margin-bottom: 50px;
+}
+.fusion-tabs .nav {
+  display: none;
+}
+.fusion-tabs .fusion-mobile-tab-nav {
+  display: block;
+}
+.fusion-tabs.clean .tab-pane {
+  margin: 20px 0;
 }
 .fusion-tabs .nav-tabs {
   display: block;
@@ -4243,10 +4096,6 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
   background-color: #f1f2f2;
   color: #747474;
   cursor: pointer;
-  -webkit-transition: all .2s;
-  -moz-transition: all .2s;
-  -ms-transition: all .2s;
-  -o-transition: all .2s;
   transition: all .2s;
 }
 .fusion-tabs .nav-tabs li .tab-link:hover,
@@ -4305,6 +4154,15 @@ body:not(:-moz-handler-blocked) .fusion-separator.sep-shadow:after {
   border: none;
 }
 @media (min-width: 768px) {
+  .fusion-tabs .nav {
+    display: block;
+  }
+  .fusion-tabs .fusion-mobile-tab-nav {
+    display: none;
+  }
+  .fusion-tabs.clean .tab-pane {
+    margin: 0;
+  }
   .fusion-tabs .nav-tabs {
     display: inline-block;
   }
@@ -4442,8 +4300,6 @@ table {
 .tkt-slctr-tbl-wrap-dv table {
   border: 1px solid#dcdcdc;
   background-color: #fff;
-  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 .table-1 table th,
@@ -4486,19 +4342,22 @@ table {
   background-color: #F2EFEF;
   border-left: 3px solid #a0ce4e;
 }
-.fusion-reading-box-container .reading-box.reading-box-center,
+.fusion-reading-box-container .reading-box.reading-box-center {
+  text-align: center;
+}
 .fusion-reading-box-container .reading-box.reading-box-right {
-  text-align: left;
+  text-align: right;
 }
 .fusion-reading-box-container .reading-box h2 {
   margin: 0 0 7px;
   line-height: 20px;
   font-size: 18px;
 }
-.fusion-reading-box-container .continue {
-  display: none;
+.fusion-reading-box-container .fusion-desktop-button {
+  display: block;
 }
 .fusion-reading-box-container .continue-center {
+  display: inline-block;
   float: none;
   margin: 15px auto 0 auto;
 }
@@ -4512,27 +4371,13 @@ table {
   margin-left: 10px;
   margin-bottom: 10px;
 }
-.fusion-reading-box-container .mobile-button {
-  display: block;
+.fusion-reading-box-container .fusion-mobile-button {
+  display: none;
   float: none;
   margin: 20px 0 0;
 }
-@media (min-width: 800px) {
-  .fusion-reading-box-container .reading-box.reading-box-center {
-    text-align: center;
-  }
-  .fusion-reading-box-container .reading-box.reading-box-right {
-    text-align: right;
-  }
-  .fusion-reading-box-container .continue {
-    display: block;
-  }
-  .fusion-reading-box-container .continue-center {
-    display: inline-block;
-  }
-  .fusion-reading-box-container .mobile-button {
-    display: none;
-  }
+.fusion-reading-box-container .fusion-mobile-button.continue-center {
+  display: inline-block;
 }
 .element-bottomshadow {
   position: relative;
@@ -4549,22 +4394,14 @@ table {
   width: 60%;
   content: "";
   opacity: 0.7;
-  -webkit-box-shadow: 0 17px 10px rgba(0, 0, 0, 0.7);
-  -moz-box-shadow: 0 17px 10px rgba(0, 0, 0, 0.7);
   box-shadow: 0 17px 10px rgba(0, 0, 0, 0.7);
   -webkit-transform: rotate(-3deg);
-  -moz-transform: rotate(-3deg);
-  -ms-transform: rotate(-3deg);
-  -o-transform: rotate(-3deg);
   transform: rotate(-3deg);
 }
 .element-bottomshadow:after {
   left: auto;
   right: 10px;
   -webkit-transform: rotate(3deg);
-  -moz-transform: rotate(3deg);
-  -ms-transform: rotate(3deg);
-  -o-transform: rotate(3deg);
   transform: rotate(3deg);
 }
 .fusion-testimonials .review {
@@ -4688,7 +4525,16 @@ table {
   text-align: center;
 }
 .fusion-title {
-  display: table;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-align-items: center;
+  -ms-align-items: center;
+  -ms-flex-align: center;
+      align-items: center;
   margin: 0 0 31px;
   overflow: hidden;
 }
@@ -4699,12 +4545,13 @@ table {
 .fusion-title h5,
 .fusion-title h6,
 .comment-respond .fusion-title .comment-reply-title {
-  float: left;
-  display: table-cell;
+  -webkit-flex-grow: 0;
+  -ms-flex-grow: 0;
+  -ms-flex-positive: 0;
+      flex-grow: 0;
   margin: 0;
   padding: 0 8px 0 0;
   line-height: normal;
-  white-space: pre;
 }
 .fusion-title h1.title-heading-left,
 .fusion-title h2.title-heading-left,
@@ -4714,6 +4561,7 @@ table {
 .fusion-title h6.title-heading-left,
 .comment-respond .fusion-title .comment-reply-title.title-heading-left {
   padding-right: 8px;
+  text-align: left;
 }
 .fusion-title h1.title-heading-left .fontawesome-icon,
 .fusion-title h2.title-heading-left .fontawesome-icon,
@@ -4732,6 +4580,7 @@ table {
 .fusion-title h6.title-heading-right,
 .comment-respond .fusion-title .comment-reply-title.title-heading-right {
   padding: 0 0 0 8px;
+  text-align: right;
 }
 .fusion-title h1.title-heading-right .fontawesome-icon,
 .fusion-title h2.title-heading-right .fontawesome-icon,
@@ -4794,14 +4643,38 @@ table {
 .comment-respond .fusion-title .comment-reply-title .fontawesome-icon.size-large {
   margin-top: 0;
 }
+.fusion-title.fusion-title-center {
+  text-align: center;
+}
+.fusion-title.fusion-title-center .title-heading-center {
+  padding: 0 45px;
+}
+.fusion-title.fusion-title-center.fusion-sep-none .title-heading-center,
+.fusion-title.fusion-title-center.sep-underline .title-heading-center {
+  padding: 0;
+  text-align: center;
+}
+.fusion-title.fusion-sep-none {
+  display: block;
+}
+.fusion-title.fusion-sep-none .title-heading-left {
+  padding: 0;
+  text-align: left;
+}
+.fusion-title.fusion-sep-none .title-heading-right {
+  padding: 0;
+  text-align: right;
+}
 .fusion-title .title-sep-container {
   position: relative;
-  display: table-cell;
-  vertical-align: middle;
   height: 6px;
-  width: 100%;
+  -webkit-flex-grow: 1;
+  -ms-flex-grow: 1;
+  -ms-flex-positive: 1;
+      flex-grow: 1;
 }
 .fusion-title.sep-underline {
+  display: block;
   padding-bottom: 10px;
   width: 100%;
   border-bottom: 1px solid #e7e6e6;
@@ -4815,6 +4688,10 @@ table {
 .fusion-title.sep-underline .title-heading-right {
   float: right;
   margin: 0;
+}
+.fusion-title.sep-underline .title-heading-left,
+.fusion-title.sep-underline .title-heading-right {
+  padding: 0;
 }
 .fusion-title .title-sep {
   position: relative;
@@ -4843,27 +4720,19 @@ table {
   border-bottom-style: dotted;
   border-top-style: dotted;
 }
-.border-below-title {
+.fusion-border-below-title {
   display: block;
 }
-.border-below-title h1,
-.border-below-title h2,
-.border-below-title h3,
-.border-below-title h4,
-.border-below-title h5,
-.border-below-title h6 {
-  white-space: normal;
-}
-#main .post-content .border-below-title h1,
-#main .post-content .border-below-title h2,
-#main .post-content .border-below-title h3,
-#main .post-content .border-below-title h4,
-#main .post-content .border-below-title h5,
-#main .post-content .border-below-title h6 {
-  float: none;
+#main .post-content .fusion-border-below-title h1,
+#main .post-content .fusion-border-below-title h2,
+#main .post-content .fusion-border-below-title h3,
+#main .post-content .fusion-border-below-title h4,
+#main .post-content .fusion-border-below-title h5,
+#main .post-content .fusion-border-below-title h6 {
+  padding-left: 0;
   padding-right: 0;
 }
-.border-below-title .title-sep-container {
+.fusion-border-below-title .title-sep-container {
   display: none;
   height: 8px;
 }
@@ -4874,12 +4743,8 @@ table {
   box-shadow: none;
   border: none;
   border-bottom: 1px solid #e5e4e3;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
   border-radius: 0;
   /* Fix to make border-radius work for transparent colors */
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
 .fusion-accordian .panel-heading {
@@ -4912,7 +4777,7 @@ table {
 }
 .fusion-accordian .panel-title a .fa-fusion-box {
   display: inline-block;
-  margin-right: 18px;
+  vertical-align: middle;
   width: 22px;
   height: 22px;
   background-color: #333;
@@ -4936,8 +4801,11 @@ table {
 .fusion-accordian .panel-title .active .fa-fusion-box:before {
   content: "\e61c";
 }
+.fusion-accordian .panel-title .fusion-toggle-icon-wrapper {
+  float: left;
+}
 .fusion-accordian .panel-title .fusion-toggle-heading {
-  display: inline-block;
+  margin-left: 40px;
 }
 .fusion-accordian .panel-body {
   padding: 10px 0 15px 0px;
@@ -4963,16 +4831,6 @@ table {
 }
 .fusion-woo-featured-products-slider .fusion-rollover-content .price .amount {
   font-size: 25px;
-}
-.fusion-woo-featured-products-slider .fusion-product-buttons {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 20px;
-  padding: 0 10%;
-}
-.fusion-woo-featured-products-slider .fusion-product-buttons a.added_to_cart {
-  display: none;
 }
 .fusion-woo-featured-products-slider .fusion-carousel-nav .fusion-nav-prev,
 .fusion-woo-featured-products-slider .fusion-carousel-nav .fusion-nav-next {
@@ -5007,6 +4865,12 @@ table {
   display: block;
   margin-bottom: 8px;
 }
+.fusion-woo-slider .fusion-classic-product-image-wrapper .cart-loading > a {
+  color: #fff !important;
+}
+.fusion-woo-slider .cart-loading .view-cart {
+  display: none;
+}
 .fusion-woo-product-slider {
   overflow: hidden;
   margin-bottom: 55px;
@@ -5020,4 +4884,79 @@ table {
 .fusion-youtube.center-video .video-shortcode,
 .fusion-vimeo.center-video .video-shortcode {
   margin: 0 auto;
+}
+.fusion-events-shortcode .fusion-layout-column {
+  border-style: solid;
+  border-width: 1px;
+  border-color: transparent;
+}
+.fusion-events-shortcode .fusion-events-thumbnail {
+  display: block;
+  border-bottom: 1px solid transparent;
+}
+.fusion-events-shortcode .tribe-events-event-image {
+  display: block;
+  width: 100%;
+}
+.fusion-events-shortcode .fusion-full-one {
+  width: 100%;
+}
+.fusion-events-shortcode .fusion-full-one .tribe-events-event-image {
+  height: 416px;
+}
+.fusion-events-shortcode .fusion-one-half .tribe-events-event-image {
+  height: 416px;
+}
+.fusion-events-shortcode .fusion-one-third .fusion-events-placeholder {
+  width: 337px;
+  height: 216px;
+}
+.fusion-events-shortcode .fusion-one-third .tribe-events-event-image {
+  height: 216px;
+}
+.fusion-events-shortcode .fusion-one-fourth .fusion-events-placeholder {
+  width: 242px;
+  height: 173px;
+}
+.fusion-events-shortcode .fusion-one-fourth .tribe-events-event-image {
+  height: 173px;
+}
+.fusion-events-shortcode .fusion-one-fifth .fusion-events-placeholder {
+  width: 177px;
+  height: 142px;
+}
+.fusion-events-shortcode .fusion-one-fifth .tribe-events-event-image {
+  height: 142px;
+}
+.fusion-events-shortcode .fusion-one-sixth .fusion-events-placeholder {
+  width: 147px;
+  height: 118px;
+}
+.fusion-events-shortcode .fusion-one-sixth .tribe-events-event-image {
+  height: 118px;
+}
+.fusion-events-shortcode .fusion-events-meta {
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+}
+.fusion-events-shortcode .fusion-events-meta .recurringinfo,
+.fusion-events-shortcode .fusion-events-meta .event-is-recurring {
+  display: inline;
+}
+.fusion-events-shortcode .tribe-events-tooltip {
+  display: none;
+}
+.fusion-events-shortcode .tribe-events-divider {
+  padding: 0px 5px;
+}
+.fusion-events-shortcode .tribe-events-event-image {
+  margin-bottom: 0;
+}
+.fusion-events-shortcode h2 {
+  margin-bottom: 0;
+}
+.fusion-events-shortcode h4 {
+  margin: 0;
 }

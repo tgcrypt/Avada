@@ -11,13 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 $template = get_option('template');
 
-if(Avada()->settings->get( 'default_sidebar_pos' ) == 'Left') {
-	$content_css = 'float:right;';
-	$sidebar_css = 'float:left;';
-} elseif(Avada()->settings->get( 'default_sidebar_pos' ) == 'Right') {
-	$content_css = 'float:left;';
-	$sidebar_css = 'float:right;';
-}
+ob_start();
+Avada()->layout->add_class( 'content_class' );
+$content_class = ob_get_clean();
+
+ob_start();
+Avada()->layout->add_style( 'content_style' );
+$content_css = ob_get_clean();
 
 switch( $template ) {
 
@@ -43,7 +43,7 @@ switch( $template ) {
 
 	// Default
 	default :
-		echo '<div class="sensei-container"><div id="content" style="'.$content_css.'">';
+		echo '<div class="sensei-container"><div id="content" ' . $content_class . ' ' . $content_css . '>';
 		break;
 }
 

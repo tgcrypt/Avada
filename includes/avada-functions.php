@@ -7,24 +7,8 @@
  * @since		Version 3.8
  */
 
-fusion_block_direct_access();
-
-
-/**
- * Alters the wp_title output to add the site name
- * @param  string $title The default page title
- *
- * @return string The altered title
- **/
-if ( ! function_exists( 'avada_add_site_name_to_title' ) ) {
-	function avada_add_site_name_to_title( $title ) {
-		if ( ! defined('WPSEO_VERSION') ) {
-			$title = ( $title ) ? get_bloginfo( 'name' ) . ' - ' . $title : get_bloginfo( 'name' );
-		}
-		return $title;
-	}
-	add_filter( 'wp_title', 'avada_add_site_name_to_title', 10, 1 );
-}
+// Do not allow directly accessing this file
+if ( ! defined( 'ABSPATH' ) ) exit( 'Direct script access denied.' );
 
 /**
  * Get the post (excerpt)
@@ -189,7 +173,7 @@ if ( ! function_exists( 'avada_render_author_info' ) ) {
 add_action( 'avada_author_info', 'avada_render_author_info', 10 );
 
 /**
- * Ooutput the footer copyright notice
+ * Output the footer copyright notice
  *
  * @return void directly echos the footer copyright notice HTML markup
  **/
@@ -242,11 +226,14 @@ add_action( 'avada_footer_copyright_content', 'avada_render_footer_social_icons'
  * @param  boolean 	$display_woo_buttons		Set to yes to show the woocommerce "add to cart" and "show details" buttons
  * @param  string	$display_post_categories 	Controls if the post categories will be shown; "deafult": theme option setting; enable/disable otheriwse
  * @param  string	$display_post_title 		Controls if the post title will be shown; "deafult": theme option setting; enable/disable otheriwse
+ * @param  string	$gallery_id 				ID of a special gallery the rollover "zoom" link should be connected to for lightbox
  *
  * @return void 	Directly echos the placeholder image HTML markup
  **/
 if ( ! function_exists( 'avada_render_rollover' ) ) {
-	function avada_render_rollover( $post_id, $post_permalink = '', $display_woo_price = false, $display_woo_buttons = false, $display_post_categories = 'default', $display_post_title = 'default', $gallery_id = '' ) {
+	function avada_render_rollover( $post_id, $post_permalink = '', $display_woo_price = false, $display_woo_buttons = false, $display_post_categories = 'default', $display_post_title = 'default', $gallery_id = '', $display_woo_rating = false ) {
+		global $product, $woocommerce;
+
 		// Retrieve the permalink if it is not set
 		if ( ! $post_permalink ) {
 			$post_permalink = get_permalink( $post_id );
@@ -290,7 +277,15 @@ if ( ! function_exists( 'avada_render_rollover' ) ) {
 		}
 
 		// Set the link target to blank if the option is set
-		$link_target = ( 'yes' == fusion_get_page_option( 'link_icon_target', $post_id ) || 'yes' == fusion_get_page_option( 'post_links_target', $post_id ) ) ? ' target="_blank"' : '';
+		if ( 'yes' == fusion_get_page_option( 'link_icon_target', $post_id ) ||
+			 'yes' == fusion_get_page_option( 'post_links_target', $post_id ) ||
+			 ( 'avada_portfolio' == get_post_type() &&  Avada()->settings->get( 'portfolio_link_icon_target' ) && 'default' == fusion_get_page_option( 'link_icon_target', $post_id ) )
+		) {
+			$link_target = ' target="_blank"';
+		} else {
+			$link_target = '';
+		}
+
 		?>
 		<div class="fusion-rollover">
 			<div class="fusion-rollover-content">
@@ -325,7 +320,7 @@ if ( ! function_exists( 'avada_render_rollover' ) ) {
 						<?php if ( $full_image[0] ) : // Render the rollover zoom icon if we have an image ?>
 							<?php
 							// Only show images of the clicked post
-							if ( 'individual' == Avada()->settings->get( 'lightbox_behavior' ) ) {							
+							if ( 'individual' == Avada()->settings->get( 'lightbox_behavior' ) ) {
 								$lightbox_content = avada_featured_images_lightbox( $post_id );
 								$data_rel         = sprintf( 'iLightbox[gallery%s]', $post_id );
 							// Show the first image of every post on the archive page
@@ -349,6 +344,7 @@ if ( ! function_exists( 'avada_render_rollover' ) ) {
 				if ( $display_post_categories ) {
 
 					// Determine the correct taxonomy
+					$post_taxonomy = '';
 					if ( 'post' == get_post_type( $post_id ) ) {
 						$post_taxonomy = 'category';
 					} elseif ( 'avada_portfolio' == get_post_type( $post_id ) ) {
@@ -361,15 +357,44 @@ if ( ! function_exists( 'avada_render_rollover' ) ) {
 				}
 				?>
 
+				<?php
+				if( class_exists( 'WooCommerce' ) && $woocommerce->cart ) {
+					$items_in_cart = array();
+					if ( $woocommerce->cart->get_cart() && is_array( $woocommerce->cart->get_cart() ) ) {
+						foreach ( $woocommerce->cart->get_cart() as $cart ) {
+							$items_in_cart[] = $cart['product_id'];
+						}
+					}
+
+					$id      = get_the_ID();
+					$in_cart = in_array( $id, $items_in_cart );
+					if ( $in_cart ) {
+						echo '<span class="cart-loading">' . '<a href="' . $woocommerce->cart->get_cart_url() .'">' . '<i class="fusion-icon-check-square-o"></i><span class="view-cart">' . __( 'View Cart', 'Avada' ) .'</span></a></span>';
+					} else {
+						echo '<span class="cart-loading">' . '<a href="' . $woocommerce->cart->get_cart_url() .'">' . '<i class="fusion-icon-spinner"></i><span class="view-cart">' . __( 'View Cart', 'Avada' ) .'</span></a></span>';
+					}
+				}
+				?>
+
+				<?php if ( $display_woo_rating ) : // Check if we should render the woo product price ?>
+					<?php woocommerce_get_template( 'loop/rating.php' ); ?>
+				<?php endif; ?>
+
 				<?php if ( $display_woo_price ) : // Check if we should render the woo product price ?>
 					<?php woocommerce_get_template( 'loop/price.php' ); ?>
 				<?php endif; ?>
 
 				<?php if ( $display_woo_buttons ) : // Check if we should render the woo "add to cart" and "details" buttons ?>
 					<div class="fusion-product-buttons">
-						<?php woocommerce_get_template( 'loop/add-to-cart.php' ); ?>
-						<span class="fusion-rollover-linebreak"></span>
-						<a class="fusion-show-details-button" href="<?php echo post_permalink(); ?>"><?php _e( 'Details', 'Avada' ); ?></a>
+						<?php
+						/**
+						 * avada_woocommerce_buttons_on_rollover hook.
+						 *
+						 * @hooked FusionTemplateWoo::avada_woocommerce_template_loop_add_to_cart - 10 (outputs add to cart button)
+						 * @hooked FusionTemplateWoo::avada_woocommerce_rollover_buttons_linebreak - 15 (outputs line break for the buttons, needed for clean version)
+						 * @hooked FusionTemplateWoo::show_details_button - 20 (outputs the show details button)
+						 */					
+						do_action( 'avada_woocommerce_buttons_on_rollover' ); ?>
 					</div>
 				<?php endif; ?>
 			</div>
@@ -377,7 +402,7 @@ if ( ! function_exists( 'avada_render_rollover' ) ) {
 		<?php
 	}
 }
-add_action( 'avada_rollover', 'avada_render_rollover', 10, 7 );
+add_action( 'avada_rollover', 'avada_render_rollover', 10, 8 );
 
 /**
  * Action to output a placeholder image
@@ -406,27 +431,46 @@ add_action( 'avada_placeholder_image', 'avada_render_placeholder_image', 10 );
 if ( ! function_exists( 'avada_render_first_featured_image_markup' ) ) {
 	/**
 	 * Render the full markup of the first featured image, incl. image wrapper and rollover
-	 * @param  string  $post_id 					ID of the current post
-	 * @param  string  $post_featured_image_size 	Size of the featured image
-	 * @param  string  $post_permalink 				Permalink of current post
-	 * @param  boolean $display_post_title 			Set to yes to show post title on rollover
-	 * @param  boolean $display_post_categories 	Set to yes to show post categories on rollover
+	 * @param  string 	$post_id 					ID of the current post
+	 * @param  string 	$post_featured_image_size 	Size of the featured image
+	 * @param  string 	$post_permalink 			Permalink of current post
+	 * @param  boolean 	$display_placeholder_image  Set to true to show an image placeholder
+	 * @param  boolean 	$display_woo_price  		Set to true to show WooCommerce prices
+	 * @param  boolean 	$display_woo_buttons  		Set to true to show WooCommerce buttons	 
+	 * @param  boolean	$display_post_categories 	Set to yes to show post categories on rollover
+ 	 * @param  string	$display_post_title 		Controls if the post title will be shown; "deafult": theme option setting; enable/disable otheriwse
+ 	 * @param  string	$type 						Type of element the featured image is for. "Related" for related posts is the only type in use so far
+ 	 * @param  string	$gallery_id 				ID of a special gallery the rollover "zoom" link should be connected to for lightbox
+ 	 * @param  string	$display_rollover 			yes|no|force_yes: no disables rollover; force_yes will force rollover even if the Theme Option is set to no
 	 *
 	 * @return string Full HTML markup of the first featured image
 	 **/
-	function avada_render_first_featured_image_markup( $post_id, $post_featured_image_size = '', $post_permalink = '', $display_placeholder_image = FALSE, $display_woo_price = FALSE, $display_woo_buttons = FALSE, $display_post_categories = 'default', $display_post_title = 'default', $type = '', $gallery_id = '' ) {
+	function avada_render_first_featured_image_markup( $post_id, $post_featured_image_size = '', $post_permalink = '', $display_placeholder_image = FALSE, $display_woo_price = FALSE, $display_woo_buttons = FALSE, $display_post_categories = 'default', $display_post_title = 'default', $type = '', $gallery_id = '', $display_rollover = 'yes', $display_woo_rating = FALSE ) {
 		// Add a class for fixed image size, to restrict the image rollovers to the image width
 		$image_size_class = '';
 		if ( $post_featured_image_size != 'full' ) {
 			$image_size_class = ' fusion-image-size-fixed';
 		}
-		
+		if ( ( ! has_post_thumbnail( $post_id ) && get_post_meta( $post_id, 'pyre_video', true ) ) ||
+			 ( is_home() && $post_featured_image_size == 'blog-large' )
+		) {
+			$image_size_class = '';
+		}
+
 		$html = '<div class="fusion-image-wrapper' . $image_size_class . '" aria-haspopup="true">';
 			// Get the featured image
 			ob_start();
 			// If there is a featured image, display it
 			if ( has_post_thumbnail( $post_id ) ) {
 				echo get_the_post_thumbnail( $post_id, $post_featured_image_size );
+
+			// Display a video if it is set
+			} elseif ( get_post_meta( $post_id, 'pyre_video', true ) ) {
+				?>
+				<div class="full-video">
+					<?php echo get_post_meta( $post_id, 'pyre_video', true ); ?>
+				</div>
+				<?php
 
 			// If there is no featured image setup a placeholder
 			} elseif ( $display_placeholder_image ) {
@@ -451,7 +495,9 @@ if ( ! function_exists( 'avada_render_first_featured_image_markup' ) ) {
 			}
 
 			// If rollovers are enabled, add one to the image container
-			if ( Avada()->settings->get( 'image_rollover' ) ) {
+			if ( ( Avada()->settings->get( 'image_rollover' ) && $display_rollover == 'yes' ) ||
+				 $display_rollover == 'force_yes'
+			) {
 				$html .= $featured_image;
 
 				ob_start();
@@ -460,7 +506,7 @@ if ( ! function_exists( 'avada_render_first_featured_image_markup' ) ) {
 				 *
 				 * @hooked avada_render_rollover - 10 (outputs the HTML for the image rollover)
 				 */
-				do_action( 'avada_rollover', $post_id, $post_permalink, $display_woo_price, $display_woo_buttons, $display_post_categories, $display_post_title, $gallery_id );
+				do_action( 'avada_rollover', $post_id, $post_permalink, $display_woo_price, $display_woo_buttons, $display_post_categories, $display_post_title, $gallery_id, $display_woo_rating );
 				$rollover = ob_get_clean();
 
 				$html .= $rollover;
@@ -763,40 +809,38 @@ if ( ! function_exists( 'avada_render_post_metadata' ) ) {
 			}
 
 			// Render rest of meta data
-			if ( $layout != 'grid_timeline' ) {
-				// Render categories
-				if ( ! $settings['post_meta_cats'] ) {
-					ob_start();
-					the_category( ', ' );
-					$categories = ob_get_clean();
+			// Render categories
+			if ( ! $settings['post_meta_cats'] ) {
+				ob_start();
+				the_category( ', ' );
+				$categories = ob_get_clean();
 
-					if ( $categories ) {
-						if ( ! $settings['post_meta_tags'] ) {
-							$metadata .=  __( 'Categories:', 'Avada' ) . ' ';
-						}
-
-						$metadata .= sprintf( '%s<span class="fusion-inline-sep">|</span>', $categories );
+				if ( $categories ) {
+					if ( ! $settings['post_meta_tags'] ) {
+						$metadata .=  __( 'Categories:', 'Avada' ) . ' ';
 					}
-				}
 
-				// Render tags
-				if ( ! $settings['post_meta_tags'] ) {
-					ob_start();
-					the_tags( '' );
-					$tags = ob_get_clean();
-
-					if( $tags ) {
-						$metadata .= sprintf( '<span class="meta-tags">%s %s</span><span class="fusion-inline-sep">|</span>', __( 'Tags:', 'Avada' ), $tags );
-					}
+					$metadata .= sprintf( '%s<span class="fusion-inline-sep">|</span>', $categories );
 				}
+			}
 
-				// Render comments
-				if ( ! $settings['post_meta_comments'] ) {
-					ob_start();
-					comments_popup_link( __( '0 Comments', 'Avada' ), __( '1 Comment', 'Avada' ), '% ' . __( 'Comments', 'Avada' ) );
-					$comments = ob_get_clean();
-					$metadata .= sprintf( '<span class="fusion-comments">%s</span>', $comments );
+			// Render tags
+			if ( ! $settings['post_meta_tags'] ) {
+				ob_start();
+				the_tags( '' );
+				$tags = ob_get_clean();
+
+				if( $tags ) {
+					$metadata .= sprintf( '<span class="meta-tags">%s %s</span><span class="fusion-inline-sep">|</span>', __( 'Tags:', 'Avada' ), $tags );
 				}
+			}
+
+			// Render comments
+			if ( ! $settings['post_meta_comments'] && $layout != 'grid_timeline' ) {
+				ob_start();
+				comments_popup_link( __( '0 Comments', 'Avada' ), __( '1 Comment', 'Avada' ), '% ' . __( 'Comments', 'Avada' ) );
+				$comments = ob_get_clean();
+				$metadata .= sprintf( '<span class="fusion-comments">%s</span>', $comments );
 			}
 
 			// Render the HTML wrappers for the different layouts
@@ -823,6 +867,45 @@ if ( ! function_exists( 'avada_render_post_metadata' ) ) {
 		}
 
 		return $html;
+	}
+}
+
+if ( ! function_exists( 'avada_render_social_sharing' ) ) {
+	function avada_render_social_sharing( $post_type = 'post' ) {
+		global $social_icons;
+
+		 if ( $post_type == 'post' ) {
+		 	$setting_name = 'social_sharing_box';
+		 } else {
+		 	$setting_name = $post_type . '_social_sharing_box';
+		 }
+
+		if ( ( Avada()->settings->get( $setting_name ) && get_post_meta( get_the_ID(), 'pyre_share_box', true) != 'no' ) ||
+			 ( ! Avada()->settings->get( $setting_name ) && get_post_meta( get_the_ID(), 'pyre_share_box', true) == 'yes' )
+		) {
+
+			$full_image = wp_get_attachment_image_src( get_post_thumbnail_id( get_the_ID() ), 'full' );
+
+			$sharingbox_soical_icon_options = array (
+				'sharingbox'		=> 'yes',
+				'icon_colors' 		=> Avada()->settings->get( 'sharing_social_links_icon_color' ),
+				'box_colors' 		=> Avada()->settings->get( 'sharing_social_links_box_color' ),
+				'icon_boxed' 		=> Avada()->settings->get( 'sharing_social_links_boxed' ),
+				'icon_boxed_radius' => Avada()->settings->get( 'sharing_social_links_boxed_radius' ),
+				'tooltip_placement'	=> Avada()->settings->get( 'sharing_social_links_tooltip_placement' ),
+				'linktarget'        => Avada()->settings->get( 'social_icons_new' ),
+				'title'				=> wp_strip_all_tags( get_the_title( get_the_ID() ), true ),
+				'description'		=> Avada()->blog->get_content_stripped_and_excerpted( 55, get_the_content() ),
+				'link'				=> get_permalink( get_the_ID() ),
+				'pinterest_image'	=> ( $full_image ) ? $full_image[0] : '',
+			);
+			?>
+			<div class="fusion-sharing-box fusion-single-sharing-box share-box">
+				<h4><?php echo apply_filters( 'fusion_sharing_box_tagline', Avada()->settings->get( 'sharing_social_tagline' ) ); ?></h4>
+				<?php echo $social_icons->render_social_icons( $sharingbox_soical_icon_options ); ?>
+			</div>
+			<?php
+		}
 	}
 }
 
@@ -860,7 +943,7 @@ if( ! function_exists( 'avada_render_related_posts' ) ) {
 			if ( $related_posts->have_posts() ) {
 				$html .= '<div class="related-posts single-related-posts">';
 					ob_start();
-					echo do_shortcode( sprintf( '[title size="3" content_align="left" style_type="default"]%s[/title]', $main_heading ) );
+					echo Avada()->template->title_template( $main_heading, '3' );
 					$html .= ob_get_clean();
 
 					// Get the correct image size
@@ -987,22 +1070,30 @@ if( ! function_exists( 'avada_render_rich_snippets_for_pages' ) ) {
 	}
 }
 
-if ( ! function_exists( 'avada_process_tag' ) ) {
+if ( ! function_exists( 'avada_extract_shortcode_contents' ) ) {
 	/**
-	 * For specific shortcodes return the shortcode contents, to be able to use it in excerpts
+	 * Extract text contents from all shortcodes for usage in excerpts
 	 *
 	 * @return string The shortcode contents
 	 **/
-	function avada_process_tag( $m ) {
+	function avada_extract_shortcode_contents( $m ) {
 
-		if ( in_array( $m[2], array( 'dropcap', 'highlight', 'tooltip', 'fusion_text', 'vc_row', 'vc_column', 'vc_column_text' ) ) ) {
-			return $m[0];
-		}
-		
-		// Extract contents from all container shortcodes
-		if ( in_array( $m[2], array( 'content_boxes', 'content_box', 'fullwidth', 'one_full', 'one_half', 'one_third', 'one_fourth', 'one_fifth', 'one_sixth', 'two_third', 'two_fifth', 'three_fourth', 'three_fifth', 'four_fifth', 'five_sixth') ) ) {
+		global $shortcode_tags;
+
+		// Setup the array of all registered shortcodes
+		$shortcodes = array_keys( $shortcode_tags );
+		$no_space_shortcodes = array( 'dropcap' );
+		$omitted_shortcodes = array( 'fusion_code', 'slide' );
+
+		// Extract contents from all shortcodes recursively
+		if ( in_array( $m[2], $shortcodes ) && ! in_array( $m[2], $omitted_shortcodes ) ) {
 			$pattern = get_shortcode_regex();
-			$content = preg_replace_callback("/$pattern/s", 'avada_process_tag', $m[5] );			
+			// Add space the excerpt by shortcode, except for those who should stick together, like dropcap
+			$space = ' ' ;
+			if ( in_array( $m[2], $no_space_shortcodes ) ) {
+				$space = '' ;
+			}
+			$content = preg_replace_callback( "/$pattern/s", 'avada_extract_shortcode_contents', rtrim( $m[5] ) . $space );
 			return $content;
 		}
 
@@ -1126,7 +1217,7 @@ if( ! function_exists( 'avada_add_login_box_to_nav' ) ) {
 							if( ! is_user_logged_in() ) {
 							$items .= '<div class="fusion-custom-menu-item-contents">';
 								if( isset( $_GET['login'] ) && $_GET['login'] == 'failed' ) {
-									$items .= sprintf( '<p class="fusion-menu-login-box-error">%s</p>', __( 'Login failed, please try again', 'Avada' ) );
+									$items .= sprintf( '<p class="fusion-menu-login-box-error">%s</p>', __( 'Login failed, please try again.', 'Avada' ) );
 								}
 								$items .= sprintf( '<form action="%s" name="loginform" method="post">', wp_login_url() );
 									$items .= sprintf( '<p><input type="text" class="input-text" name="log" id="username" value="" placeholder="%s" /></p>', __( 'Username', 'Avada' ) );
@@ -1168,13 +1259,23 @@ if( ! function_exists( 'avada_nav_woo_cart' ) ) {
 			$main_cart_class = 'fusion-main-menu-cart';
 			$cart_link_active_class = 'fusion-main-menu-icon fusion-main-menu-icon-active';
 			$cart_link_active_text = '';
+
+			if( Avada()->settings->get( 'woocommerce_cart_counter') ) {
+					$cart_link_active_text = '<span class="fusion-widget-cart-number">' . $woocommerce->cart->get_cart_contents_count() . '</span>';
+					$main_cart_class .= ' fusion-widget-cart-counter';
+			}
+
+			if( ! Avada()->settings->get( 'woocommerce_cart_counter') && $woocommerce->cart->get_cart_contents_count() ) {
+				$main_cart_class .= ' fusion-active-cart-icons';
+			}
+
 			$cart_link_inactive_class = 'fusion-main-menu-icon';
 			$cart_link_inactive_text = '';
 		} else if( $position ='secondary' ) {
 			$is_enabled = fusion_get_theme_option( 'woocommerce_cart_link_top_nav' );
 			$main_cart_class = 'fusion-secondary-menu-cart';
 			$cart_link_active_class = 'fusion-secondary-menu-icon';
-			$cart_link_active_text = sprintf('%s %s <span class="fusion-woo-cart-separator">-</span> %s', $woocommerce->cart->cart_contents_count, __( 'Item(s)', 'Avada' ),wc_price( $woocommerce->cart->subtotal ) );
+			$cart_link_active_text = sprintf('%s %s <span class="fusion-woo-cart-separator">-</span> %s', $woocommerce->cart->get_cart_contents_count(), __( 'Item(s)', 'Avada' ),wc_price( $woocommerce->cart->subtotal ) );
 			$cart_link_inactive_class = $cart_link_active_class;
 			$cart_link_inactive_text = __( 'Cart', 'Avada' );
 		}
@@ -1183,7 +1284,7 @@ if( ! function_exists( 'avada_nav_woo_cart' ) ) {
 			$woo_cart_page_link = get_permalink( get_option( 'woocommerce_cart_page_id' ) );
 
 			$items = sprintf( '<li class="fusion-custom-menu-item fusion-menu-cart %s">', $main_cart_class );
-				if( $woocommerce->cart->cart_contents_count ) {
+				if( $woocommerce->cart->get_cart_contents_count() ) {
 					$checkout_link = get_permalink( get_option('woocommerce_checkout_page_id') );
 
 					$items .= sprintf( '<a class="%s" href="%s">%s</a>', $cart_link_active_class, $woo_cart_page_link, $cart_link_active_text );
@@ -1191,7 +1292,7 @@ if( ! function_exists( 'avada_nav_woo_cart' ) ) {
 					$items .= '<div class="fusion-custom-menu-item-contents fusion-menu-cart-items">';
 						foreach( $woocommerce->cart->cart_contents as $cart_item ) {
 							$product_link = get_permalink( $cart_item['product_id'] );
-							$thumbnail_id = ( $cart_item['variation_id'] ) ? $cart_item['variation_id'] : $cart_item['product_id'];
+							$thumbnail_id = ( $cart_item['variation_id'] && has_post_thumbnail( $cart_item['variation_id'] )  ) ? $cart_item['variation_id'] : $cart_item['product_id'];
 							$items .= '<div class="fusion-menu-cart-item">';
 								$items .= sprintf( '<a href="%s">', $product_link );
 									$items .= get_the_post_thumbnail( $thumbnail_id, 'recent-works-thumbnail' );
@@ -1214,6 +1315,36 @@ if( ! function_exists( 'avada_nav_woo_cart' ) ) {
 
 			return $items;
 		}
+	}
+}
+
+if( ! function_exists( 'fusion_add_woo_cart_to_widget_html' ) ) {
+	function fusion_add_woo_cart_to_widget_html() {
+		global $woocommerce;
+
+		if( class_exists( 'WooCommerce') ) {
+			$counter = '';
+			$class = '';
+			$items = '';
+
+			if( Avada()->settings->get( 'woocommerce_cart_counter') ) {
+					$counter = '<span class="fusion-widget-cart-number">' . $woocommerce->cart->get_cart_contents_count() . '</span>';
+					$class = 'fusion-widget-cart-counter';
+			}
+
+			if( ! Avada()->settings->get( 'woocommerce_cart_counter') && $woocommerce->cart->get_cart_contents_count() ) {
+				$class .= ' fusion-active-cart-icon';
+			}
+
+			$items .= '<li class="fusion-widget-cart ' . $class .'">
+			<a href="' . get_permalink( get_option( 'woocommerce_cart_page_id' ) ) . '" class="">
+				<span class="fusion-widget-cart-icon"></span>
+				' . $counter . '
+			</a>
+			</li>';
+		}
+
+		return $items;
 	}
 }
 

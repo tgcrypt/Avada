@@ -85,7 +85,7 @@ class Avada_Theme_Updater {
 				$theme_name = '<strong>'. wp_get_theme() .'</strong>';
 			}
 			echo '<div class="updated">
-			<p>' . __( 'There is an update available for the ' . $theme_name . ' theme.', 'Avada' ) . '</p>
+			<p>' . sprintf( __( 'There is an update available for the %s theme.', 'Avada' ), $theme_name ) . '</p>
 			</div>';
 		}
 	}

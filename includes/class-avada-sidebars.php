@@ -12,7 +12,7 @@ class Avada_Sidebars {
     public function widgets_init() {
 
     	register_sidebar( array(
-    		'name'          => __( 'Blog Sidebar', 'Avada' ),
+    		'name'          => 'Blog Sidebar',
     		'id'            => 'avada-blog-sidebar',
     		'description'   => __( 'Default Sidebar of Avada', 'Avada' ),
     		'before_widget' => '<div id="%1$s" class="widget %2$s">',
@@ -27,7 +27,7 @@ class Avada_Sidebars {
         for ( $i = 1; $i < $columns; $i++ ) {
 
             register_sidebar( array(
-                'name'          => sprintf( __( 'Footer Widget %s', 'Avada' ), $i ),
+                'name'          => sprintf( 'Footer Widget %s', $i ),
     			'id'            => 'avada-footer-widget-' . $i,
     			'before_widget' => '<div id="%1$s" class="fusion-footer-widget-column widget %2$s">',
     			'after_widget'  => '<div style="clear:both;"></div></div>',
@@ -43,7 +43,7 @@ class Avada_Sidebars {
         for ( $i = 1; $i < $columns; $i++ ) {
 
     		register_sidebar( array(
-                'name'          => sprintf( __( 'Slidingbar Widget %s', 'Avada' ), $i ),
+                'name'          => sprintf( 'Slidingbar Widget %s', $i ),
     			'id'            => 'avada-slidingbar-widget-' . $i,
     			'before_widget' => '<div id="%1$s" class="fusion-slidingbar-widget-column widget %2$s">',
     			'after_widget'  => '<div style="clear:both;"></div></div>',

@@ -1,68 +1,44 @@
 <?php
-if( ! function_exists( 'avada_header_template' ) ) {
+
+if ( ! function_exists( 'avada_header_template' ) ) {
 	/**
 	 * Avada Header Template Function
 	 * @param  string $slider_position Show header below or above slider
 	 * @return void
 	 */
 	function avada_header_template( $slider_position = 'Below' ) {
+
 		$page_id = get_queried_object_id();
 
-		if( $slider_position == 'Below' ) {
-			$reverse_position = 'Above';
-		} else {
-			$reverse_position = 'Below';
-		}
+		$reverse_position = ( 'Below' == $slider_position ) ? 'Above' : 'Below';
 
-		$theme_option_slider_position = fusion_get_theme_option( 'slider_position' );
-		$page_option_slider_position = fusion_get_page_option( 'slider_position', $page_id );
+		$menu_text_align = '';
 
-		if( ( ! $theme_option_slider_position ||
-			( $theme_option_slider_position == $slider_position && $page_option_slider_position != strtolower( $reverse_position ) ) ||
-			( $theme_option_slider_position != $slider_position && $page_option_slider_position == strtolower( $slider_position ) ) ) &&
-			! is_page_template( 'blank.php' ) &&
-			fusion_get_page_option( 'display_header', $page_id ) != 'no' &&
-			fusion_get_theme_option( 'header_position' ) == 'Top'
-		) {
+		$theme_option_slider_position = Avada()->settings->get( 'slider_position' );
+		$page_option_slider_position  = fusion_get_page_option( 'slider_position', $page_id );
 
-			$header_wrapper_class = 'fusion-header-wrapper';
-
-			if( fusion_get_theme_option( 'header_shadow' ) ) {
-				$header_wrapper_class .= ' fusion-header-shadow';
-			}
-
-			$header_wrapper_class = sprintf( 'class="%s"', $header_wrapper_class );
+		if ( ( ! $theme_option_slider_position || ( $theme_option_slider_position == $slider_position && $page_option_slider_position != strtolower( $reverse_position ) ) || ( $theme_option_slider_position != $slider_position && $page_option_slider_position == strtolower( $slider_position ) ) ) && ! is_page_template( 'blank.php' ) && fusion_get_page_option( 'display_header', $page_id ) != 'no' && Avada()->settings->get( 'header_position' ) == 'Top' ) {
+			$header_wrapper_class  = 'fusion-header-wrapper';
+			$header_wrapper_class .= ( Avada()->settings->get( 'header_shadow' ) ) ? ' fusion-header-shadow' : '';
+			$header_wrapper_class  = 'class="' . $header_wrapper_class . '"';
 
 			/**
 			 * avada_before_header_wrapper hook
 			 */
 			do_action( 'avada_before_header_wrapper' );
 
-			if( fusion_get_theme_option( 'sticky_header_logo' ) ) {
-				$sticky_header_logo = true;
-			} else {
-				$sticky_header_logo = false;
-			}
-
-			if( fusion_get_theme_option( 'mobile_logo' ) ) {
-				$mobile_logo = true;
-			} else {
-				$mobile_logo = false;
-			}
+			$sticky_header_logo = ( Avada()->settings->get( 'sticky_header_logo' ) ) ? true : false;
+			$mobile_logo        = ( Avada()->settings->get( 'mobile_logo' ) ) ? true : false;
 
 			$sticky_header_type2_layout = '';
-			if ( fusion_get_theme_option('header_layout') == 'v4' ||
-				 fusion_get_theme_option('header_layout') == 'v5'
-			) {
-				if ( fusion_get_theme_option( 'header_sticky_type2_layout' ) == 'menu_and_logo' ) {
-					$sticky_header_type2_layout = ' fusion-sticky-menu-and-logo';
-				} else {
-					$sticky_header_type2_layout = ' fusion-sticky-menu-only';
-				}
+
+			if ( in_array( Avada()->settings->get( 'header_layout' ), array( 'v4', 'v5' ) ) ) {
+				$sticky_header_type2_layout = ( 'menu_and_logo' == Avada()->settings->get( 'header_sticky_type2_layout' ) ) ? ' fusion-sticky-menu-and-logo' : ' fusion-sticky-menu-only';
+				$menu_text_align = 'fusion-header-menu-align-' . Avada()->settings->get( 'menu_text_align' );
 			}
-		?>
+			?>
 			<div <?php echo $header_wrapper_class; ?>>
-				<div class="<?php echo sprintf( 'fusion-header-%s fusion-logo-%s fusion-sticky-menu-%s fusion-sticky-logo-%s fusion-mobile-logo-%s fusion-mobile-menu-design-%s%s', fusion_get_theme_option( 'header_layout' ), strtolower( fusion_get_theme_option( 'logo_alignment' ) ), has_nav_menu( 'sticky_navigation' ), $sticky_header_logo, $mobile_logo, strtolower( fusion_get_theme_option( 'mobile_menu_design' ) ), $sticky_header_type2_layout ); ?>">
+				<div class="<?php echo sprintf( 'fusion-header-%s fusion-logo-%s fusion-sticky-menu-%s fusion-sticky-logo-%s fusion-mobile-logo-%s fusion-mobile-menu-design-%s%s %s', Avada()->settings->get( 'header_layout' ), strtolower( Avada()->settings->get( 'logo_alignment' ) ), has_nav_menu( 'sticky_navigation' ), $sticky_header_logo, $mobile_logo, strtolower( Avada()->settings->get( 'mobile_menu_design' ) ), $sticky_header_type2_layout, $menu_text_align ); ?>">
 					<?php
 					/**
 					 * avada_header hook
@@ -73,8 +49,9 @@ if( ! function_exists( 'avada_header_template' ) ) {
 					do_action( 'avada_header' );
 					?>
 				</div>
+				<div class="fusion-clearfix"></div>
 			</div>
-		<?php
+			<?php
 			/**
 			 * avada_after_header_wrapper hook
 			 */
@@ -83,7 +60,7 @@ if( ! function_exists( 'avada_header_template' ) ) {
 	}
 }
 
-if( ! function_exists( 'avada_side_header' ) ) {
+if ( ! function_exists( 'avada_side_header' ) ) {
 	/**
 	 * Avada Side Header Template Function
 	 * @return void
@@ -91,322 +68,315 @@ if( ! function_exists( 'avada_side_header' ) ) {
 	function avada_side_header() {
 		$queried_object_id = get_queried_object_id();
 
-		if( ! is_page_template( 'blank.php' ) && get_post_meta( $queried_object_id, 'pyre_display_header', true) != 'no' ) {
+		if ( ! is_page_template( 'blank.php' ) && 'no' != get_post_meta( $queried_object_id, 'pyre_display_header', true ) ) : ?>
+
+			<?php
 			/**
 			 * avada_before_header_wrapper hook
 			 */
 			do_action( 'avada_before_header_wrapper' );
 
-			if( fusion_get_theme_option( 'sticky_header_logo' ) ) {
-				$sticky_header_logo = true;
-			} else {
-				$sticky_header_logo = false;
-			}
-
-			if( fusion_get_theme_option( 'mobile_logo' ) ) {
-				$mobile_logo = true;
-			} else {
-				$mobile_logo = false;
-			}
-		?>
-		<div id="side-header-sticky"></div>
-		<div id="side-header" class="<?php echo sprintf( 'clearfix fusion-mobile-menu-design-%s fusion-sticky-logo-%s fusion-mobile-logo-%s fusion-sticky-menu-%s',  strtolower( fusion_get_theme_option( 'mobile_menu_design' ) ), $sticky_header_logo, $mobile_logo, has_nav_menu( 'sticky_navigation' ) ); ?><?php if( fusion_get_theme_option( 'header_shadow' ) ): ?> header-shadow<?php endif; ?>">
-			<div class="side-header-wrapper">
-				<?php
-				/**
-				 * avada_header_inner_before
-				 */
-				do_action( 'avada_header_inner_before' );
-				if( fusion_get_theme_option( 'mobile_logo' ) ) {
-					$mobile_logo = true;
-				} else {
-					$mobile_logo = false;
-				}
-				?>
-				<div class="side-header-content <?php echo sprintf( 'fusion-logo-%s fusion-mobile-logo-%s', strtolower( fusion_get_theme_option( 'logo_alignment' ) ), $mobile_logo ); ?>">
-					<?php avada_logo(); ?>
-				</div>
-				<div class="fusion-main-menu-container <?php echo sprintf( 'fusion-logo-menu-%s', strtolower( fusion_get_theme_option( 'logo_alignment' ) ) ); ?>">
-
-					<?php avada_main_menu(); ?>
-				</div>
-				<?php if ( fusion_get_theme_option( 'header_v4_content' ) == 'Tagline And Search' || fusion_get_theme_option( 'header_v4_content' ) == 'Search' ): ?>
-					<div class="fusion-secondary-menu-search"><div class="fusion-secondary-menu-search-inner"><?php get_search_form(); ?></div></div>
-				<?php endif;
-
-				if( fusion_get_theme_option( 'header_left_content' ) != 'Leave Empty' || fusion_get_theme_option( 'header_right_content' ) != 'Leave Empty' ):
-					$content_1 = avada_secondary_header_content( 'header_left_content' );
-					$content_2 = avada_secondary_header_content( 'header_right_content' );
-				?>
-				<div class="side-header-content side-header-content-1-2">
+			$sticky_header_logo = ( Avada()->settings->get( 'sticky_header_logo' ) ) ? true : false;
+			$mobile_logo        = ( Avada()->settings->get( 'mobile_logo' ) ) ? true : false;
+			?>
+			<div id="side-header-sticky"></div>
+			<div id="side-header" class="clearfix fusion-mobile-menu-design-<?php echo strtolower( Avada()->settings->get( 'mobile_menu_design' ) ); ?> fusion-sticky-logo-<?php echo $sticky_header_logo; ?> fusion-mobile-logo-<?php echo $mobile_logo; ?> fusion-sticky-menu-<?php echo has_nav_menu( 'sticky_navigation' ); ?><?php echo ( Avada()->settings->get( 'header_shadow' ) ) ? ' header-shadow' : ''; ?>">
+				<div class="side-header-wrapper">
 					<?php
-					if( $content_1 ): ?>
-						<div class="side-header-content-1 fusion-clearfix"><?php echo $content_1; ?></div>
-					<?php endif; ?>
-					<?php if( $content_2 ): ?>
-						<div class="side-header-content-2 fusion-clearfix"><?php echo $content_2; ?></div>
-					<?php endif; ?>
-				</div>
-				<?php endif; ?>
-				<?php if( fusion_get_theme_option( 'header_v4_content' ) != 'None' ): ?>
-				<div class="side-header-content side-header-content-3">
-					<?php avada_header_content_3(); ?>
-				</div>
-				<?php endif;
+					/**
+					 * avada_header_inner_before
+					 */
+					do_action( 'avada_header_inner_before' );
+					?>
+					<?php $mobile_logo = ( Avada()->settings->get( 'mobile_logo' ) ) ? true : false; ?>
+					<div class="side-header-content fusion-logo-<?php echo strtolower( Avada()->settings->get( 'logo_alignment' ) ); ?> fusion-mobile-logo-<?php echo $mobile_logo; ?>">
+						<?php avada_logo(); ?>
+					</div>
+					<div class="fusion-main-menu-container fusion-logo-menu-<?php echo strtolower( Avada()->settings->get( 'logo_alignment' ) ); ?>">
+						<?php avada_main_menu(); ?>
+					</div>
 
-				/**
-				 * avada_header_inner_after
-				 */
-				do_action( 'avada_header_inner_after' );
-				?>
+					<?php if ( 'Tagline And Search' == Avada()->settings->get( 'header_v4_content' ) || 'Search' == Avada()->settings->get( 'header_v4_content' ) ) : ?>
+						<div class="fusion-secondary-menu-search">
+							<div class="fusion-secondary-menu-search-inner"><?php get_search_form(); ?></div>
+						</div>
+					<?php endif; ?>
+
+					<?php if ( 'Leave Empty' != Avada()->settings->get( 'header_left_content' ) || 'Leave Empty' != Avada()->settings->get( 'header_right_content' ) ) : ?>
+						<?php $content_1 = avada_secondary_header_content( 'header_left_content' ); ?>
+						<?php $content_2 = avada_secondary_header_content( 'header_right_content' ); ?>
+
+						<div class="side-header-content side-header-content-1-2">
+							<?php if ( $content_1 ) : ?>
+								<div class="side-header-content-1 fusion-clearfix"><?php echo $content_1; ?></div>
+							<?php endif; ?>
+							<?php if ( $content_2 ) : ?>
+								<div class="side-header-content-2 fusion-clearfix"><?php echo $content_2; ?></div>
+							<?php endif; ?>
+						</div>
+					<?php endif; ?>
+
+					<?php if ( 'None' != Avada()->settings->get( 'header_v4_content' ) ) : ?>
+						<div class="side-header-content side-header-content-3">
+							<?php avada_header_content_3(); ?>
+						</div>
+					<?php endif; ?>
+
+					<?php
+					/**
+					 * avada_header_inner_after
+					 */
+					do_action( 'avada_header_inner_after' );
+					?>
+				</div>
+				<div class="side-header-background"></div>
+				<div class="side-header-border"></div>
 			</div>
-		</div>
-		<?php
+			<?php
 			/**
 			 * avada_after_header_wrapper hook
 			 */
 			do_action( 'avada_after_header_wrapper' );
-		}
-	}
-}
-
-if( fusion_get_theme_option('header_layout') == 'v2' || fusion_get_theme_option('header_layout') == 'v3' ||
-	fusion_get_theme_option('header_layout') == 'v4' || fusion_get_theme_option('header_layout') == 'v5' ) {
-	add_action( 'avada_header', 'avada_secondary_header', 10 );
-}
-if( ! function_exists( 'avada_secondary_header' ) ) {
-	function avada_secondary_header() {
-		if( fusion_get_theme_option( 'header_left_content' ) != 'Leave Empty' || fusion_get_theme_option( 'header_right_content' ) != 'Leave Empty' ):
-			$content_1 = avada_secondary_header_content( 'header_left_content' );
-			$content_2 = avada_secondary_header_content( 'header_right_content' );
-	?>
-	<div class="fusion-secondary-header">
-		<div class="fusion-row">
-			<?php if( $content_1 ): ?>
-				<div class="fusion-alignleft"><?php echo $content_1; ?></div>
-			<?php endif; ?>
-			<?php if( $content_2 ): ?>
-				<div class="fusion-alignright"><?php echo $content_2; ?></div>
-			<?php endif; ?>
-		</div>
-	</div>
-	<?php
-		endif;
-	}
-}
-
-if( fusion_get_theme_option('header_layout') == 'v1' || fusion_get_theme_option('header_layout') == 'v2' ||
-	fusion_get_theme_option('header_layout') == 'v3' ) {
-	add_action( 'avada_header', 'avada_header_1', 20 );
-}
-if( ! function_exists( 'avada_header_1' ) ) {
-	function avada_header_1() { ?>
-	<div class="fusion-header-sticky-height"></div>
-	<div class="fusion-header">
-		<div class="fusion-row">
-			<?php
-			avada_logo();
-			avada_main_menu();
 			?>
-		</div>
-	</div>
-	<?php }
+		<?php endif;
+	}
 }
 
-if( fusion_get_theme_option('header_layout') == 'v4' || fusion_get_theme_option('header_layout') == 'v5'  ) {
-	add_action( 'avada_header', 'avada_header_2', 20 );
-	add_action( 'avada_header', 'avada_secondary_main_menu', 30 );
+if ( ! function_exists( 'avada_secondary_header' ) ) {
+
+	function avada_secondary_header() {
+		if ( ! in_array( Avada()->settings->get( 'header_layout' ), array( 'v2', 'v3', 'v4', 'v5' ) ) ) {
+			return;
+		}
+		?>
+		<?php if ( 'Leave Empty' != Avada()->settings->get( 'header_left_content' ) || 'Leave Empty' != Avada()->settings->get( 'header_right_content' ) ) : ?>
+			<?php $content_1 = avada_secondary_header_content( 'header_left_content' ); ?>
+			<?php $content_2 = avada_secondary_header_content( 'header_right_content' ); ?>
+
+			<div class="fusion-secondary-header">
+				<div class="fusion-row">
+					<?php if ( $content_1 ) : ?>
+						<div class="fusion-alignleft"><?php echo $content_1; ?></div>
+					<?php endif; ?>
+					<?php if ( $content_2 ) : ?>
+						<div class="fusion-alignright"><?php echo $content_2; ?></div>
+					<?php endif; ?>
+				</div>
+			</div>
+		<?php endif;
+	}
 }
-if( ! function_exists( 'avada_header_2' ) ) {
-	function avada_header_2() { ?>
-	<div class="fusion-header-sticky-height"></div>
-	<div class="fusion-sticky-header-wrapper"> <!-- start fusion sticky header wrapper -->
+add_action( 'avada_header', 'avada_secondary_header', 10 );
+
+if ( ! function_exists( 'avada_header_1' ) ) {
+	function avada_header_1() {
+		if ( ! in_array( Avada()->settings->get( 'header_layout' ), array( 'v1', 'v2', 'v3' ) ) ) {
+			return;
+		}
+		?>
+		<div class="fusion-header-sticky-height"></div>
 		<div class="fusion-header">
 			<div class="fusion-row">
-				<?php
-				avada_logo();
-				echo avada_modern_menu();
-				?>
+				<?php avada_logo(); ?>
+				<?php avada_main_menu(); ?>
 			</div>
 		</div>
-	<?php }
+		<?php
+	}
 }
+add_action( 'avada_header', 'avada_header_1', 20 );
 
-if( ! function_exists( 'avada_secondary_main_menu' ) ) {
-	function avada_secondary_main_menu() { ?>
+if ( ! function_exists( 'avada_header_2' ) ) {
+	function avada_header_2() {
+		if ( ! in_array( Avada()->settings->get( 'header_layout' ), array( 'v4', 'v5' ) ) ) {
+			return;
+		}
+		?>
+		<div class="fusion-header-sticky-height"></div>
+		<div class="fusion-sticky-header-wrapper"> <!-- start fusion sticky header wrapper -->
+			<div class="fusion-header">
+				<div class="fusion-row">
+					<?php avada_logo(); ?>
+					<?php echo avada_modern_menu(); ?>
+				</div>
+			</div>
+			<?php
+	}
+}
+add_action( 'avada_header', 'avada_header_2', 20 );
+
+if ( ! function_exists( 'avada_secondary_main_menu' ) ) {
+	function avada_secondary_main_menu() {
+		if ( ! in_array( Avada()->settings->get( 'header_layout' ), array( 'v4', 'v5' ) ) ) {
+			return;
+		}
+		?>
 		<div class="fusion-secondary-main-menu">
 			<div class="fusion-row">
-				<?php
-				avada_main_menu();
-
-				if( fusion_get_theme_option('header_layout') == 'v4' ) {
-					$header_content_3 = fusion_get_theme_option( 'header_v4_content' );
-					if( $header_content_3 == 'Tagline And Search' ) {
-						echo sprintf( '<div class="fusion-secondary-menu-search">%s</div>', get_search_form( false ) );
-					} elseif( $header_content_3 == 'Search' ) {
-						echo sprintf( '<div class="fusion-secondary-menu-search">%s</div>', get_search_form( false ) );
-					}
-				}
-				?>
+				<?php avada_main_menu(); ?>
+				<?php if ( 'v4' == Avada()->settings->get( 'header_layout' ) ) : ?>
+					<?php $header_content_3 = Avada()->settings->get( 'header_v4_content' ); ?>
+					<?php if ( 'Tagline And Search' == $header_content_3 ) : ?>
+						<div class="fusion-secondary-menu-search"><?php echo get_search_form( false ); ?></div>
+					<?php elseif ( 'Search' == $header_content_3 ) : ?>
+						<div class="fusion-secondary-menu-search"><?php echo get_search_form( false ); ?></div>
+					<?php endif; ?>
+				<?php endif; ?>
 			</div>
 		</div>
 	</div> <!-- end fusion sticky header wrapper -->
 	<?php }
 }
+add_action( 'avada_header', 'avada_secondary_main_menu', 30 );
 
-if( ! function_exists( 'avada_logo' ) ) {
-	function avada_logo() { ?>
-		<?php
+if ( ! function_exists( 'avada_logo' ) ) {
+	function avada_logo() {
 		/**
 		 * No need to proceed any further if no logo is set
 		 */
-		if ( '' == fusion_get_theme_option( 'logo' ) && '' == fusion_get_theme_option( 'logo_retina' ) ) {
+		if ( '' == Avada()->settings->get( 'logo' ) && '' == Avada()->settings->get( 'logo_retina' ) ) {
 			return;
 		}
 		?>
 
-		<div class="fusion-logo" data-margin-top="<?php echo fusion_get_theme_option( 'margin_logo_top' ); ?>" data-margin-bottom="<?php echo fusion_get_theme_option( 'margin_logo_bottom' ); ?>" data-margin-left="<?php echo fusion_get_theme_option( 'margin_logo_left' ); ?>" data-margin-right="<?php echo fusion_get_theme_option( 'margin_logo_right' ); ?>">
+		<div class="fusion-logo" data-margin-top="<?php echo intval( Avada()->settings->get( 'margin_logo_top' ) ); ?>px" data-margin-bottom="<?php echo intval( Avada()->settings->get( 'margin_logo_bottom' ) ); ?>px" data-margin-left="<?php echo intval( Avada()->settings->get( 'margin_logo_left' ) ); ?>px" data-margin-right="<?php echo intval( Avada()->settings->get( 'margin_logo_right' ) ); ?>px">
 			<?php
 			/**
 			 * avada_logo_prepend hook
 			 */
 			do_action( 'avada_logo_prepend' );
 			?>
-			<?php if( fusion_get_theme_option( 'logo' ) ): ?>
-				<a href="<?php echo home_url(); ?>">
-					<?php
-					$logo_url = fusion_get_theme_option( 'logo' );
+			<?php if ( Avada()->settings->get( 'logo' ) ) : ?>
+				<a class="fusion-logo-link" href="<?php echo home_url(); ?>">
+					<?php $logo_url = Avada_Sanitize::get_url_with_correct_scheme( Avada()->settings->get( 'logo' ) ); ?>
 
-					if ( fusion_get_theme_option( 'retina_logo_width' ) && fusion_get_theme_option( 'retina_logo_height' ) ) {
-						$logo_size['width'] = fusion_get_theme_option( 'retina_logo_width' );
-						$logo_size['height'] = fusion_get_theme_option( 'retina_logo_height' );
-					} else {
-						$logo_size['width'] = '';
-						$logo_size['height'] = '';
-					}
-					?>
-					<img src="<?php echo fusion_get_theme_option( 'logo' ); ?>" width="<?php echo $logo_size['width']; ?>" height="<?php echo $logo_size['height']; ?>" alt="<?php bloginfo( 'name' ); ?>" class="fusion-logo-1x fusion-standard-logo" />
-					<?php
-					$retina_logo = fusion_get_theme_option( 'logo_retina' );
-					if( $retina_logo ):
-					$style = sprintf( 'style="max-height: %spx; height: auto;"', $logo_size['height'] );
-					?>
-					<img src="<?php echo $retina_logo; ?>" width="<?php echo $logo_size['width']; ?>" height="<?php echo $logo_size['height']; ?>" alt="<?php bloginfo('name'); ?>" <?php echo $style; ?> class="fusion-standard-logo fusion-logo-2x" />
-					<?php else: ?>
-					<img src="<?php echo fusion_get_theme_option( 'logo' ); ?>" width="<?php echo $logo_size['width']; ?>" height="<?php echo $logo_size['height']; ?>" alt="<?php bloginfo('name'); ?>" class="fusion-standard-logo fusion-logo-2x" />
+					<?php if ( Avada()->settings->get( 'retina_logo_width' ) && Avada()->settings->get( 'retina_logo_height' ) ) : ?>
+						<?php $logo_size['width']  = fusion_strip_unit( Avada()->settings->get( 'retina_logo_width' ) ); ?>
+						<?php $logo_size['height'] = fusion_strip_unit( Avada()->settings->get( 'retina_logo_height' ) ); ?>
+					<?php else : ?>
+						<?php $logo_size['width']  = ''; ?>
+						<?php $logo_size['height'] = ''; ?>
 					<?php endif; ?>
-				<?php endif; ?>
 
-				<!-- mobile logo -->
-				<?php if( fusion_get_theme_option( 'mobile_logo' ) ): ?>
-					<img src="<?php echo fusion_get_theme_option( 'mobile_logo' ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="fusion-logo-1x fusion-mobile-logo-1x" />
-					<?php
-					$retina_logo = fusion_get_theme_option( 'mobile_logo_retina' );
-					if( $retina_logo ):
-					if ( fusion_get_theme_option( 'mobile_retina_logo_width' ) && fusion_get_theme_option( 'mobile_retina_logo_height' ) ) {
-						$logo_size['width'] = fusion_get_theme_option( 'mobile_retina_logo_width' );
-						$logo_size['height'] = fusion_get_theme_option( 'mobile_retina_logo_height' );
-					} else {
-						$logo_size['width'] = '';
-						$logo_size['height'] = '';
-					}
-					$style = sprintf( 'style="max-height: %spx; height: auto;"', $logo_size['height'] );
-					?>
-					<img src="<?php echo $retina_logo; ?>" alt="<?php bloginfo('name'); ?>" <?php echo $style; ?> class="fusion-logo-2x fusion-mobile-logo-2x" />
+					<img src="<?php echo $logo_url; ?>" width="<?php echo $logo_size['width']; ?>" height="<?php echo $logo_size['height']; ?>" alt="<?php bloginfo( 'name' ); ?>" class="fusion-logo-1x fusion-standard-logo" />
+					<?php $retina_logo = Avada()->settings->get( 'logo_retina' ); ?>
+					<?php if ( $retina_logo ) : ?>
+						<?php $retina_logo = Avada_Sanitize::get_url_with_correct_scheme( $retina_logo ); ?>
+						<?php $style = 'style="max-height: ' . $logo_size['height'] . 'px; height: auto;"'; ?>
+						<img src="<?php echo $retina_logo; ?>" width="<?php echo $logo_size['width']; ?>" height="<?php echo $logo_size['height']; ?>" alt="<?php bloginfo('name'); ?>" <?php echo $style; ?> class="fusion-standard-logo fusion-logo-2x" />
 					<?php else: ?>
-					<img src="<?php echo fusion_get_theme_option( 'mobile_logo' ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="fusion-logo-2x fusion-mobile-logo-2x" />
+						<img src="<?php echo $logo_url; ?>" width="<?php echo $logo_size['width']; ?>" height="<?php echo $logo_size['height']; ?>" alt="<?php bloginfo('name'); ?>" class="fusion-standard-logo fusion-logo-2x" />
 					<?php endif; ?>
-				<?php endif; ?>
 
-				<!-- sticky header logo -->
-				<?php if( fusion_get_theme_option( 'sticky_header_logo' ) &&
-						( fusion_get_theme_option('header_layout') == 'v1' || fusion_get_theme_option('header_layout') == 'v2' || fusion_get_theme_option('header_layout') == 'v3' ||
-						( ( fusion_get_theme_option('header_layout') == 'v4' | fusion_get_theme_option('header_layout') == 'v5' ) && fusion_get_theme_option('header_sticky_type2_layout') == 'menu_and_logo' ) ) ): ?>
-					<img src="<?php echo fusion_get_theme_option( 'sticky_header_logo' ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="fusion-logo-1x fusion-sticky-logo-1x" />
-					<?php
-					$retina_logo = fusion_get_theme_option( 'sticky_header_logo_retina' );
-					if( $retina_logo ):
-					if ( fusion_get_theme_option( 'sticky_retina_logo_width' ) && fusion_get_theme_option( 'sticky_retina_logo_height' ) ) {
-						$logo_size['width'] = fusion_get_theme_option( 'sticky_retina_logo_width' );
-						$logo_size['height'] = fusion_get_theme_option( 'sticky_retina_logo_height' );
-					} else {
-						$logo_size['width'] = '';
-						$logo_size['height'] = '';
-					}
-					$style = sprintf( 'style="max-height: %spx; height: auto;"', $logo_size['height'] );
-					?>
-					<img src="<?php echo $retina_logo; ?>" alt="<?php bloginfo('name'); ?>" <?php echo $style; ?> class="fusion-logo-2x fusion-sticky-logo-2x" />
-					<?php else: ?>
-					<img src="<?php echo fusion_get_theme_option( 'sticky_header_logo' ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="fusion-logo-2x fusion-sticky-logo-2x" />
+					<!-- mobile logo -->
+					<?php if ( Avada()->settings->get( 'mobile_logo' ) ) : ?>
+						<?php $mobile_logo = Avada_Sanitize::get_url_with_correct_scheme( Avada()->settings->get( 'mobile_logo' ) ); ?>
+
+						<img src="<?php echo $mobile_logo; ?>" alt="<?php bloginfo( 'name' ); ?>" class="fusion-logo-1x fusion-mobile-logo-1x" />
+
+						<?php $retina_logo = Avada()->settings->get( 'mobile_logo_retina' ); ?>
+						<?php if ( $retina_logo ) : ?>
+							<?php $retina_logo = Avada_Sanitize::get_url_with_correct_scheme( $retina_logo ); ?>
+							<?php if ( Avada()->settings->get( 'mobile_retina_logo_width' ) && Avada()->settings->get( 'mobile_retina_logo_height' ) ) : ?>
+								<?php $logo_size['width']  = fusion_strip_unit( Avada()->settings->get( 'mobile_retina_logo_width' ) ); ?>
+								<?php $logo_size['height'] = fusion_strip_unit( Avada()->settings->get( 'mobile_retina_logo_height' ) ); ?>
+							<?php else : ?>
+								<?php $logo_size['width']  = ''; ?>
+								<?php $logo_size['height'] = ''; ?>
+							<?php endif; ?>
+							<?php $style = 'style="max-height: ' . $logo_size['height'] . 'px; height: auto;"'; ?>
+
+							<img src="<?php echo $retina_logo; ?>" alt="<?php bloginfo('name'); ?>" <?php echo $style; ?> class="fusion-logo-2x fusion-mobile-logo-2x" />
+						<?php else: ?>
+							<img src="<?php echo Avada()->settings->get( 'mobile_logo' ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="fusion-logo-2x fusion-mobile-logo-2x" />
+						<?php endif; ?>
 					<?php endif; ?>
-				<?php endif; ?>
-			</a>
+
+					<!-- sticky header logo -->
+					<?php if ( Avada()->settings->get( 'sticky_header_logo' ) && ( in_array( Avada()->settings->get( 'header_layout' ), array( 'v1', 'v2', 'v3' ) ) || ( ( in_array( Avada()->settings->get( 'header_layout' ), array( 'v4', 'v5' ) ) && Avada()->settings->get( 'header_sticky_type2_layout' ) == 'menu_and_logo' ) ) ) ) : ?>
+						<?php $sticky_logo = Avada_Sanitize::get_url_with_correct_scheme( Avada()->settings->get( 'sticky_header_logo' ) ); ?>
+						<img src="<?php echo $sticky_logo; ?>" alt="<?php bloginfo( 'name' ); ?>" class="fusion-logo-1x fusion-sticky-logo-1x" />
+						<?php $retina_logo = Avada()->settings->get( 'sticky_header_logo_retina' ); ?>
+						<?php if ( $retina_logo ) : ?>
+							<?php $retina_logo = Avada_Sanitize::get_url_with_correct_scheme( $retina_logo ); ?>
+							<?php if ( Avada()->settings->get( 'sticky_retina_logo_width' ) && Avada()->settings->get( 'sticky_retina_logo_height' ) ) : ?>
+								<?php $logo_size['width']  = fusion_strip_unit( Avada()->settings->get( 'sticky_retina_logo_width' ) ); ?>
+								<?php $logo_size['height'] = fusion_strip_unit( Avada()->settings->get( 'sticky_retina_logo_height' ) ); ?>
+							<?php else : ?>
+								<?php $logo_size['width']  = ''; ?>
+								<?php $logo_size['height'] = ''; ?>
+							<?php endif; ?>
+							<?php $style = 'style="max-height: ' . $logo_size['height'] . 'px; height: auto;"'; ?>
+
+							<img src="<?php echo $retina_logo; ?>" alt="<?php bloginfo('name'); ?>" <?php echo $style; ?> class="fusion-logo-2x fusion-sticky-logo-2x" />
+						<?php else : ?>
+							<img src="<?php echo $sticky_logo; ?>" alt="<?php bloginfo( 'name' ); ?>" class="fusion-logo-2x fusion-sticky-logo-2x" />
+						<?php endif; ?>
+					<?php endif; ?>
+				</a>
+			<?php endif; ?>
 			<?php
 			/**
 			 * avada_logo_append hook
 			 * @hooked avada_header_content_3 - 10
 			 */
-			if( fusion_get_theme_option( 'header_position' ) == 'Top' ) {
-				do_action( 'avada_logo_append' );
-			}
+			do_action( 'avada_logo_append' );
 			?>
 		</div>
-	<?php }
+		<?php
+	}
 }
 
-if( ! function_exists( 'avada_main_menu' ) ) {
+if ( ! function_exists( 'avada_main_menu' ) ) {
 	function avada_main_menu() {
-		wp_nav_menu(array(
-			'theme_location'	=> 'main_navigation',
-			'depth'				=> 5,
-			'menu_class'      	=> 'fusion-menu',
-			'items_wrap' 		=> '<ul id="%1$s" class="%2$s">%3$s</ul>',
-			'fallback_cb'	   	=> 'FusionCoreFrontendWalker::fallback',
-			'walker'			=> new FusionCoreFrontendWalker(),
-			'container_class'	=> 'fusion-main-menu'
-		));
+		wp_nav_menu( array(
+			'theme_location'  => 'main_navigation',
+			'depth'           => 5,
+			'menu_class'      => 'fusion-menu',
+			'items_wrap'      => '<ul id="%1$s" class="%2$s">%3$s</ul>',
+			'fallback_cb'     => 'FusionCoreFrontendWalker::fallback',
+			'walker'          => new FusionCoreFrontendWalker(),
+			'container_class' => 'fusion-main-menu'
+		) );
 
-		if( has_nav_menu( 'sticky_navigation' ) &&
-			( ! function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) || ( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ! ubermenu_get_menu_instance_by_theme_location( 'sticky_navigation' ) ) )
-		) {
-			wp_nav_menu(array(
-				'theme_location'	=> 'sticky_navigation',
-				'depth'				=> 5,
-				'menu_class'      	=> 'fusion-menu',
-				'items_wrap' 		=> '<ul id="%1$s" class="%2$s">%3$s</ul>',
-				'fallback_cb'	   	=> 'FusionCoreFrontendWalker::fallback',
-				'walker'			=> new FusionCoreFrontendWalker(),
-				'container_class'	=> 'fusion-main-menu fusion-sticky-menu'
-			));
+		if ( has_nav_menu( 'sticky_navigation' ) && ( ! function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) || ( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ! ubermenu_get_menu_instance_by_theme_location( 'sticky_navigation' ) ) ) ) {
+			wp_nav_menu( array(
+				'theme_location'  => 'sticky_navigation',
+				'depth'           => 5,
+				'menu_class'      => 'fusion-menu',
+				'items_wrap'      => '<ul id="%1$s" class="%2$s">%3$s</ul>',
+				'fallback_cb'     => 'FusionCoreFrontendWalker::fallback',
+				'walker'          => new FusionCoreFrontendWalker(),
+				'container_class' => 'fusion-main-menu fusion-sticky-menu'
+			) );
 		}
 
 		// Make sure mobile menu is not loaded when ubermenu is used
-		if ( ! function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) ||
-			 ( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ! ubermenu_get_menu_instance_by_theme_location( 'main_navigation' ) )
-		) {
+		if ( ! function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) || ( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ! ubermenu_get_menu_instance_by_theme_location( 'main_navigation' ) ) ) {
 			avada_mobile_main_menu();
 		}
 	}
 }
 
-if( ! function_exists( 'avada_default_menu_fallback' ) ) {
+if ( ! function_exists( 'avada_default_menu_fallback' ) ) {
 	function avada_default_menu_fallback( $args ) {
 		return null;
 	}
 }
 
-if( ! function_exists( 'avada_contact_info' ) ) {
+if ( ! function_exists( 'avada_contact_info' ) ) {
 	function avada_contact_info() {
-		$phone_number = do_shortcode( fusion_get_theme_option( 'header_number' ) );
-		$email = fusion_get_theme_option( 'header_email' );
-		$header_position = fusion_get_theme_option( 'header_position' );
+		$phone_number    = do_shortcode( Avada()->settings->get( 'header_number' ) );
+		$email           = Avada()->settings->get( 'header_email' );
+		$header_position = Avada()->settings->get( 'header_position' );
+
 		$html = '';
 
-		if( $phone_number || $email ) {
+		if ( $phone_number || $email ) {
 			$html .= '<div class="fusion-contact-info">';
 				$html .= $phone_number;
-				if( $phone_number && $email ) {
-					if( $header_position == 'Top' ) {
+				if ( $phone_number && $email ) {
+					if ( 'Top' == $header_position ) {
 						$html .= '<span class="fusion-header-separator">' . apply_filters( 'avada_header_separator', '|' ) .'</span>';
 					} else {
 						$html .= '<br />';
@@ -415,66 +385,59 @@ if( ! function_exists( 'avada_contact_info' ) ) {
 				$html .= sprintf( apply_filters( 'avada_header_contact_info_email', '<a href="mailto:%s">%s</a>' ), $email, $email );
 			$html .= '</div>';
 		}
-
 		return $html;
 	}
 }
 
-if( ! function_exists( 'avada_secondary_nav' ) ) {
+if ( ! function_exists( 'avada_secondary_nav' ) ) {
 	function avada_secondary_nav() {
 		if ( has_nav_menu( 'top_navigation' ) ) {
-			return wp_nav_menu(array(
-				'theme_location'	=> 'top_navigation',
-				'depth'				=> 5,
-				'items_wrap' 		=> '<ul id="%1$s" class="%2$s">%3$s</ul>',
-				'container_class'	=> 'fusion-secondary-menu',
-				'fallback_cb'	   	=> 'FusionCoreFrontendWalker::fallback',
-				'walker'			=> new FusionCoreFrontendWalker(),				
-				'echo'				=> false
-			));		
+			return wp_nav_menu( array(
+				'theme_location'  => 'top_navigation',
+				'depth'           => 5,
+				'items_wrap'      => '<ul id="%1$s" class="%2$s">%3$s</ul>',
+				'container_class' => 'fusion-secondary-menu',
+				'fallback_cb'     => 'FusionCoreFrontendWalker::fallback',
+				'walker'          => new FusionCoreFrontendWalker(),
+				'echo'            => false
+			) );
 		}
 	}
 }
 
-if( ! function_exists( 'avada_header_social_links' ) ) {
+if ( ! function_exists( 'avada_header_social_links' ) ) {
 	function avada_header_social_links() {
 		global $social_icons;
 
 		$options = array(
-			'position'			=> 'header',
-			'icon_colors' 		=> fusion_get_theme_option( 'header_social_links_icon_color'),
-			'box_colors' 		=> fusion_get_theme_option( 'header_social_links_box_color' ),
-			'icon_boxed' 		=> fusion_get_theme_option( 'header_social_links_boxed' ),
-			'icon_boxed_radius' => fusion_get_theme_option( 'header_social_links_boxed_radius' ),
-			'tooltip_placement'	=> fusion_get_theme_option( 'header_social_links_tooltip_placement' ),
-			'linktarget'		=> fusion_get_theme_option( 'social_icons_new' )
+			'position'          => 'header',
+			'icon_colors'       => Avada()->settings->get( 'header_social_links_icon_color'),
+			'box_colors'        => Avada()->settings->get( 'header_social_links_box_color' ),
+			'icon_boxed'        => Avada()->settings->get( 'header_social_links_boxed' ),
+			'icon_boxed_radius' => intval( Avada()->settings->get( 'header_social_links_boxed_radius' ) ) . 'px',
+			'tooltip_placement' => Avada()->settings->get( 'header_social_links_tooltip_placement' ),
+			'linktarget'        => Avada()->settings->get( 'social_icons_new' )
 		);
 
 		$render_social_icons = $social_icons->render_social_icons( $options );
-		$html = '';
-
-		if( $render_social_icons ) {
-			$html .= '<div class="fusion-social-links-header">';
-				$html .= $render_social_icons;
-			$html .= '</div>';
-		}
+		$html = ( $render_social_icons ) ? '<div class="fusion-social-links-header">' . $render_social_icons . '</div>' : '';
 
 		return $html;
 	}
 }
 
-if( ! function_exists( 'avada_secondary_header_content' ) ) {
+if ( ! function_exists( 'avada_secondary_header_content' ) ) {
 	/**
 	 * Get the secondary header content based on the content area
 	 * @param  string $content_area Secondary header content area from theme optins
 	 * @return string               Html for the content
 	 */
 	function avada_secondary_header_content( $content_area ) {
-		if( fusion_get_theme_option( $content_area ) == 'Contact Info' ) {
+		if ( Avada()->settings->get( $content_area ) == 'Contact Info' ) {
 			return avada_contact_info();
-		} elseif( fusion_get_theme_option( $content_area ) == 'Social Links' ) {
+		} elseif ( Avada()->settings->get( $content_area ) == 'Social Links' ) {
 			return avada_header_social_links();
-		} elseif( fusion_get_theme_option( $content_area ) == 'Navigation' ) {
+		} elseif ( Avada()->settings->get( $content_area ) == 'Navigation' ) {
 			$mobile_menu_wrapper = '';
 			if ( has_nav_menu( 'top_navigation' ) ) {
 				$mobile_menu_wrapper = '<div class="fusion-mobile-nav-holder"></div>';
@@ -484,93 +447,96 @@ if( ! function_exists( 'avada_secondary_header_content' ) ) {
 	}
 }
 
-if( fusion_get_theme_option('header_layout') == 'v4' ) {
-	add_action( 'avada_logo_append', 'avada_header_content_3', 10 );
-}
-if( ! function_exists( 'avada_header_content_3' ) ) {
+if ( ! function_exists( 'avada_header_content_3' ) ) {
 	function avada_header_content_3() {
-		$header_content_3 = fusion_get_theme_option( 'header_v4_content' );
+		if ( 'v4' != Avada()->settings->get( 'header_layout' ) && Avada()->settings->get( 'header_position' ) == 'Top' ) {
+			return;
+		}
+
+		$header_content_3 = Avada()->settings->get( 'header_v4_content' );
 		$html = '';
 
-		if( $header_content_3 == 'Tagline' ) {
+		if ( 'Tagline' == $header_content_3 ) {
 			$html .= avada_header_tagline();
-		} elseif( $header_content_3 == 'Tagline And Search' ) {
-			if( fusion_get_theme_option( 'header_position' ) == 'Top' ) {
-				if( fusion_get_theme_option( 'logo_alignment' ) == 'Right' ) {
+		} elseif ( 'Tagline And Search' == $header_content_3 ) {
+			if ( 'Top' == Avada()->settings->get( 'header_position' ) ) {
+				if ( 'Right' == Avada()->settings->get( 'logo_alignment' ) ) {
 					$html .= avada_header_tagline();
-					$html .= sprintf( '<div class="fusion-secondary-menu-search">%s</div>', get_search_form( false ) );
+					$html .= '<div class="fusion-secondary-menu-search">' . get_search_form( false ) . '</div>';
 				} else {
-					$html .= sprintf( '<div class="fusion-secondary-menu-search">%s</div>', get_search_form( false ) );
+					$html .= '<div class="fusion-secondary-menu-search">' . get_search_form( false ) . '</div>';
 					$html .= avada_header_tagline();
 				}
 			} else {
 				$html .= avada_header_tagline();
-				$html .= sprintf( '<div class="fusion-secondary-menu-search">%s</div>', get_search_form( false ) );
+				$html .= '<div class="fusion-secondary-menu-search">' . get_search_form( false ) . '</div>';
 			}
-		} elseif( $header_content_3 == 'Search' ) {
-			$html .= sprintf( '<div class="fusion-secondary-menu-search">%s</div>', get_search_form( false ) );
-		} elseif( $header_content_3 == 'Banner' ) {
+		} elseif ( 'Search' == $header_content_3 ) {
+			$html .= '<div class="fusion-secondary-menu-search">' . get_search_form( false ) . '</div>';
+		} elseif ( 'Banner' == $header_content_3 ) {
 			$html .= avada_header_banner();
 		}
 
-		echo $html;
+		echo '<div class="fusion-header-content-3-wrapper">' . $html . '</div>';
 	}
 }
+if ( Avada()->settings->get( 'header_position' ) == 'Top' ) {
+	add_action( 'avada_logo_append', 'avada_header_content_3', 10 );
+}
 
-if( ! function_exists( 'avada_header_banner' ) ) {
+
+if ( ! function_exists( 'avada_header_banner' ) ) {
 	function avada_header_banner() {
-		return sprintf( '<div class="fusion-header-banner">%s</div>', do_shortcode( fusion_get_theme_option( 'header_banner_code' ) ) );
+		return '<div class="fusion-header-banner">' . do_shortcode( Avada()->settings->get( 'header_banner_code' ) ) . '</div>';
 	}
 }
 
-if( ! function_exists( 'avada_header_tagline' ) ) {
+if ( ! function_exists( 'avada_header_tagline' ) ) {
 	function avada_header_tagline() {
-		return sprintf( '<h3 class="fusion-header-tagline">%s</h3>', do_shortcode( fusion_get_theme_option( 'header_tagline' ) ) );
+		return '<h3 class="fusion-header-tagline">' . do_shortcode( Avada()->settings->get( 'header_tagline' ) ) . '</h3>';
 	}
 }
 
-if( ! function_exists( 'avada_modern_menu' ) ) {
+if ( ! function_exists( 'avada_modern_menu' ) ) {
 	function avada_modern_menu() {
 		$html = '';
 
-		if( fusion_get_theme_option( 'mobile_menu_design' ) == 'modern' ) {
-			$header_content_3 = fusion_get_theme_option( 'header_v4_content' );
+		if ( 'modern' == Avada()->settings->get( 'mobile_menu_design' ) ) {
+			$header_content_3 = Avada()->settings->get( 'header_v4_content' );
 
 			$html .= '<div class="fusion-mobile-menu-icons">';
 				// Make sure mobile menu toggle is not loaded when ubermenu is used
-				if ( ! function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) ||
-					 ( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ! ubermenu_get_menu_instance_by_theme_location( 'main_navigation' ) )
-				) {
+				if ( ! function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) || ( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ! ubermenu_get_menu_instance_by_theme_location( 'main_navigation' ) ) ) {
 					$html .= '<a href="#" class="fusion-icon fusion-icon-bars"></a>';
 				}
 
-				if ( ( fusion_get_theme_option('header_layout') == 'v4' || fusion_get_theme_option( 'header_position' ) != 'Top' )  &&
-					 ( $header_content_3 == 'Tagline And Search' || $header_content_3 == 'Search' )
-				) {
+				if ( ( 'v4' == Avada()->settings->get( 'header_layout' ) || 'Top' != Avada()->settings->get( 'header_position' ) )  && ( 'Tagline And Search' == $header_content_3 || 'Search' == $header_content_3 ) ) {
 					$html .= '<a href="#" class="fusion-icon fusion-icon-search"></a>';
 				}
-				if ( class_exists('WooCommerce') && fusion_get_theme_option( 'woocommerce_cart_link_main_nav' ) ) {
-					$html .= sprintf( '<a href="%s" class="fusion-icon fusion-icon-shopping-cart"></a>', get_permalink( get_option( 'woocommerce_cart_page_id' ) ) );
+				if ( class_exists('WooCommerce') && Avada()->settings->get( 'woocommerce_cart_link_main_nav' ) ) {
+					$html .= '<a href="' . get_permalink( get_option( 'woocommerce_cart_page_id' ) ) . '" class="fusion-icon fusion-icon-shopping-cart"></a>';
 				}
 			$html .= '</div>';
 		}
-
 		return $html;
 	}
 }
 
-if( ! function_exists( 'avada_mobile_main_menu' ) ) {
+if ( ! function_exists( 'avada_mobile_main_menu' ) ) {
 	function avada_mobile_main_menu() {
-		if( fusion_get_theme_option('header_position') != 'Top' ||
-			( fusion_get_theme_option('header_layout') != 'v4' && fusion_get_theme_option('header_layout') != 'v5' )
-		) {
+		if ( 'Top' != Avada()->settings->get( 'header_position' ) || ( ! in_array( Avada()->settings->get( 'header_layout' ), array( 'v4', 'v5' ) ) ) ) {
 			echo avada_modern_menu();
 		}
+		
+		$mobile_menu_text_align = '';
+		if ( 'right' == Avada()->settings->get( 'mobile_menu_text_align' ) ) {
+			$mobile_menu_text_align = ' fusion-mobile-menu-text-align-right';
+		}
+		
+		printf( '<div class="fusion-mobile-nav-holder%s"></div>', $mobile_menu_text_align );
 
-		echo '<div class="fusion-mobile-nav-holder"></div>';
-
-		if( has_nav_menu( 'sticky_navigation' ) ) {
-			echo '<div class="fusion-mobile-nav-holder fusion-mobile-sticky-nav-holder"></div>';
+		if ( has_nav_menu( 'sticky_navigation' ) ) {
+			printf( '<div class="fusion-mobile-nav-holder%s fusion-mobile-sticky-nav-holder"></div>', $mobile_menu_text_align );
 		}
 	}
 }

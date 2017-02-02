@@ -152,7 +152,7 @@ class Fusion_Image_Resizer {
 
 			// Load Wordpress Image Editor
 			$editor = wp_get_image_editor( $file_path );
-			if ( is_wp_error( $editor ) ) {
+			if ( is_wp_error( $editor ) || ! is_writable( $dest_file_name ) ) {
 				return array( 'url' => $url, 'width' => $width, 'height' => $height );
 			}
 

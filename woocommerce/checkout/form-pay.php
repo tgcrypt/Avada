@@ -2,135 +2,103 @@
 /**
  * Pay for order form
  *
- * @author 		WooThemes
- * @package 	WooCommerce/Templates
- * @version     1.6.4
+ * This template can be overridden by copying it to yourtheme/woocommerce/checkout/form-pay.php.
+ *
+ * HOWEVER, on occasion WooCommerce will need to update template files and you (the theme developer).
+ * will need to copy the new files to your theme to maintain compatibility. We try to do this.
+ * as little as possible, but it does happen. When this occurs the version of the template file will.
+ * be bumped and the readme will list any important changes.
+ *
+ * @see 	    http://docs.woothemes.com/document/template-structure/
+ * @author   WooThemes
+ * @package  WooCommerce/Templates
+ * @version  2.5.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit;
 }
-
 
 ?>
 <div class="woocommerce-content-box full-width avada-checkout checkout">
 	<h3 id="order_review_heading"><?php _e( 'Your order', 'woocommerce' ); ?></h3>
 
-	<form id="order_review" class method="post">
+	<form id="order_review" method="post">
 
 		<table class="shop_table">
 			<thead>
 				<tr>
 					<th class="product-name"><?php _e( 'Product', 'woocommerce' ); ?></th>
-					<th class="product-total"><?php _e( 'Total', 'woocommerce' ); ?></th>
+					<th class="product-total"><?php _e( 'Totals', 'woocommerce' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
-				<?php
-				if ( sizeof( $order->get_items() ) > 0 ) :
-					foreach ( $order->get_items() as $item ) :
-						$product = get_product( $item['product_id'] );
-						$thumbnail = $product->get_image();
-				?>
+				<?php if ( sizeof( $order->get_items() ) > 0 ) : ?>
+					<?php foreach ( $order->get_items() as $item ) : ?>
+						<?php $product   = get_product( $item['product_id'] ); ?>
+						<?php $thumbnail = $product->get_image(); ?>
 						<tr>
 							<td class="product-name">
-								<?php // Avada edit ?>
 								<span class="product-thumbnail">
-									<?php
-
-										if ( ! $product->is_visible() ) {
-											echo $thumbnail;
-										} else {
-											printf( '<a href="%s">%s</a>', $product->get_permalink(), $thumbnail );
-										}
-									?>
+									<?php if ( ! $product->is_visible() ) : ?>
+										<?php echo $thumbnail; ?>
+									<?php else : ?>
+										<?php echo '<a href="' . $product->get_permalink() . '">' . $thumbnail . '</a>'; ?>
+									<?php endif; ?>
 								</span>
 								<div class="product-info">
-									<?php
-										echo $item['name'];
-										printf( '<strong class="product-quantity">%s</strong>', $item['qty'] );
-									?>
+									<?php echo esc_html( $item['name'] ); ?>
+									<strong class="product-quantity"><?php echo esc_html( $item['qty'] ); ?></strong>
 								</div>
 							</td>
-							<td class="product-total">
-								<?php echo $order->get_formatted_line_subtotal( $item ); ?>
-							</td>
+							<td class="product-total"><?php echo $order->get_formatted_line_subtotal( $item ); ?></td>
 						</tr>
-					<?php
-					endforeach;
-				endif;
-				?>
+					<?php endforeach; ?>
+				<?php endif; ?>
 			</tbody>
 			<tfoot>
-			<?php
-				if ( $totals = $order->get_order_item_totals() ) {
-					$last_total = count( $totals ) - 1;
-					$i = 0;
-					foreach ( $totals as $total ) :
-						if ( $i == $last_total ) {
-							echo '<tr class="order-total">';
-						} else {
-							echo '<tr>';
-						}
-						?>
-							<th><?php echo $total['label']; ?></th>
-							<td class="product-total">
-								<?php echo $total['value']; ?>
-							</td>
+				<?php if ( $totals = $order->get_order_item_totals() ) : ?>
+					<?php $last_total = count( $totals ) - 1; ?>
+					<?php $i = 0; ?>
+					<?php foreach ( $totals as $total ) : ?>
+						<?php if ( $i == $last_total ) : ?>
+							<tr class="order-total">
+						<?php else : ?>
+							<tr>
+						<?php endif; ?>
+							<th scope="row" colspan="2"><?php echo $total['label']; ?></th>
+							<td class="product-total"><?php echo $total['value']; ?></td>
 						</tr>
-						<?php
-						$i++;
-					endforeach;
-				}
-			?>
+						<?php $i++; ?>
+					<?php endforeach; ?>
+				<?php endif; ?>
 			</tfoot>
 		</table>
 
 		<div id="payment" class="woocommerce-checkout-payment">
 			<?php if ( $order->needs_payment() ) : ?>
-			<ul class="payment_methods methods">
-				<?php
-					if ( $available_gateways = WC()->payment_gateways->get_available_payment_gateways() ) {
-						// Chosen Method
-						if ( sizeof( $available_gateways ) )
-							current( $available_gateways )->set_current();
-
-						foreach ( $available_gateways as $gateway ) {
-							?>
-							<li class="payment_method_<?php echo $gateway->id; ?>">
-								<input id="payment_method_<?php echo $gateway->id; ?>" type="radio" class="input-radio" name="payment_method" value="<?php echo esc_attr( $gateway->id ); ?>" <?php checked( $gateway->chosen, true ); ?> data-order_button_text="<?php echo esc_attr( $gateway->order_button_text ); ?>" />
-								<label for="payment_method_<?php echo $gateway->id; ?>"><?php echo $gateway->get_title(); ?> <?php echo $gateway->get_icon(); ?></label>
-								<?php
-									if ( $gateway->has_fields() || $gateway->get_description() ) {
-										echo '<div class="payment_box payment_method_' . $gateway->id . '" style="display:none;">';
-										$gateway->payment_fields();
-										echo '</div>';
-									}
-								?>
-							</li>
-							<?php
+				<ul class="wc_payment_methods payment_methods methods">
+					<?php
+						if ( ! empty( $available_gateways ) ) {
+							foreach ( $available_gateways as $gateway ) {
+								wc_get_template( 'checkout/payment-method.php', array( 'gateway' => $gateway ) );
+							}
+						} else {
+							echo '<li>' . apply_filters( 'woocommerce_no_available_payment_methods_message', __( 'Sorry, it seems that there are no available payment methods for your location. Please contact us if you require assistance or wish to make alternate arrangements.', 'woocommerce' ) ) . '</li>';
 						}
-					} else {
-
-						echo '<p>' . __( 'Sorry, it seems that there are no available payment methods for your location. Please contact us if you require assistance or wish to make alternate arrangements.', 'woocommerce' ) . '</p>';
-
-					}
-				?>
-			</ul>
+					?>
+				</ul>
 			<?php endif; ?>
-
 			<div class="form-row">
-				<?php wp_nonce_field( 'woocommerce-pay' ); ?>
-				<?php
-					$pay_order_button_text = apply_filters( 'woocommerce_pay_order_button_text', __( 'Pay for order', 'woocommerce' ) );
-
-					echo apply_filters( 'woocommerce_pay_order_button_html', '<input type="submit" class="button alt" id="place_order" value="' . esc_attr( $pay_order_button_text ) . '" data-value="' . esc_attr( $pay_order_button_text ) . '" />' );
-				?>
 				<input type="hidden" name="woocommerce_pay" value="1" />
+
+				<?php echo apply_filters( 'woocommerce_pay_order_button_html', '<input type="submit" class="button alt" id="place_order" value="' . esc_attr( $order_button_text ) . '" data-value="' . esc_attr( $order_button_text ) . '" />' ); ?>
+
+				<?php wc_get_template( 'checkout/terms.php' ); ?>
+
+				<?php wp_nonce_field( 'woocommerce-pay' ); ?>
 				<div class="clear"></div>
 			</div>
-
 		</div>
-
 	</form>
 </div>

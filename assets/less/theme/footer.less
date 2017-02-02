@@ -2,6 +2,7 @@
 Table of Contents
 ----------------------------------------------------------------------------------------------------
 	01 General Footer Styles
+	02 Centered Footer Styles
 	
 ================================================================================================= */
 
@@ -37,7 +38,8 @@ Table of Contents
 	-ms-backface-visibility: hidden;
 	backface-visibility: hidden;
 
-	h3, .widget-title {
+	h3, 
+	.widget-title {
 		margin: 0 0 28px;
 		color: #ddd;
 		text-transform: uppercase;
@@ -83,7 +85,7 @@ Table of Contents
 }	
 
 .fusion-footer-widget-column {
-	margin-bottom: 20px;
+	margin-bottom: 50px;
 	
 	&:last-child {
 		margin-bottom: 0;
@@ -113,5 +115,33 @@ Table of Contents
 	
 	a {
 		color: #bfbfbf;
+	}
+}
+
+/* Centered Footer Styles
+================================================================================================= */
+.fusion-body .fusion-footer-widget-area-center {
+	.fusion-columns {
+		.fusion-column {
+			text-align: center;
+		}
+	}
+}
+
+.fusion-body .fusion-footer-copyright-center {
+	.fusion-copyright-content {
+		display: block;
+		text-align: center;
+	}
+	
+	.fusion-copyright-notice,
+	.fusion-social-links-footer {
+		display: block;
+		width: 100%;
+		text-align: center;
+	}
+	
+	.fusion-social-links-footer {
+		margin-top: 20px;
 	}
 }

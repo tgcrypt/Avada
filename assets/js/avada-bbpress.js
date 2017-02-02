@@ -1,5 +1,4 @@
 jQuery(window).load(function() {
-    // BBPress
     jQuery( '.bbp-template-notice' ).each(
         function() {
             if ( jQuery( this ).hasClass( 'info' ) ) {

@@ -60,54 +60,60 @@ define( 'THEMEAUTHORURI', $author_uri );
 
 // Avada Edit
 $lang = '';
-if( function_exists( 'pll_define_wpml_constants' ) ) {
+if ( function_exists( 'pll_define_wpml_constants' ) ) {
 	pll_define_wpml_constants();
 }
-if(defined('ICL_LANGUAGE_CODE')) {
-	if( defined('ICL_SITEPRESS_VERSION') ) {
+if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
+	if ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
 		global $sitepress;
 	}
 
-	if( function_exists( 'pll_default_language' ) ) {
+	if ( function_exists( 'pll_default_language' ) ) {
 		global $polylang;
 		$pll_languages_obj = $polylang->model->get_languages_list();
 		$pll_languages = array();
 
-		foreach( $pll_languages_obj as $pll_language_obj ) {
+		foreach ( $pll_languages_obj as $pll_language_obj ) {
 			$pll_languages[] = $pll_language_obj->slug;
 		}
 	}
 
-	if( ICL_LANGUAGE_CODE) {
-		if( ICL_LANGUAGE_CODE != 'en' && ICL_LANGUAGE_CODE != 'all' && array_key_exists( ICL_LANGUAGE_CODE, icl_get_languages( 'skip_missing=N' ) ) ) {
-			$lang = '_'.ICL_LANGUAGE_CODE;
-			if(!get_option($theme_name.'_options'.$lang)) {
-				update_option($theme_name.'_options'.$lang, get_option($theme_name.'_options'));
-			}
-		} elseif( ICL_LANGUAGE_CODE != 'en' && ICL_LANGUAGE_CODE != 'all' && function_exists( 'pll_default_language' ) ) {
-			if( in_array( ICL_LANGUAGE_CODE, $pll_languages ) ) {
-				$lang = '_'.ICL_LANGUAGE_CODE;
-				if(!get_option($theme_name.'_options'.$lang)) {
-					update_option($theme_name.'_options'.$lang, get_option($theme_name.'_options'));
-				}
-			}
-		} elseif( ICL_LANGUAGE_CODE == 'all' ) {
-			if( defined('ICL_SITEPRESS_VERSION') ) {
-				$lang = '_' . $sitepress->get_default_language();
-				if( $sitepress->get_default_language() == 'en' ) {
-					$lang = '';
-				}
-			} elseif( function_exists( 'pll_default_language' ) ) {
-				$lang = '_' . pll_default_language('slug');
-				if( pll_default_language('slug') == 'en' ) {
-					$lang = '';
-				}
+	if ( ICL_LANGUAGE_CODE ) {
+		$language_exists = true;
+		if ( function_exists( 'pll_default_language' ) ) {
+			if ( ! in_array( ICL_LANGUAGE_CODE, $pll_languages ) ) {
+				$language_exists = false;
 			}
 		} else {
-			$lang = '';
+			if ( ! array_key_exists( ICL_LANGUAGE_CODE, icl_get_languages( 'skip_missing=0' ) ) ) {
+				$language_exists = false;
+			}
 		}
-	} else {
-		$lang = '';
+		if ( ! in_array( ICL_LANGUAGE_CODE, array( 'en', 'all' ) ) && $language_exists ) {
+			$lang = '_' . ICL_LANGUAGE_CODE;
+			if ( ! get_option( $theme_name . '_options' . $lang ) ) {
+				update_option( $theme_name . '_options' . $lang, get_option( $theme_name . '_options' ) );
+			}
+		} elseif ( ! in_array( ICL_LANGUAGE_CODE, array( 'en', 'all' ) ) && function_exists( 'pll_default_language' ) ) {
+			if ( in_array( ICL_LANGUAGE_CODE, $pll_languages ) ) {
+				$lang = '_' . ICL_LANGUAGE_CODE;
+				if ( ! get_option( $theme_name . '_options' . $lang ) ) {
+					update_option( $theme_name . '_options' . $lang, get_option( $theme_name . '_options' ) );
+				}
+			}
+		} elseif ( 'all' == ICL_LANGUAGE_CODE  ) {
+			if ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
+				$lang = '_' . $sitepress->get_default_language();
+				if ( 'en' == $sitepress->get_default_language() ) {
+					$lang = '';
+				}
+			} elseif ( function_exists( 'pll_default_language' ) ) {
+				$lang = '_' . pll_default_language( 'slug' );
+				if ( 'en' == pll_default_language('slug') ) {
+					$lang = '';
+				}
+			}
+		}		
 	}
 }
 // End Avada Edit
