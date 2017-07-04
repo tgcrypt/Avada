@@ -1,4 +1,14 @@
 <?php
+/**
+ * Handles google maps in Avada.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      3.8.5
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -7,8 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Handles google maps in Avada.
- *
- * @since 3.8.5
  */
 class Avada_GoogleMap {
 
@@ -189,7 +197,7 @@ class Avada_GoogleMap {
 				$infobox_text_color       = ( $brightness_level > 140 ) ? '#fff' : '#747474';
 			} elseif ( 'custom' == $map_style ) {
 				$overlay_color = Avada()->settings->get( 'map_overlay_color' );
-				$color_obj = Avada_Color::new_color( $overlay_color );
+				$color_obj = Fusion_Color::new_color( $overlay_color );
 				if ( '0' == $color_obj->alpha ) {
 					$overlay_color = '';
 				} elseif ( 1 > $color_obj->alpha ) {
@@ -204,8 +212,12 @@ class Avada_GoogleMap {
 				}
 			}
 
-			wp_print_scripts( 'google-maps-api' );
-			wp_print_scripts( 'google-maps-infobox' );
+			if ( wp_script_is( 'google-maps-api', 'registered' ) ) {
+				wp_print_scripts( 'google-maps-api' );
+				if ( wp_script_is( 'google-maps-infobox', 'registered' ) ) {
+					wp_print_scripts( 'google-maps-infobox' );
+				}
+			}
 
 			foreach ( self::$args['address'] as $add ) {
 				$add     = trim( $add );
@@ -277,7 +289,7 @@ class Avada_GoogleMap {
 						$json_addresses[ $key ]['cache']     = true;
 					}
 				}
-			}
+			} // End foreach().
 
 			$json_addresses = wp_json_encode( $json_addresses );
 
@@ -285,32 +297,32 @@ class Avada_GoogleMap {
 			$this->map_id = $map_id;
 			ob_start(); ?>
 			<script type="text/javascript">
-				var map_<?php echo $map_id; ?>;
+				var map_<?php echo esc_attr( $map_id ); ?>;
 				var markers = [];
 				var counter = 0;
-				function fusion_run_map_<?php echo $map_id ; ?>() {
-					jQuery('#<?php echo $map_id ; ?>').fusion_maps({
-						addresses: <?php echo $json_addresses; ?>,
+				function fusion_run_map_<?php echo esc_attr( $map_id ); ?>() {
+					jQuery('#<?php echo esc_attr( $map_id ); ?>').fusion_maps({
+						addresses: <?php echo wp_kses_post( $json_addresses ); ?>,
 						address_pin: <?php echo ( 'yes' == $address_pin ) ? 'true' : 'false'; ?>,
 						animations: <?php echo ( 'yes' == $animation ) ? 'true' : 'false'; ?>,
-						infobox_background_color: '<?php echo $infobox_background_color; ?>',
-						infobox_styling: '<?php echo $infobox; ?>',
-						infobox_text_color: '<?php echo $infobox_text_color; ?>',
-						map_style: '<?php echo $map_style; ?>',
-						map_type: '<?php echo $type; ?>',
-						marker_icon: '<?php echo $icon; ?>',
-						overlay_color: '<?php echo $overlay_color; ?>',
+						infobox_background_color: '<?php echo esc_attr( $infobox_background_color ); ?>',
+						infobox_styling: '<?php echo esc_attr( $infobox ); ?>',
+						infobox_text_color: '<?php echo esc_attr( $infobox_text_color ); ?>',
+						map_style: '<?php echo esc_attr( $map_style ); ?>',
+						map_type: '<?php echo esc_attr( $type ); ?>',
+						marker_icon: '<?php echo esc_attr( $icon ); ?>',
+						overlay_color: '<?php echo esc_attr( $overlay_color ); ?>',
 						overlay_color_hsl: <?php echo wp_json_encode( fusion_rgb2hsl( $overlay_color ) ); ?>,
 						pan_control: <?php echo ( 'yes' == $zoom_pancontrol ) ? 'true' : 'false'; ?>,
 						show_address: <?php echo ( 'yes' == $popup ) ? 'true' : 'false'; ?>,
 						scale_control: <?php echo ( 'yes' == $scale ) ? 'true' : 'false'; ?>,
 						scrollwheel: <?php echo ( 'yes' == $scrollwheel ) ? 'true' : 'false'; ?>,
-						zoom: <?php echo $zoom; ?>,
+						zoom: <?php echo esc_attr( $zoom ); ?>,
 						zoom_control: <?php echo ( 'yes' == $zoom_pancontrol ) ? 'true' : 'false'; ?>,
 					});
 				}
 
-				google.maps.event.addDomListener(window, 'load', fusion_run_map_<?php echo $map_id ; ?>);
+				google.maps.event.addDomListener(window, 'load', fusion_run_map_<?php echo esc_attr( $map_id ); ?>);
 			</script>
 			<?php
 			if ( $defaults['id'] ) {
@@ -318,7 +330,7 @@ class Avada_GoogleMap {
 			} else {
 				$html = ob_get_clean() . '<div ' . $this->attributes( 'avada-google-map' ) . '></div>';
 			}
-		}
+		} // End if().
 
 		return $html;
 

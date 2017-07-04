@@ -1,5 +1,5 @@
 <?php
-
+// @codingStandardsIgnoreFile
 /*
 Plugin Name: Sidebar Generator
 Plugin URI: http://www.getson.info
@@ -53,7 +53,6 @@ class Sidebar_Generator {
 		add_action( 'edit_post', array( $this, 'save_form' ) );
 		add_action( 'publish_post', array( $this, 'save_form' ) );
 		add_action( 'save_post', array( $this, 'save_form' ) );
-		add_action( 'edit_page_form', array( $this, 'save_form' ) );
 
 	}
 
@@ -106,7 +105,7 @@ class Sidebar_Generator {
 	 */
 	public function admin_print_scripts() {
 
-		$ajax_add_sidebar_nonce = wp_create_nonce( 'add-sidebar' );
+		$ajax_add_sidebar_nonce    = wp_create_nonce( 'add-sidebar' );
 		$ajax_remove_sidebar_nonce = wp_create_nonce( 'remove-sidebar' );
 
 		?>
@@ -121,7 +120,7 @@ class Sidebar_Generator {
 				mysack.setVar( 'sidebar_name', sidebar_name );
 				// mysack.encVar( 'cookie', document.cookie, false );
 				mysack.onError = function() { alert( 'Ajax error. Cannot add sidebar' ) };
-			  	mysack.runAJAX();
+				mysack.runAJAX();
 				return true;
 			}
 
@@ -132,11 +131,11 @@ class Sidebar_Generator {
 				mysack.method  = 'POST';
 				mysack.setVar( 'action', 'remove_sidebar' );
 				mysack.setVar( 'security', '<?php echo $ajax_remove_sidebar_nonce; ?>' );
-			  	mysack.setVar( 'sidebar_name', sidebar_name );
-			  	mysack.setVar( 'row_number', num );
-			  	//mysack.encVar( 'cookie', document.cookie, false );
-			  	mysack.onError = function() { alert( 'Ajax error. Cannot remove sidebar' ) };
-			  	mysack.runAJAX();
+				mysack.setVar( 'sidebar_name', sidebar_name );
+				mysack.setVar( 'row_number', num );
+				//mysack.encVar( 'cookie', document.cookie, false );
+				mysack.onError = function() { alert( 'Ajax error. Cannot remove sidebar' ) };
+				mysack.runAJAX();
 				// alert( 'hi!:::'+sidebar_name );
 				return true;
 			}
@@ -218,10 +217,11 @@ class Sidebar_Generator {
 		check_ajax_referer( 'remove-sidebar', 'security' );
 
 		$sidebars = Sidebar_Generator::get_sidebars();
-		$id       = str_replace( array( "\n", "\r", "\t" ), '', $_POST['sidebar_name'] );
+		$id       = strtolower( str_replace( array( "\n", "\r", "\t" ), '', $_POST['sidebar_name'] ) );
 		$counter  = '1';
 
 		if ( is_array( $sidebars ) && ! empty( $sidebars ) ) {
+			$sidebars = array_change_key_case( $sidebars, CASE_LOWER );
 			$counter = count( $sidebars );
 		}
 		$no_widget_text = esc_html__( 'No Widget Sections defined.', 'Avada' );
@@ -321,7 +321,6 @@ class Sidebar_Generator {
 	 * @param string|int $post_id The post ID.
 	 */
 	public function save_form( $post_id ) {
-
 		if ( isset( $_POST['sbg_edit'] ) ) {
 			$is_saving = $_POST['sbg_edit'];
 			if ( ! empty( $is_saving ) ) {
@@ -399,7 +398,7 @@ class Sidebar_Generator {
 			<div class="pyre_field">
 				<?php global $wp_registered_sidebars; ?>
 				<?php for ( $i = 0; $i < 1; $i++ ) : ?>
-					<select name="sidebar_generator[<?php echo $i; ?>]" style="display: none !important; width:100%">
+					<select name="sidebar_generator[<?php echo $i; ?>]" style="display: none !important; width:100%" class="hidden-sidebar">
 						<option value="0"<?php echo ( '' == $selected_sidebar[ $i ] ) ? ' selected' : ''; ?>><?php echo esc_html( 'WP Default Sidebar', 'Avada' ); ?></option>
 						<?php $sidebars = $wp_registered_sidebars; ?>
 						<?php if ( is_array( $sidebars ) && ! empty( $sidebars ) ) : ?>
@@ -467,7 +466,7 @@ class Sidebar_Generator {
 			<div class="pyre_field">
 				<?php global $wp_registered_sidebars; ?>
 				<?php for ( $i = 0; $i < 1; $i++ ) : ?>
-					<select name="sidebar_2_generator[<?php echo $i; ?>]" style="display: none !important; width:100%">
+					<select name="sidebar_2_generator[<?php echo $i; ?>]" style="display: none !important; width:100%" class="hidden-sidebar">
 						<option value="0"<?php echo ( '' == $selected_sidebar_2[ $i ] ) ? ' selected' : ''; ?>><?php esc_html_e( 'WP Default Sidebar', 'Avada' ); ?></option>
 						<?php $sidebars = $wp_registered_sidebars; ?>
 						<?php if ( is_array( $sidebars ) && ! empty( $sidebars ) ) : ?>

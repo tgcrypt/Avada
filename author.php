@@ -1,4 +1,10 @@
 <?php
+/**
+ * Authors template.
+ *
+ * @package Avada
+ * @subpackage Templates
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {

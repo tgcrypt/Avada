@@ -1,4 +1,13 @@
 <?php
+/**
+ * Widget Class.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,8 +26,13 @@ class Fusion_Widget_Menu extends WP_Widget {
 	 */
 	function __construct() {
 
-		$widget_ops  = array( 'classname' => 'menu', 'description' => '' );
-		$control_ops = array( 'id_base' => 'menu-widget' );
+		$widget_ops  = array(
+			'classname' => 'menu',
+			'description' => '',
+		);
+		$control_ops = array(
+			'id_base' => 'menu-widget',
+		);
 		parent::__construct( 'menu-widget', 'Avada: Horizontal Menu', $widget_ops, $control_ops );
 
 	}
@@ -35,7 +49,7 @@ class Fusion_Widget_Menu extends WP_Widget {
 
 		extract( $args );
 
-		echo $before_widget;
+		echo wp_kses_post( $before_widget );
 
 		// Get menu.
 		$nav_menu = ! empty( $instance['nav_menu'] ) ? wp_get_nav_menu_object( $instance['nav_menu'] ) : false;
@@ -46,39 +60,39 @@ class Fusion_Widget_Menu extends WP_Widget {
 
 		echo '<style type="text/css">';
 
-		echo '#' . $this->id . ' > .fusion-widget-menu ul{';
-		echo 'text-align:' . strtolower( $instance['alignment'] ) . ';';
+		echo '#' . esc_attr( $this->id ) . ' > .fusion-widget-menu ul{';
+		echo 'text-align:' . esc_attr( strtolower( $instance['alignment'] ) ) . ';';
 		echo '}';
 
-		echo '#' . $this->id . ' > .fusion-widget-menu li{display: inline-block;}';
-		echo '#' . $this->id . ' ul li a{';
+		echo '#' . esc_attr( $this->id ) . ' > .fusion-widget-menu li{display: inline-block;}';
+		echo '#' . esc_attr( $this->id ) . ' ul li a{';
 		echo 'display: inline-block;padding:0;border:0;';
-		echo 'color:' . Avada_Sanitize::color( $instance['menu_link_color'] ) . ';';
-		echo 'font-size:' . Avada_Sanitize::size( $instance['font_size'] ) . ';';
+		echo 'color:' . esc_attr( Fusion_Sanitize::color( $instance['menu_link_color'] ) ) . ';';
+		echo 'font-size:' . esc_attr( Fusion_Sanitize::size( $instance['font_size'] ) ) . ';';
 		echo '}';
 
-		echo '#' . $this->id . ' ul li a:after{';
-		echo 'content:\'' . $instance['sep_text'] . '\';';
-		echo 'color:' . Avada_Sanitize::color( $instance['menu_link_color'] ) . ';';
-		echo 'padding-right:' . Avada_Sanitize::size( $instance['menu_padding'] ) . ';';
-		echo 'padding-left:' . Avada_Sanitize::size( $instance['menu_padding'] ) . ';';
-		echo 'font-size:' . Avada_Sanitize::size( $instance['font_size'] ) . ';';
+		echo '#' . esc_attr( $this->id ) . ' ul li a:after{';
+		echo 'content:\'' . esc_attr( $instance['sep_text'] ) . '\';';
+		echo 'color:' . esc_attr( Fusion_Sanitize::color( $instance['menu_link_color'] ) ) . ';';
+		echo 'padding-right:' . esc_attr( Fusion_Sanitize::size( $instance['menu_padding'] ) ) . ';';
+		echo 'padding-left:' . esc_attr( Fusion_Sanitize::size( $instance['menu_padding'] ) ) . ';';
+		echo 'font-size:' . esc_attr( Fusion_Sanitize::size( $instance['font_size'] ) ) . ';';
 		echo '}';
 
-		echo '#' . $this->id . ' ul li a:hover{';
-		echo 'color:' . Avada_Sanitize::color( $instance['menu_link_hover_color'] ) . ';';
+		echo '#' . esc_attr( $this->id ) . ' ul li a:hover, #' . esc_attr( $this->id ) . ' ul .menu-item.current-menu-item a {';
+		echo 'color:' . esc_attr( Fusion_Sanitize::color( $instance['menu_link_hover_color'] ) ) . ';';
 		echo '}';
 
-		echo '#' . $this->id . ' ul li:last-child a:after{display: none}';
+		echo '#' . esc_attr( $this->id ) . ' ul li:last-child a:after{display: none}';
 
-		echo '#' . $this->id . ' ul li .fusion-widget-cart-number{';
+		echo '#' . esc_attr( $this->id ) . ' ul li .fusion-widget-cart-number{';
 		echo 'margin:0 7px;';
-		echo 'background-color:' . Avada_Sanitize::color( $instance['menu_link_hover_color'] ) . ';';
-		echo 'color:' . Avada_Sanitize::color( $instance['menu_link_color'] ) . ';';
+		echo 'background-color:' . esc_attr( Fusion_Sanitize::color( $instance['menu_link_hover_color'] ) ) . ';';
+		echo 'color:' . esc_attr( Fusion_Sanitize::color( $instance['menu_link_color'] ) ) . ';';
 		echo '}';
 
-		echo '#' . $this->id . ' ul li.fusion-active-cart-icon .fusion-widget-cart-icon:after{';
-		echo 'color:' . Avada_Sanitize::color( $instance['menu_link_hover_color'] ) . ';';
+		echo '#' . esc_attr( $this->id ) . ' ul li.fusion-active-cart-icon .fusion-widget-cart-icon:after{';
+		echo 'color:' . esc_attr( Fusion_Sanitize::color( $instance['menu_link_hover_color'] ) ) . ';';
 		echo '}';
 
 		echo '</style>';
@@ -89,11 +103,12 @@ class Fusion_Widget_Menu extends WP_Widget {
 			'depth'		  	  => -1,
 			'container_class' => 'fusion-widget-menu',
 			'container'       => 'nav',
+			'item_spacing'    => 'discard',
 		);
 
 		wp_nav_menu( $nav_menu_args );
 
-		echo $after_widget;
+		echo wp_kses_post( $after_widget );
 
 	}
 
@@ -151,9 +166,9 @@ class Fusion_Widget_Menu extends WP_Widget {
 		?>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'nav_menu' ); ?>"><?php _e( 'Select Menu:', 'Avada' ); ?></label>
-			<select id="<?php echo $this->get_field_id( 'nav_menu' ); ?>" name="<?php echo $this->get_field_name( 'nav_menu' ); ?>" class="widefat" style="width:100%;">
-				<option value="0"><?php _e( '&mdash; Select &mdash;' ); ?></option>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'nav_menu' ) ); ?>"><?php esc_attr_e( 'Select Menu:', 'Avada' ); ?></label>
+			<select id="<?php echo esc_attr( $this->get_field_id( 'nav_menu' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'nav_menu' ) ); ?>" class="widefat" style="width:100%;">
+				<option value="0"><?php esc_attr_e( '&mdash; Select &mdash;' ); ?></option>
 				<?php foreach ( $menus as $menu ) : ?>
 					<option value="<?php echo esc_attr( $menu->slug ); ?>" <?php selected( $nav_menu, $menu->slug ); ?>>
 						<?php echo esc_html( $menu->name ); ?>
@@ -162,32 +177,32 @@ class Fusion_Widget_Menu extends WP_Widget {
 			</select>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'alignment' ); ?>"><?php _e( 'Alignment:', 'Avada' ); ?></label>
-			<select id="<?php echo $this->get_field_id( 'alignment' ); ?>" name="<?php echo $this->get_field_name( 'alignment' ); ?>" class="widefat" style="width:100%;">
-				<option value="Left" <?php if ( 'Left' == $instance['alignment'] ) { echo 'selected="selected"'; } ?>><?php _e( 'Left', 'Avada' ); ?></option>
-				<option value="Center" <?php if ( 'Center' == $instance['alignment'] ) { echo 'selected="selected"'; } ?>><?php _e( 'Center', 'Avada' ); ?></option>
-				<option value="Right" <?php if ( 'Right' == $instance['alignment'] ) { echo 'selected="selected"'; } ?>><?php _e( 'Right', 'Avada' ); ?></option>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'alignment' ) ); ?>"><?php esc_attr_e( 'Alignment:', 'Avada' ); ?></label>
+			<select id="<?php echo esc_attr( $this->get_field_id( 'alignment' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'alignment' ) ); ?>" class="widefat" style="width:100%;">
+				<option value="Left" <?php if ( 'Left' == $instance['alignment'] ) { echo 'selected="selected"'; } ?>><?php esc_attr_e( 'Left', 'Avada' ); ?></option>
+				<option value="Center" <?php if ( 'Center' == $instance['alignment'] ) { echo 'selected="selected"'; } ?>><?php esc_attr_e( 'Center', 'Avada' ); ?></option>
+				<option value="Right" <?php if ( 'Right' == $instance['alignment'] ) { echo 'selected="selected"'; } ?>><?php esc_attr_e( 'Right', 'Avada' ); ?></option>
 			</select>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'menu_padding' ); ?>"><?php _e( 'Menu Padding:', 'Avada' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'menu_padding' ); ?>" name="<?php echo $this->get_field_name( 'menu_padding' ); ?>" value="<?php echo $instance['menu_padding']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'menu_padding' ) ); ?>"><?php esc_attr_e( 'Menu Padding:', 'Avada' ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'menu_padding' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'menu_padding' ) ); ?>" value="<?php echo esc_attr( $instance['menu_padding'] ); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'menu_link_color' ); ?>"><?php _e( 'Menu Link Color:', 'Avada' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'menu_Link_color' ); ?>" name="<?php echo $this->get_field_name( 'menu_link_color' ); ?>" value="<?php echo $instance['menu_link_color']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'menu_link_color' ) ); ?>"><?php esc_attr_e( 'Menu Link Color:', 'Avada' ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'menu_Link_color' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'menu_link_color' ) ); ?>" value="<?php echo esc_attr( $instance['menu_link_color'] ); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'menu_link_hover_color' ); ?>"><?php _e( 'Menu Link Hover Color:', 'Avada' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'menu_link_hover_color' ); ?>" name="<?php echo $this->get_field_name( 'menu_link_hover_color' ); ?>" value="<?php echo $instance['menu_link_hover_color']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'menu_link_hover_color' ) ); ?>"><?php esc_attr_e( 'Menu Link Hover Color:', 'Avada' ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'menu_link_hover_color' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'menu_link_hover_color' ) ); ?>" value="<?php echo esc_attr( $instance['menu_link_hover_color'] ); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'sep_text' ); ?>"><?php _e( 'Separator Text:', 'Avada' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'sep_text' ); ?>" name="<?php echo $this->get_field_name( 'sep_text' ); ?>" value="<?php echo $instance['sep_text']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'sep_text' ) ); ?>"><?php esc_attr_e( 'Separator Text:', 'Avada' ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'sep_text' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'sep_text' ) ); ?>" value="<?php echo esc_attr( $instance['sep_text'] ); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'font_size' ); ?>"><?php _e( 'Font Size:', 'Avada' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'font_size' ); ?>" name="<?php echo $this->get_field_name( 'font_size' ); ?>" value="<?php echo $instance['font_size']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'font_size' ) ); ?>"><?php esc_attr_e( 'Font Size:', 'Avada' ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'font_size' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'font_size' ) ); ?>" value="<?php echo esc_attr( $instance['font_size'] ); ?>" />
 		</p>
 		<?php
 

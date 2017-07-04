@@ -1,4 +1,14 @@
 <?php
+/**
+ * Initializes Avada basic components.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      3.8
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -7,8 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Initializes Avada basic components.
- *
- * @since 3.8
  */
 class Avada_Init {
 
@@ -25,16 +33,15 @@ class Avada_Init {
 		add_action( 'after_setup_theme', array( $this, 'register_nav_menus' ) );
 		add_action( 'after_setup_theme', array( $this, 'add_image_size' ) );
 
-		if ( class_exists( 'BuddyPress' ) && ! is_buddypress() ) {
+		if ( class_exists( 'BuddyPress' ) && ! Avada_Helper::is_buddypress() ) {
 			add_action( 'init', array( $this, 'remove_buddypress_redirection' ), 5 );
 		}
 
-		add_action( 'widgets_init', array( $this, 'widget_init' ) );
-
-		// Check done for buddypress activation, might be good for other plugins too.
-		if ( ( isset( $_GET['plugin'] ) && false === strpos( $_GET['plugin'], 'woocommerce' ) && false === strpos( $_GET['plugin'], 'bbpress' ) && false === strpos( $_GET['plugin'], 'buddypress' ) && false === strpos( $_GET['plugin'], 'the-events-calendar' ) ) || ! isset( $_GET['plugin'] ) ) {
-			add_action( 'wp_loaded', array( $this, 'register_third_party_plugin_functions' ), 5 );
+		if ( class_exists( 'GF_User_Registration_Bootstrap' ) ) {
+			add_action( 'init', array( $this, 'change_gravity_user_registration_priority' ) );
 		}
+
+		add_action( 'widgets_init', array( $this, 'widget_init' ) );
 
 		add_action( 'wp', array( $this, 'set_theme_version' ) );
 
@@ -42,7 +49,8 @@ class Avada_Init {
 		add_filter( 'widget_text', 'do_shortcode' );
 
 		add_filter( 'wp_nav_menu_args', array( $this, 'main_menu_args' ), 5 );
-		add_action( 'admin_init', array( $this, 'theme_activation' ) );
+		add_action( 'after_switch_theme', array( $this, 'theme_activation' ) );
+		add_action( 'switch_theme', array( $this, 'theme_deactivation' ) );
 
 		// Term meta migration for WordPress 4.4.
 		add_action( 'avada_before_main_content', array( $this, 'youtube_flash_fix' ) );
@@ -50,9 +58,6 @@ class Avada_Init {
 
 		// Remove post_format from preview link.
 		add_filter( 'preview_post_link', array( $this, 'remove_post_format_from_link' ), 9999 );
-
-		// Add home url link for navigation menus.
-		add_filter( 'wp_nav_menu_objects', array( $this, 'set_correct_class_for_menu_items' ) );
 
 		add_filter( 'wp_tag_cloud', array( $this, 'remove_font_size_from_tagcloud' ) );
 
@@ -183,6 +188,17 @@ class Avada_Init {
 		add_theme_support( 'custom-background' );
 		// Woocommerce Support.
 		add_theme_support( 'woocommerce' );
+
+		add_theme_support( 'wc-product-gallery-slider' );
+
+		if ( '1' === Avada()->settings->get( 'enable_woo_gallery_zoom' ) ) {
+			add_theme_support( 'wc-product-gallery-zoom' );
+		}
+
+		if ( '1' !== Avada()->settings->get( 'disable_woo_gallery' ) ) {
+			add_theme_support( 'wc-product-gallery-lightbox' );
+		}
+
 		// Post Formats.
 		add_theme_support( 'post-formats', array( 'gallery', 'link', 'image', 'quote', 'video', 'audio', 'chat' ) );
 		// Add post thumbnail functionality.
@@ -198,11 +214,6 @@ class Avada_Init {
 	public function add_image_size() {
 		add_image_size( 'blog-large', 669, 272, true );
 		add_image_size( 'blog-medium', 320, 202, true );
-		add_image_size( 'portfolio-full', 940, 400, true );
-		add_image_size( 'portfolio-one', 540, 272, true );
-		add_image_size( 'portfolio-two', 460, 295, true );
-		add_image_size( 'portfolio-three', 300, 214, true );
-		add_image_size( 'portfolio-five', 177, 142, true );
 		add_image_size( 'recent-posts', 700, 441, true );
 		add_image_size( 'recent-works-thumbnail', 66, 66, true );
 		// Image sizes used for grid layouts.
@@ -211,112 +222,6 @@ class Avada_Init {
 		add_image_size( '600', 600, '', false );
 		add_image_size( '800', 800, '', false );
 		add_image_size( '1200', 1200, '', false );
-	}
-
-	/**
-	 * Register default functions when corresponding plugins are not activated.
-	 *
-	 * @access  public
-	 * @since 4.0 in init class.
-	 * @return bool
-	 */
-	public function register_third_party_plugin_functions() {
-
-		if ( ! function_exists( 'is_woocommerce' ) ) {
-
-			/**
-			 * Dummy function to avoid PHP Fatal Errors.
-			 *
-			 * @return false
-			 */
-			function is_woocommerce() {
-				return false;
-			}
-		}
-
-		if ( ! function_exists( 'is_bbpress' ) ) {
-
-			/**
-			 * Dummy function to avoid PHP Fatal Errors.
-			 *
-			 * @return false
-			 */
-			function is_bbpress() {
-				return false;
-			}
-		}
-
-		if ( ! function_exists( 'bbp_is_forum_archive' ) ) {
-
-			/**
-			 * Dummy function to avoid PHP Fatal Errors.
-			 *
-			 * @return false
-			 */
-			function bbp_is_forum_archive() {
-				return false;
-			}
-		}
-
-		if ( ! function_exists( 'bbp_is_topic_archive' ) ) {
-
-			/**
-			 * Dummy function to avoid PHP Fatal Errors.
-			 *
-			 * @return false
-			 */
-			function bbp_is_topic_archive() {
-				return false;
-			}
-		}
-
-		if ( ! function_exists( 'bbp_is_user_home' ) ) {
-
-			/**
-			 * Dummy function to avoid PHP Fatal Errors.
-			 *
-			 * @return false
-			 */
-			function bbp_is_user_home() {
-				return false;
-			}
-		}
-
-		if ( ! function_exists( 'bbp_is_search' ) ) {
-
-			/**
-			 * Dummy function to avoid PHP Fatal Errors.
-			 *
-			 * @return false
-			 */
-			function bbp_is_search() {
-				return false;
-			}
-		}
-
-		if ( ! function_exists( 'is_buddypress' ) ) {
-
-			/**
-			 * Dummy function to avoid PHP Fatal Errors.
-			 *
-			 * @return false
-			 */
-			function is_buddypress() {
-				return false;
-			}
-		}
-
-		if ( ! function_exists( 'tribe_is_event' ) ) {
-
-			/**
-			 * Dummy function to avoid PHP Fatal Errors.
-			 *
-			 * @return false
-			 */
-			function tribe_is_event() {
-				return false;
-			}
-		}
 	}
 
 	/**
@@ -340,15 +245,40 @@ class Avada_Init {
 	 */
 	public function theme_activation() {
 
-		global $pagenow;
+		update_option( 'shop_catalog_image_size',   array(
+			'width' => 500,
+			'height' => '',
+			0,
+		) );
+		update_option( 'shop_single_image_size',    array(
+			'width' => 700,
+			'height' => '',
+			0,
+		) );
+		update_option( 'shop_thumbnail_image_size', array(
+			'width' => 120,
+			'height' => '',
+			0,
+		) );
+		// Delete the patcher caches.
+		delete_site_transient( 'fusion_patcher_check_num' );
+		// Delete compiled JS.
+		avada_reset_all_cache();
 
-		if ( is_admin() && 'themes.php' == $pagenow && isset( $_GET['activated'] ) ) {
+	}
 
-			update_option( 'shop_catalog_image_size',   array( 'width' => 500, 'height' => '', 0 ) );
-			update_option( 'shop_single_image_size',    array( 'width' => 500, 'height' => '', 0 ) );
-			update_option( 'shop_thumbnail_image_size', array( 'width' => 120, 'height' => '', 0 ) );
+	/**
+	 * Theme activation actions.
+	 *
+	 * @access  public
+	 */
+	public function theme_deactivation() {
 
-		}
+		// Delete the patcher caches.
+		delete_site_transient( 'fusion_patcher_check_num' );
+		// Delete compiled JS.
+		avada_reset_all_cache();
+
 	}
 
 	/*
@@ -372,7 +302,7 @@ class Avada_Init {
 
 		global $post;
 
-		$c_page_id = Avada()->get_page_id();
+		$c_page_id = Avada()->fusion_library->get_page_id();
 
 		if ( get_post_meta( $c_page_id, 'pyre_displayed_menu', true ) &&
 			'default' !== get_post_meta( $c_page_id, 'pyre_displayed_menu', true ) &&
@@ -427,44 +357,6 @@ class Avada_Init {
 	}
 
 	/**
-	 * Modify menu items classes.
-	 *
-	 * @access public
-	 * @param  mixed $menu_items The menu items.
-	 * @return  mixed
-	 */
-	public function set_correct_class_for_menu_items( $menu_items ) {
-		global $wp_query, $wp_rewrite;
-		$url = get_home_url();
-		$url = str_replace( 'http://', '', $url );
-		$url = str_replace( 'https://', '', $url );
-
-		foreach ( (array) $menu_items as $key => $menu_item ) {
-
-			// Make sure we are in a custom menu item with a url placeholder.
-			if ( 'custom' == $menu_item->object && false !== strpos( $menu_item->url, 'fusion_home_url' ) ) {
-				// Replace the fusion_home_url placeholder with the home url.
-				$menu_item->url = str_replace( 'fusion_home_url', $url, $menu_item->url );
-
-				$_root_relative_current = untrailingslashit( $_SERVER['REQUEST_URI'] );
-				$current_url = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_root_relative_current );
-				$raw_item_url = strpos( $menu_item->url, '#' ) ? substr( $menu_item->url, 0, strpos( $menu_item->url, '#' ) ) : $menu_item->url;
-				$item_url = set_url_scheme( untrailingslashit( $raw_item_url ) );
-				$_indexless_current = untrailingslashit( preg_replace( '/' . preg_quote( $wp_rewrite->index, '/' ) . '$/', '', $current_url ) );
-
-				if ( $raw_item_url && in_array( $item_url, array( $current_url, $_indexless_current, $_root_relative_current ) ) ) {
-					$menu_items[ $key ]->classes[] = 'current-menu-item';
-					$menu_items[ $key ]->current = true;
-				} elseif ( home_url() == $item_url && is_front_page() ) {
-					$menu_items[ $key ]->classes[] = 'current-menu-item';
-				}
-			}
-		}
-
-	    return $menu_items;
-	}
-
-	/**
 	 * Removes font-sizes from the tagclouds.
 	 *
 	 * @param string $tagcloud The markup of tagclouds.
@@ -503,6 +395,19 @@ class Avada_Init {
 	}
 
 	/**
+	 * Changes the hook priority of the GF_User_Registration->maybe_activate_user() function.
+	 *
+	 * @since 5.1
+	 * @access public
+	 * @return void
+	 */
+	public function change_gravity_user_registration_priority() {
+		remove_action( 'wp', array( gf_user_registration(), 'maybe_activate_user' ) );
+		add_action( 'wp', array( gf_user_registration(), 'maybe_activate_user' ), 999 );
+	}
+
+
+	/**
 	 * Modifies the search filter.
 	 *
 	 * @param object $query The search query.
@@ -516,17 +421,17 @@ class Avada_Init {
 
 			$search_content = Avada()->settings->get( 'search_content' );
 
-			if ( 'all_post_types_no_pages' == $search_content ) {
+			if ( 'all_post_types_no_pages' === $search_content ) {
 				$query->set( 'post_type', array( 'post', 'avada_portfolio', 'product', 'tribe_events' ) );
-			} elseif ( 'Only Posts' == $search_content ) {
+			} elseif ( 'Only Posts' === $search_content ) {
 				$query->set( 'post_type', 'post' );
-			} elseif ( 'portfolio_items' == $search_content ) {
+			} elseif ( 'portfolio_items' === $search_content ) {
 				$query->set( 'post_type', 'avada_portfolio' );
-			} elseif ( 'Only Pages' == $search_content ) {
+			} elseif ( 'Only Pages' === $search_content ) {
 				$query->set( 'post_type', 'page' );
-			} elseif ( 'woocommerce_products' == $search_content ) {
+			} elseif ( 'woocommerce_products' === $search_content ) {
 				$query->set( 'post_type', 'product' );
-			} elseif ( 'tribe_events' == $search_content ) {
+			} elseif ( 'tribe_events' === $search_content ) {
 				$query->set( 'post_type', 'tribe_events' );
 			}
 		}

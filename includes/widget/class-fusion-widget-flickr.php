@@ -1,4 +1,13 @@
 <?php
+/**
+ * Widget Class.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,7 +30,9 @@ class Fusion_Widget_Flickr extends WP_Widget {
 			'classname'   => 'flickr',
 			'description' => __( 'The most recent photos from flickr.', 'Avada' ),
 		);
-		$control_ops = array( 'id_base' => 'flickr-widget' );
+		$control_ops = array(
+			'id_base' => 'flickr-widget',
+		);
 
 		parent::__construct( 'flickr-widget', 'Avada: Flickr', $widget_ops, $control_ops );
 
@@ -48,13 +59,13 @@ class Fusion_Widget_Flickr extends WP_Widget {
 			$api = 'c9d2c2fda03a2ff487cb4769dc0781ea';
 		}
 
-		echo $before_widget;
+		echo wp_kses_post( $before_widget );
 
 		if ( $title ) {
-			echo $before_title . $title . $after_title;
+			echo wp_kses_post( $before_title . $title . $after_title );
 		}
 		?>
-		<div id="fusion-<?php echo $args['widget_id']; ?>-images"></div>
+		<div id="fusion-<?php echo esc_attr( $args['widget_id'] ); ?>-images"></div>
 
 		<?php if ( $screen_name && $number && $api ) : ?>
 
@@ -86,17 +97,20 @@ class Fusion_Widget_Flickr extends WP_Widget {
 					photo.title + '"src="' + t_url + '"/>' + '</a></div>';
 				}
 
-				$container = document.getElementById( 'fusion-<?php echo $args['widget_id']; ?>-images' );
+				$container = document.getElementById( 'fusion-<?php echo esc_attr( $args['widget_id'] ); ?>-images' );
 				$container.innerHTML = s;
 			}
 			</script>
 
+			<?php // @codingStandardsIgnoreStart ?>
 			<script type="text/javascript" src="https://api.flickr.com/services/rest/?format=json&amp;method=flickr.photos.search&amp;user_id=<?php echo $screen_name; ?>&amp;api_key=<?php echo $api; ?>&amp;media=photos&amp;per_page=<?php echo $number; ?>&amp;privacy_filter=1"></script>
 			<script type="text/javascript" src="https://api.flickr.com/services/rest/?format=json&amp;method=flickr.photos.search&amp;group_id=<?php echo $screen_name; ?>&amp;api_key=<?php echo $api; ?>&amp;media=photos&amp;per_page=<?php echo $number; ?>&amp;privacy_filter=1"></script>
+			<?php // @codingStandardsIgnoreEnd ?>
 
-		<?php endif;
+		<?php
+		endif;
 
-		echo $after_widget;
+		echo wp_kses_post( $after_widget );
 
 	}
 
@@ -146,24 +160,24 @@ class Fusion_Widget_Flickr extends WP_Widget {
 		?>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'Avada' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_attr_e( 'Title:', 'Avada' ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $instance['title'] ); ?>" />
 		</p>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'screen_name' ); ?>"><?php printf( __( 'Flickr ID (<a href="%s">Get your flickr ID</s>):', 'Avada' ), $flickr_getid_url ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'screen_name' ); ?>" name="<?php echo $this->get_field_name( 'screen_name' ); ?>" value="<?php echo $instance['screen_name']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'screen_name' ) ); ?>"><?php echo wp_kses_post( sprintf( __( 'Flickr ID (<a href="%s">Get your flickr ID</s>):', 'Avada' ), esc_url_raw( $flickr_getid_url ) ) ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'screen_name' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'screen_name' ) ); ?>" value="<?php echo esc_attr( $instance['screen_name'] ); ?>" />
 		</p>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'number' ); ?>"><?php _e( 'Number of photos to show:', 'Avada' ); ?></label>
-			<input class="widefat" type="text" style="width: 30px;" id="<?php echo $this->get_field_id( 'number' ); ?>" name="<?php echo $this->get_field_name( 'number' ); ?>" value="<?php echo $instance['number']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>"><?php esc_attr_e( 'Number of photos to show:', 'Avada' ); ?></label>
+			<input class="widefat" type="text" style="width: 30px;" id="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'number' ) ); ?>" value="<?php echo esc_attr( $instance['number'] ); ?>" />
 		</p>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'api' ); ?>"><?php printf( __( 'API key (Use default or get your own from <a href="%s">Flickr APP Garden</a>):', 'Avada' ), $flickr_apply_url ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'api' ); ?>" name="<?php echo $this->get_field_name( 'api' ); ?>" value="<?php echo $instance['api']; ?>" />
-			<small><?php printf( __( 'Default key is: %s', 'Avada' ), 'c9d2c2fda03a2ff487cb4769dc0781ea' ); ?></small>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'api' ) ); ?>"><?php wp_kses_post( sprintf( __( 'API key (Use default or get your own from <a href="%s">Flickr APP Garden</a>):', 'Avada' ), esc_url_raw( $flickr_apply_url ) ) ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'api' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'api' ) ); ?>" value="<?php echo esc_attr( $instance['api'] ); ?>" />
+			<small><?php wp_kses_post( sprintf( __( 'Default key is: %s', 'Avada' ), 'c9d2c2fda03a2ff487cb4769dc0781ea' ) ); ?></small>
 		</p>
 
 	<?php

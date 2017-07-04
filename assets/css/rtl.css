@@ -1,20 +1,20 @@
 /* =================================================================================================
 Table of Contents
 ----------------------------------------------------------------------------------------------------
-	01 General Styles
-	02 Header Styles
-	03 Main Menu Styles
-	04 Secondary Menu Styles
-	05 Common Menu Styles
-	06 Megamenu Styles
-	07 Mobile Menu Styles
-	08 Page Title Bar
-	09 Blog Layout Styles
-	10 Author Page - Info
-	11 Footer
-	12 Shortcodes
-	13 Woocommerce
-	14 Events Calendar
+  01 General Styles
+  02 Header Styles
+  03 Main Menu Styles
+  04 Secondary Menu Styles
+  05 Common Menu Styles
+  06 Megamenu Styles
+  07 Mobile Menu Styles
+  08 Page Title Bar
+  09 Blog Layout Styles
+  10 Author Page - Info
+  11 Footer
+  12 Shortcodes
+  13 Woocommerce
+  14 Events Calendar
 
 ================================================================================================= */
 .rtl {
@@ -459,8 +459,18 @@ Table of Contents
 .rtl .fusion-main-menu .sub-menu {
   text-align: right;
 }
-.rtl.fusion-top-header .fusion-main-menu .sub-menu {
+.rtl.fusion-top-header .fusion-main-menu > .sub-menu {
   right: 0 !important;
+}
+.rtl.fusion-top-header .fusion-main-menu .sub-menu ul {
+  top: -3px !important;
+  left: auto;
+}
+.rtl.fusion-top-header .sub-menu {
+  right: 0 !important;
+}
+.rtl.fusion-top-header .sub-menu ul {
+  right: 100% !important;
 }
 .rtl.side-header-right .fusion-main-menu .sub-menu {
   right: auto !important;
@@ -531,9 +541,11 @@ Table of Contents
 .rtl .fusion-menu-login-box .fusion-menu-login-box-register {
   float: left;
 }
-.rtl .fusion-megamenu-wrapper {
+.rtl .fusion-header-wrapper .fusion-megamenu-wrapper {
   left: auto;
   right: 0;
+}
+.rtl .fusion-megamenu-wrapper {
   text-align: right;
 }
 .rtl .fusion-megamenu-wrapper .menu-text {
@@ -550,10 +562,6 @@ Table of Contents
 }
 .rtl .fusion-megamenu-wrapper .fusion-megamenu-submenu:last-child {
   border-right: 1px solid;
-}
-.rtl .fusion-megamenu-icon {
-  margin-right: 0;
-  margin-left: 12px;
 }
 .rtl .fusion-megamenu-bullet {
   float: right;
@@ -775,8 +783,8 @@ Table of Contents
 .rtl .close {
   float: left;
 }
-.rtl .fusion-carousel-title-below-image .fusion-carousel-title,
-.rtl .fusion-carousel-title-below-image .fusion-carousel-meta {
+.rtl .fusion-carousel-title-below-image .fusion-carousel-meta,
+.rtl .fusion-carousel-title-below-image .fusion-carousel-title {
   text-align: right;
 }
 .rtl .modal-footer {
@@ -1170,8 +1178,12 @@ Table of Contents
   padding-left: 10px;
   padding-right: 0;
 }
+.rtl .woocommerce-address-fields p:first-of-type {
+  text-align: left;
+}
 .rtl form .woocommerce-Button,
-.rtl form button {
+.rtl form button,
+.rtl form input.button {
   float: left;
 }
 .rtl .avada-myaccount-user > span {
@@ -1273,6 +1285,9 @@ Table of Contents
 }
 .rtl .product-buttons a:last-child {
   float: left;
+}
+.rtl .avada-single-product-gallery-wrapper {
+  float: right;
 }
 .rtl .product .images {
   float: right;

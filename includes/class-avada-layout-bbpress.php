@@ -1,4 +1,15 @@
 <?php
+/**
+ * The main class to alter bbPress output.
+ * Anything that does not need a template override, should be added here.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      3.8.6
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -8,8 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The main class to alter bbPress output.
  * Anything that does not need a template override, should be added here.
- *
- * @since 3.8.6
  */
 class Avada_Layout_bbPress extends Avada_Layout {
 
@@ -90,7 +99,7 @@ class Avada_Layout_bbPress extends Avada_Layout {
 		?>
 		<div class="bbp-reply-post-date"><?php bbp_reply_post_date( bbp_get_reply_id() ); ?></div>
 
-		<div class="bbps-post-count"><?php printf( __( 'Post count: %s', 'Avada' ), bbp_get_user_reply_count_raw( bbp_get_reply_author_id() ) + bbp_get_user_topic_count_raw( bbp_get_reply_author_id() ) ); ?></div>
+		<div class="bbps-post-count"><?php printf( esc_attr__( 'Post count: %s', 'Avada' ), absint( bbp_get_user_reply_count_raw( bbp_get_reply_author_id() ) + bbp_get_user_topic_count_raw( bbp_get_reply_author_id() ) ) ); ?></div>
 
 		<?php if ( bbp_is_user_keymaster() ) : ?>
 
@@ -125,14 +134,14 @@ class Avada_Layout_bbPress extends Avada_Layout {
 	public function add_search_page_search_form() {
 		?>
 		<div class="search-page-search-form search-page-search-form-top">
-			<h2><?php _e( 'Need a new search?', 'Avada' ); ?></h2>
-			<p><?php _e( 'If you didn\'t find what you were looking for, try a new search!', 'Avada' ); ?></p>
+			<h2><?php esc_attr_e( 'Need a new search?', 'Avada' ); ?></h2>
+			<p><?php esc_attr_e( 'If you didn\'t find what you were looking for, try a new search!', 'Avada' ); ?></p>
 			<form role="search" method="get" class="bbp-search-form seach-form searchform" action="<?php bbp_search_url(); ?>">
 				<div class="search-table">
-					<label class="screen-reader-text hidden" for="bbp_search"><?php _e( 'Search for:', 'bbpress' ); ?></label>
+					<label class="screen-reader-text hidden" for="bbp_search"><?php esc_attr_e( 'Search for:', 'bbpress' ); ?></label>
 					<input type="hidden" name="action" value="bbp-search-request" />
 					<div class="search-field">
-						<input tabindex="<?php bbp_tab_index(); ?>" type="text" value="<?php echo esc_attr( bbp_get_search_terms() ); ?>" placeholder="<?php _e( 'Search the Forum...', 'Avada' ); ?>" name="bbp_search" id="bbp_search" />
+						<input tabindex="<?php bbp_tab_index(); ?>" type="text" value="<?php echo esc_attr( bbp_get_search_terms() ); ?>" placeholder="<?php esc_attr_e( 'Search the Forum...', 'Avada' ); ?>" name="bbp_search" id="bbp_search" />
 					</div>
 					<div class="search-button">
 						<input tabindex="<?php bbp_tab_index(); ?>" class="fusion-button button submit" type="submit" id="bbp_search_submit" value="&#xf002;" />

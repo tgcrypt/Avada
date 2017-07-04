@@ -1,4 +1,14 @@
 <?php
+/**
+ * Fonts handling.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      3.8
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -7,8 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Fonts handling.
- *
- * @since 3.8
  */
 class Avada_Fonts {
 
@@ -29,10 +37,11 @@ class Avada_Fonts {
 	 */
 	public function mime_types( $mimes ) {
 
-		$mimes['ttf']  = 'font/ttf';
-		$mimes['woff'] = 'font/woff';
-		$mimes['svg']  = 'font/svg';
-		$mimes['eot']  = 'font/eot';
+		$mimes['ttf']   = 'font/ttf';
+		$mimes['woff']  = 'font/woff';
+		$mimes['svg']   = 'font/svg';
+		$mimes['eot']   = 'font/eot';
+		$mimes['woff2'] = 'font/woff2';
 
 		return $mimes;
 

@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -29,7 +39,7 @@ function avada_options_section_portfolio( $sections ) {
 				'fields'      => array(
 					'general_portfolio_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab control the portfolio elements and portfolio archives. Element options can override these Theme Options.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab control the portfolio elements and portfolio archives. Element options can override these Theme Options.', 'Avada' ) . '</div>',
 						'id'          => 'general_portfolio_important_note_info',
 						'type'        => 'custom',
 					),
@@ -52,7 +62,6 @@ function avada_options_section_portfolio( $sections ) {
 							'Portfolio Four Column Text'  => esc_html__( 'Portfolio Four Column Text', 'Avada' ),
 							'Portfolio Five Column Text'  => esc_html__( 'Portfolio Five Column Text', 'Avada' ),
 							'Portfolio Six Column Text'   => esc_html__( 'Portfolio Six Column Text', 'Avada' ),
-							'Portfolio Grid'              => esc_html__( 'Portfolio Grid', 'Avada' ),
 						),
 					),
 					'portfolio_items' => array(

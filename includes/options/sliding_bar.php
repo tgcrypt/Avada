@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,7 +33,7 @@ function avada_options_section_sliding_bar( $sections ) {
 				'label'       => esc_html__( 'Sliding Bar on Desktops', 'Avada' ),
 				'description' => esc_html__( 'Turn on to display the sliding bar on desktops.', 'Avada' ),
 				'id'          => 'slidingbar_widgets',
-				'default'     => '1',
+				'default'     => '0',
 				'type'        => 'switch',
 			),
 			'mobile_slidingbar_widgets' => array(

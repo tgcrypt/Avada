@@ -23,8 +23,10 @@ add_action( 'wp_ajax_fusion_import_demo_data', 'fusion_importer' );
 function fusion_importer() {
 	global $wpdb;
 
+	check_ajax_referer( 'avada_demo_ajax', 'security' );
+
 	// Include the remote file getter.
-	include 'class-avada-importer-data.php';
+	include_once wp_normalize_path( dirname( __FILE__ ) . '/class-avada-importer-data.php');
 
 	if ( current_user_can( 'manage_options' ) ) {
 		if ( ! defined( 'WP_LOAD_IMPORTERS' ) ) {
@@ -37,7 +39,7 @@ function fusion_importer() {
 		}
 
 		if ( ! class_exists( 'WP_Import' ) ) { // If WP importer doesn't exist.
-			$wp_import = get_template_directory() . '/includes/plugins/importer/wordpress-importer.php';
+			$wp_import = Avada::$template_dir_path . '/includes/plugins/importer/wordpress-importer.php';
 			include $wp_import;
 		}
 
@@ -57,6 +59,9 @@ function fusion_importer() {
 				}
 			}
 
+			if ( ! class_exists( 'Avada_Importer_Data' ) ) {
+				include_once wp_normalize_path( Avada::$template_dir_path . '/includes/plugins/importer/class-avada-importer-data.php' );
+			}
 			// Get remote files and save locally.
 			$importer_files = new Avada_Importer_Data( $demo_type );
 
@@ -71,7 +76,7 @@ function fusion_importer() {
 			$woopages       = $importer_files->get_woopages();
 			$fs_exists      = true;
 
-			if ( 'landing_product' == $demo_type ) {
+			if ( 'landing_product' === $demo_type ) {
 				$fs_exists = false;
 			}
 
@@ -112,114 +117,134 @@ function fusion_importer() {
 			$menus = wp_get_nav_menus(); // Registered menus.
 
 			if ( $menus ) {
-				if ( 'classic' == $demo_type ) {
-					$opmenu = get_page_by_title( 'One Page' );
+				if ( 'classic' === $demo_type ) {
+					$opmenu = get_page_by_title( 'One Page Parallax' );
 				} elseif ( 'landing_product' == $demo_type ) {
 					$opmenu = get_page_by_title( 'Homepage' );
 				}
 				foreach ( $menus as $menu ) { // Assign menus to theme locations.
-					if ( 'classic' == $demo_type ) {
-						if ( 'Main' == $menu->name ) {
+					if ( 'classic' === $demo_type ) {
+						if ( 'Main' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
-						} elseif ( '404' == $menu->name ) {
+						} elseif ( '404' === $menu->name ) {
 							$locations['404_pages'] = $menu->term_id;
-						} elseif ( 'Top' == $menu->name ) {
+						} elseif ( 'Top' === $menu->name ) {
 							$locations['top_navigation'] = $menu->term_id;
 						}
 
 						// Assign One Page Menu.
-						if ( isset( $opmenu ) && $opmenu->ID && 'One Page' == $menu->name ) {
+						if ( isset( $opmenu ) && $opmenu->ID && 'One Page' === $menu->name ) {
 							update_post_meta( $opmenu->ID, 'pyre_displayed_menu', $menu->term_id );
 						}
-					} elseif ( 'agency' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'agency' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'app' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'app' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'travel' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'travel' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'cafe' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'cafe' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
 					} elseif ( 'fashion' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'architecture' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'architecture' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'hosting' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'hosting' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'hotel' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'hotel' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'law' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'law' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'lifestyle' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'lifestyle' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'church' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'church' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'gym' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'gym' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'photography' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'photography' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'modern_shop' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'modern_shop' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'classic_shop' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'classic_shop' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						} elseif ( 'Top Secondary Menu' == $menu->name ) {
 							$locations['top_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'landing_product' == $demo_type ) {
+					} elseif ( 'landing_product' === $demo_type ) {
 						// Assign One Page Menu.
-						if ( isset( $opmenu ) && $opmenu->ID && 'Landing Page Menu' == $menu->name ) {
+						if ( isset( $opmenu ) && $opmenu->ID && 'Landing Page Menu' === $menu->name ) {
 							update_post_meta( $opmenu->ID, 'pyre_displayed_menu', $menu->term_id );
 						}
 
-						if ( 'Main Menu' == $menu->name ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'forum' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'forum' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'resume' == $demo_type ) {
-						if ( 'Main' == $menu->name ) {
+					} elseif ( 'resume' === $demo_type ) {
+						if ( 'Main' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'wedding' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'wedding' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'health' == $demo_type ) {
-						if ( 'Main' == $menu->name ) {
+					} elseif ( 'health' === $demo_type ) {
+						if ( 'Main' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
-					} elseif ( 'technology' == $demo_type ) {
-						if ( 'Main Menu' == $menu->name ) {
+					} elseif ( 'technology' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
+							$locations['main_navigation'] = $menu->term_id;
+						}
+					} elseif ( 'charity' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
+							$locations['main_navigation'] = $menu->term_id;
+						}
+					} elseif ( 'construction' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
+							$locations['main_navigation'] = $menu->term_id;
+						}
+					} elseif ( 'creative' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
+							$locations['main_navigation'] = $menu->term_id;
+						}
+					} elseif ( 'daycare' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
+							$locations['main_navigation'] = $menu->term_id;
+						}
+					} elseif ( 'veterinarian' === $demo_type ) {
+						if ( 'Main Menu' === $menu->name ) {
 							$locations['main_navigation'] = $menu->term_id;
 						}
 					}
@@ -232,6 +257,8 @@ function fusion_importer() {
 			$theme_options_json = file_get_contents( $theme_options_file );
 			$theme_options = json_decode( $theme_options_json, true );
 			$theme_options['logo_retina'] = '';
+			$theme_options['sticky_header_logo_retina'] = '';
+			$theme_options['mobile_logo_retina'] = '';
 			$theme_options_db_name = Avada::get_original_option_name();
 			update_option( $theme_options_db_name, $theme_options );
 
@@ -261,7 +288,7 @@ function fusion_importer() {
 			}
 
 			// Import Layerslider.
-			if ( file_exists( WP_PLUGIN_DIR . '/LayerSlider/classes/class.ls.importutil.php' ) && false !== $importer_files->get_layerslider() ) {
+			if ( defined( 'LS_PLUGIN_VERSION' ) && file_exists( WP_PLUGIN_DIR . '/LayerSlider/classes/class.ls.importutil.php' ) && false !== $importer_files->get_layerslider() ) {
 				// Get importUtil.
 				include WP_PLUGIN_DIR . '/LayerSlider/classes/class.ls.importutil.php';
 
@@ -277,7 +304,7 @@ function fusion_importer() {
 
 				// Get sliders.
 				$sliders = $wpdb->get_results( "SELECT * FROM $table_name WHERE flag_hidden = '0' AND flag_deleted = '0' ORDER BY date_c ASC" );
-
+				$slides = array();
 				if ( ! empty( $sliders ) ) {
 					foreach ( $sliders as $key => $item ) {
 						$slides[ $item->id ] = $item->name;
@@ -326,10 +353,13 @@ function fusion_importer() {
 
 			// Fusion Sliders Import.
 			if ( true == $fs_exists ) {
-				@avada_import_fsliders( $fs_url );
+				@avada_import_fsliders( $fs_url, $demo_type );
 			}
 
 			update_option( 'avada_imported_demo', 'true' );
+
+			// Reset all caches.
+			avada_reset_all_cache();
 
 			echo 'imported';
 
@@ -351,7 +381,7 @@ function fusion_import_widget_data( $widget_data ) {
 	$widget_data = $json_data[1];
 
 	foreach ( $widget_data as $widget_data_title => $widget_data_value ) {
-		$widgets[ $widget_data_title ] = '';
+		$widgets[ $widget_data_title ] = array();
 		foreach ( $widget_data_value as $widget_data_key => $widget_data_array ) {
 			if ( is_int( $widget_data_key ) ) {
 				$widgets[ $widget_data_title ][ $widget_data_key ] = 'on';
@@ -554,24 +584,27 @@ function avada_name_to_class( $name ) {
 /**
  * Import Fusion Sliders.
  *
- * @param string $zip_file The path to the zip file.
+ * @param string $zip_file  The path to the zip file.
+ * @param string $demo_type The demo name.
  */
-function avada_import_fsliders( $zip_file ) {
+function avada_import_fsliders( $zip_file, $demo_type = '' ) {
 	$upload_dir = wp_upload_dir();
-	$base_dir = trailingslashit( $upload_dir['basedir'] );
-	$fs_dir = $base_dir . 'fusion_slider_exports/';
+	$base_dir   = trailingslashit( $upload_dir['basedir'] );
+	$fs_dir     = $base_dir . 'fusion_slider_exports/';
 
-	@unlink( $fs_dir . 'sliders.xml' );
-	@unlink( $fs_dir . 'settings.json' );
+	// Init the filesystem.
+	$filesystem = Fusion_Helper::init_filesystem();
 
-	if ( file_exists( $fs_dir ) && is_dir( $fs_dir ) ) {
-		@fusion_slider_delete_dir( $fs_dir );
-	}
+	// Delete existing folder
+	$filesystem->delete( $fs_dir, true, 'd' );
 
-	$zip = new ZipArchive();
-	$zip->open( $zip_file );
-	$zip->extractTo( $fs_dir );
-	$zip->close();
+	// Unzip file to folder.
+	unzip_file( $zip_file, $fs_dir );
+
+	// Replace remote URLs with local ones.
+	$sliders_xml = $filesystem->get_contents( $fs_dir . 'sliders.xml' );
+	$sliders_xml = preg_replace_callback( '/(?<=<wp:meta_value><!\[CDATA\[)(https?:\/\/avada.theme-fusion.com)+(.*?)(?=]]><)/', 'fusion_fs_importer_replace_url', $sliders_xml );
+	$filesystem->put_contents( $fs_dir . 'sliders.xml', $sliders_xml );
 
 	if ( ! defined( 'WP_LOAD_IMPORTERS' ) ) {
 		define( 'WP_LOAD_IMPORTERS', true );
@@ -594,41 +627,43 @@ function avada_import_fsliders( $zip_file ) {
 			$thumbnail_ids[ get_post_meta( get_the_ID(), '_thumbnail_id', true ) ] = get_the_ID();
 		}
 
-		foreach ( new DirectoryIterator( $fs_dir ) as $file ) {
-			if ( $file->isDot() || $file->getFilename() == '.DS_Store' ) {
-				continue;
-			}
+		if ( is_dir( $fs_dir ) ) {
+			foreach ( new DirectoryIterator( $fs_dir ) as $file ) {
+				if ( $file->isDot() || $file->getFilename() == '.DS_Store' ) {
+					continue;
+				}
 
-			$image_path = pathinfo( $fs_dir . $file->getFilename() );
-			if ( 'xml' != $image_path['extension'] && 'json' != $image_path['extension'] ) {
-				$filename = $image_path['filename'];
-				$new_image_path = $upload_dir['path'] . '/' . $image_path['basename'];
-				$new_image_url = $upload_dir['url'] . '/' . $image_path['basename'];
-				@copy( $fs_dir . $file->getFilename(), $new_image_path );
+				$image_path = pathinfo( $fs_dir . $file->getFilename() );
+				if ( 'xml' != $image_path['extension'] && 'json' != $image_path['extension'] ) {
+					$filename = $image_path['filename'];
+					$new_image_path = $upload_dir['path'] . '/' . $image_path['basename'];
+					$new_image_url = $upload_dir['url'] . '/' . $image_path['basename'];
+					@copy( $fs_dir . $file->getFilename(), $new_image_path );
 
-				// Check the type of tile. We'll use this as the 'post_mime_type'.
-				$filetype = wp_check_filetype( basename( $new_image_path ), null );
+					// Check the type of tile. We'll use this as the 'post_mime_type'.
+					$filetype = wp_check_filetype( basename( $new_image_path ), null );
 
-				// Prepare an array of post data for the attachment.
-				$attachment = array(
-					'guid'		   => $new_image_url,
-					'post_mime_type' => $filetype['type'],
-					'post_title'	 => preg_replace( '/\.[^.]+$/', '', basename( $new_image_path ) ),
-					'post_content'   => '',
-					'post_status'	=> 'inherit',
-				);
+					// Prepare an array of post data for the attachment.
+					$attachment = array(
+						'guid'		   => $new_image_url,
+						'post_mime_type' => $filetype['type'],
+						'post_title'	 => preg_replace( '/\.[^.]+$/', '', basename( $new_image_path ) ),
+						'post_content'   => '',
+						'post_status'	=> 'inherit',
+					);
 
-				// Insert the attachment.
-				$attach_id = wp_insert_attachment( $attachment, $new_image_path, $thumbnail_ids[ $filename ] );
+					// Insert the attachment.
+					$attach_id = wp_insert_attachment( $attachment, $new_image_path, $thumbnail_ids[ $filename ] );
 
-				// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
-				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+					// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+					require_once wp_normalize_path( ABSPATH . '/wp-admin/includes/image.php' );
 
-				// Generate the metadata for the attachment, and update the database record.
-				$attach_data = wp_generate_attachment_metadata( $attach_id, $new_image_path );
-				wp_update_attachment_metadata( $attach_id, $attach_data );
+					// Generate the metadata for the attachment, and update the database record.
+					$attach_data = wp_generate_attachment_metadata( $attach_id, $new_image_path );
+					wp_update_attachment_metadata( $attach_id, $attach_data );
 
-				set_post_thumbnail( $thumbnail_ids[ $filename ], $attach_id );
+					set_post_thumbnail( $thumbnail_ids[ $filename ], $attach_id );
+				}
 			}
 		}
 
@@ -720,6 +755,28 @@ function fusion_get_import_files( $directory, $filetype ) {
 	}
 
 	return $files;
+}
+
+function fusion_fs_importer_replace_url( $matches ) {
+	// Get the uploads folder.
+	$wp_upload_dir = wp_upload_dir();
+	if ( is_array( $matches ) ) {
+		foreach ( $matches as $key => $match ) {
+			if ( false !== strpos( $match, 'wp-content/uploads/sites/' ) ) {
+				$parts = explode( 'wp-content/uploads/sites/', $match );
+				if ( isset( $parts[1] ) ) {
+					$sub_parts = explode( '/', $parts[1] );
+					unset( $sub_parts[0] );
+					$parts[1] = implode( '/', $sub_parts );
+
+					// append the url to the uploads url.
+					$parts[0] = $wp_upload_dir['baseurl'];
+					return implode( '/', $parts );
+				}
+			}
+		}
+	}
+	return $matches;
 }
 
 /* Omit closing PHP tag to avoid "Headers already sent" issues. */

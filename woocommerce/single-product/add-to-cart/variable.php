@@ -21,11 +21,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $product;
 
+if ( ! $product ) {
+	return;
+}
+
 $attribute_keys = array_keys( $attributes );
 
 do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 
-<form class="variations_form cart" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->id ); ?>" data-product_variations="<?php echo htmlspecialchars( wp_json_encode( $available_variations ) ) ?>">
+<form class="variations_form cart" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->get_id() ); ?>" data-product_variations="<?php echo htmlspecialchars( wp_json_encode( $available_variations ) ) ?>">
 	<?php do_action( 'woocommerce_before_variations_form' ); ?>
 
 	<?php if ( empty( $available_variations ) && false !== $available_variations ) : ?>
@@ -44,7 +48,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 						</td>
 					</tr>
 		        <?php endforeach;?>
-				<?php // Avada edit. ?>
+				<?php // ThemeFusion edit for Avada theme: move the price reset button. ?>
 				  <tr>
 					<td class="label"></td>
 					<td class="value">

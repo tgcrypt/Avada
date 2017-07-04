@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,7 +31,7 @@ function avada_options_section_colors( $sections ) {
 		'fields'   => array(
 			'colors_important_note_info' => array(
 				'label'       => '',
-				'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> This tab contains general color options. Additional color options for specific areas, can be found within other tabs. Example: For menu color options go to the menu tab.', 'Avada' ) . '</div>',
+				'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> This tab contains general color options. Additional color options for specific areas, can be found within other tabs. Example: For menu color options go to the menu tab.', 'Avada' ) . '</div>',
 				'id'          => 'colors_important_note_info',
 				'type'        => 'custom',
 			),
@@ -35,12 +45,12 @@ function avada_options_section_colors( $sections ) {
 					'Light' => array(
 						'label'    => esc_html__( 'Light', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/ffffff.png',
-						'settings' => Avada_Data::color_theme( 'light' ),
+						'settings' => Fusion_Data::color_theme( 'light' ),
 					),
 					'Dark' => array(
 						'label'    => esc_html__( 'Dark', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/29292a.png',
-						'settings' => Avada_Data::color_theme( 'dark' ),
+						'settings' => Fusion_Data::color_theme( 'dark' ),
 					),
 				),
 			),
@@ -54,52 +64,52 @@ function avada_options_section_colors( $sections ) {
 					'Red'        => array(
 						'label'    => esc_html__( 'Red', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/e10707.png',
-						'settings' => Avada_Data::color_theme( 'red' ),
+						'settings' => Fusion_Data::color_theme( 'red' ),
 					),
 					'Light Red'  => array(
 						'label'    => esc_html__( 'Light Red', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/f05858.png',
-						'settings' => Avada_Data::color_theme( 'lightred' ),
+						'settings' => Fusion_Data::color_theme( 'lightred' ),
 					),
 					'Blue'       => array(
 						'label'    => esc_html__( 'Blue', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/1a80b6.png',
-						'settings' => Avada_Data::color_theme( 'blue' ),
+						'settings' => Fusion_Data::color_theme( 'blue' ),
 					),
 					'Light Blue' => array(
 						'label'    => esc_html__( 'Light Blue', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/67b7e1.png',
-						'settings' => Avada_Data::color_theme( 'lightblue' ),
+						'settings' => Fusion_Data::color_theme( 'lightblue' ),
 					),
 					'Green'      => array(
 						'label'    => esc_html__( 'Green', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/a0ce4e.png',
-						'settings' => Avada_Data::color_theme( 'green' ),
+						'settings' => Fusion_Data::color_theme( 'green' ),
 					),
 					'Dark Green' => array(
 						'label'    => esc_html__( 'Dark Green', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/9db668.png',
-						'settings' => Avada_Data::color_theme( 'darkgreen' ),
+						'settings' => Fusion_Data::color_theme( 'darkgreen' ),
 					),
 					'Orange'     => array(
 						'label'    => esc_html__( 'Orange', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/e9a825.png',
-						'settings' => Avada_Data::color_theme( 'orange' ),
+						'settings' => Fusion_Data::color_theme( 'orange' ),
 					),
 					'Pink'       => array(
 						'label'    => esc_html__( 'Pink', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/e67fb9.png',
-						'settings' => Avada_Data::color_theme( 'pink' ),
+						'settings' => Fusion_Data::color_theme( 'pink' ),
 					),
 					'Brown'      => array(
 						'label'    => esc_html__( 'Brown', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/ab8b65.png',
-						'settings' => Avada_Data::color_theme( 'brown' ),
+						'settings' => Fusion_Data::color_theme( 'brown' ),
 					),
 					'Light Grey' => array(
 						'label'    => esc_html__( 'Light Grey', 'Avada' ),
 						'image'    => Avada::$template_dir_url . '/assets/images/colors/9e9e9e.png',
-						'settings' => Avada_Data::color_theme( 'lightgrey' ),
+						'settings' => Fusion_Data::color_theme( 'lightgrey' ),
 					),
 				),
 			),
@@ -195,7 +205,7 @@ function avada_options_section_colors( $sections ) {
 		</div>';
 
 	// Add all buttons and markup to field description.
-	$sections['colors']['fields']['custom_color']['description'] = '<div class="avada-custom-color-scheme">'
+	$sections['colors']['fields']['custom_color']['description'] = '<div class="fusion-custom-color-scheme">'
 			 . $buttons . $save . $update . $import . $export . $delete . '</div>';
 
 	// Add each scheme as an option.

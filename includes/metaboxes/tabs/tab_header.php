@@ -1,4 +1,13 @@
 <?php
+/**
+ * Header Metabox options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -55,7 +64,7 @@ $this->range(
 	'0',
 	'1',
 	'0.01',
-	Avada_Color::new_color( Avada()->settings->get( 'header_bg_color' ) )->alpha,
+	Fusion_Color::new_color( Avada()->settings->get( 'header_bg_color' ) )->alpha,
 	'',
 	array(
 		array(
@@ -125,7 +134,9 @@ $this->select(
 	)
 );
 
-$menus = get_terms( 'nav_menu', array( 'hide_empty' => false ) );
+$menus = get_terms( 'nav_menu', array(
+	'hide_empty' => false,
+) );
 $menu_select['default'] = 'Default Menu';
 
 foreach ( $menus as $menu ) {

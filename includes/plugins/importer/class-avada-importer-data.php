@@ -1,4 +1,13 @@
 <?php
+/**
+ * Imports demo data from our remote server.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 /**
  * The class responsible for importing data remotely.
@@ -104,9 +113,12 @@ class Avada_Importer_Data {
 			$demos = json_decode( $demos, true );
 
 			// Get the demo details from the remote server.
-			$remote_demos = wp_remote_retrieve_body( wp_remote_get( self::$remote_server ) );
+			$args = array(
+				'user-agent' => 'avada-user-agent',
+			);
+			$remote_demos = wp_remote_retrieve_body( wp_remote_get( self::$remote_server, $args ) );
 			$remote_demos = json_decode( $remote_demos, true );
-			if ( ! empty( $remote_demos ) && $remote_demos && json_last_error() === JSON_ERROR_NONE ) {
+			if ( ! empty( $remote_demos ) && $remote_demos && function_exists( 'json_last_error' ) && json_last_error() === JSON_ERROR_NONE ) {
 				$demos = $remote_demos;
 			}
 			set_transient( 'avada_demos', $demos, WEEK_IN_SECONDS );
@@ -146,18 +158,18 @@ class Avada_Importer_Data {
 		}
 
 		// Initialize the Wordpress filesystem.
-		global $wp_filesystem;
+		$wp_filesystem = Fusion_Helper::init_filesystem();
 		if ( ! defined( 'FS_CHMOD_DIR' ) ) {
 			define( 'FS_CHMOD_DIR', ( 0755 & ~ umask() ) );
 		}
 		if ( ! defined( 'FS_CHMOD_FILE' ) ) {
 			define( 'FS_CHMOD_FILE', ( 0644 & ~ umask() ) );
 		}
-		Avada_Helper::init_filesystem();
 
 		$unzipfile = unzip_file( $folder_path . 'data.zip', $folder_path );
 
 		if ( $unzipfile ) {
+			$this->xml_replacements();
 			return true;
 		}
 
@@ -167,10 +179,80 @@ class Avada_Importer_Data {
 			if ( true === $zip->open( $folder_path . 'data.zip' ) ) {
 				$zip->extractTo( $folder_path );
 				$zip->close();
+				$this->xml_replacements();
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Fixes menus paths in xml files.
+	 *
+	 * @access private
+	 * @since 5.1.0
+	 * @return bool
+	 */
+	private function xml_replacements() {
+
+		// Get the files path.
+		$xml_file_path  = wp_normalize_path( $this->basedir . '/' . $this->demo . '_demo/avada.xml' );
+		$json_file_path = wp_normalize_path( $this->basedir . '/' . $this->demo . '_demo/widget-data.json' );
+
+		// Initialize the filesystem.
+		$wp_filesystem = Fusion_Helper::init_filesystem();
+
+		// Get the files contents.
+		$xml_content  = $wp_filesystem->get_contents( $xml_file_path );
+		$json_content = $wp_filesystem->get_contents( $json_file_path );
+
+		// Replace placeholders.
+		$home_url = untrailingslashit( get_home_url() );
+		$demo     = str_replace( '_', '-', $this->demo );
+
+		// Replace URLs.
+		$xml_content = str_replace(
+			array(
+				'http://avada.theme-fusion.com/' . $demo,
+				'https://avada.theme-fusion.com/' . $demo,
+			),
+			$home_url,
+			$xml_content
+		);
+		$json_content = str_replace(
+			array(
+				str_replace( '/', '\\/', 'http://avada.theme-fusion.com/' . $demo ),
+				str_replace( '/', '\\/', 'https://avada.theme-fusion.com/' . $demo ),
+			),
+			str_replace( '/', '\\/', $home_url ),
+			$json_content
+		);
+
+		// Make sure assets are still from the remote server.
+		// We can use http instead of https here for performance reasons
+		// since static assets don't require https anyway.
+		$xml_content = str_replace(
+			$home_url . '/wp-content/',
+			'http://avada.theme-fusion.com/' . $demo . '/wp-content/',
+			$xml_content
+		);
+
+		// Take care of assets.
+		$xml_content = preg_replace_callback( '/(?<=<wp:meta_value><!\[CDATA\[)(https?:\/\/avada.theme-fusion.com)+(.*?)(?=]]><)/', 'fusion_fs_importer_replace_url', $xml_content );
+
+		// Replace URLs in the JSON file.
+		$json_content = str_replace(
+			str_replace( '/', '\\/', $home_url . '/wp-content/' ),
+			str_replace( '/', '\\/', 'http://avada.theme-fusion.com/' . $demo . '/wp-content/' ),
+			$json_content
+		);
+
+		// Write files.
+		$xml_file_return  = $wp_filesystem->put_contents( $xml_file_path, $xml_content );
+		$json_file_return = $wp_filesystem->put_contents( $json_file_path, $json_content );
+
+		return ( $xml_file_return && $json_file_return );
+
 	}
 
 	/**
@@ -227,7 +309,7 @@ class Avada_Importer_Data {
 
 		// Early exit if we don't have anything.
 		if ( ! isset( $this->demo_data['layerSliders'] ) || empty( $this->demo_data['layerSliders'] ) ) {
-			return array();
+			return false;
 		}
 		return $this->demo_data['layerSliders'];
 

@@ -1,5 +1,4 @@
 <?php
-
 // @codingStandardsIgnoreFile
 /**
  * Plugin installation and activation for WordPress themes.
@@ -259,7 +258,7 @@ if ( ! class_exists( 'TGM_Plugin_Activation' ) ) {
 		 *
 		 * @see TGM_Plugin_Activation::init()
 		 */
-		protected function __construct() {
+		public function __construct() {
 			// Set the current WordPress version.
 			$this->wp_version = $GLOBALS['wp_version'];
 
@@ -429,7 +428,8 @@ if ( ! class_exists( 'TGM_Plugin_Activation' ) ) {
 				// ThemeFusion edit for Avada theme: redirect to Avada plugin page after plugin deactivation
 				add_action( 'admin_menu', array( $this, 'deacivate_update_plugin' ), 5 );
 
-				add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+				// ThemeFusion edit for Avada theme: do not register admin menu, as its being registered from within theme.
+				// add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
 				// ThemeFusion edit for Avada theme: delete the dismiss button to make sure FusionCore plugin is updated
 				//add_action( 'admin_head', array( $this, 'dismiss' ) );
@@ -489,7 +489,7 @@ if ( ! class_exists( 'TGM_Plugin_Activation' ) ) {
 					$query = sprintf( '?page=%s&plugin=%s&tgmpa-update=%sversion=%s&return_url=%s&tgmpa-nonce=%s', $_GET['page'], $_GET['plugin'], $_GET['tgmpa-update'], $_GET['version'], $_GET['return_url'], $_GET['tgmpa-nonce'] );
 				}
 
-				wp_redirect( admin_url( 'themes.php' . $query ) );
+				wp_safe_redirect( admin_url( 'admin.php' . $query ) );
 				exit;
 			}
 		}
@@ -688,9 +688,8 @@ if ( ! class_exists( 'TGM_Plugin_Activation' ) ) {
 
 				global $tab, $body_id;
 				$body_id = 'plugin-information';
-				// @codingStandardsIgnoreStart
+				// @codingStandardsIgnoreLine
 				$tab     = 'plugin-information';
-				// @codingStandardsIgnoreEnd
 
 				install_plugin_information();
 
@@ -1148,7 +1147,8 @@ if ( ! class_exists( 'TGM_Plugin_Activation' ) ) {
 		 */
 		public function notices() {
 			// Remove nag on the install page / Return early if the nag message has been dismissed.
-			if ( ( $this->is_tgmpa_page() || $this->is_core_update_page() ) || get_user_meta( get_current_user_id(), 'tgmpa_dismissed_notice_' . $this->id, true ) || ! current_user_can( apply_filters( 'tgmpa_show_admin_notice_capability', 'publish_posts' ) ) ) {
+			// ThemeFusion edit for Avada theme: Display nag on plugins page too.
+			if ( $this->is_core_update_page() || get_user_meta( get_current_user_id(), 'tgmpa_dismissed_notice_' . $this->id, true ) || ! current_user_can( apply_filters( 'tgmpa_show_admin_notice_capability', 'publish_posts' ) ) ) {
 				return;
 			}
 
@@ -1831,9 +1831,10 @@ if ( ! class_exists( 'TGM_Plugin_Activation' ) ) {
 		 * @return string Properly encoded URL (not escaped).
 		 */
 		public function get_tgmpa_status_url( $status ) {
+			// ThemeFusion edit for Avada theme: append #avada-install-plugins to the url.
 			return add_query_arg(
 				array(
-					'plugin_status' => urlencode( $status ),
+					'plugin_status' => urlencode( $status ) . '#avada-install-plugins',
 				),
 				$this->get_tgmpa_url()
 			);
@@ -2326,29 +2327,30 @@ if ( ! class_exists( 'TGMPA_List_Table' ) ) {
 
 			foreach ( $plugins[ $this->view_context ] as $slug => $plugin ) {
 				// ThemeFusion edit, prevent recommended showing in window.
-				if ( $plugin['required'] ) {
-					$table_data[ $i ]['sanitized_plugin']  = $plugin['name'];
-					$table_data[ $i ]['slug']              = $slug;
-					$table_data[ $i ]['plugin']            = '<strong>' . $this->tgmpa->get_info_link( $slug ) . '</strong>';
-					$table_data[ $i ]['source']            = $this->get_plugin_source_type_text( $plugin['source_type'] );
-					$table_data[ $i ]['type']              = $this->get_plugin_advise_type_text( $plugin['required'] );
-					$table_data[ $i ]['status']            = $this->get_plugin_status_text( $slug );
-					$table_data[ $i ]['installed_version'] = $this->tgmpa->get_installed_version( $slug );
-					$table_data[ $i ]['minimum_version']   = $plugin['version'];
-					$table_data[ $i ]['available_version'] = $this->tgmpa->does_plugin_have_update( $slug );
-
-					// Prep the upgrade notice info.
-					$upgrade_notice = $this->tgmpa->get_upgrade_notice( $slug );
-					if ( ! empty( $upgrade_notice ) ) {
-						$table_data[ $i ]['upgrade_notice'] = $upgrade_notice;
-
-						add_action( "tgmpa_after_plugin_row_{$slug}", array( $this, 'wp_plugin_update_row' ), 10, 2 );
-					}
-
-					$table_data[ $i ] = apply_filters( 'tgmpa_table_data_item', $table_data[ $i ], $plugin );
-
-					$i++;
+				if ( ! $plugin['required'] ) {
+					continue;
 				}
+				$table_data[ $i ]['sanitized_plugin']  = $plugin['name'];
+				$table_data[ $i ]['slug']              = $slug;
+				$table_data[ $i ]['plugin']            = '<strong>' . $this->tgmpa->get_info_link( $slug ) . '</strong>';
+				$table_data[ $i ]['source']            = $this->get_plugin_source_type_text( $plugin['source_type'] );
+				$table_data[ $i ]['type']              = $this->get_plugin_advise_type_text( $plugin['required'] );
+				$table_data[ $i ]['status']            = $this->get_plugin_status_text( $slug );
+				$table_data[ $i ]['installed_version'] = $this->tgmpa->get_installed_version( $slug );
+				$table_data[ $i ]['minimum_version']   = $plugin['version'];
+				$table_data[ $i ]['available_version'] = $this->tgmpa->does_plugin_have_update( $slug );
+
+				// Prep the upgrade notice info.
+				$upgrade_notice = $this->tgmpa->get_upgrade_notice( $slug );
+				if ( ! empty( $upgrade_notice ) ) {
+					$table_data[ $i ]['upgrade_notice'] = $upgrade_notice;
+
+					add_action( "tgmpa_after_plugin_row_{$slug}", array( $this, 'wp_plugin_update_row' ), 10, 2 );
+				}
+
+				$table_data[ $i ] = apply_filters( 'tgmpa_table_data_item', $table_data[ $i ], $plugin );
+
+				$i++;
 			}
 
 			return $table_data;

@@ -1,4 +1,14 @@
 <?php
+/**
+ * Various helper methods for Avada.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      3.8
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -6,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Various helper fmethods for Avada.
+ * Various helper methods for Avada.
  *
  * @since 3.8
  */
@@ -100,7 +110,7 @@ class Avada_Helper {
 	 * @return  int
 	 */
 	public static function ems_to_pixels( $ems, $font_size = 14 ) {
-		return intval( Avada_Sanitize::number( $ems ) * $font_size );
+		return intval( Fusion_Sanitize::number( $ems ) * $font_size );
 	}
 
 	/**
@@ -161,37 +171,10 @@ class Avada_Helper {
 	 * @return bool
 	 */
 	public static function is_events_archive() {
-		if ( function_exists( 'tribe_is_event' ) ) {
-			return ( tribe_is_event() && is_archive() );
+		if ( is_post_type_archive( 'tribe_events' ) || ( self::tribe_is_event() && is_archive() ) ) {
+			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * This function transforms the php.ini notation for numbers (like '2M') to an integer.
-	 *
-	 * @static
-	 * @access public
-	 * @since 3.8.0
-	 * @param string $size The size.
-	 * @return int
-	 */
-	public static function let_to_num( $size ) {
-		$l   = substr( $size, -1 );
-		$ret = substr( $size, 0, -1 );
-		switch ( strtoupper( $l ) ) {
-			case 'P':
-				$ret *= 1024;
-			case 'T':
-				$ret *= 1024;
-			case 'G':
-				$ret *= 1024;
-			case 'M':
-				$ret *= 1024;
-			case 'K':
-				$ret *= 1024;
-		}
-		return $ret;
 	}
 
 	/**
@@ -241,11 +224,152 @@ class Avada_Helper {
 		global $wp_filesystem;
 
 		if ( empty( $wp_filesystem ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/file.php' );
+			require_once wp_normalize_path( ABSPATH . '/wp-admin/includes/file.php' );
 			WP_Filesystem();
 		}
 
 		return $wp_filesystem;
+	}
+
+	/**
+	 * Check if we're on a WooCommerce page.
+	 *
+	 * @static
+	 * @access public
+	 * @since 5.1.0
+	 * @return bool
+	 */
+	public static function is_woocommerce() {
+
+		if ( function_exists( 'is_woocommerce' ) ) {
+			return (bool) is_woocommerce();
+		}
+		return false;
+
+	}
+
+	/**
+	 * Check if we're on a bbPress page.
+	 *
+	 * @static
+	 * @access public
+	 * @since 5.1.0
+	 * @return bool
+	 */
+	public static function is_bbpress() {
+
+		if ( function_exists( 'is_bbpress' ) ) {
+			return (bool) is_bbpress();
+		}
+		return false;
+
+	}
+
+	/**
+	 * Check if we're on a bbPress forum archive.
+	 *
+	 * @static
+	 * @access public
+	 * @since 5.1.0
+	 * @return bool
+	 */
+	public static function bbp_is_forum_archive() {
+
+		if ( function_exists( 'bbp_is_forum_archive' ) ) {
+			return (bool) bbp_is_forum_archive();
+		}
+		return false;
+
+	}
+
+	/**
+	 * Check if we're on a bbPress topic archive.
+	 *
+	 * @static
+	 * @access public
+	 * @since 5.1.0
+	 * @return bool
+	 */
+	public static function bbp_is_topic_archive() {
+
+		if ( function_exists( 'bbp_is_topic_archive' ) ) {
+			return (bool) bbp_is_topic_archive();
+		}
+		return false;
+
+	}
+
+	/**
+	 * Check if we're on a bbPress user's home.
+	 *
+	 * @static
+	 * @access public
+	 * @since 5.1.0
+	 * @return bool
+	 */
+	public static function bbp_is_user_home() {
+
+		if ( function_exists( 'bbp_is_user_home' ) ) {
+			return (bool) bbp_is_user_home();
+		}
+		return false;
+
+	}
+
+	/**
+	 * Check if we're on a bbPress search-results page.
+	 *
+	 * @static
+	 * @access public
+	 * @since 5.1.0
+	 * @return bool
+	 */
+	public static function bbp_is_search() {
+
+		if ( function_exists( 'bbp_is_search' ) ) {
+			return (bool) bbp_is_search();
+		}
+		return false;
+
+	}
+
+	/**
+	 * Check if we're on a buddyPress page.
+	 *
+	 * @static
+	 * @access public
+	 * @since 5.1.0
+	 * @return bool
+	 */
+	public static function is_buddypress() {
+
+		if ( function_exists( 'is_buddypress' ) ) {
+			return (bool) is_buddypress();
+		}
+		return false;
+
+	}
+
+	/**
+	 * Check if we're on an Event page.
+	 *
+	 * @static
+	 * @access public
+	 * @since 5.1.0
+	 * @param int|false $id The page ID.
+	 * @return bool
+	 */
+	public static function tribe_is_event( $id = false ) {
+
+		if ( function_exists( 'tribe_is_event' ) ) {
+			if ( false === $id ) {
+				return (bool) tribe_is_event();
+			} else {
+				return (bool) tribe_is_event( $id );
+			}
+		}
+		return false;
+
 	}
 }
 

@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -404,7 +414,7 @@ function avada_options_section_page_title_bar( $sections ) {
 				'fields'      => array(
 					'breadcrumb_important_note_info' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong>  The page title bar is set to "Hide". However, there are breadcrumb options below that are still visible due to having a fusion page option dependency. Click the link in the option description to learn more. ', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong>  The page title bar is set to "Hide". However, there are breadcrumb options below that are still visible due to having a fusion page option dependency. Click the link in the option description to learn more. ', 'Avada' ) . '</div>',
 						'id'          => 'breadcrumb_important_note_info',
 						'type'        => 'custom',
 						'required'    => array(
@@ -523,8 +533,8 @@ function avada_options_section_page_title_bar( $sections ) {
 						),
 					),
 					'breadcrumb_show_post_type_archive' => array(
-						'label'       => esc_html__( 'Custom Post Type Archives on Breadcrumbs', 'Avada' ),
-						'description' => esc_html__( 'Turn on to display custom post type archives in the breadcrumbs path.', 'Avada' ),
+						'label'       => esc_html__( 'Post Type Archives on Breadcrumbs', 'Avada' ),
+						'description' => esc_html__( 'Turn on to display post type archives in the breadcrumbs path.', 'Avada' ),
 						'id'          => 'breadcrumb_show_post_type_archive',
 						'default'     => '0',
 						'type'        => 'switch',

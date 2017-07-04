@@ -252,7 +252,7 @@ if ( ! class_exists( 'Avada_Google_Fonts' ) ) {
 
 			if ( null === $this->google_fonts || empty( $this->google_fonts ) ) {
 
-				$fonts = include_once wp_normalize_path( Avada::$template_dir_path . '/includes/avadaredux/custom-fields/typography/googlefonts-array.php' );
+				$fonts = include_once wp_normalize_path( FUSION_LIBRARY_PATH . '/inc/redux/custom-fields/typography/googlefonts-array.php' );
 
 				$google_fonts = array();
 				if ( is_array( $fonts ) ) {
@@ -273,4 +273,4 @@ if ( ! class_exists( 'Avada_Google_Fonts' ) ) {
 
 		}
 	}
-}
+} // End if().

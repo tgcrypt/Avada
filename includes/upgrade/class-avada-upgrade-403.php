@@ -1,4 +1,13 @@
 <?php
+/**
+ * Upgrades Handler.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -29,7 +38,7 @@ class Avada_Upgrade_403 extends Avada_Upgrade_Abstract {
 	 */
 	protected function migration_process() {
 
-		$options = get_option( Avada::get_option_name(), array() );
+		$options = get_option( $this->option_name, array() );
 
 		// Update the post title option.
 		$post_title = Avada()->settings->get( 'blog_post_title' );
@@ -41,7 +50,7 @@ class Avada_Upgrade_403 extends Avada_Upgrade_Abstract {
 		}
 
 		$options['blog_post_title'] = $post_title;
-		update_option( Avada::get_option_name(), $options );
+		update_option( $this->option_name, $options );
 
 	}
 }

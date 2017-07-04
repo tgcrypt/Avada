@@ -1,4 +1,13 @@
 <?php
+/**
+ * Handles multiple featured images.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,9 +25,19 @@ class Avada_Multiple_Featured_Images {
 	 * @access  public
 	 */
 	public function __construct() {
+		$this->include_files();
 		if ( is_admin() ) {
 			add_action( 'after_setup_theme', array( $this, 'generate' ) );
 		}
+	}
+
+	/**
+	 * Include the multiple-featured-images plugin.
+	 *
+	 * @access public
+	 */
+	public function include_files() {
+		include_once Avada::$template_dir_path . '/includes/plugins/multiple-featured-images/multiple-featured-images.php';
 	}
 
 	/**

@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,7 +37,7 @@ function avada_options_section_social_media( $sections ) {
 				'fields'      => array(
 					'social_media_icons_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> This tab controls the social networks that display in the header and footer. Add the network of your choice along with your unique URL. Each network you wish to display must be added here to show up in the header and footer. These settings do not control the avada social widget, social link element or person element.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> This tab controls the social networks that display in the header and footer. Add the network of your choice along with your unique URL. Each network you wish to display must be added here to show up in the header and footer. These settings do not control the avada social widget, social link element or person element.', 'Avada' ) . '</div>',
 						'id'          => 'social_media_icons_important_note_info',
 						'type'        => 'custom',
 					),
@@ -43,7 +53,7 @@ function avada_options_section_social_media( $sections ) {
 								'type'        => 'select',
 								'description' => esc_html__( 'Select a social network to automatically add its icon', 'Avada' ),
 								'default'     => 'none',
-								'choices'     => Avada_Data::fusion_social_icons( true, false ),
+								'choices'     => Fusion_Data::fusion_social_icons( true, false ),
 							),
 							'url' => array(
 								'type'        => 'text',

@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -29,7 +39,7 @@ function avada_options_section_blog( $sections ) {
 				'fields'      => array(
 					'general_blog_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab only control the assigned blog page in settings > reading, or the blog archives, not the blog element. The only options on this tab that work with the blog element are the Date Format options and Load More Post Button Color.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab only control the assigned blog page in settings > reading, or the blog archives, not the blog element. The only options on this tab that work with the blog element are the Date Format options and Load More Post Button Color.', 'Avada' ) . '</div>',
 						'id'          => 'general_blog_important_note_info',
 						'type'        => 'custom',
 					),
@@ -296,7 +306,7 @@ function avada_options_section_blog( $sections ) {
 				'fields'      => array(
 					'blog_meta_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The on/off meta options on this tab only control the assigned blog page in settings > reading, or the blog archives, not the blog element. The only options on this tab that work with the blog element are the Meta Data Font Size and Date Format options.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The on/off meta options on this tab only control the assigned blog page in settings > reading, or the blog archives, not the blog element. The only options on this tab that work with the blog element are the Meta Data Font Size and Date Format options.', 'Avada' ) . '</div>',
 						'id'          => 'blog_meta_important_note_info',
 						'type'        => 'custom',
 					),

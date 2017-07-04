@@ -4,7 +4,7 @@ jQuery( document ).ready( function() {
 	    $i,
 		$defaultReset;
 
-	jQuery( '.pyre_field select' ).select2({
+	jQuery( '.pyre_field select:not(.hidden-sidebar)' ).select2({
 		minimumResultsForSearch: 10,
 		dropdownCssClass: 'avada-select2'
 	});
@@ -165,7 +165,7 @@ jQuery( document ).ready( function() {
 		});
 
 		// On manual input change, update slider position
-		$rangeInput.on( 'change', function( values, handle ) {
+		$rangeInput.on( 'keyup', function( values, handle ) {
 			if ( $rangeDefault ) {
 				$rangeDefault.parent().removeClass( 'checked' );
 				$hiddenValue.val( values[handle] );

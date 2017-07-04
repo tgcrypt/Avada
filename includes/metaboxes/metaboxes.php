@@ -1,4 +1,13 @@
 <?php
+/**
+ * The metaboxes class.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -29,7 +38,7 @@ class PyreThemeFrameworkMetaboxes {
 
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 11 );
 		add_action( 'save_post', array( $this, 'save_meta_boxes' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_script_loader' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_script_loader' ), 99 );
 
 	}
 
@@ -42,6 +51,10 @@ class PyreThemeFrameworkMetaboxes {
 
 		if ( is_admin() && ( in_array( $pagenow, array( 'post-new.php', 'post.php' ) ) ) ) {
 
+			$screen = get_current_screen();
+			if ( isset( $screen->post_type ) && in_array( $screen->post_type, apply_filters( 'avada_hide_page_options', array() ) ) ) {
+				return;
+			}
 			$theme_info = wp_get_theme();
 
 			wp_enqueue_script(
@@ -69,22 +82,24 @@ class PyreThemeFrameworkMetaboxes {
 			wp_dequeue_script( 'tribe-events-select2' );
 			wp_enqueue_style(
 				'select2-css',
-				get_template_directory_uri() . '/includes/avadaredux/avadaredux-framework/AvadaReduxCore/assets/css/vendor/select2.css',
+				Avada::$template_dir_url . '/assets/admin/css/select2.css',
 				array(),
-				'3.5.2',
+				'4.0.3',
 				'all'
 			);
+			wp_dequeue_script( 'yoast-seo-select2' );
+			wp_deregister_script( 'yoast-seo-select2' );
 			wp_enqueue_script(
-				'select2-js',
-				get_template_directory_uri() . '/includes/avadaredux/avadaredux-framework/AvadaReduxCore/assets/js/vendor/select2.min.js',
+				( class_exists( 'WPSEO_Admin_Asset_Manager' ) ) ? 'yoast-seo-select2' : 'select2-avada-js',
+				Avada::$template_dir_url . '/assets/admin/js/select2.min.js',
 				array( 'jquery' ),
-				'3.5.2'
+				'4.0.3'
 			);
 
 			// Range field assets.
 			wp_enqueue_style(
 				'avadaredux-nouislider-css',
-				get_template_directory_uri() . '/includes/avadaredux/avadaredux-framework/AvadaReduxCore/inc/fields/slider/vendor/nouislider/avadaredux.jquery.nouislider.css',
+				FUSION_LIBRARY_URL . '/inc/redux/framework/FusionReduxCore/inc/fields/slider/vendor/nouislider/fusionredux.jquery.nouislider.css',
 				array(),
 				'5.0.0',
 				'all'
@@ -122,7 +137,7 @@ class PyreThemeFrameworkMetaboxes {
 				$theme_info->get( 'Version' )
 			);
 
-		}
+		} // End if().
 
 	}
 
@@ -133,10 +148,13 @@ class PyreThemeFrameworkMetaboxes {
 	 */
 	public function add_meta_boxes() {
 
-		$post_types = get_post_types( array( 'public' => true ) );
+		$post_types = get_post_types( array(
+			'public' => true,
+		) );
 
 		$disallowed = array( 'page', 'post', 'attachment', 'avada_portfolio', 'themefusion_elastic', 'product', 'wpsc-product', 'slide', 'tribe_events' );
 
+		$disallowed = array_merge( $disallowed, apply_filters( 'avada_hide_page_options', array() ) );
 		foreach ( $post_types as $post_type ) {
 			if ( in_array( $post_type, $disallowed ) ) {
 				continue;
@@ -285,11 +303,11 @@ class PyreThemeFrameworkMetaboxes {
 		<ul class="pyre_metabox_tabs">
 
 			<?php foreach ( $requested_tabs as $key => $tab_name ) : ?>
-				<?php $class_active = ( 0 === $key ) ? ' class="active"' : ''; ?>
+				<?php $class_active = ( 0 === $key ) ? 'active' : ''; ?>
 				<?php if ( 'page' == $tab_name && 'product' == $post_type ) : ?>
-					<li<?php echo $class_active; ?>><a href="<?php echo $tab_name; ?>"><?php echo $tabs_names[ $post_type ]; ?></a></li>
+					<li class="<?php echo esc_attr( $class_active ); ?>"><a href="<?php echo esc_attr( $tab_name ); ?>"><?php echo esc_attr( $tabs_names[ $post_type ] ); ?></a></li>
 				<?php else : ?>
-					<li<?php echo $class_active; ?>><a href="<?php echo $tab_name; ?>"><?php echo $tabs_names[ $tab_name ]; ?></a></li>
+					<li class="<?php echo esc_attr( $class_active ); ?>"><a href="<?php echo esc_attr( $tab_name ); ?>"><?php echo esc_attr( $tabs_names[ $tab_name ] ); ?></a></li>
 				<?php endif; ?>
 			<?php endforeach; ?>
 
@@ -298,8 +316,8 @@ class PyreThemeFrameworkMetaboxes {
 		<div class="pyre_metabox">
 
 			<?php foreach ( $requested_tabs as $key => $tab_name ) : ?>
-				<div class="pyre_metabox_tab" id="pyre_tab_<?php echo $tab_name; ?>">
-					<?php require_once( 'tabs/tab_' . $tab_name . '.php' ); ?>
+				<div class="pyre_metabox_tab" id="pyre_tab_<?php echo esc_attr( $tab_name ); ?>">
+					<?php require_once wp_normalize_path( dirname( __FILE__ ) . '/tabs/tab_' . $tab_name . '.php' ); ?>
 				</div>
 			<?php endforeach; ?>
 
@@ -324,15 +342,17 @@ class PyreThemeFrameworkMetaboxes {
 		?>
 
 		<div class="pyre_metabox_field">
+			<?php // No need to sanitize this, we already know what's in here. ?>
+			<?php // @codingStandardsIgnoreLine ?>
 			<?php echo $this->dependency( $dependency ); ?>
 			<div class="pyre_desc">
-				<label for="pyre_<?php echo $id; ?>"><?php echo $label; ?></label>
+				<label for="pyre_<?php echo esc_attr( $id ); ?>"><?php echo esc_textarea( $label ); ?></label>
 				<?php if ( $desc ) : ?>
-					<p><?php echo $desc; ?></p>
+					<p><?php echo wp_kses_post( $desc ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="pyre_field">
-				<input type="text" id="pyre_<?php echo $id; ?>" name="pyre_<?php echo $id; ?>" value="<?php echo get_post_meta( $post->ID, 'pyre_' . $id, true ); ?>" />
+				<input type="text" id="pyre_<?php echo esc_attr( $id ); ?>" name="pyre_<?php echo esc_attr( $id ); ?>" value="<?php echo esc_attr( get_post_meta( $post->ID, 'pyre_' . $id, true ) ); ?>" />
 			</div>
 		</div>
 		<?php
@@ -355,18 +375,20 @@ class PyreThemeFrameworkMetaboxes {
 		?>
 
 		<div class="pyre_metabox_field">
+			<?php // No need to sanitize this, we already know what's in here. ?>
+			<?php // @codingStandardsIgnoreLine ?>
 			<?php echo $this->dependency( $dependency ); ?>
 			<div class="pyre_desc">
-				<label for="pyre_<?php echo $id; ?>"><?php echo $label; ?></label>
+				<label for="pyre_<?php echo esc_attr( $id ); ?>"><?php echo esc_textarea( $label ); ?></label>
 				<?php if ( $desc ) : ?>
-					<p><?php echo $desc; ?></p>
+					<p><?php echo wp_kses_post( $desc ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="pyre_field">
-				<select id="pyre_<?php echo $id; ?>" name="pyre_<?php echo $id; ?>" style="width:100%">
+				<select id="pyre_<?php echo esc_attr( $id ); ?>" name="pyre_<?php echo esc_attr( $id ); ?>" style="width:100%">
 					<?php foreach ( $options as $key => $option ) : ?>
 						<?php $selected = ( get_post_meta( $post->ID, 'pyre_' . $id, true ) == $key ) ? 'selected="selected"' : ''; ?>
-						<option <?php echo $selected; ?> value="<?php echo $key; ?>"><?php echo $option; ?></option>
+						<option <?php echo esc_attr( $selected ); ?> value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $option ); ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
@@ -390,22 +412,30 @@ class PyreThemeFrameworkMetaboxes {
 	public function color( $id, $label, $desc = '', $alpha = false, $dependency = array(), $default = '' ) {
 		global $post;
 		$styling_class = ( $alpha ) ? 'colorpickeralpha' : 'colorpicker';
+
 		if ( $default ) {
+
+			if ( ! $alpha && ( 'transparent' === $default || ! is_string( $default ) ) ) {
+				$default = '#ffffff';
+			}
+
 			$desc .= '  <span class="pyre-default-reset"><a href="#" id="default-' . $id . '" class="fusion-range-default fusion-hide-from-atts" type="radio" name="' . $id . '" value="" data-default="' . $default . '">' . esc_attr( 'Reset to default.', 'Avada' ) . '</a><span>' . esc_attr( 'Using default value.', 'Avada' ) . '</span></span>';
 		}
 		?>
 
 		<div class="pyre_metabox_field">
+			<?php // No need to sanitize this, we already know what's in here. ?>
+			<?php // @codingStandardsIgnoreLine ?>
 			<?php echo $this->dependency( $dependency ); ?>
 			<div class="pyre_desc">
-				<label for="pyre_<?php echo $id; ?>"><?php echo $label; ?></label>
+				<label for="pyre_<?php echo esc_attr( $id ); ?>"><?php echo wp_kses_post( $label ); ?></label>
 				<?php if ( $desc ) : ?>
+					<?php // @codingStandardsIgnoreLine ?>
 					<p><?php echo $desc; ?></p>
 				<?php endif; ?>
 			</div>
-			<div class="pyre_field avada-color <?php echo $styling_class; ?>">
-				<input id="pyre_<?php echo $id; ?>" name="pyre_<?php echo $id; ?>" class="fusion-builder-color-picker-hex color-picker" type="text" value="<?php echo get_post_meta( $post->ID, 'pyre_' . $id, true ) ?>" <?php if ( $alpha ) { ?> data-alpha="true" <?php } ?> <?php if ( $default ) { echo 'data-default="' . $default . '"';} ?>/>
-
+			<div class="pyre_field avada-color <?php echo esc_attr( $styling_class ); ?>">
+				<input id="pyre_<?php echo esc_attr( $id ); ?>" name="pyre_<?php echo esc_attr( $id ); ?>" class="fusion-builder-color-picker-hex color-picker" type="text" value="<?php echo esc_attr( get_post_meta( $post->ID, 'pyre_' . $id, true ) ) ?>" <?php if ( $alpha ) { ?> data-alpha="true" <?php } ?> <?php if ( $default ) { echo 'data-default="' . esc_attr( $default ) . '"';} ?>/>
 			</div>
 		</div>
 		<?php
@@ -434,10 +464,13 @@ class PyreThemeFrameworkMetaboxes {
 		?>
 
 		<div class="pyre_metabox_field">
+			<?php // No need to sanitize this, we already know what's in here. ?>
+			<?php // @codingStandardsIgnoreLine ?>
 			<?php echo $this->dependency( $dependency ); ?>
 			<div class="pyre_desc">
-				<label for="pyre_<?php echo $id; ?>"><?php echo $label; ?></label>
+				<label for="pyre_<?php echo esc_attr( $id ); ?>"><?php echo esc_textarea( $label ); ?></label>
 				<?php if ( $desc ) : ?>
+					<?php // @codingStandardsIgnoreLine ?>
 					<p><?php echo $desc; ?></p>
 				<?php endif; ?>
 			</div>
@@ -450,23 +483,23 @@ class PyreThemeFrameworkMetaboxes {
 				?>
 				<input
 					type="text"
-					name="<?php echo $id; ?>"
-					id="<?php echo $regular_id; ?>"
-					value="<?php echo $display_value; ?>"
-					class="fusion-slider-input <?php echo $default_status; ?> <?php if ( isset( $default ) && '' !== $default ) { echo 'fusion-hide-from-atts'; } ?>"
+					name="<?php echo esc_attr( $id ); ?>"
+					id="<?php echo esc_attr( $regular_id ); ?>"
+					value="<?php echo esc_attr( $display_value ); ?>"
+					class="fusion-slider-input <?php echo esc_attr( $default_status ); ?> <?php if ( isset( $default ) && '' !== $default ) { echo 'fusion-hide-from-atts'; } ?>"
 				/>
 				<div
 					class="fusion-slider-container"
-					data-id="<?php echo $id; ?>"
-					data-min="<?php echo $min; ?>"
-					data-max="<?php echo $max; ?>"
-					data-step="<?php echo $step; ?>">
+					data-id="<?php echo esc_attr( $id ); ?>"
+					data-min="<?php echo esc_attr( $min ); ?>"
+					data-max="<?php echo esc_attr( $max ); ?>"
+					data-step="<?php echo esc_attr( $step ); ?>">
 				</div>
 				<?php if ( isset( $default ) && '' !== $default ) { ?>
 				<input type="hidden"
-					   id="pyre_<?php echo $id ?>"
-					   name="pyre_<?php echo $id ?>"
-					   value="<?php echo  get_post_meta( $post->ID, 'pyre_' . $id, true ); ?>"
+					   id="pyre_<?php echo esc_attr( $id ) ?>"
+					   name="pyre_<?php echo esc_attr( $id ) ?>"
+					   value="<?php echo esc_attr( get_post_meta( $post->ID, 'pyre_' . $id, true ) ); ?>"
 					   class="fusion-hidden-value" />
 				<?php } ?>
 
@@ -494,19 +527,21 @@ class PyreThemeFrameworkMetaboxes {
 		?>
 
 		<div class="pyre_metabox_field">
+			<?php // No need to sanitize this, we already know what's in here. ?>
+			<?php // @codingStandardsIgnoreLine ?>
 			<?php echo $this->dependency( $dependency ); ?>
 			<div class="pyre_desc">
-				<label for="pyre_<?php echo $id; ?>"><?php echo $label; ?></label>
+				<label for="pyre_<?php echo esc_attr( $id ); ?>"><?php echo wp_kses_post( $label ); ?></label>
 				<?php if ( $desc ) : ?>
-					<p><?php echo $desc; ?></p>
+					<p><?php echo wp_kses_post( $desc ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="pyre_field avada-buttonset">
 				<div class="fusion-form-radio-button-set ui-buttonset">
-					<input type="hidden" id="pyre_<?php echo $id; ?>" name="pyre_<?php echo $id; ?>" value="<?php echo $value; ?>" class="button-set-value" />
+					<input type="hidden" id="pyre_<?php echo esc_attr( $id ); ?>" name="pyre_<?php echo esc_attr( $id ); ?>" value="<?php echo esc_attr( $value ); ?>" class="button-set-value" />
 					<?php foreach ( $options as $key => $option ) : ?>
 						<?php $selected = ( $key == $value ) ? ' ui-state-active' : ''; ?>
-						<a href="#" class="ui-button buttonset-item<?php echo $selected; ?>" data-value="<?php echo $key; ?>"><?php echo $option; ?></a>
+						<a href="#" class="ui-button buttonset-item<?php echo esc_attr( $selected ); ?>" data-value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $option ); ?></a>
 					<?php endforeach; ?>
 				</div>
 			</div>
@@ -529,11 +564,13 @@ class PyreThemeFrameworkMetaboxes {
 		?>
 
 		<div class="pyre_metabox_field">
+			<?php // No need to sanitize this, we already know what's in here. ?>
+			<?php // @codingStandardsIgnoreLine ?>
 			<?php echo $this->dependency( $dependency ); ?>
 			<div class="pyre_desc">
-				<label for="pyre_<?php echo $ids[0]; ?>"><?php echo $label; ?></label>
+				<label for="pyre_<?php echo esc_attr( $ids[0] ); ?>"><?php echo wp_kses_post( $label ); ?></label>
 				<?php if ( $desc ) : ?>
-					<p><?php echo $desc; ?></p>
+					<p><?php echo wp_kses_post( $desc ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="pyre_field avada-dimension">
@@ -557,8 +594,8 @@ class PyreThemeFrameworkMetaboxes {
 					}
 					?>
 					<div class="fusion-builder-dimension">
-						<span class="add-on"><i class="<?php echo $icon_class; ?>"></i></span>
-						<input type="text" name="pyre_<?php echo $field_id; ?>" id="pyre_<?php echo $field_id; ?>"" value="<?php echo get_post_meta( $post->ID, 'pyre_' . $field_id, true ); ?>"" />
+						<span class="add-on"><i class="<?php echo esc_attr( $icon_class ); ?>"></i></span>
+						<input type="text" name="pyre_<?php echo esc_attr( $field_id ); ?>" id="pyre_<?php echo esc_attr( $field_id ); ?>"" value="<?php echo esc_attr( get_post_meta( $post->ID, 'pyre_' . $field_id, true ) ); ?>"" />
 					</div>
 				<?php endforeach; ?>
 			</div>
@@ -581,18 +618,20 @@ class PyreThemeFrameworkMetaboxes {
 		?>
 
 		<div class="pyre_metabox_field">
+			<?php // No need to sanitize this, we already know what's in here. ?>
+			<?php // @codingStandardsIgnoreLine ?>
 			<?php echo $this->dependency( $dependency ); ?>
 			<div class="pyre_desc">
-				<label for="pyre_<?php echo $id; ?>"><?php echo $label; ?></label>
+				<label for="pyre_<?php echo esc_attr( $id ); ?>"><?php echo wp_kses_post( $label ); ?></label>
 				<?php if ( $desc ) : ?>
-					<p><?php echo $desc; ?></p>
+					<p><?php echo wp_kses_post( $desc ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="pyre_field">
-				<select multiple="multiple" id="pyre_<?php echo $id; ?>" name="pyre_<?php echo $id; ?>[]">
+				<select multiple="multiple" id="pyre_<?php echo esc_attr( $id ); ?>" name="pyre_<?php echo esc_attr( $id ); ?>[]">
 					<?php foreach ( $options as $key => $option ) : ?>
 						<?php $selected = ( is_array( get_post_meta( $post->ID, 'pyre_' . $id, true ) ) && in_array( $key, get_post_meta( $post->ID, 'pyre_' . $id, true ) ) ) ? 'selected="selected"' : ''; ?>
-						<option <?php echo $selected; ?> value="<?php echo $key; ?>"><?php echo $option; ?></option>
+						<option <?php echo esc_attr( $selected ); ?> value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $option ); ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
@@ -623,15 +662,18 @@ class PyreThemeFrameworkMetaboxes {
 		?>
 
 		<div class="pyre_metabox_field">
+			<?php // No need to sanitize this, we already know what's in here. ?>
+			<?php // @codingStandardsIgnoreLine ?>
 			<?php echo $this->dependency( $dependency ); ?>
 			<div class="pyre_desc">
-				<label for="pyre_<?php echo $id; ?>"><?php echo $label; ?></label>
+				<?php // @codingStandardsIgnoreLine ?>
+				<label for="pyre_<?php echo esc_attr( $id ); ?>"><?php echo $label; ?></label>
 				<?php if ( $desc ) : ?>
-					<p><?php echo $desc; ?></p>
+					<p><?php echo wp_kses_post( $desc ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="pyre_field">
-				<textarea cols="120" rows="<?php echo $rows; ?>" id="pyre_<?php echo $id; ?>" name="pyre_<?php echo $id; ?>"><?php echo $value; ?></textarea>
+				<textarea cols="120" rows="<?php echo (int) $rows; ?>" id="pyre_<?php echo esc_attr( $id ); ?>" name="pyre_<?php echo esc_attr( $id ); ?>"><?php echo esc_textarea( $value ); ?></textarea>
 			</div>
 		</div>
 		<?php
@@ -651,17 +693,19 @@ class PyreThemeFrameworkMetaboxes {
 		?>
 
 		<div class="pyre_metabox_field">
+			<?php // No need to sanitize this, we already know what's in here. ?>
+			<?php // @codingStandardsIgnoreLine ?>
 			<?php echo $this->dependency( $dependency ); ?>
 			<div class="pyre_desc">
-				<label for="pyre_<?php echo $id; ?>"><?php echo $label; ?></label>
+				<label for="pyre_<?php echo esc_attr( $id ); ?>"><?php echo wp_kses_post( $label ); ?></label>
 				<?php if ( $desc ) : ?>
-					<p><?php echo $desc; ?></p>
+					<p><?php echo wp_kses_post( $desc ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="pyre_field">
 				<div class="pyre_upload">
-					<input name="pyre_<?php echo $id; ?>" class="upload_field" id="pyre_<?php echo $id; ?>" type="text" value="<?php echo get_post_meta( $post->ID, 'pyre_' . $id, true ); ?>" />
-					<input class="fusion_upload_button button" type="button" value="<?php _e( 'Browse', 'Avada' ); ?>" />
+					<input name="pyre_<?php echo esc_attr( $id ); ?>" class="upload_field" id="pyre_<?php echo esc_attr( $id ); ?>" type="text" value="<?php echo esc_attr( get_post_meta( $post->ID, 'pyre_' . $id, true ) ); ?>" />
+					<input class="fusion_upload_button button" type="button" value="<?php esc_attr_e( 'Browse', 'Avada' ); ?>" />
 				</div>
 			</div>
 		</div>
@@ -678,7 +722,7 @@ class PyreThemeFrameworkMetaboxes {
 	public function hidden( $id, $value ) {
 		global $post;
 		?>
-		<input type="hidden" id="pyre_<?php echo $id; ?>" name="pyre_<?php echo $id; ?>" value="<?php echo $value; ?>">
+		<input type="hidden" id="pyre_<?php echo esc_attr( $id ); ?>" name="pyre_<?php echo esc_attr( $id ); ?>" value="<?php echo esc_attr( $value ); ?>">
 		<?php
 
 	}

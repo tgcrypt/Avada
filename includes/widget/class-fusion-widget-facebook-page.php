@@ -1,4 +1,13 @@
 <?php
+/**
+ * Widget Class.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,7 +30,9 @@ class Fusion_Widget_Facebook_Page extends WP_Widget {
 			'classname'   => 'facebook_like',
 			'description' => __( 'Adds support for Facebook Page Plugin.', 'Avada' ),
 		);
-		$control_ops = array( 'id_base' => 'facebook-like-widget' );
+		$control_ops = array(
+			'id_base' => 'facebook-like-widget',
+		);
 
 		parent::__construct( 'facebook-like-widget', 'Avada: Facebook Page Plugin', $widget_ops, $control_ops );
 
@@ -56,14 +67,14 @@ class Fusion_Widget_Facebook_Page extends WP_Widget {
 		$height = ( 'true' == $show_stream && 'true' == $show_faces && 'false' == $show_header ) ? '540' : $height;
 		$height = ( 'true' == $show_header ) ? $height + 30 : $height;
 
-		echo $before_widget;
+		echo wp_kses_post( $before_widget );
 
 		if ( ! $language ) {
 			$language = 'en_EN';
 		}
 
 		if ( $title ) {
-			echo $before_title . $title . $after_title;
+			echo wp_kses_post( $before_title . $title . $after_title );
 		}
 		?>
 
@@ -74,7 +85,7 @@ class Fusion_Widget_Facebook_Page extends WP_Widget {
 			  var js, fjs = d.getElementsByTagName(s)[0];
 			  if (d.getElementById(id)) return;
 			  js = d.createElement(s); js.id = id;
-			  js.src = "//connect.facebook.net/<?php echo $language; ?>/sdk.js#xfbml=1&version=v2.6&appId=<?php echo $app_id; ?>";
+			  js.src = "//connect.facebook.net/<?php echo esc_attr( $language ); ?>/sdk.js#xfbml=1&version=v2.6&appId=<?php echo esc_attr( $app_id ); ?>";
 			  fjs.parentNode.insertBefore(js, fjs);
 			}(document, 'script', 'facebook-jssdk'));
 
@@ -86,22 +97,22 @@ class Fusion_Widget_Facebook_Page extends WP_Widget {
 				});
 
 				function fusion_resize_page_widget() {
-					var $container_width = jQuery( '.<?php echo $args['widget_id']; ?>' ).width();
+					var $container_width = jQuery( '.<?php echo esc_attr( $args['widget_id'] ); ?>' ).width();
 
-					if ( $container_width != jQuery('.<?php echo $args['widget_id']; ?> .fb-page' ).data( 'width' ) ) {
-						jQuery('.<?php echo $args['widget_id']; ?> .fb-page' ).attr( 'data-width', $container_width );
+					if ( $container_width != jQuery('.<?php echo esc_attr( $args['widget_id'] ); ?> .fb-page' ).data( 'width' ) ) {
+						jQuery('.<?php echo esc_attr( $args['widget_id'] ); ?> .fb-page' ).attr( 'data-width', $container_width );
 						FB.XFBML.parse();
 					}
 				}
 			}
 			</script>
 
-			<div class="fb-like-box-container <?php echo $args['widget_id']; ?>" id="fb-root">
-				<div class="fb-page" data-href="<?php echo $page_url; ?>" data-width="<?php echo $widget_width; ?>" data-adapt-container-width="true" data-small-header="<?php echo $small_header; ?>" data-height="<?php echo $height; ?>" data-hide-cover="<?php echo $show_header; ?>" data-show-facepile="<?php echo $show_faces; ?>" data-show-posts="<?php echo $show_stream; ?>"></div>
+			<div class="fb-like-box-container <?php echo esc_attr( $args['widget_id'] ); ?>" id="fb-root">
+				<div class="fb-page" data-href="<?php echo esc_url_raw( $page_url ); ?>" data-width="<?php echo esc_attr( $widget_width ); ?>" data-adapt-container-width="true" data-small-header="<?php echo esc_attr( $small_header ); ?>" data-height="<?php echo esc_attr( $height ); ?>" data-hide-cover="<?php echo esc_attr( $show_header ); ?>" data-show-facepile="<?php echo esc_attr( $show_faces ); ?>" data-show-posts="<?php echo esc_attr( $show_stream ); ?>"></div>
 			</div>
 		<?php endif;
 
-		echo $after_widget;
+		echo wp_kses_post( $after_widget );
 
 	}
 
@@ -156,46 +167,46 @@ class Fusion_Widget_Facebook_Page extends WP_Widget {
 
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 
-		<h4 style="line-height: 1.6em;"><?php _e( 'IMPORTANT: Please create a Facebook App and use its ID for features like sharing.', 'Avada' ); ?> <a href="https://developers.facebook.com/docs/apps/register" target="_blank" rel="noopener noreferrer"><?php _e( 'See Instructions.', 'Avada' ); ?></a></h4>
+		<h4 style="line-height: 1.6em;"><?php esc_attr_e( 'IMPORTANT: Please create a Facebook App and use its ID for features like sharing.', 'Avada' ); ?> <a href="https://developers.facebook.com/docs/apps/register" target="_blank" rel="noopener noreferrer"><?php esc_attr_e( 'See Instructions.', 'Avada' ); ?></a></h4>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'Avada' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_attr_e( 'Title:', 'Avada' ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $instance['title'] ); ?>" />
 		</p>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'page_url' ); ?>"><?php _e( 'Facebook Page URL:', 'Avada' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'page_url' ); ?>" name="<?php echo $this->get_field_name( 'page_url' ); ?>" value="<?php echo $instance['page_url']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'page_url' ) ); ?>"><?php esc_attr_e( 'Facebook Page URL:', 'Avada' ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'page_url' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'page_url' ) ); ?>" value="<?php echo esc_attr( $instance['page_url'] ); ?>" />
 		</p>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'app_id' ); ?>"><?php _e( 'Facebook App ID:', 'Avada' ); ?></label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'app_id' ); ?>" name="<?php echo $this->get_field_name( 'app_id' ); ?>" value="<?php echo $instance['app_id']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'app_id' ) ); ?>"><?php esc_attr_e( 'Facebook App ID:', 'Avada' ); ?></label>
+			<input class="widefat" type="text" id="<?php echo esc_attr( $this->get_field_id( 'app_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'app_id' ) ); ?>" value="<?php echo esc_attr( $instance['app_id'] ); ?>" />
 		</p>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'width' ); ?>"><?php _e( 'Width (has to be between 180 and 500):', 'Avada' ); ?></label>
-			<input class="widefat" type="text" style="width: 80px;" id="<?php echo $this->get_field_id( 'width' ); ?>" name="<?php echo $this->get_field_name( 'width' ); ?>" value="<?php echo $instance['width']; ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'width' ) ); ?>"><?php esc_attr_e( 'Width (has to be between 180 and 500):', 'Avada' ); ?></label>
+			<input class="widefat" type="text" style="width: 80px;" id="<?php echo esc_attr( $this->get_field_id( 'width' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'width' ) ); ?>" value="<?php echo esc_attr( $instance['width'] ); ?>" />
 		</p>
 
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['show_faces'], 'on' ); ?> id="<?php echo $this->get_field_id( 'show_faces' ); ?>" name="<?php echo $this->get_field_name( 'show_faces' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_faces' ); ?>"><?php _e( 'Show Friends Faces', 'Avada' ); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked( $instance['show_faces'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'show_faces' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_faces' ) ); ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'show_faces' ) ); ?>"><?php esc_attr_e( 'Show Friends Faces', 'Avada' ); ?></label>
 		</p>
 
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['show_stream'], 'on' ); ?> id="<?php echo $this->get_field_id( 'show_stream' ); ?>" name="<?php echo $this->get_field_name( 'show_stream' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_stream' ); ?>"><?php _e( 'Show Posts', 'Avada' ); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked( $instance['show_stream'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'show_stream' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_stream' ) ); ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'show_stream' ) ); ?>"><?php esc_attr_e( 'Show Posts', 'Avada' ); ?></label>
 		</p>
 
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['show_header'], 'on' ); ?> id="<?php echo $this->get_field_id( 'show_header' ); ?>" name="<?php echo $this->get_field_name( 'show_header' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_header' ); ?>"><?php _e( 'Show Cover Photo', 'Avada' ); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked( $instance['show_header'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'show_header' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_header' ) ); ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'show_header' ) ); ?>"><?php esc_attr_e( 'Show Cover Photo', 'Avada' ); ?></label>
 		</p>
 
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['small_header'], 'on' ); ?> id="<?php echo $this->get_field_id( 'small_header' ); ?>" name="<?php echo $this->get_field_name( 'small_header' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'small_header' ); ?>"><?php _e( 'Use Small Header', 'Avada' ); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked( $instance['small_header'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'small_header' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'small_header' ) ); ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'small_header' ) ); ?>"><?php esc_attr_e( 'Use Small Header', 'Avada' ); ?></label>
 		</p>
 	<?php
 	}

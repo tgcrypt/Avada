@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -34,7 +44,7 @@ function avada_options_section_contact( $sections ) {
 				'fields'      => array(
 					'contact_form_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are only for the contact form that displays on the "Contact" page template except for the Google Map API Key.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are only for the contact form that displays on the "Contact" page template except for the Google Map API Key.', 'Avada' ) . '</div>',
 						'id'          => 'contact_form_important_note_info',
 						'type'        => 'custom',
 					),
@@ -66,7 +76,7 @@ function avada_options_section_contact( $sections ) {
 					),
 					'recaptcha_php_version_warning' => ( version_compare( PHP_VERSION, '5.3' ) >= 0 ) ? array() : array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . esc_html__( 'ReCaptcha is not compatible with the PHP version you\'re using. Please update your server to at least PHP 5.3', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . esc_html__( 'ReCaptcha is not compatible with the PHP version you\'re using. Please update your server to at least PHP 5.3', 'Avada' ) . '</div>',
 						'id'          => 'recaptcha_php_version_warning',
 						'type'        => 'custom',
 					),
@@ -110,7 +120,7 @@ function avada_options_section_contact( $sections ) {
 				'fields'      => array(
 					'google_map_disabled_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Google Maps Script is disabled in Advanced > Theme Features section. Please enable it to see the options.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Google Maps Script is disabled in Advanced > Theme Features section. Please enable it to see the options.', 'Avada' ) . '</div>',
 						'id'          => 'google_map_disabled_note',
 						'type'        => 'custom',
 						'required'    => array(
@@ -123,7 +133,7 @@ function avada_options_section_contact( $sections ) {
 					),
 					'google_map_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are for the google map that displays on the "Contact" page template. The only option that controls the Fusion Builder google map element is the Google Maps API Key.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are for the google map that displays on the "Contact" page template. The only option that controls the Fusion Builder google map element is the Google Maps API Key.', 'Avada' ) . '</div>',
 						'id'          => 'google_map_important_note_info',
 						'type'        => 'custom',
 						'required'    => array(
@@ -340,7 +350,7 @@ function avada_options_section_contact( $sections ) {
 				'fields'      => array(
 					'google_map_disabled_note_1' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Google Maps Script is disabled in Advanced > Theme Features section. Please enable it to see the options.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Google Maps Script is disabled in Advanced > Theme Features section. Please enable it to see the options.', 'Avada' ) . '</div>',
 						'id'          => 'google_map_disabled_note_1',
 						'type'        => 'custom',
 						'required'    => array(
@@ -353,7 +363,7 @@ function avada_options_section_contact( $sections ) {
 					),
 					'google_map_styling_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are only for the google map that displays on the "Contact" page template, they do not control the google map element.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab are only for the google map that displays on the "Contact" page template, they do not control the google map element.', 'Avada' ) . '</div>',
 						'id'          => 'google_map_styling_important_note_info',
 						'type'        => 'custom',
 						'required'    => array(

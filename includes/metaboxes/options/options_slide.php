@@ -1,4 +1,13 @@
 <?php
+/**
+ * Slide Metabox options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -65,7 +74,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$this->select(
 			'video_display',
 			esc_attr__( 'Video Display Mode', 'Avada' ),
-			array( 'cover' => esc_attr__( 'Cover', 'Avada' ), 'contain' => esc_attr__( 'Contain', 'Avada' ) ),
+			array(
+				'cover' => esc_attr__( 'Cover', 'Avada' ),
+				'contain' => esc_attr__( 'Contain', 'Avada' ),
+			),
 			esc_html__( 'If set to cover, the video will fill the entire slider area.  If set to contain, the video will display such that both its width and its height can fit inside the slider area.', 'Avada' )
 		);
 		$this->text(
@@ -76,25 +88,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$this->select(
 			'mute_video',
 			esc_attr__( 'Mute Video', 'Avada' ),
-			array( 'yes' => esc_attr__( 'Yes', 'Avada' ), 'no' => esc_attr__( 'No', 'Avada' ) ),
+			array(
+				'yes' => esc_attr__( 'Yes', 'Avada' ),
+				'no' => esc_attr__( 'No', 'Avada' ),
+			),
 			''
 		);
 		$this->select(
 			'autoplay_video',
 			esc_attr__( 'Autoplay Video', 'Avada' ),
-			array( 'yes' => esc_attr__( 'Yes', 'Avada' ), 'no' => esc_attr__( 'No', 'Avada' ) ),
+			array(
+				'yes' => esc_attr__( 'Yes', 'Avada' ),
+				'no' => esc_attr__( 'No', 'Avada' ),
+			),
 			''
 		);
 		$this->select(
 			'loop_video',
 			esc_attr__( 'Loop Video', 'Avada' ),
-			array( 'yes' => esc_attr__( 'Yes', 'Avada' ), 'no' => esc_html__( 'No', 'Avada' ) ),
+			array(
+				'yes' => esc_attr__( 'Yes', 'Avada' ),
+				'no' => esc_html__( 'No', 'Avada' ),
+			),
 			''
 		);
 		$this->select(
 			'hide_video_controls',
 			esc_attr__( 'Hide Video Controls', 'Avada' ),
-			array( 'yes' => esc_attr__( 'Yes', 'Avada' ), 'no' => esc_attr__( 'No', 'Avada' ) ),
+			array(
+				'yes' => esc_attr__( 'Yes', 'Avada' ),
+				'no' => esc_attr__( 'No', 'Avada' ),
+			),
 			esc_html__( 'If this is set to yes, then autoplay must be enabled for the video to work.  In order to ensure the controls are always fully visible, the Video Display Mode should be set to "contain".', 'Avada' )
 		);
 		?>
@@ -108,7 +132,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	$this->select(
 		'content_alignment',
 		esc_attr__( 'Content Alignment', 'Avada' ),
-		array( 'left' => esc_attr__( 'Left', 'Avada' ), 'center' => esc_attr__( 'Center', 'Avada' ), 'right' => esc_attr__( 'Right', 'Avada' ) ),
+		array(
+			'left' => esc_attr__( 'Left', 'Avada' ),
+			'center' => esc_attr__( 'Center', 'Avada' ),
+			'right' => esc_attr__( 'Right', 'Avada' ),
+		),
 		esc_html__( 'Select how the heading, caption and buttons will be aligned.', 'Avada' )
 	);
 	$this->textarea(
@@ -148,7 +176,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	$this->select(
 		'heading_bg',
 		esc_attr__( 'Heading Background', 'Avada' ),
-		array( 'yes' => esc_attr__( 'Yes', 'Avada' ), 'no' => esc_attr__( 'No', 'Avada' ) ),
+		array(
+			'yes' => esc_attr__( 'Yes', 'Avada' ),
+			'no' => esc_attr__( 'No', 'Avada' ),
+		),
 		esc_html__( 'Select this option if you would like a semi-transparent background behind your heading.', 'Avada' )
 	);
 	$default = sprintf( esc_html__( 'Default: %s', 'Avada' ), '#000' );
@@ -194,7 +225,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	$this->select(
 		'caption_bg',
 		esc_attr__( 'Caption Background', 'Avada' ),
-		array( 'yes' => esc_attr__( 'Yes', 'Avada' ), 'no' => esc_attr__( 'No', 'Avada' ) ),
+		array(
+			'yes' => esc_attr__( 'Yes', 'Avada' ),
+			'no' => esc_attr__( 'No', 'Avada' ),
+		),
 		esc_html__( 'Select this option if you would like a semi-transparent background behind your caption.', 'Avada' )
 	);
 	$default = sprintf( esc_html__( 'Default: %s', 'Avada' ), '#000' );
@@ -212,7 +246,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	$this->select(
 		'link_type',
 		esc_attr__( 'Slide Link Type', 'Avada' ),
-		array( 'button' => esc_attr__( 'Button', 'Avada' ), 'full' => esc_attr__( 'Full Slide', 'Avada' ) ),
+		array(
+			'button' => esc_attr__( 'Button', 'Avada' ),
+			'full' => esc_attr__( 'Full Slide', 'Avada' ),
+		),
 		esc_html__( 'Select how the slide will link.', 'Avada' )
 	);
 	$this->text(
@@ -223,17 +260,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	$this->select(
 		'slide_target',
 		esc_attr__( 'Open Slide Link In New Window', 'Avada' ),
-		array( 'yes' => esc_html__( 'Yes', 'Avada' ), 'no' => esc_html__( 'No', 'Avada' ) )
+		array(
+			'yes' => esc_html__( 'Yes', 'Avada' ),
+			'no' => esc_html__( 'No', 'Avada' ),
+		)
 	);
 	$this->textarea(
 		'button_1',
-		esc_html__( 'Button #1', 'Avada' ) . '<br/><a href="http://theme-fusion.com/knowledgebase/avada-shortcode-list/#buttons" target="_blank">' . esc_html__( 'Click here to view button option descriptions.', 'Avada' ) . '</a>',
+		esc_html__( 'Button #1', 'Avada' ) . '<br/><a href="https://theme-fusion.com/fb-doc/elements/fusion-builder-elements-list/#fbel-buttons" target="_blank">' . esc_html__( 'Click here to view button option descriptions.', 'Avada' ) . '</a>',
 		esc_html__( 'Adjust the button shortcode parameters for the first button.', 'Avada' ),
 		'[fusion_button link="" color="default" size="" type="" shape="" target="_self" title="" gradient_colors="|" gradient_hover_colors="|" accent_color="" accent_hover_color="" bevel_color="" border_width="1px" shadow="" icon="" icon_divider="yes" icon_position="left" modal="" animation_type="0" animation_direction="down" animation_speed="0.1" class="" id=""]' . esc_html__( 'Button Text', 'Avada' ) . '[/fusion_button]'
 	);
 	$this->textarea(
 		'button_2',
-		esc_html__( 'Button #2', 'Avada' ) . '<br/><a href="http://theme-fusion.com/knowledgebase/avada-shortcode-list/#buttons" target="_blank">' . esc_html__( 'Click here to view button option descriptions.', 'Avada' ) . '</a>',
+		esc_html__( 'Button #2', 'Avada' ) . '<br/><a href="https://theme-fusion.com/fb-doc/elements/fusion-builder-elements-list/#fbel-buttons" target="_blank">' . esc_html__( 'Click here to view button option descriptions.', 'Avada' ) . '</a>',
 		esc_html__( 'Adjust the button shortcode parameters for the second button.', 'Avada' ),
 		'[fusion_button link="" color="default" size="" type="" shape="" target="_self" title="" gradient_colors="|" gradient_hover_colors="|" accent_color="" accent_hover_color="" bevel_color="" border_width="1px" shadow="" icon="" icon_divider="yes" icon_position="left" modal="" animation_type="0" animation_direction="down" animation_speed="0.1" class="" id=""]' . esc_html__( 'Button Text', 'Avada' ) . '[/fusion_button]'
 	);

@@ -3,7 +3,12 @@
  * On the fly image resizer.
  * Script from the Shoestrap theme by @aristath
  *
- * @since 3.8.0
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      3.8.0
  */
 
 // Do not allow directly accessing this file.
@@ -80,7 +85,11 @@ class Fusion_Image_Resizer {
 		}
 
 		if ( ! isset( $file_path ) ) {
-			return array( 'url' => $url, 'width' => $width, 'height' => $height );
+			return array(
+				'url' => $url,
+				'width' => $width,
+				'height' => $height,
+			);
 		}
 
 		// Destination width and height variables.
@@ -109,12 +118,20 @@ class Fusion_Image_Resizer {
 			 *  We only want to resize Media Library images, so we can be sure they get deleted correctly when appropriate.
 			 */
 			if ( ! isset( $attachment_id ) || ! $attachment_id ) {
-				return array( 'url' => $url, 'width' => $width, 'height' => $height );
+				return array(
+					'url' => $url,
+					'width' => $width,
+					'height' => $height,
+				);
 			}
 			// Load Wordpress Image Editor.
 			$editor = wp_get_image_editor( $file_path );
 			if ( is_wp_error( $editor ) ) {
-				return array( 'url' => $url, 'width' => $width, 'height' => $height );
+				return array(
+					'url' => $url,
+					'width' => $width,
+					'height' => $height,
+				);
 			}
 
 			// Get the original image size.
@@ -141,7 +158,11 @@ class Fusion_Image_Resizer {
 			Avada_Helper::init_filesystem();
 
 			if ( ! $wp_filesystem->put_contents( $dest_file_name, '', FS_CHMOD_FILE ) ) {
-				return array( 'url' => $url, 'width' => $orig_width, 'height' => $orig_height );
+				return array(
+					'url' => $url,
+					'width' => $orig_width,
+					'height' => $orig_height,
+				);
 			}
 			// Time to crop the image!
 			$editor->crop( $src_x, $src_y, $src_w, $src_h, $dest_width, $dest_height );
@@ -149,7 +170,11 @@ class Fusion_Image_Resizer {
 			$saved = $editor->save( $dest_file_name );
 			// If saving fails, return the original image.
 			if ( is_wp_error( $saved ) ) {
-				return array( 'url' => $url, 'width' => $width, 'height' => $height );
+				return array(
+					'url' => $url,
+					'width' => $width,
+					'height' => $height,
+				);
 			}
 			// Get resized image information.
 			$resized_url    = str_replace( basename( $url ), basename( $saved['path'] ), $url );
@@ -182,7 +207,7 @@ class Fusion_Image_Resizer {
 			);
 			$image_array['retina_url'] = ( file_exists( "{$dir}/{$name}-{$suffix}{$suffix_retina}.{$ext}" ) ) ? rtrim( $image_array['url'], ".{$ext}" ) . "@2x.{$ext}" : false;
 
-		}
+		} // End if().
 		// Return image array.
 		return $image_array;
 	}

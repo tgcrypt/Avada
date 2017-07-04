@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,7 +24,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 function avada_options_section_menu( $sections ) {
 
 	$settings = get_option( Avada::get_option_name(), array() );
+	$menu_height_hint = '<span id="fusion-menu-height-hint" style="display: none">' . sprintf( esc_html__( '  To match the logo height set to %s.', 'Avada' ), '<strong>Unknown</strong>' ) . '</span>';
 
+	// If we can get logo height and the logo margins are in pixels, then we can provide a hint.
+	if ( is_admin() ) {
+		$logo_data = Avada()->images->get_logo_data( 'logo' );
+		if ( isset( $logo_data['height'] ) && '' !== $logo_data['height'] && isset( $settings['logo_margin']['top'] ) && isset( $settings['logo_margin']['bottom'] ) ) {
+			$logo_top_margin = Fusion_Sanitize::size( $settings['logo_margin']['top'] );
+			$logo_bottom_margin = Fusion_Sanitize::size( $settings['logo_margin']['bottom'] );
+			if ( strpos( $logo_top_margin, 'px' ) && strpos( $logo_bottom_margin, 'px' ) ) {
+				$total_logo_height = intval( $logo_top_margin ) + intval( $logo_bottom_margin ) + intval( $logo_data['height'] );
+				$menu_height_hint = '<span id="fusion-menu-height-hint" style="display:inline">' . sprintf( esc_html__( '  To match the logo height set to %s.', 'Avada' ), '<strong>' . $total_logo_height . '</strong>' ) . '</span>';
+			}
+		}
+	}
 	$sections['menu'] = array(
 		'label'    => esc_html__( 'Menu', 'Avada' ),
 		'id'       => 'heading_menu_section',
@@ -30,21 +53,82 @@ function avada_options_section_menu( $sections ) {
 
 					'nav_height' => array(
 						'label'       => esc_html__( 'Main Menu Height', 'Avada' ),
-						'description' => esc_html__( 'Controls the menu height.', 'Avada' ),
+						'description' => esc_html__( 'Controls the menu height.', 'Avada' ) . $menu_height_hint,
 						'id'          => 'nav_height',
-						'default'     => '83',
+						'default'     => '84',
 						'type'        => 'slider',
 						'choices'     => array(
 							'min'  => '0',
 							'max'  => '300',
 							'step' => '1',
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
 								'operator' => '!=',
 								'value'    => 'Top',
+							),
+							array(
+								'setting'  => 'header_layout',
+								'operator' => '!=',
+								'value'    => 'v6',
+							),
+						),
+					),
+					'menu_highlight_style' => array(
+						'label'       => esc_html__( 'Main Menu Highlight Style', 'Avada' ),
+						'description' => __( 'Controls the highlight style for main menu links and also affects the look of menu dropdowns. Arrow style cannot work with a transparent header background. <strong>Important:</strong>  Arrow & Background style can require configuration of other options depending on desired effect.', 'Avada' ) . '  <a href="http://theme-fusion.com/avada-doc/main-menu-highlight-styles/">' . esc_html__( 'See this post for more information', 'Avada' ) . '</a>.',
+						'id'          => 'menu_highlight_style',
+						'default'     => 'bar',
+						'choices'     => array(
+							'bar'          => esc_html__( 'Bar', 'Avada' ),
+							'arrow'        => esc_html__( 'Arrow', 'Avada' ),
+							'background'   => esc_html__( 'Background', 'Avada' ),
+						),
+						'type'        => 'radio-buttonset',
+						'required'    => array(
+							array(
+								'setting'  => 'header_layout',
+								'operator' => '!=',
+								'value'    => 'v6',
+							),
+						),
+					),
+					'menu_highlight_background' => array(
+						'label'       => esc_html__( 'Main Menu Highlight Background Color', 'Avada' ),
+						'description' => esc_html__( 'Controls the background color of main menu highlight.', 'Avada' ),
+						'id'          => 'menu_highlight_background',
+						'default'     => '#a0ce4e',
+						'type'        => 'color-alpha',
+						'required'    => array(
+							array(
+								'setting'  => 'menu_highlight_style',
+								'operator' => '==',
+								'value'    => 'background',
+							),
+							array(
+								'setting'  => 'header_layout',
+								'operator' => '!=',
+								'value'    => 'v6',
+							),
+						),
+					),
+					'menu_arrow_size' => array(
+						'label'       => esc_html__( 'Main Menu Arrow Size', 'Avada' ),
+						'description' => esc_html__( 'Controls the width and height of the main menu arrow.', 'Avada' ),
+						'id'          => 'menu_arrow_size',
+						'units'		  => false,
+						'default'     => array(
+							'width'   => ( isset( $settings['header_position'] ) && 'Top' !== $settings['header_position'] ) ? '12px' : '23px',
+							'height'  => ( isset( $settings['header_position'] ) && 'Top' !== $settings['header_position'] ) ? '23px' : '12px',
+						),
+						'type'        => 'dimensions',
+						'required'    => array(
+							array(
+								'setting'  => 'menu_highlight_style',
+								'operator' => '==',
+								'value'    => 'arrow',
 							),
 							array(
 								'setting'  => 'header_layout',
@@ -63,6 +147,18 @@ function avada_options_section_menu( $sections ) {
 							'min'  => '0',
 							'max'  => '40',
 							'step' => '1',
+						),
+						'required'    => array(
+							array(
+								'setting'  => 'menu_highlight_style',
+								'operator' => '==',
+								'value'    => 'bar',
+							),
+							array(
+								'setting'  => 'header_layout',
+								'operator' => '!=',
+								'value'    => 'v6',
+							),
 						),
 					),
 					'nav_padding' => array(
@@ -90,7 +186,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'megamenu_shadow',
 						'default'     => '1',
 						'type'        => 'switch',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -115,7 +211,7 @@ function avada_options_section_menu( $sections ) {
 							'max'  => '500',
 							'step' => '1',
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -140,7 +236,7 @@ function avada_options_section_menu( $sections ) {
 							'max'  => '50',
 							'step' => '1',
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -160,7 +256,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'mainmenu_dropdown_display_divider',
 						'default'     => '1',
 						'type'        => 'switch',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -180,7 +276,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'menu_display_dropdown_indicator',
 						'default'     => '0',
 						'type'        => 'switch',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -214,7 +310,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'menu_sub_bg_color',
 						'default'     => '#f2efef',
 						'type'        => 'color-alpha',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -234,7 +330,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'menu_bg_hover_color',
 						'default'     => '#f8f8f8',
 						'type'        => 'color-alpha',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -254,7 +350,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'menu_sub_sep_color',
 						'default'     => '#dcdadb',
 						'type'        => 'color-alpha',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -274,7 +370,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'menu_h45_bg_color',
 						'default'     => '#ffffff',
 						'type'        => 'color-alpha',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_layout',
@@ -330,7 +426,7 @@ function avada_options_section_menu( $sections ) {
 						'choices'     => array(
 							'units' => array( 'px', 'em' ),
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -365,7 +461,7 @@ function avada_options_section_menu( $sections ) {
 							'right'   => esc_html__( 'Right', 'Avada' ),
 						),
 						'type'        => 'radio-buttonset',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_layout',
@@ -404,7 +500,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'menu_sub_color',
 						'default'     => '#333333',
 						'type'        => 'color',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -427,10 +523,10 @@ function avada_options_section_menu( $sections ) {
 				'fields'   => array(
 					'flyout_menu_important_note_info' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong>  Flyout Menu Options are only available when using Header Layout #6. Your current Header Layout does not utilize the flyout menu.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong>  Flyout Menu Options are only available when using Header Layout #6. Your current Header Layout does not utilize the flyout menu.', 'Avada' ) . '</div>',
 						'id'          => 'flyout_menu_important_note_info',
 						'type'        => 'custom',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -559,7 +655,7 @@ function avada_options_section_menu( $sections ) {
 				'fields'   => array(
 					'no_secondary_menu_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Secondary Top Menu Options are only available when using Header Layouts #2-5. Your current Header Layout does not utilize the secondary top menu.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Secondary Top Menu Options are only available when using Header Layouts #2-5. Your current Header Layout does not utilize the secondary top menu.', 'Avada' ) . '</div>',
 						'id'          => 'no_secondary_menu_note',
 						'type'        => 'custom',
 						'required'    => array(
@@ -601,7 +697,7 @@ function avada_options_section_menu( $sections ) {
 							'max'  => '500',
 							'step' => '1',
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -636,7 +732,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'header_top_first_border_color',
 						'default'     => '#e5e5e5',
 						'type'        => 'color-alpha',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -671,7 +767,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'header_top_sub_bg_color',
 						'default'     => '#ffffff',
 						'type'        => 'color-alpha',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -706,7 +802,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'header_top_menu_bg_hover_color',
 						'default'     => '#fafafa',
 						'type'        => 'color-alpha',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -741,7 +837,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'header_top_menu_sub_sep_color',
 						'default'     => '#e5e5e5',
 						'type'        => 'color-alpha',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -776,7 +872,7 @@ function avada_options_section_menu( $sections ) {
 						'id'              => 'secondary_menu_typography_info',
 						'type'            => 'custom',
 						'style'           => 'heading',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -814,7 +910,7 @@ function avada_options_section_menu( $sections ) {
 						'choices'     => array(
 							'units' => array( 'px', 'em' ),
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -852,7 +948,7 @@ function avada_options_section_menu( $sections ) {
 						'choices'     => array(
 							'units' => array( 'px', 'em' ),
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -887,7 +983,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'snav_color',
 						'default'     => '#747474',
 						'type'        => 'color',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -922,7 +1018,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'header_top_menu_sub_color',
 						'default'     => '#747474',
 						'type'        => 'color',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -957,7 +1053,7 @@ function avada_options_section_menu( $sections ) {
 						'id'          => 'header_top_menu_sub_hover_color',
 						'default'     => '#333333',
 						'type'        => 'color',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -996,7 +1092,7 @@ function avada_options_section_menu( $sections ) {
 				'fields'   => array(
 					'no_responsive_mode_info_1' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Please enable responsive mode. Mobile menus are only available when you\'re using the responsive mode. To enable it please go to the "Responsive" section and set the "Responsive Design" option to ON.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Please enable responsive mode. Mobile menus are only available when you\'re using the responsive mode. To enable it please go to the "Responsive" section and set the "Responsive Design" option to ON.', 'Avada' ) . '</div>',
 						'id'          => 'no_responsive_mode_info_1',
 						'type'        => 'custom',
 						'required'    => array(
@@ -1009,7 +1105,7 @@ function avada_options_section_menu( $sections ) {
 					),
 					'no_mobile_menu_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> "Mobile Header Background Color" is the only option available for your Header Layout #6, the other options are only available when using Header Layouts #1-5. The rest of the options for Header #6 are on the Flyout Menu and Main Menu tab. ', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> "Mobile Header Background Color" is the only option available for your Header Layout #6, the other options are only available when using Header Layouts #1-5. The rest of the options for Header #6 are on the Flyout Menu and Main Menu tab. ', 'Avada' ) . '</div>',
 						'id'          => 'no_mobile_menu_note',
 						'type'        => 'custom',
 						'required'    => array(
@@ -1326,7 +1422,7 @@ function avada_options_section_menu( $sections ) {
 				'fields'   => array(
 					'header_v6_used_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Mega Menu Options are only available when using Header Layouts #1-5. Your current Header Layout #6 does not utilize the mega menu.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Mega Menu Options are only available when using Header Layouts #1-5. Your current Header Layout #6 does not utilize the mega menu.', 'Avada' ) . '</div>',
 						'id'          => 'header_v6_used_note',
 						'type'        => 'custom',
 						'required'    => array(
@@ -1339,7 +1435,7 @@ function avada_options_section_menu( $sections ) {
 					),
 					'megamenu_disabled_note' => ( '0' === Avada()->settings->get( 'dependencies_status' ) ) ? array() : array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Mega Menu is disabled in Advanced > Theme Features section. Please enable it to see the options.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Mega Menu is disabled in Advanced > Theme Features section. Please enable it to see the options.', 'Avada' ) . '</div>',
 						'id'          => 'megamenu_disabled_note',
 						'type'        => 'custom',
 						'required'    => array(
@@ -1395,7 +1491,7 @@ function avada_options_section_menu( $sections ) {
 					),
 					'megamenu_item_vertical_padding' => array(
 						'label'       => esc_html__( 'Mega Menu Dropdown Item Padding', 'Avada' ),
-						'description' => esc_html__( 'Controls the font size for mega menu column titles.', 'Avada' ),
+						'description' => esc_html__( 'Controls the top/bottom padding for mega menu dropdown items.', 'Avada' ),
 						'id'          => 'megamenu_item_vertical_padding',
 						'default'     => '5',
 						'type'        => 'slider',
@@ -1432,6 +1528,76 @@ function avada_options_section_menu( $sections ) {
 							array(
 								'setting'  => 'disable_megamenu',
 								'operator' => '=',
+								'value'    => '1',
+							),
+						),
+					),
+				),
+			),
+			'menu_icons_subsection' => array(
+				'label'    => esc_html__( 'Main Menu Icons', 'Avada' ),
+				'id'       => 'menu_icons_subsection',
+				'type'     => 'sub-section',
+				'fields'   => array(
+					'menu_icons_note' => array(
+						'label'       => '',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> Icons are available for both the main and dropdown menus. However, the options below only apply to the main menu. Dropdown menu icons do not use these options below, they follow the dropdown font size and color. The icons themselves can be added to your menu items in the Appearance > Menus section.', 'Avada' ) . '</div>',
+						'id'          => 'menu_icons_note',
+						'type'        => 'custom',
+					),
+					'menu_icon_position' => array(
+						'label'       => esc_html__( 'Main Menu Icon Position', 'Avada' ),
+						'description' => esc_html__( 'Controls the main menu icon position.', 'Avada' ),
+						'id'          => 'menu_icon_position',
+						'default'     => 'left',
+						'choices'     => array(
+							'top'     => esc_html__( 'Top', 'Avada' ),
+							'right'   => esc_html__( 'Right', 'Avada' ),
+							'bottom'  => esc_html__( 'Bottom', 'Avada' ),
+							'left'    => esc_html__( 'Left', 'Avada' ),
+						),
+						'type'        => 'radio-buttonset',
+					),
+					'menu_icon_size' => array(
+						'label'       => esc_html__( 'Main Menu Icon Size', 'Avada' ),
+						'description' => esc_html__( 'Controls the size of the menu icon.', 'Avada' ),
+						'id'          => 'menu_icon_size',
+						'default'     => ( isset( $settings['nav_font_size'] ) && ! empty( $settings['nav_font_size'] ) && false !== strpos( $settings['nav_font_size'], 'px' ) ) ? intval( $settings['nav_font_size'] ) : '14',
+						'type'        => 'slider',
+						'choices'     => array(
+							'min'  => '0',
+							'max'  => '100',
+							'step' => '1',
+						),
+					),
+					'menu_icon_color' => array(
+						'label'       => esc_html__( 'Main Menu Icon Color', 'Avada' ),
+						'description' => esc_html__( 'Controls the color of the main menu icon.', 'Avada' ),
+						'id'          => 'menu_icon_color',
+						'default'     => ( isset( $settings['menu_first_color'] ) && ! empty( $settings['menu_first_color'] ) ) ? $settings['menu_first_color'] : '#333333',
+						'type'        => 'color-alpha',
+					),
+					'menu_icon_hover_color' => array(
+						'label'       => esc_html__( 'Main Menu Icon Hover Color', 'Avada' ),
+						'description' => esc_html__( 'Controls the hover color of the main menu icon.', 'Avada' ),
+						'id'          => 'menu_icon_hover_color',
+						'default'     => ( isset( $settings['primary_color'] ) && ! empty( $settings['primary_color'] ) ) ? $settings['primary_color'] : '#a0ce4e',
+						'type'        => 'color-alpha',
+					),
+					'menu_thumbnail_size' => array(
+						'label'       => esc_html__( 'Mega Menu Thumbnail Size', 'Avada' ),
+						'description' => esc_html__( 'Controls the width and height of the mega menu thumbnail. Use "auto" for automatic resizing if you added either width or height.', 'Avada' ),
+						'id'          => 'menu_thumbnail_size',
+						'units'		  => false,
+						'default'     => array(
+							'width'   => '26px',
+							'height'  => ( isset( $settings['nav_font_size'] ) && ! empty( $settings['nav_font_size'] ) ) ? $settings['nav_font_size'] : '14px',
+						),
+						'type'        => 'dimensions',
+						'required'    => array(
+							array(
+								'setting'  => 'disable_megamenu',
+								'operator' => '==',
 								'value'    => '1',
 							),
 						),

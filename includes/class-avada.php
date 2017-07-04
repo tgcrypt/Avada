@@ -1,4 +1,15 @@
 <?php
+/**
+ * The main theme class.
+ * We're using this one to instantiate uther classes
+ * and access the main theme objects.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -62,7 +73,7 @@ class Avada {
 	 * @access public
 	 * @var string
 	 */
-	public static $version = '5.0.6';
+	public static $version = AVADA_VERSION;
 
 	/**
 	 * The original option name.
@@ -73,7 +84,7 @@ class Avada {
 	 * @access private
 	 * @var string
 	 */
-	private static $original_option_name = 'avada_theme_options';
+	private static $original_option_name = 'fusion_options';
 
 	/**
 	 * The option name including the language suffix.
@@ -147,7 +158,36 @@ class Avada {
 	 * @access public
 	 * @var array
 	 */
-	public static $bundled_plugins = array();
+	public static $bundled_plugins = array(
+		'fusion_core' => array(
+			'slug'    => 'fusion-core',
+			'name'    => 'Fusion Core',
+			'version' => '3.1.6',
+		),
+		'fusion_builder' => array(
+			'slug'    => 'fusion-builder',
+			'name'    => 'Fusion Builder',
+			'version' => '1.1.6',
+		),
+		'layer_slider' => array(
+			'slug'    => 'LayerSlider',
+			'name'    => 'LayerSlider WP',
+			'version' => '6.3.0',
+		),
+		'slider_revolution' => array(
+			'slug'    => 'revslider',
+			'name'    => 'Slider Revolution',
+			'version' => '5.4.2',
+		),
+	);
+
+	/**
+	 * Fusion.
+	 *
+	 * @access public
+	 * @var object
+	 */
+	public $fusion_library;
 
 	/**
 	 * Avada_Init.
@@ -206,14 +246,6 @@ class Avada {
 	public $layout;
 
 	/**
-	 * Avada_Dynamic_CSS.
-	 *
-	 * @access public
-	 * @var object
-	 */
-	public $dynamic_css;
-
-	/**
 	 * Avada_GoogleMap.
 	 *
 	 * @access public
@@ -246,20 +278,12 @@ class Avada {
 	public $registration;
 
 	/**
-	 * Avada_Theme_Updater.
+	 * Avada_Sermon_Manager
 	 *
 	 * @access public
-	 * @var object Avada_Theme_Updater.
+	 * @var object Avada_Sermon_Manager
 	 */
-	public $theme_updater;
-
-	/**
-	 * The current page ID.
-	 *
-	 * @access public
-	 * @var bool|int
-	 */
-	public static $c_page_id = false;
+	public $sermon_manager;
 
 	/**
 	 * Access the single instance of this class.
@@ -282,6 +306,8 @@ class Avada {
 
 	/**
 	 * The class constructor
+	 *
+	 * @access private
 	 */
 	private function __construct() {
 
@@ -290,13 +316,13 @@ class Avada {
 
 		// Set static vars.
 		if ( '' === self::$template_dir_path ) {
-			self::$template_dir_path = get_template_directory();
+			self::$template_dir_path = wp_normalize_path( get_template_directory() );
 		}
 		if ( '' === self::$template_dir_url ) {
 			self::$template_dir_url = get_template_directory_uri();
 		}
 		if ( '' === self::$stylesheet_dir_path ) {
-			self::$stylesheet_dir_path = get_stylesheet_directory();
+			self::$stylesheet_dir_path = wp_normalize_path( get_stylesheet_directory() );
 		}
 		if ( '' === self::$stylesheet_dir_url ) {
 			self::$stylesheet_dir_url = get_stylesheet_directory_uri();
@@ -312,34 +338,46 @@ class Avada {
 			self::$option_name = self::get_option_name();
 		}
 
-		// Initialize bundled plugins array.
-		self::$bundled_plugins = array(
-			'fusion_core' => array( 'slug' => 'fusion-core', 'name' => 'Fusion Core', 'version' => '3.0.6' ),
-			'fusion_builder' => array( 'slug' => 'fusion-builder', 'name' => 'Fusion Builder', 'version' => '1.0.6' ),
-			'layer_slider' => array( 'slug' => 'LayerSlider', 'name' => 'LayerSlider WP', 'version' => '6.1.0' ),
-			'slider_revolution' => array( 'slug' => 'revslider', 'name' => 'Slider Revolution', 'version' => '5.3.1.5' ),
-		);
-
 		// Instantiate secondary classes.
 		$this->settings       = Avada_Settings::get_instance();
-		$this->registration   = new Avada_Product_Registration();
+		$this->registration   = new Fusion_Product_Registration( array(
+			'type'    => 'theme',
+			'name'    => 'Avada',
+			'bundled' => array(
+				'Fusion Core',
+				'Fusion Builder',
+			),
+			'bundled-versions' => array(
+				'Fusion Core'    => self::$bundled_plugins['fusion_core']['version'],
+				'Fusion Builder' => self::$bundled_plugins['fusion_builder']['version'],
+			),
+		) );
 		$this->init           = new Avada_Init();
 		$this->social_sharing = new Avada_Social_Sharing();
 		$this->template       = new Avada_Template();
 		$this->blog           = new Avada_Blog();
 		$this->images         = new Avada_Images();
 		$this->head           = new Avada_Head();
-		$this->dynamic_css    = new Avada_Dynamic_CSS();
 		$this->layout         = new Avada_Layout();
 		$this->google_map     = new Avada_GoogleMap();
 		$this->remote_install = new Avada_Remote_installer();
-		$this->theme_updater  = new Avada_Theme_Updater();
-		add_action( 'wp', array( $this, 'set_page_id' ) );
+		$this->fusion_library = Fusion::get_instance();
+		$this->sermon_manager = new Avada_Sermon_Manager();
+
+		// Set the Fusion Library Image Class variable to the Avada one, to avoid duplication.
+		global $fusion_library;
+		if ( $fusion_library ) {
+			$fusion_library->images = $this->images;
+		}
 	}
+
+
 
 	/**
 	 * Checks if we're in the migration page.
 	 * It does that by checking _GET, and then sets the $is_updating property.
+	 *
+	 * @access public
 	 */
 	public function set_is_updating() {
 		if ( ! self::$is_updating && $_GET && isset( $_GET['avada_update'] ) && '1' == $_GET['avada_update'] ) {
@@ -350,8 +388,9 @@ class Avada {
 	/**
 	 * Gets the theme version.
 	 *
+	 * @static
+	 * @access public
 	 * @since 5.0
-	 *
 	 * @return string
 	 */
 	public static function get_theme_version() {
@@ -361,8 +400,9 @@ class Avada {
 	/**
 	 * Gets the normalized theme version.
 	 *
+	 * @static
+	 * @access public
 	 * @since 5.0
-	 *
 	 * @return string
 	 */
 	public static function get_normalized_theme_version() {
@@ -379,64 +419,13 @@ class Avada {
 	/**
 	 * Gets the bundled plugins.
 	 *
+	 * @static
+	 * @access public
 	 * @since 5.0
-	 *
 	 * @return array Array of bundled plugins.
 	 */
 	public static function get_bundled_plugins() {
 		return self::$bundled_plugins;
-	}
-
-	/**
-	 * Gets the current page ID.
-	 *
-	 * @return string The current page ID.
-	 */
-	public function get_page_id() {
-		return self::$c_page_id;
-	}
-
-	/**
-	 * Sets the current page ID.
-	 *
-	 * @uses self::c_page_id
-	 */
-	public function set_page_id() {
-		self::$c_page_id = self::c_page_id();
-	}
-
-	/**
-	 * Gets the current page ID.
-	 *
-	 * @return bool|int
-	 */
-	private static function c_page_id() {
-		$object_id = get_queried_object_id();
-
-		$c_page_id = false;
-
-		if ( get_option( 'show_on_front' ) && get_option( 'page_for_posts' ) && is_home() ) {
-			$c_page_id = get_option( 'page_for_posts' );
-		} else {
-			// Use the $object_id if available.
-			if ( isset( $object_id ) ) {
-				$c_page_id = $object_id;
-			}
-			// If we're not on a singular post, set to false.
-			if ( ! is_singular() ) {
-				$c_page_id = false;
-			}
-			// Front page is the posts page.
-			if ( isset( $object_id ) && 'posts' == get_option( 'show_on_front' ) && is_home() ) {
-				$c_page_id = $object_id;
-			}
-			// The woocommerce shop page.
-			if ( class_exists( 'WooCommerce' ) && ( is_shop() || is_tax( 'product_cat' ) || is_tax( 'product_tag' ) ) ) {
-				$c_page_id = get_option( 'woocommerce_shop_page_id' );
-			}
-		}
-
-		return $c_page_id;
 	}
 
 	/**
@@ -446,11 +435,19 @@ class Avada {
 	 * If we're not currently performing a migration
 	 * it also checks if the options for the current language are set.
 	 * If they are not, then we will copy the options from the main language.
+	 *
+	 * @static
+	 * @access public
 	 */
 	public static function multilingual_options() {
+
+		global $fusion_library;
+		$multilingual = $fusion_library->multilingual;
+
 		// Set the self::$lang.
-		if ( ! in_array( Avada_Multilingual::get_active_language(), array( '', 'en', 'all' ) ) ) {
-			self::$lang = '_' . Avada_Multilingual::get_active_language();
+		$active_language = Fusion_Multilingual::get_active_language();
+		if ( ! in_array( $active_language, array( '', 'en', 'all' ) ) ) {
+			self::$lang = '_' . $active_language;
 		}
 		// Make sure the options are copied if needed.
 		if ( ! in_array( self::$lang, array( '', 'en', 'all' ) ) && ! self::$lang_applied ) {
@@ -476,6 +473,8 @@ class Avada {
 	 * Get the private $option_name.
 	 * If empty returns the original_option_name.
 	 *
+	 * @static
+	 * @access public
 	 * @return string
 	 */
 	public static function get_option_name() {
@@ -488,6 +487,8 @@ class Avada {
 	/**
 	 * Get the private $original_option_name.
 	 *
+	 * @static
+	 * @access public
 	 * @return string
 	 */
 	public static function get_original_option_name() {
@@ -497,7 +498,9 @@ class Avada {
 	/**
 	 * Change the private $option_name.
 	 *
-	 * @param  false|string $option_name The option name to use.
+	 * @static
+	 * @access public
+	 * @param false|string $option_name The option name to use.
 	 */
 	public static function set_option_name( $option_name = false ) {
 		if ( false !== $option_name && ! empty( $option_name ) ) {

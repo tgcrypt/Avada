@@ -1,14 +1,14 @@
 <?php
 /**
  * Class Avada_Breadcrumbs
- *
  * This file does the breadcrumbs handling for the fusion framework.
  *
- * @author		ThemeFusion
- * @copyright	(c) Copyright by ThemeFusion
- * @link		http://theme-fusion.com
- * @package 	FusionFramework
- * @since		Version 1.0
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      1.0
  */
 
 // Do not allow directly accessing this file.
@@ -186,12 +186,12 @@ class Avada_Breadcrumbs {
 		$this->html_markup .= $this->get_breadcrumb_home();
 
 		// Woocommerce path prefix (e.g "Shop" ).
-		if ( class_exists( 'WooCommerce' ) && ( ( is_woocommerce() && is_archive() && ! is_shop() ) || is_cart() || is_checkout() || is_account_page() ) ) {
+		if ( class_exists( 'WooCommerce' ) && ( ( Avada_Helper::is_woocommerce() && is_archive() && ! is_shop() ) || is_cart() || is_checkout() || is_account_page() ) ) {
 			$this->html_markup .= $this->get_woocommerce_shop_page();
 		}
 
 		// Path prefix for bbPress (e.g "Forums" ).
-		if ( class_exists( 'bbPress' ) && is_bbpress() &&  ( bbp_is_topic_archive() || bbp_is_single_user() || bbp_is_search() ) ) {
+		if ( class_exists( 'bbPress' ) && Avada_Helper::is_bbpress() && ( Avada_Helper::bbp_is_topic_archive() || bbp_is_single_user() || Avada_Helper::bbp_is_search() ) ) {
 			$this->html_markup .= $this->get_bbpress_main_archive_page();
 		}
 
@@ -236,6 +236,7 @@ class Avada_Breadcrumbs {
 				$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'term' );
 			} // Date Archives.
 			elseif ( is_date() ) {
+				global $wp_locale;
 				$year = esc_html( get_query_var( 'year' ) );
 				if ( ! $year ) {
 					$year = substr( esc_html( get_query_var( 'm' ) ) , 0, 4 );
@@ -256,9 +257,8 @@ class Avada_Breadcrumbs {
 					if ( ! $month ) {
 						$month = substr( esc_html( get_query_var( 'm' ) ) , 4, 2 );
 					}
-					
-					$month_name = $wp_locale->get_month( $month );
 
+					$month_name = $wp_locale->get_month( $month );
 					$this->html_markup .= $this->get_single_breadcrumb_markup( $year, get_year_link( $year ) );
 					$this->html_markup .= $this->get_single_breadcrumb_markup( $month_name, get_month_link( $year, $month ) );
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'day' );
@@ -272,23 +272,22 @@ class Avada_Breadcrumbs {
 			} // 404 Page.
 			elseif ( is_404() ) {
 				// Special treatment for Events Calendar to avoid 404 messages on list view.
-				if ( ( function_exists( 'tribe_is_event' ) && tribe_is_event() ) || Avada_Helper::is_events_archive() ) {
+				if ( Avada_Helper::tribe_is_event() || Avada_Helper::is_events_archive() ) {
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'events' );
-				} // Default case.
-				else {
+				} else {
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( '404' );
 				}
 			} // bbPress.
 			elseif ( class_exists( 'bbPress' ) ) {
-			 	// Search Page.
-			 	if ( bbp_is_search() ) {
-			 		$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'bbpress_search' );
+				// Search Page.
+				if ( Avada_Helper::bbp_is_search() ) {
+					$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'bbpress_search' );
 				} // User page.
-			 	elseif ( bbp_is_single_user() ) {
+				elseif ( bbp_is_single_user() ) {
 					$this->html_markup .= $this->get_breadcrumb_leaf_markup( 'bbpress_user' );
 				}
 			}
-		}
+		} // End if().
 	}
 
 	/**
@@ -304,7 +303,7 @@ class Avada_Breadcrumbs {
 	 * @return void
 	 */
 	private function output_breadcrumbs_html() {
-		echo $this->html_markup;
+		echo wp_kses_post( $this->html_markup );
 	}
 
 	/**
@@ -365,7 +364,7 @@ class Avada_Breadcrumbs {
 		elseif ( 'avada_portfolio' == $this->post->post_type ) {
 			$taxonomy = 'portfolio_category';
 		} // Woocommerce.
-		elseif ( 'product' == $this->post->post_type && class_exists( 'WooCommerce' ) && is_woocommerce() ) {
+		elseif ( 'product' == $this->post->post_type && class_exists( 'WooCommerce' ) && Avada_Helper::is_woocommerce() ) {
 			$taxonomy = 'product_cat';
 		} // The Events Calendar.
 		elseif ( 'tribe_events' == $this->post->post_type ) {
@@ -512,12 +511,12 @@ class Avada_Breadcrumbs {
 		if ( is_object( $post_type_object ) ) {
 
 			// Woocommerce: archive name should be same as shop page name.
-			if ( 'product' == $post_type && $woocommerce_shop_page = $this->get_woocommerce_shop_page( $linked ) ) {
+			if ( 'product' === $post_type && $woocommerce_shop_page = $this->get_woocommerce_shop_page( $linked ) ) {
 				return $woocommerce_shop_page;
 			}
 
 			// Make sure that the Forums slug and link are correct for bbPress.
-			if ( class_exists( 'bbPress' ) && 'topic' == $post_type ) {
+			if ( class_exists( 'bbPress' ) && 'topic' === $post_type ) {
 				$archive_title = bbp_get_forum_archive_title();
 				if ( $linked ) {
 					$link = get_post_type_archive_link( bbp_get_forum_post_type() );
@@ -528,12 +527,11 @@ class Avada_Breadcrumbs {
 
 			// Use its name as fallback.
 			$archive_title = $post_type_object->name;
-			// Default case
-			// Check if the post type has a non empty label.
+			// Default case. Check if the post type has a non empty label.
 			if ( isset( $post_type_object->label ) && '' !== $post_type_object->label ) {
 				$archive_title = $post_type_object->label;
-			} // Alternatively check for a non empty menu name.
-			elseif ( isset( $post_type_object->labels->menu_name ) && '' !== $post_type_object->labels->menu_name ) {
+			} elseif ( isset( $post_type_object->labels->menu_name ) && '' !== $post_type_object->labels->menu_name ) {
+				// Alternatively check for a non empty menu name.
 				$archive_title = $post_type_object->labels->menu_name;
 			}
 		}
@@ -560,7 +558,7 @@ class Avada_Breadcrumbs {
 		$shop_page_markup = $link = '';
 
 		// Make sure we are on a woocommerce page.
-		if ( is_object( $post_type_object ) && class_exists( 'WooCommerce' ) && ( is_woocommerce() || is_cart() || is_checkout() || is_account_page() ) ) {
+		if ( is_object( $post_type_object ) && class_exists( 'WooCommerce' ) && ( Avada_Helper::is_woocommerce() || is_cart() || is_checkout() || is_account_page() ) ) {
 			// Get shop page id and then its name.
 			$shop_page_name = wc_get_page_id( 'shop' ) ? get_the_title( wc_get_page_id( 'shop' ) ) : '';
 
@@ -574,7 +572,11 @@ class Avada_Breadcrumbs {
 				$link = get_post_type_archive_link( $post_type );
 			}
 
-			$shop_page_markup = $this->get_single_breadcrumb_markup( $shop_page_name, $link );
+			$separator = ! is_shop();
+			if ( is_search() ) {
+				$separator = true;
+			}
+			$shop_page_markup = $this->get_single_breadcrumb_markup( $shop_page_name, $link, $separator, true, is_shop() );
 		}
 
 		return $shop_page_markup;
@@ -654,7 +656,7 @@ class Avada_Breadcrumbs {
 			default:
 				$title = get_the_title( $this->post->ID );
 				break;
-		}
+		} // End switch().
 
 		return '<span class="breadcrumb-leaf">' . $title . '</span>';
 	}
@@ -662,17 +664,18 @@ class Avada_Breadcrumbs {
 	/**
 	 * Adds the markup of a single breadcrumb.
 	 *
-	 * @param  string  $title      The title that should be displayed.
-	 * @param  string  $link       The URL of the breadcrumb.
-	 * @param  boolean $separator  Set to TRUE to show the separator at the end of the breadcrumb.
-	 * @param  boolean $microdata  Set to FALSE to make sure we get a link not being part of the breadcrumb microdata path.
-	 *
-	 * @return string 				The HTML markup of a single breadcrumb.
+	 * @access private
+	 * @param string $title     The title that should be displayed.
+	 * @param string $link      The URL of the breadcrumb.
+	 * @param bool   $separator Set to TRUE to show the separator at the end of the breadcrumb.
+	 * @param bool   $microdata Set to FALSE to make sure we get a link not being part of the breadcrumb microdata path.
+	 * @param bool   $is_leaf   Set to TRUE to make sure leaf markup is added to the span.
+	 * @return string           The HTML markup of a single breadcrumb.
 	 */
-	private function get_single_breadcrumb_markup( $title, $link = '', $separator = true, $microdata = true ) {
+	private function get_single_breadcrumb_markup( $title, $link = '', $separator = true, $microdata = true, $is_leaf = false ) {
 
 		// Init vars.
-		$microdata_itemscope = $microdata_url = $microdata_title = $separator_markup = '';
+		$microdata_itemscope = $microdata_url = $microdata_title = $separator_markup = $leaf_markup = '';
 
 		// Setup the elements attributes for breadcrumb microdata rich snippets.
 		if ( $microdata && Avada()->settings->get( 'disable_date_rich_snippet_pages' ) ) {
@@ -681,7 +684,11 @@ class Avada_Breadcrumbs {
 			$microdata_title     = 'itemprop="title"';
 		}
 
-		$breadcrumb_content = '<span ' . $microdata_title . '>' . $title . '</span>';
+		if ( $is_leaf ) {
+			$leaf_markup = ' class="breadcrumb-leaf"';
+		}
+
+		$breadcrumb_content = '<span ' . $microdata_title . $leaf_markup . '>' . $title . '</span>';
 
 		// If a link is set add its markup.
 		if ( $link ) {

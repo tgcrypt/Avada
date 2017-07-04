@@ -1,4 +1,13 @@
 <?php
+/**
+ * Post Metabox options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -99,7 +108,7 @@ if ( 'avada_faq' !== $screen->post_type ) {
 		),
 		esc_html__( 'Choose to open the single post page link in a new window.', 'Avada' )
 	);
-}
+} // End if().
 
 $this->radio_buttonset(
 	'related_posts',

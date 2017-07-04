@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -324,7 +334,7 @@ function avada_options_section_footer( $sections ) {
 						'id'          => 'footer_100_width',
 						'default'     => '0',
 						'type'        => 'switch',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'footer_widgets',
@@ -356,7 +366,7 @@ function avada_options_section_footer( $sections ) {
 							'right'   => '0px',
 						),
 						'type'        => 'spacing',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'footer_widgets',
@@ -536,7 +546,7 @@ function avada_options_section_footer( $sections ) {
 							'letter-spacing' => '0',
 							'color'          => '#dddddd',
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'footer_widgets',
@@ -556,7 +566,7 @@ function avada_options_section_footer( $sections ) {
 						'id'          => 'footer_text_color',
 						'default'     => '#8C8989',
 						'type'        => 'color',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'footer_widgets',
@@ -576,7 +586,7 @@ function avada_options_section_footer( $sections ) {
 						'id'          => 'footer_link_color',
 						'default'     => '#BFBFBF',
 						'type'        => 'color',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'footer_widgets',
@@ -596,7 +606,7 @@ function avada_options_section_footer( $sections ) {
 						'id'          => 'footer_link_color_hover',
 						'default'     => ( isset( $settings['primary_color'] ) && ! empty( $settings['primary_color'] ) ) ? $settings['primary_color'] : '#ffffff',
 						'type'        => 'color',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'footer_widgets',

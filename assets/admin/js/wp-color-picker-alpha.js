@@ -219,6 +219,10 @@
 					self.controls[k] = v;
 				});
 
+				//set custom dimensions for square.
+				self.controls.square.width( 273 );
+				self.controls.square.height( 198 );
+
 				// Change size strip and add margin for sliders
 				self.controls.square.css({'margin-right': '0'});
 				var emptyWidth = ( self.picker.width() - self.controls.square.width() - 20 ),

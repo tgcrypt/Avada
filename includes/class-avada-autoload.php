@@ -1,4 +1,13 @@
 <?php
+/**
+ * Autoloader for Avada classes.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -98,7 +107,7 @@ class Avada_Autoload {
 		$paths = array();
 		if ( 0 === stripos( $class_name, 'Avada' ) || 0 === stripos( $class_name, 'Fusion' ) ) {
 
-			$path     = wp_normalize_path( Avada::$template_dir_path . '/includes/' );
+			$path     = Avada::$template_dir_path . '/includes/';
 			$filename = 'class-' . strtolower( str_replace( '_', '-', $class_name ) ) . '.php';
 
 			$paths[] = $path . $filename;
@@ -135,8 +144,8 @@ class Avada_Autoload {
 	public function include_class_file( $class_name ) {
 
 		// If the path is cached, use it & early exit.
-		if ( isset( self::$cached_paths[ $class_name ] ) ) {
-			include_once self::$cached_paths[ $class_name ];
+		if ( isset( self::$cached_paths[ $class_name ] ) && file_exists( self::$cached_paths[ $class_name ] ) ) {
+			include_once wp_normalize_path( self::$cached_paths[ $class_name ] );
 			return;
 		}
 
@@ -150,12 +159,16 @@ class Avada_Autoload {
 		}
 
 		// Include the path.
-		include_once $path;
-
-		// Add path to the array of paths to cache.
-		self::$cached_paths[ $class_name ] = $path;
-		// Make sure we update the caches.
-		self::$update_cache = true;
+		if ( file_exists( $path ) ) {
+			include_once wp_normalize_path( $path );
+			// Add path to the array of paths to cache.
+			self::$cached_paths[ $class_name ] = $path;
+			// Make sure we update the caches.
+			self::$update_cache = true;
+			return;
+		}
+		// If we got this far, we need to reset the caches.
+		$this->reset_cached_paths();
 
 	}
 

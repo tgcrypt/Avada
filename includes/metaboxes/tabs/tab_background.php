@@ -1,4 +1,13 @@
 <?php
+/**
+ * Background Metabox options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -80,20 +89,7 @@ $this->select(
 );
 
 // Dependency check for wide mode.
-$wide_dependency = array(
-	array(
-		'field'      => 'page_bg_layout',
-		'value'      => 'boxed',
-		'comparison' => '!=',
-	),
-);
-if ( 'Boxed' == Avada()->settings->get( 'layout' ) ) {
-	$wide_dependency[] = array(
-		'field'      => 'page_bg_layout',
-		'value'      => 'default',
-		'comparison' => '!=',
-	);
-}
+$wide_dependency = array();
 
 $this->color(
 	'wide_page_bg_color',

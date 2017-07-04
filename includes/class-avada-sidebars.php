@@ -1,4 +1,13 @@
 <?php
+/**
+ * Handles sidebars.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,6 +31,7 @@ class Avada_Sidebars {
 	 */
 	public function widgets_init() {
 
+		// Main Blog widget area.
 		register_sidebar( array(
 			'name'          => 'Blog Sidebar',
 			'id'            => 'avada-blog-sidebar',
@@ -32,7 +42,8 @@ class Avada_Sidebars {
 			'after_title'   => '</h4></div>',
 		) );
 
-		$columns = Avada()->settings->get( 'footer_widgets_columns' ) + 1;
+		// Footer widget areas.
+		$columns = (int) Avada()->settings->get( 'footer_widgets_columns' ) + 1;
 
 		if ( ! $columns || 1 === $columns ) {
 			$columns = 5;
@@ -52,7 +63,8 @@ class Avada_Sidebars {
 
 		}
 
-		$columns = Avada()->settings->get( 'slidingbar_widgets_columns' ) + 1;
+		// Sliding bar widget areas.
+		$columns = (int) Avada()->settings->get( 'slidingbar_widgets_columns' ) + 1;
 
 		if ( ! $columns || 1 === $columns ) {
 			$columns = 5;
@@ -62,7 +74,7 @@ class Avada_Sidebars {
 		for ( $i = 1; $i < $columns; $i++ ) {
 
 			register_sidebar( array(
-				'name'          => sprintf( 'Slidingbar Widget %s', $i ),
+				'name'          => sprintf( 'Sliding Bar Widget %s', $i ),
 				'id'            => 'avada-slidingbar-widget-' . $i,
 				'before_widget' => '<div id="%1$s" class="fusion-slidingbar-widget-column widget %2$s">',
 				'after_widget'  => '<div style="clear:both;"></div></div>',
@@ -71,8 +83,8 @@ class Avada_Sidebars {
 			) );
 
 		}
-
 	}
+
 }
 
 /* Omit closing PHP tag to avoid "Headers already sent" issues. */

@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -99,7 +109,7 @@ function avada_options_section_header( $sections ) {
 							'Navigation'   => esc_html__( 'Navigation', 'Avada' ),
 							'Leave Empty'  => esc_html__( 'Leave Empty', 'Avada' ),
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -140,7 +150,7 @@ function avada_options_section_header( $sections ) {
 							'Navigation'   => esc_html__( 'Navigation', 'Avada' ),
 							'Leave Empty'  => esc_html__( 'Leave Empty', 'Avada' ),
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -182,7 +192,7 @@ function avada_options_section_header( $sections ) {
 							'Banner'             => esc_html__( 'Banner', 'Avada' ),
 							'None'               => esc_html__( 'Leave Empty', 'Avada' ),
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -202,7 +212,7 @@ function avada_options_section_header( $sections ) {
 						'id'          => 'header_number',
 						'default'     => 'Call Us Today! 1.555.555.555',
 						'type'        => 'text',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -237,7 +247,7 @@ function avada_options_section_header( $sections ) {
 						'id'          => 'header_email',
 						'default'     => 'info@yourdomain.com',
 						'type'        => 'text',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -272,7 +282,13 @@ function avada_options_section_header( $sections ) {
 						'id'          => 'header_tagline',
 						'default'     => 'Insert Tagline Here',
 						'type'        => 'textarea',
+						'class'		  => 'fusion-gutter-and-or-and',
 						'required'    => array(
+							array(
+								'setting'  => 'header_v4_content',
+								'operator' => 'contains',
+								'value'    => 'Tagline',
+							),
 							array(
 								'setting'  => 'header_layout',
 								'operator' => '=',
@@ -282,6 +298,11 @@ function avada_options_section_header( $sections ) {
 								'setting'  => 'header_v4_content',
 								'operator' => 'contains',
 								'value'    => 'Tagline',
+							),
+							array(
+								'setting'  => 'header_position',
+								'operator' => '!=',
+								'value'    => 'Top',
 							),
 						),
 					),
@@ -298,7 +319,7 @@ function avada_options_section_header( $sections ) {
 						'required'    => array(
 							array(
 								'setting'  => 'header_v4_content',
-								'operator' => '==',
+								'operator' => '=',
 								'value'    => 'Banner',
 							),
 						),
@@ -514,7 +535,7 @@ function avada_options_section_header( $sections ) {
 						'id'          => 'header_border_color',
 						'default'     => '#e5e5e5',
 						'type'        => 'color-alpha',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -576,7 +597,7 @@ function avada_options_section_header( $sections ) {
 						'choices'     => array(
 							'units' => array( 'px', 'em' ),
 						),
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',
@@ -596,7 +617,7 @@ function avada_options_section_header( $sections ) {
 						'id'          => 'tagline_font_color',
 						'default'     => '#747474',
 						'type'        => 'color',
-						'class'		  => 'avada-or-gutter',
+						'class'		  => 'fusion-or-gutter',
 						'required'    => array(
 							array(
 								'setting'  => 'header_position',

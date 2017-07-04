@@ -1,4 +1,14 @@
 <?php
+/**
+ * Import demos for fusion-builder.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      5.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -91,11 +101,14 @@ class Fusion_Builder_Demos_Importer {
 	 * @since 5.0.0
 	 */
 	public function __construct() {
-		$this->demo_folder_path = self::get_demo_folder_path();
-		$this->is_demo_folder_writeable = self::is_demo_folder_writeable();
+
+		$this->demo_folder_path            = self::get_demo_folder_path();
+		$this->is_demo_folder_writeable    = self::is_demo_folder_writeable();
 		$this->is_demo_data_zip_downloaded = $this->import_demo_data_zip();
-		$this->demos = $this->get_demo_names_array();
+		$this->demos                       = $this->get_demo_names_array();
+
 		$this->include_demo_files();
+
 	}
 
 	/**
@@ -107,10 +120,12 @@ class Fusion_Builder_Demos_Importer {
 	 * @return string
 	 */
 	private static function get_demo_folder_path() {
-		$wp_upload_dir = wp_upload_dir();
+
+		$wp_upload_dir    = wp_upload_dir();
 		$demo_folder_path = wp_normalize_path( $wp_upload_dir['basedir'] . '/' . self::$demo_folder_name . '/' );
 
 		return $demo_folder_path;
+
 	}
 
 	/**
@@ -123,11 +138,14 @@ class Fusion_Builder_Demos_Importer {
 	 * @return bool
 	 */
 	public static function is_demo_folder_writeable() {
+
 		$demo_folder_path = self::get_demo_folder_path();
 
 		// If the folder doesn't exist, attempt to create it.
 		if ( ! file_exists( $demo_folder_path ) ) {
+
 			$new_folder = wp_mkdir_p( $demo_folder_path );
+
 			// Return false if we were unable to create the folder.
 			if ( false === $new_folder ) {
 				return false;
@@ -135,7 +153,7 @@ class Fusion_Builder_Demos_Importer {
 		}
 
 		if ( ! function_exists( 'get_filesystem_method' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/file.php' );
+			require_once wp_normalize_path( ABSPATH . '/wp-admin/includes/file.php' );
 		}
 		$file_system_mode = get_filesystem_method( array(), $demo_folder_path );
 
@@ -145,6 +163,7 @@ class Fusion_Builder_Demos_Importer {
 
 		// Return true/false based on the target folder's writability.
 		return wp_is_writable( $demo_folder_path );
+
 	}
 
 	/**
@@ -156,15 +175,20 @@ class Fusion_Builder_Demos_Importer {
 	 * @return int
 	 */
 	public static function get_number_of_demo_files() {
-		$demo_folder_path = self::get_demo_folder_path();
-		$number_of_files = 0;
 
-		if ( file_exists( $demo_folder_path ) ) {
-			$filesystem_iterator = new FilesystemIterator( $demo_folder_path, FilesystemIterator::SKIP_DOTS );
-			$number_of_files = iterator_count( $filesystem_iterator );
+		$demo_folder_path = self::get_demo_folder_path();
+		$number_of_files  = 0;
+
+		// FilesystemIterator only runs on PHP 5.3+.
+		if ( version_compare( PHP_VERSION, '5.3.0' ) >= 0 ) {
+			if ( file_exists( $demo_folder_path ) ) {
+				$filesystem_iterator = new FilesystemIterator( $demo_folder_path, FilesystemIterator::SKIP_DOTS );
+				$number_of_files     = iterator_count( $filesystem_iterator );
+			}
 		}
 
 		return $number_of_files;
+
 	}
 
 	/**
@@ -175,6 +199,7 @@ class Fusion_Builder_Demos_Importer {
 	 * @return bool
 	 */
 	private function import_demo_data_zip() {
+
 		// Early exit if we can't write to the destination folder.
 		if ( ! $this->is_demo_folder_writeable ) {
 			return false;
@@ -182,7 +207,7 @@ class Fusion_Builder_Demos_Importer {
 
 		$zip_file = wp_normalize_path( $this->demo_folder_path . $this->zip_file_name );
 
-		if ( ! file_exists( $zip_file ) ) {
+		if ( $this->should_import( $zip_file ) ) {
 			$response = avada_wp_get_http( self::$remote_api_url, $zip_file );
 
 			if ( false === $response ) {
@@ -191,6 +216,48 @@ class Fusion_Builder_Demos_Importer {
 		}
 
 		return true;
+
+	}
+
+	/**
+	 * Determine if we need to import demos.
+	 *
+	 * @access private
+	 * @since 5.1
+	 * @param string $file The file to check against.
+	 * @return bool
+	 */
+	private function should_import( $file ) {
+
+		$transient_name = 'fusion_builder_demos_import_skip_check';
+
+		// Check if we want to skip the check.
+		if ( true === get_site_transient( $transient_name ) ) {
+			return false;
+		}
+
+		// If the file doesn't exist then we should import.
+		if ( ! file_exists( $file ) ) {
+			return true;
+		}
+
+		// If the file is more than a week old, we should import.
+		$lastweek = time() - WEEK_IN_SECONDS;
+		$filemtime = filemtime( $file );
+		if ( $filemtime < $lastweek ) {
+
+			// Demos more than a month old.
+			// Delete them so that they may be re-imported.
+			self::delete_demos();
+
+			return true;
+		}
+
+		// If we got this far then we don't need to import.
+		// Check again tomorrow.
+		set_site_transient( $transient_name, true, DAY_IN_SECONDS );
+		return false;
+
 	}
 
 	/**
@@ -201,6 +268,7 @@ class Fusion_Builder_Demos_Importer {
 	 * @return bool
 	 */
 	private function extract_demo_data_zip() {
+
 		$zip_file = wp_normalize_path( $this->demo_folder_path . $this->zip_file_name );
 
 		Avada_Helper::init_filesystem();
@@ -209,8 +277,8 @@ class Fusion_Builder_Demos_Importer {
 		if ( ! $unzipfile ) {
 			return false;
 		}
-
 		return true;
+
 	}
 
 	/**
@@ -221,17 +289,23 @@ class Fusion_Builder_Demos_Importer {
 	 * @return array
 	 */
 	private function get_demo_names_array() {
+
 		$demos = array(
 		   'agency',
 		   'app',
 		   'architecture',
 		   'cafe',
+		   'charity',
 		   'church',
 		   'classic',
 		   'classic_shop',
+		   'construction',
+		   'creative',
+		   'daycare',
 		   'fashion',
 		   'forum',
 		   'gym',
+		   'health',
 		   'hosting',
 		   'hotel',
 		   'landing_product',
@@ -242,11 +316,12 @@ class Fusion_Builder_Demos_Importer {
 		   'travel',
 		   'resume',
 		   'technology',
+		   'veterinarian',
 		   'wedding',
-		   'health',
 		);
 
 		return $demos;
+
 	}
 
 	/**
@@ -257,6 +332,7 @@ class Fusion_Builder_Demos_Importer {
 	 * @return bool
 	 */
 	private function include_demo_files() {
+
 		// Load Fusion Builder demos.
 		foreach ( $this->demos as $demo ) {
 			$demo_file = wp_normalize_path( $this->demo_folder_path . $demo . '.php' );
@@ -271,5 +347,28 @@ class Fusion_Builder_Demos_Importer {
 		}
 
 		return true;
+
+	}
+
+	/**
+	 * Delete FB demos.
+	 * They will be re-downloaded the next time they're needed.
+	 *
+	 * @static
+	 * @access public
+	 * @since 5.1
+	 */
+	public static function delete_demos() {
+
+		$wp_upload_dir = wp_upload_dir();
+		$basedir       = $wp_upload_dir['basedir'];
+		$dir           = wp_normalize_path( $basedir . '/fusion-builder-avada-pages' );
+
+		// initialize the WordPress Filesystem.
+		$filesystem = Avada_Helper::init_filesystem();
+
+		// Recursively delete the folder.
+		return $filesystem->delete( $dir, true );
+
 	}
 }

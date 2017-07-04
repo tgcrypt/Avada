@@ -1,4 +1,10 @@
 <?php
+/**
+ * The template used for 404 pages.
+ *
+ * @package Avada
+ * @subpackage Templates
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php
 			// Render the page titles.
 			$subtitle = esc_html__( 'Oops, This Page Could Not Be Found!', 'Avada' );
-			echo Avada()->template->title_template( $subtitle );
+			Avada()->template->title_template( $subtitle );
 			?>
 			<div class="fusion-clearfix"></div>
 			<div class="error-page">
@@ -30,6 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'menu_id'        => 'checklist-1',
 							'menu_class'     => 'error-menu list-icon list-icon-arrow ' . $circle_class,
 							'echo'           => 1,
+							'item_spacing'   => 'discard',
 						) ); ?>
 					</div>
 					<div class="fusion-column col-lg-4 col-md-4 col-sm-4">

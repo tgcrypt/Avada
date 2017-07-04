@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -404,7 +414,7 @@ function avada_options_section_extra( $sections ) {
 				'fields'      => array(
 					'pagination_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab apply to all pagination throughout the site, including the 3rd party plugins that Avada has design integration with.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab apply to all pagination throughout the site, including the 3rd party plugins that Avada has design integration with.', 'Avada' ) . '</div>',
 						'id'          => 'pagination_important_note_info',
 						'type'        => 'custom',
 					),
@@ -450,7 +460,7 @@ function avada_options_section_extra( $sections ) {
 				'fields'      => array(
 					'forms_styling_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab apply to all forms throughout the site, including the 3rd party plugins that Avada has design integration with.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab apply to all forms throughout the site, including the 3rd party plugins that Avada has design integration with.', 'Avada' ) . '</div>',
 						'id'          => 'forms_styling_important_note_info',
 						'type'        => 'custom',
 					),
@@ -493,7 +503,7 @@ function avada_options_section_extra( $sections ) {
 				'fields'      => array(
 					'gridbox_styling_important_note_info' => array(
 						'label'       => '',
-						'description' => '<div class="avada-avadaredux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab apply to grid boxes throughout the site; blog grid and timeline, portfolio boxed layout and WooCommerce boxes.', 'Avada' ) . '</div>',
+						'description' => '<div class="fusion-redux-important-notice">' . __( '<strong>IMPORTANT NOTE:</strong> The options on this tab apply to grid boxes throughout the site; blog grid and timeline, portfolio boxed layout and WooCommerce boxes.', 'Avada' ) . '</div>',
 						'id'          => 'gridbox_styling_important_note_info',
 						'type'        => 'custom',
 					),

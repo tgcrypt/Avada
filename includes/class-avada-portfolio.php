@@ -1,4 +1,13 @@
 <?php
+/**
+ * Portfolios main class.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -44,7 +53,7 @@ class Avada_Portfolio {
 	 */
 	public function set_portfolio_single_width( $classes ) {
 		if ( is_singular( 'avada_portfolio' ) ) {
-			$portfolio_width = ( 'half' == fusion_get_option( 'portfolio_featured_image_width', 'width', Avada()->get_page_id() ) ) ? 'half' : 'full';
+			$portfolio_width = ( 'half' == fusion_get_option( 'portfolio_featured_image_width', 'width', Avada()->fusion_library->get_page_id() ) ) ? 'half' : 'full';
 			if ( ! Avada()->settings->get( 'portfolio_featured_images' ) && 'half' == $portfolio_width ) {
 				$portfolio_width = 'full';
 			}

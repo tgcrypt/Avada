@@ -1,4 +1,14 @@
 <?php
+/**
+ * Avada Options.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      4.0.0
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -383,7 +393,7 @@ function avada_options_section_sidebars( $sections ) {
 				),
 			) : array(),
 			'ec_global_sidebar_heading' => ( Avada::$is_updating || class_exists( 'Tribe__Events__Main' ) ) ? array(
-				'label'  => esc_html__( 'Events Calendar Posts', 'Avada' ),
+				'label'  => esc_html__( 'Events Calendar', 'Avada' ),
 				'id'     => 'ec_global_sidebar_heading',
 				'type'   => 'sub-section',
 				'fields' => array(
@@ -395,16 +405,16 @@ function avada_options_section_sidebars( $sections ) {
 						'type'        => 'switch',
 					),
 					'ec_sidebar' => array(
-						'label'       => esc_html__( 'Global Events Calendar Post Sidebar 1', 'Avada' ),
-						'description' => esc_html__( 'Select sidebar 1 that will display on all Events Calendar posts.', 'Avada' ),
+						'label'       => esc_html__( 'Global Events Calendar Sidebar 1', 'Avada' ),
+						'description' => esc_html__( 'Select sidebar 1 that will display on all Events Calendar posts and archives pages.', 'Avada' ),
 						'id'          => 'ec_sidebar',
 						'default'     => 'None',
 						'type'        => 'select',
 						'choices'     => $sidebar_options,
 					),
 					'ec_sidebar_2' => array(
-						'label'       => esc_html__( 'Global Events Calendar Post Sidebar 2', 'Avada' ),
-						'description' => esc_html__( 'Select sidebar 2 that will display on all all Events Calendar posts. Sidebar 2 can only be used if sidebar 1 is selected.', 'Avada' ),
+						'label'       => esc_html__( 'Global Events Calendar Sidebar 2', 'Avada' ),
+						'description' => esc_html__( 'Select sidebar 2 that will display on all all Events Calendar posts and archive pages. Sidebar 2 can only be used if sidebar 1 is selected.', 'Avada' ),
 						'id'          => 'ec_sidebar_2',
 						'default'     => 'None',
 						'type'        => 'select',

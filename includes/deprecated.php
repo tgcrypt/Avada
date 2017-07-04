@@ -2,6 +2,13 @@
 /**
  * This file contains functions that have been deprecated.
  * They will still work, but it we recommend you switch to the new methods instead.
+ *
+ * @codingStandardsIgnoreFile
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
  */
 
 // Do not allow directly accessing this file.
@@ -195,5 +202,71 @@ class FusionCoreFrontendWalker extends Avada_Nav_Walker {}
  * Kept for child-themes compatibility.
  */
 class FusionCoreMegaMenus extends Avada_Nav_Walker_Megamenu {}
+
+if ( ! function_exists( 'avada_render_rich_snippets_for_pages' ) ) {
+	function avada_render_rich_snippets_for_pages( $title_tag = true, $author_tag = true, $updated_tag = true ) {
+		return fusion_render_rich_snippets_for_pages( $title_tag, $author_tag, $updated_tag );
+	}
+}
+
+if ( ! function_exists( 'avada_render_post_metadata' ) ) {
+	function avada_render_post_metadata( $layout, $settings = array() ) {
+		return fusion_render_post_metadata( $layout, $settings );
+	}
+}
+
+if ( ! function_exists( 'avada_render_first_featured_image_markup' ) ) {
+	function avada_render_first_featured_image_markup( $post_id, $post_featured_image_size = '', $post_permalink = '', $display_placeholder_image = false, $display_woo_price = false, $display_woo_buttons = false, $display_post_categories = 'default', $display_post_title = 'default', $type = '', $gallery_id = '', $display_rollover = 'yes', $display_woo_rating = false ) {
+		return fusion_render_first_featured_image_markup( $post_id, $post_featured_image_size, $post_permalink, $display_placeholder_image, $display_woo_price, $display_woo_buttons, $display_post_categories, $display_post_title, $type, $gallery_id, $display_rollover, $display_woo_rating );
+	}
+}
+
+if ( ! function_exists( 'avada_extract_shortcode_contents' ) ) {
+	function avada_extract_shortcode_contents( $m ) {
+		return fusion_extract_shortcode_contents( $m );
+	}
+}
+
+if ( ! function_exists( 'avada_get_portfolio_excerpt_length' ) ) {
+	function avada_get_portfolio_excerpt_length( $id ) {
+		return fusion_get_portfolio_excerpt_length( $id );
+	}
+}
+
+if ( ! function_exists( 'avada_link_pages' ) ) {
+	function avada_link_pages() {
+		fusion_link_pages();
+	}
+}
+
+if ( ! function_exists( 'avada_get_sermon_content' ) ) {
+	function avada_get_sermon_content( $archive = false ) {
+		// @codingStandardsIgnoreLine
+		error_log( 'The `avada_get_sermon_content` function has been deprecated since Avada 5.1.0. Please use `Avada()->sermon_manager->get_sermon_content()` instead.' );
+		return Avada()->sermon_manager->get_sermon_content( $archive );
+	}
+}
+
+if ( ! function_exists( 'fusion_render_wpfc_sorting' ) ) {
+	function fusion_render_wpfc_sorting() {
+		// @codingStandardsIgnoreLine
+		error_log( 'The `fusion_render_wpfc_sorting` function has been deprecated since Avada 5.1.0. Please use `Avada()->sermon_manager->render_wpfc_sorting()` instead.' );
+		Avada()->sermon_manager->render_wpfc_sorting();
+	}
+}
+
+/**
+ * Keep Backwards-compatibility.
+ */
+if ( ! class_exists( 'Avada_Color' ) ) {
+	class Avada_Color extends Fusion_Color {}
+}
+
+/**
+ * Keep Backwards-compatibility.
+ */
+if ( ! class_exists( 'Avada_Data' ) ) {
+	class Avada_Data extends Fusion_Data {}
+}
 
 /* Omit closing PHP tag to avoid "Headers already sent" issues. */

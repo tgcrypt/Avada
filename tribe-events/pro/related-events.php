@@ -24,7 +24,7 @@ $posts = tribe_get_related_posts();
 if ( is_array( $posts ) && ! empty( $posts ) ) : ?>
 
 <div class="related-posts single-related-posts">
-	<?php echo Avada()->template->title_template( sprintf( __( 'Related %s', 'tribe-events-calendar-pro' ), tribe_get_event_label_plural() ), '3' ); ?>
+	<?php Avada()->template->title_template( sprintf( __( 'Related %s', 'tribe-events-calendar-pro' ), tribe_get_event_label_plural() ), '3' ); ?>
 
 	<ul class="tribe-related-events tribe-clearfix hfeed vcalendar">
 		<?php foreach ( $posts as $post ) : ?>

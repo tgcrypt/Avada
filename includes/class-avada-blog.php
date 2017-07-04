@@ -1,4 +1,14 @@
 <?php
+/**
+ * Blog mods.
+ *
+ * @author     ThemeFusion
+ * @copyright  (c) Copyright by ThemeFusion
+ * @link       http://theme-fusion.com
+ * @package    Avada
+ * @subpackage Core
+ * @since      3.8
+ */
 
 // Do not allow directly accessing this file.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -7,8 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * The Avada_Blog class.
- *
- * @since 3.8
  */
 class Avada_Blog {
 
@@ -113,7 +121,7 @@ class Avada_Blog {
 	 */
 	public function get_content_stripped_and_excerpted( $excerpt_length, $content ) {
 		$pattern = get_shortcode_regex();
-		$content = preg_replace_callback( "/$pattern/s", 'avada_extract_shortcode_contents', $content );
+		$content = preg_replace_callback( "/$pattern/s", 'fusion_extract_shortcode_contents', $content );
 		$content = explode( ' ', $content, $excerpt_length + 1 );
 
 		if ( $excerpt_length < count( $content ) ) {
@@ -184,7 +192,7 @@ class Avada_Blog {
 		if ( $raw_content && ! $custom_excerpt ) {
 
 			$pattern = get_shortcode_regex();
-			$content = preg_replace_callback( "/$pattern/s", 'avada_extract_shortcode_contents', $raw_content );
+			$content = preg_replace_callback( "/$pattern/s", 'fusion_extract_shortcode_contents', $raw_content );
 
 			if ( 'Characters' == Avada()->settings->get( 'excerpt_base' ) ) {
 
@@ -223,12 +231,12 @@ class Avada_Blog {
 
 			return $content;
 
-		}
+		} // End if().
 
 		if ( true == $custom_excerpt ) {
 
 			$pattern = get_shortcode_regex();
-			$content = preg_replace_callback( "/$pattern/s", 'avada_extract_shortcode_contents', $raw_content );
+			$content = preg_replace_callback( "/$pattern/s", 'fusion_extract_shortcode_contents', $raw_content );
 
 			if ( true == $test_strip_html ) {
 
